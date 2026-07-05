@@ -1,4 +1,3 @@
-@use 'styles/card' as c;
 @use 'styles/section' as s;
 @use 'styles/typography' as t;
 
@@ -11,10 +10,11 @@
   min-height: 100vh;
 
   &__card {
-    @include c.card;
-
     width: 100%;
     max-width: 560px;
+  }
+
+  &__card-content {
     padding: 40px;
   }
 

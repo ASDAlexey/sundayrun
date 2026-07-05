@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 
 import { ProtocolStateService } from '../../state/protocol-state.service';
@@ -8,6 +9,7 @@ import { FileDropEvent, PreventableEvent, ZoneKeyEvent } from './upload-page.int
 /** The /upload page: accepts a timer xlsx export via drag-drop or a file dialog. */
 @Component({
   selector: 'app-upload-page',
+  imports: [MatCardModule],
   templateUrl: './upload-page.html',
   styleUrl: './upload-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
