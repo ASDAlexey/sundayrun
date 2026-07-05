@@ -2,11 +2,96 @@
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
-    <title>Воскресный парковый пробег — протоколы</title>
+    <title>Воскресный парковый пробег в Таганроге — протоколы и результаты</title>
     <base href="/" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <meta content="Конвертер результатов паркового пробега из Excel в PDF-протокол и архив всех забегов." name="description" />
-    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <meta
+      content="Результаты и PDF-протоколы Воскресного паркового пробега в Таганроге (ПКиО им. Горького). История и личная статистика каждого участника. Организатор — КЛБ «Легенда»."
+      name="description"
+    />
+    <meta content="пробег, забег, Таганрог, парк Горького, результаты, протокол, КЛБ Легенда, бег, паркран" name="keywords" />
+    <meta content="Алексей Попов" name="author" />
+    <meta content="#060607" name="theme-color" />
+
+    <!-- Race data and PDFs are served from jsDelivr; warm the connection up front. -->
+    <link href="https://cdn.jsdelivr.net" rel="preconnect" />
+    <link href="https://cdn.jsdelivr.net" rel="dns-prefetch" />
+
+    <link href="favicon.ico" rel="icon" sizes="32x32" type="image/x-icon" />
+    <link href="logo-mark.png" rel="icon" sizes="256x256" type="image/png" />
+    <link href="apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- The locale builds share this file; ru is the primary language, hreflang links both. -->
+    <link href="https://asdalexey.github.io/sundayrun/ru/" hreflang="ru" rel="alternate" />
+    <link href="https://asdalexey.github.io/sundayrun/en/" hreflang="en" rel="alternate" />
+    <link href="https://asdalexey.github.io/sundayrun/ru/" hreflang="x-default" rel="alternate" />
+
+    <meta content="website" property="og:type" />
+    <meta content="Воскресный парковый пробег" property="og:site_name" />
+    <meta content="Воскресный парковый пробег в Таганроге — протоколы и результаты" property="og:title" />
+    <meta
+      content="Результаты и PDF-протоколы воскресных забегов в ПКиО им. Горького. История каждого участника. Организатор — КЛБ «Легенда»."
+      property="og:description"
+    />
+    <meta content="https://asdalexey.github.io/sundayrun/ru/" property="og:url" />
+    <meta content="https://asdalexey.github.io/sundayrun/ru/og-image.png" property="og:image" />
+    <meta content="1200" property="og:image:width" />
+    <meta content="630" property="og:image:height" />
+    <meta content="Воскресный парковый пробег — протоколы и результаты, Таганрог" property="og:image:alt" />
+    <meta content="ru_RU" property="og:locale" />
+    <meta content="en_US" property="og:locale:alternate" />
+
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Воскресный парковый пробег в Таганроге — протоколы и результаты" name="twitter:title" />
+    <meta
+      content="Результаты и PDF-протоколы воскресных забегов в ПКиО им. Горького. История каждого участника."
+      name="twitter:description"
+    />
+    <meta content="https://asdalexey.github.io/sundayrun/ru/og-image.png" name="twitter:image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://asdalexey.github.io/sundayrun/#website",
+            "url": "https://asdalexey.github.io/sundayrun/ru/",
+            "name": "Воскресный парковый пробег",
+            "description": "Протоколы и результаты воскресных парковых пробегов в Таганроге",
+            "inLanguage": ["ru", "en"]
+          },
+          {
+            "@type": "SportsOrganization",
+            "@id": "https://asdalexey.github.io/sundayrun/#organizer",
+            "name": "КЛБ «Легенда»",
+            "sport": "Running",
+            "sameAs": ["https://vk.com/parkgorkogoruntgn"],
+            "areaServed": {
+              "@type": "City",
+              "name": "Таганрог"
+            }
+          },
+          {
+            "@type": "EventSeries",
+            "name": "Воскресный парковый пробег",
+            "description": "Регулярный любительский пробег в ПКиО им. Горького, Таганрог",
+            "sport": "Running",
+            "isAccessibleForFree": true,
+            "organizer": { "@id": "https://asdalexey.github.io/sundayrun/#organizer" },
+            "location": {
+              "@type": "Place",
+              "name": "ПКиО им. Горького",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Таганрог",
+                "addressCountry": "RU"
+              }
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <!-- spa-github-pages: 404.html stores the requested deep link before bouncing to the locale root. -->

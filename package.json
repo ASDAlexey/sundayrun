@@ -1,9 +1,8 @@
 {
-  "name": "parkrun",
+  "name": "sundayrun",
   "version": "0.0.0",
   "description": "Воскресный парковый пробег — конвертер Excel-результатов в PDF-протокол с архивом (Angular 22, RU/EN).",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve",
     "start:en": "ng serve --configuration=en",
     "build": "ng build --localize",

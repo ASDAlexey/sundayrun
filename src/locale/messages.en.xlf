@@ -143,8 +143,8 @@
         <target> Generate protocol </target>
       </trans-unit>
       <trans-unit id="races.title" datatype="html">
-        <source>Воскресный парковый пробег</source>
-        <target>Sunday Park Run</target>
+        <source>Воскресный <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;races__title-accent&quot;&gt;"/>парковый пробег<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Sunday <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;races__title-accent&quot;&gt;"/>park run<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="races.adminHint" datatype="html">
         <source>Режим организатора включён.</source>
@@ -181,10 +181,6 @@
       <trans-unit id="races.cdnNote" datatype="html">
         <source>Список может обновляться с небольшой задержкой после публикации.</source>
         <target>The list may update with a short delay after publishing.</target>
-      </trans-unit>
-      <trans-unit id="races.forOrganizer" datatype="html">
-        <source>для организатора</source>
-        <target>for the organiser</target>
       </trans-unit>
       <trans-unit id="races.pdfAriaLabel" datatype="html">
         <source>Протокол пробега № <x id="number" equiv-text="entry.number"/> (PDF)</source>
@@ -509,6 +505,130 @@
       <trans-unit id="shared.twoThreeKm" datatype="html">
         <source>2,3 км</source>
         <target>2.3 km</target>
+      </trans-unit>
+      <trans-unit id="app.brandName" datatype="html">
+        <source>Воскресный парковый пробег</source>
+        <target>SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="app.brandPlace" datatype="html">
+        <source>Таганрог · ПКиО им. Горького</source>
+        <target>Taganrog · Gorky Central Park</target>
+      </trans-unit>
+      <trans-unit id="app.navLabel" datatype="html">
+        <source>Основные разделы</source>
+        <target>Main sections</target>
+      </trans-unit>
+      <trans-unit id="app.navRaces" datatype="html">
+        <source>Забеги</source>
+        <target>Races</target>
+      </trans-unit>
+      <trans-unit id="app.navAthletes" datatype="html">
+        <source>Участники</source>
+        <target>Athletes</target>
+      </trans-unit>
+      <trans-unit id="app.footerBrandNote" datatype="html">
+        <source>Протоколы, результаты и история каждого участника.</source>
+        <target>Protocols, results and every athlete’s history.</target>
+      </trans-unit>
+      <trans-unit id="app.footerOrganizerLabel" datatype="html">
+        <source>Организатор</source>
+        <target>Organiser</target>
+      </trans-unit>
+      <trans-unit id="app.footerOrganizer" datatype="html">
+        <source>КЛБ «Легенда»</source>
+        <target>Legenda running club</target>
+      </trans-unit>
+      <trans-unit id="app.footerPlace" datatype="html">
+        <source>ПКиО им. Горького, г. Таганрог</source>
+        <target>Gorky Central Park, Taganrog</target>
+      </trans-unit>
+      <trans-unit id="app.footerVk" datatype="html">
+        <source>Сообщество ВКонтакте</source>
+        <target>VK community</target>
+      </trans-unit>
+      <trans-unit id="app.footerDeveloperLabel" datatype="html">
+        <source>Разработал</source>
+        <target>Developed by</target>
+      </trans-unit>
+      <trans-unit id="app.footerCreator" datatype="html">
+        <source>Алексей Попов</source>
+        <target>Alexey Popov</target>
+      </trans-unit>
+      <trans-unit id="app.footerCopyright" datatype="html">
+        <source>© Воскресный парковый пробег, Таганрог</source>
+        <target>© SundayRUN, Taganrog</target>
+      </trans-unit>
+      <trans-unit id="app.forOrganizer" datatype="html">
+        <source>для организатора</source>
+        <target>for the organiser</target>
+      </trans-unit>
+      <trans-unit id="title.races" datatype="html">
+        <source>Воскресный парковый пробег в Таганроге — протоколы и результаты</source>
+        <target>SundayRUN in Taganrog — protocols and results</target>
+      </trans-unit>
+      <trans-unit id="title.admin" datatype="html">
+        <source>Вход для организатора — Воскресный парковый пробег</source>
+        <target>Organiser sign-in — SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="title.upload" datatype="html">
+        <source>Загрузка забега — Воскресный парковый пробег</source>
+        <target>Race upload — SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="title.preview" datatype="html">
+        <source>Предпросмотр протокола — Воскресный парковый пробег</source>
+        <target>Protocol preview — SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="title.result" datatype="html">
+        <source>Публикация результата — Воскресный парковый пробег</source>
+        <target>Publishing the result — SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="title.race" datatype="html">
+        <source>Протокол пробега — Воскресный парковый пробег</source>
+        <target>Race protocol — SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="title.athletes" datatype="html">
+        <source>Участники — Воскресный парковый пробег</source>
+        <target>Athletes — SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="title.athlete" datatype="html">
+        <source>Участник — Воскресный парковый пробег</source>
+        <target>Athlete — SundayRUN</target>
+      </trans-unit>
+      <trans-unit id="admin.tokenHelp" datatype="html">
+        <source>Как создать токен — пошаговая инструкция</source>
+        <target>How to create a token — step-by-step guide</target>
+      </trans-unit>
+      <trans-unit id="races.eyebrow" datatype="html">
+        <source>Таганрог · ПКиО им. Горького</source>
+        <target>Taganrog · Gorky Central Park</target>
+      </trans-unit>
+      <trans-unit id="races.tagline" datatype="html">
+        <source>Протоколы, результаты и история каждого участника.</source>
+        <target>Protocols, results and every athlete’s history.</target>
+      </trans-unit>
+      <trans-unit id="races.courseEyebrow" datatype="html">
+        <source>Трасса</source>
+        <target>The course</target>
+      </trans-unit>
+      <trans-unit id="races.courseTitle" datatype="html">
+        <source>5 км — два круга по парку</source>
+        <target>5 km — two laps around the park</target>
+      </trans-unit>
+      <trans-unit id="races.courseText" datatype="html">
+        <source>Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.</source>
+        <target>The route follows the alleys of Gorky Central Park. The start and finish share one spot, with the meeting point nearby.</target>
+      </trans-unit>
+      <trans-unit id="races.courseVk" datatype="html">
+        <source>Сообщество ВКонтакте</source>
+        <target>VK community</target>
+      </trans-unit>
+      <trans-unit id="races.courseAlt" datatype="html">
+        <source>Схема трассы 5 км — два круга по ПКиО им. Горького</source>
+        <target>5 km course map — two laps around Gorky Central Park</target>
+      </trans-unit>
+      <trans-unit id="app.footerCreatorSite" datatype="html">
+        <source>asdalexey.github.io</source>
+        <target>asdalexey.github.io</target>
       </trans-unit>
     </body>
   </file>
