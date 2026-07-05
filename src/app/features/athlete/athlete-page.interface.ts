@@ -12,7 +12,6 @@ export interface AthleteRunView {
   slug: string;
   raceLink: string[];
   dateShort: string;
-  distanceText: string;
   timeText: string;
 }
 

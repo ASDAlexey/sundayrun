@@ -18,7 +18,7 @@
         <p class="athlete__counters">
           <span class="athlete__counter" i18n="@@athlete.participations">Участий: {{ participationCount() }}</span>
 
-          <span class="athlete__counter" i18n="@@athlete.finishes">Финишей: {{ finishCount() }}</span>
+          <span class="athlete__counter" i18n="@@athlete.finishes">Финишей на 5 км: {{ finishCount() }}</span>
         </p>
       </header>
 
@@ -46,56 +46,60 @@
         <section class="athlete__runs">
           <div class="athlete__controls">
             <div class="athlete__filter">
-              <label class="athlete__filter-label" for="athlete-year" i18n="@@athlete.yearLabel">Год</label>
+              <span class="athlete__filter-label" i18n="@@athlete.yearLabel">Год</span>
 
-              <select #yearSelect class="athlete__filter-select" id="athlete-year" (change)="onYearChange(yearSelect.value)">
-                <option i18n="@@athlete.allYears" [value]="allValue">Все годы</option>
+              <div class="athlete__chips">
+                <button
+                  class="athlete__chip"
+                  i18n="@@athlete.allYears"
+                  type="button"
+                  [attr.aria-pressed]="year() === null"
+                  [class.athlete__chip_active]="year() === null"
+                  (click)="setYear(null)"
+                >
+                  Все
+                </button>
 
                 @for (runYear of years(); track runYear) {
-                  <option [value]="runYear">{{ runYear }}</option>
+                  <button
+                    class="athlete__chip"
+                    type="button"
+                    [attr.aria-pressed]="year() === runYear"
+                    [class.athlete__chip_active]="year() === runYear"
+                    (click)="setYear(runYear)"
+                  >
+                    {{ runYear }}
+                  </button>
                 }
-              </select>
+              </div>
             </div>
 
             <div class="athlete__filter">
-              <label class="athlete__filter-label" for="athlete-distance" i18n="@@athlete.distanceLabel">Дистанция</label>
+              <span class="athlete__filter-label" i18n="@@athlete.sortLabel">Сортировка</span>
 
-              <select
-                #distanceSelect
-                class="athlete__filter-select"
-                id="athlete-distance"
-                (change)="onDistanceChange(distanceSelect.value)"
-              >
-                <option i18n="@@athlete.allDistances" [value]="allValue">Все дистанции</option>
+              <div class="athlete__chips">
+                <button
+                  class="athlete__chip"
+                  i18n="@@athlete.sortByTime"
+                  type="button"
+                  [attr.aria-pressed]="sort() === sorts.byTime"
+                  [class.athlete__chip_active]="sort() === sorts.byTime"
+                  (click)="setSort(sorts.byTime)"
+                >
+                  По времени
+                </button>
 
-                <option i18n="@@athlete.fiveKm" [value]="fiveKm">5 км</option>
-
-                <option i18n="@@athlete.twoThreeKm" [value]="twoThreeKm">2,3 км</option>
-              </select>
-            </div>
-
-            <div class="athlete__sorts">
-              <button
-                class="athlete__sort"
-                i18n="@@athlete.sortByDate"
-                type="button"
-                [attr.aria-pressed]="sort() === sorts.byDate"
-                [class.athlete__sort_active]="sort() === sorts.byDate"
-                (click)="setSort(sorts.byDate)"
-              >
-                По дате
-              </button>
-
-              <button
-                class="athlete__sort"
-                i18n="@@athlete.sortByTime"
-                type="button"
-                [attr.aria-pressed]="sort() === sorts.byTime"
-                [class.athlete__sort_active]="sort() === sorts.byTime"
-                (click)="setSort(sorts.byTime)"
-              >
-                По времени
-              </button>
+                <button
+                  class="athlete__chip"
+                  i18n="@@athlete.sortByDate"
+                  type="button"
+                  [attr.aria-pressed]="sort() === sorts.byDate"
+                  [class.athlete__chip_active]="sort() === sorts.byDate"
+                  (click)="setSort(sorts.byDate)"
+                >
+                  По дате
+                </button>
+              </div>
             </div>
           </div>
 
@@ -111,7 +115,6 @@
                 <thead>
                   <tr>
                     <th class="athlete__th" i18n="@@athlete.table.date" scope="col">Дата</th>
-                    <th class="athlete__th" i18n="@@athlete.table.distance" scope="col">Дистанция</th>
                     <th class="athlete__th" i18n="@@athlete.table.time" scope="col">Время</th>
                   </tr>
                 </thead>
@@ -122,7 +125,6 @@
                       <td class="athlete__td">
                         <a class="athlete__race" [routerLink]="run.raceLink">{{ run.dateShort }}</a>
                       </td>
-                      <td class="athlete__td">{{ run.distanceText }}</td>
                       <td class="athlete__td athlete__td_mono">{{ run.timeText }}</td>
                     </tr>
                   }

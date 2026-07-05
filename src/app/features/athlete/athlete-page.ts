@@ -6,19 +6,18 @@ import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { distinctRunYears, filterRuns, sortRuns, yearBestEntries } from '../../core/history/athlete-runs';
 import { RunsSort, RunsSortType } from '../../core/history/athlete-runs.enum';
 import { YearBestEntry } from '../../core/history/athlete-runs.interface';
-import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
-import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
+import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
+import { AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
-import { FIVE_KM_TEXT, TWO_THREE_KM_TEXT } from '../../shared/distance-label.constant';
 import { ATHLETES_PAGE_LINK, NO_BEST_TIME_TEXT } from '../athletes/athletes-page.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { ALL_OPTION_VALUE, KEY_ROUTE_PARAM } from './athlete-page.constant';
+import { KEY_ROUTE_PARAM } from './athlete-page.constant';
 import { AthleteStatus, AthleteStatusType } from './athlete-page.enum';
 import { AthletePageState, AthleteRunView, YearBestView } from './athlete-page.interface';
 
-/** One athlete's history: participation counters, 5 km records, and all runs with filters and sorting. */
+/** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
 @Component({
   selector: 'app-athlete-page',
   imports: [RouterLink],
@@ -28,29 +27,25 @@ import { AthletePageState, AthleteRunView, YearBestView } from './athlete-page.i
 })
 export class AthletePage {
   readonly #athletes = inject(AthletesService);
-  readonly #record = signal<AthleteRecord | null>(null);
+  readonly #record = signal<AthletePageState['record']>(null);
+  // The whole page is about the full distance: one-lap runs never reach the table or the filters.
+  readonly #fiveKmRuns = computed(() => filterRuns(this.#record()?.runs ?? [], null, FIVE_KM_DISTANCE_KM));
 
   readonly status = signal<AthleteStatusType>(AthleteStatus.loading);
   readonly year = signal<string | null>(null);
-  readonly distanceKm = signal<number | null>(null);
-  readonly sort = signal<RunsSortType>(RunsSort.byDate);
+  readonly sort = signal<RunsSortType>(RunsSort.byTime);
 
   readonly displayName = computed(() => this.#record()?.displayName ?? '');
   readonly participationCount = computed(() => this.#record()?.participationSlugs.length ?? 0);
-  readonly finishCount = computed(() => this.#record()?.runs.length ?? 0);
+  readonly finishCount = computed(() => this.#fiveKmRuns().length);
   readonly bestTimeText = computed(() => toTimeText(this.#record()?.bestMs ?? null));
   readonly yearBests = computed(() => yearBestEntries(this.#record()?.bestMsByYear ?? {}).map(toYearBestView));
-  readonly years = computed(() => distinctRunYears(this.#record()?.runs ?? []));
-  readonly runs = computed(() =>
-    sortRuns(filterRuns(this.#record()?.runs ?? [], this.year(), this.distanceKm()), this.sort()).map(toRunView),
-  );
+  readonly years = computed(() => distinctRunYears(this.#fiveKmRuns()));
+  readonly runs = computed(() => sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), this.sort()).map(toRunView));
 
   protected readonly statuses = AthleteStatus;
   protected readonly sorts = RunsSort;
   protected readonly athletesLink = ATHLETES_PAGE_LINK;
-  protected readonly allValue = ALL_OPTION_VALUE;
-  protected readonly fiveKm = FIVE_KM_DISTANCE_KM;
-  protected readonly twoThreeKm = TWO_THREE_KM_DISTANCE_KM;
 
   #key = '';
 
@@ -64,12 +59,8 @@ export class AthletePage {
       });
   }
 
-  onYearChange(value: string): void {
-    this.year.set(value === ALL_OPTION_VALUE ? null : value);
-  }
-
-  onDistanceChange(value: string): void {
-    this.distanceKm.set(value === ALL_OPTION_VALUE ? null : Number(value));
+  setYear(year: string | null): void {
+    this.year.set(year);
   }
 
   setSort(sort: RunsSortType): void {
@@ -80,8 +71,7 @@ export class AthletePage {
     this.status.set(AthleteStatus.loading);
     this.#record.set(null);
     this.year.set(null);
-    this.distanceKm.set(null);
-    this.sort.set(RunsSort.byDate);
+    this.sort.set(RunsSort.byTime);
 
     const next = await this.#resolveState(key);
 
@@ -114,7 +104,6 @@ function toRunView(run: AthleteRun): AthleteRunView {
     slug: run.slug,
     raceLink: [RACE_PAGE_BASE_LINK, run.slug],
     dateShort: formatRussianDateShort(run.dateIso),
-    distanceText: run.distanceKm === FIVE_KM_DISTANCE_KM ? FIVE_KM_TEXT : TWO_THREE_KM_TEXT,
     timeText: formatDuration(run.timeMs),
   };
 }

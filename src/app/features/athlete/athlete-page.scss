@@ -1,6 +1,5 @@
 @use 'styles/buttons' as b;
 @use 'styles/card' as c;
-@use 'styles/field' as f;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/table' as tbl;
@@ -91,35 +90,34 @@
     @include c.card;
 
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
+    flex-direction: column;
     padding: 24px;
     gap: 16px;
   }
 
+  // A Bonds-Tracker-style row: a small label on the left, toggle chips to the right.
   &__filter {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
   }
 
   &__filter-label {
     @include t.text('label', 'medium');
 
+    min-width: 88px;
     color: var(--text-secondary);
+    text-transform: uppercase;
   }
 
-  &__filter-select {
-    @include f.field;
-  }
-
-  &__sorts {
+  &__chips {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  &__sort {
+  &__chip {
     @include b.button-toggle;
 
     &_active {

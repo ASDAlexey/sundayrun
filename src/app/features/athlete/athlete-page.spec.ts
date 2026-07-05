@@ -3,14 +3,13 @@ import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
 import { RunsSort } from '../../core/history/athlete-runs.enum';
 import { EXPECTED_ROLLUP_HISTORY, DNF_ONLY_KEY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
-import { TWO_THREE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { AthletesHistory } from '../../core/models/athletes-history.type';
 import { AthletesService } from '../../github/athletes.service';
 import { ATHLETES_PAGE_LINK, NO_BEST_TIME_TEXT } from '../athletes/athletes-page.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
 import { AthletePage } from './athlete-page';
-import { ALL_OPTION_VALUE, KEY_ROUTE_PARAM } from './athlete-page.constant';
+import { KEY_ROUTE_PARAM } from './athlete-page.constant';
 import { AthleteStatus } from './athlete-page.enum';
 import {
   ATHLETE_LOAD_ERROR_MESSAGE,
@@ -20,8 +19,8 @@ import {
   EXPECTED_BY_DATE_VIEWS,
   EXPECTED_BY_TIME_VIEWS,
   EXPECTED_RUN_YEAR_OPTIONS,
+  EXPECTED_SHORT_RUNNER_VIEWS,
   EXPECTED_YEAR_BEST_VIEWS,
-  EXPECTED_SHORT_RUN_VIEW,
   EXPECTED_YEAR_FILTERED_VIEWS,
   SHORT_RUNNER_KEY_PARAM,
   UNKNOWN_KEY_PARAM,
@@ -60,7 +59,7 @@ describe('AthletePage', () => {
     return created;
   }
 
-  it('normalizes the route key and renders the header, records and the runs table (newest first)', async () => {
+  it('normalizes the route key and renders the header, records and the runs table (fastest first)', async () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -73,75 +72,81 @@ describe('AthletePage', () => {
     expect(page.bestTimeText()).toBe(EXPECTED_BEST_TIME_TEXT);
     expect(page.yearBests()).toEqual(EXPECTED_YEAR_BEST_VIEWS);
     expect(page.years()).toEqual(EXPECTED_RUN_YEAR_OPTIONS);
-    expect(page.runs()).toEqual(EXPECTED_BY_DATE_VIEWS);
+    expect(page.runs(), 'runs are sorted by time by default').toEqual(EXPECTED_BY_TIME_VIEWS);
 
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
     const headers = [...element.querySelectorAll('.athlete__th')];
     const raceLinks = [...element.querySelectorAll('.athlete__race')];
-    const yearOptions = [...element.querySelectorAll('#athlete-year option')];
+    const filterChips = [...element.querySelectorAll('.athlete__filter')[0].querySelectorAll('.athlete__chip')];
 
     expect(element.querySelector('.athlete__status').getAttribute('aria-live'), 'the live region stays in the DOM across states').toBe(
       'polite',
     );
     expect(element.querySelector('.athlete__status').textContent.trim(), 'the live region is empty once the history is ready').toBe('');
     expect(element.querySelector('.athlete__title').textContent.trim()).toBe(expectedRecord.displayName);
-    expect(headers.map((header) => header.getAttribute('scope'))).toEqual(['col', 'col', 'col']);
-    expect(raceLinks.map((link) => link.textContent.trim())).toEqual(EXPECTED_BY_DATE_VIEWS.map((view) => view.dateShort));
-    expect(raceLinks[0].getAttribute('href'), 'the date links to the online protocol').toBe(EXPECTED_BY_DATE_VIEWS[0].raceLink.join('/'));
-    expect(yearOptions.length, 'the "all years" option plus one per distinct year').toBe(EXPECTED_RUN_YEAR_OPTIONS.length + 1);
-    expect(element.querySelector('.athlete__filter-label[for="athlete-distance"]')).not.toBeNull();
+    expect(
+      headers.map((header) => header.getAttribute('scope')),
+      'the table has date and time columns only',
+    ).toEqual(['col', 'col']);
+    expect(raceLinks.map((link) => link.textContent.trim())).toEqual(EXPECTED_BY_TIME_VIEWS.map((view) => view.dateShort));
+    expect(raceLinks[0].getAttribute('href'), 'the date links to the online protocol').toBe(EXPECTED_BY_TIME_VIEWS[0].raceLink.join('/'));
+    expect(
+      filterChips.map((chip) => chip.textContent.trim()),
+      'the year row is the "all" chip plus one per distinct year',
+    ).toEqual(['Все', ...EXPECTED_RUN_YEAR_OPTIONS]);
+    expect(
+      filterChips.map((chip) => chip.getAttribute('aria-pressed')),
+      'all years by default',
+    ).toEqual(['true', 'false', 'false']);
   });
 
-  it('filters by year and distance, re-sorts by time and reports when no runs match', async () => {
+  it('filters by year, re-sorts by date and reports when no runs match', async () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
 
-    page.setSort(RunsSort.byTime);
-
-    expect(page.runs()).toEqual(EXPECTED_BY_TIME_VIEWS);
-
     page.setSort(RunsSort.byDate);
-    page.onYearChange(ATHLETE_YEAR_FILTER);
+
+    expect(page.runs()).toEqual(EXPECTED_BY_DATE_VIEWS);
+
+    page.setYear(ATHLETE_YEAR_FILTER);
 
     expect(page.runs()).toEqual(EXPECTED_YEAR_FILTERED_VIEWS);
 
-    page.onYearChange(ALL_OPTION_VALUE);
+    page.setYear(null);
 
-    expect(page.runs(), 'the "all years" option resets the filter').toEqual(EXPECTED_BY_DATE_VIEWS);
+    expect(page.runs(), 'the "all years" chip resets the filter').toEqual(EXPECTED_BY_DATE_VIEWS);
 
-    page.onDistanceChange(String(TWO_THREE_KM_DISTANCE_KM));
+    page.setYear(UNKNOWN_KEY_PARAM);
 
-    expect(page.runs(), 'the athlete has no 2.3 km runs').toEqual([]);
+    expect(page.runs(), 'a year without runs empties the table').toEqual([]);
 
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
-    const sortButtons = [...element.querySelectorAll('.athlete__sort')];
-
+    const sortChips = [...element.querySelectorAll('.athlete__filter')[1].querySelectorAll('.athlete__chip')];
     const statusRegions = [...element.querySelectorAll('.athlete__status')];
 
     expect(element.querySelector('.athlete__table-wrap')).toBeNull();
     expect(statusRegions.at(-1).getAttribute('role')).toBe('status');
     expect(statusRegions.at(-1).textContent.trim(), 'the "no filtered runs" note lives in the persistent live region').not.toBe('');
-    expect(sortButtons.map((button) => button.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
-
-    page.onDistanceChange(ALL_OPTION_VALUE);
-
-    expect(page.runs(), 'the "all distances" option resets the filter').toEqual(EXPECTED_BY_DATE_VIEWS);
+    expect(
+      sortChips.map((chip) => chip.getAttribute('aria-pressed')),
+      'time first, date second',
+    ).toEqual(['false', 'true']);
   });
 
-  it('labels a 2.3 km run with the short distance and keeps it when filtering by that distance', async () => {
+  it('hides 2.3 km runs everywhere: table, finish counter and year chips', async () => {
     routeParams[KEY_ROUTE_PARAM] = SHORT_RUNNER_KEY_PARAM;
     fixture = await createPage();
 
     const page = fixture.componentInstance;
 
-    page.onDistanceChange(String(TWO_THREE_KM_DISTANCE_KM));
-
-    expect(page.runs()).toEqual([EXPECTED_SHORT_RUN_VIEW]);
+    expect(page.runs()).toEqual(EXPECTED_SHORT_RUNNER_VIEWS);
+    expect(page.finishCount(), 'only the 5 km finish counts').toBe(EXPECTED_SHORT_RUNNER_VIEWS.length);
+    expect(page.years(), 'the 2.3 km run year never becomes a chip').toEqual(['2026']);
   });
 
   it('shows the DNF-only athlete without records or a runs table', async () => {
@@ -171,9 +176,8 @@ describe('AthletePage', () => {
 
     const page = fixture.componentInstance;
 
-    page.onYearChange(ATHLETE_YEAR_FILTER);
-    page.onDistanceChange(String(TWO_THREE_KM_DISTANCE_KM));
-    page.setSort(RunsSort.byTime);
+    page.setYear(ATHLETE_YEAR_FILTER);
+    page.setSort(RunsSort.byDate);
 
     let resolveStale: (history: AthletesHistory) => void = vi.fn();
 
@@ -187,8 +191,7 @@ describe('AthletePage', () => {
 
     expect(page.status(), 'a param change restarts loading').toBe(AthleteStatus.loading);
     expect(page.year(), 'the year filter is reset for the new athlete').toBeNull();
-    expect(page.distanceKm(), 'the distance filter is reset for the new athlete').toBeNull();
-    expect(page.sort(), 'the sort is reset for the new athlete').toBe(RunsSort.byDate);
+    expect(page.sort(), 'the sort is reset for the new athlete').toBe(RunsSort.byTime);
 
     loadHistory.mockResolvedValueOnce(EXPECTED_ROLLUP_HISTORY);
     routeStub.setParams({ [KEY_ROUTE_PARAM]: DNF_ONLY_KEY });
