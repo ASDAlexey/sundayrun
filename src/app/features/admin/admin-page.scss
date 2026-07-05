@@ -115,4 +115,56 @@
   &__error {
     @include st.error-text;
   }
+
+  &__races {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+  }
+
+  &__race {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__race-info {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  &__race-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__race-delete,
+  &__race-cancel {
+    @include b.button-outline;
+
+    padding: 8px 16px;
+  }
+
+  &__race-confirm {
+    @include b.button-outline;
+
+    padding: 8px 16px;
+    border-color: var(--accent-warm);
+    color: var(--accent-warm);
+
+    &:hover {
+      border-color: var(--accent-warm);
+    }
+
+    &:disabled {
+      border-color: var(--border);
+      color: var(--text-muted);
+      cursor: default;
+    }
+  }
 }

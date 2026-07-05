@@ -91,5 +91,79 @@
         }
       </div>
     </section>
+
+    <section class="admin__card">
+      <h2 class="admin__subtitle" i18n="@@admin.deleteTitle">Удаление забега</h2>
+
+      <p class="admin__hint" i18n="@@admin.deleteHint">
+        Если забег загружен по ошибке, удалите его — протокол, результаты и рекорды пересчитаются без него.
+      </p>
+
+      @switch (racesStatus()) {
+        @case (raceStatuses.loading) {
+          <p class="admin__status" i18n="@@admin.racesLoading">Загружаем список забегов…</p>
+        }
+        @case (raceStatuses.empty) {
+          <p class="admin__hint" i18n="@@admin.racesEmpty">Опубликованных забегов пока нет.</p>
+        }
+        @case (raceStatuses.error) {
+          <p class="admin__error" i18n="@@admin.racesError" role="alert">Не удалось загрузить список забегов.</p>
+        }
+        @case (raceStatuses.ready) {
+          <ul class="admin__races">
+            @for (race of races(); track race.slug) {
+              <li class="admin__race">
+                <span class="admin__race-info" i18n="@@admin.raceInfo">
+                  Пробег № {{ race.number }} — {{ race.dateLong }}, участников: {{ race.participantCount }}
+                </span>
+
+                @if (pendingSlug() === race.slug) {
+                  <span class="admin__race-actions">
+                    <button
+                      class="admin__race-confirm"
+                      i18n="@@admin.raceConfirm"
+                      type="button"
+                      [disabled]="deleteState() === publishStates.publishing"
+                      (click)="confirmDelete()"
+                    >
+                      Точно удалить
+                    </button>
+
+                    <button class="admin__race-cancel" i18n="@@admin.raceCancel" type="button" (click)="cancelDelete()">Отмена</button>
+                  </span>
+                } @else {
+                  <button
+                    class="admin__race-delete"
+                    i18n="@@admin.raceDelete"
+                    type="button"
+                    [disabled]="deleteState() === publishStates.publishing"
+                    (click)="askDelete(race.slug)"
+                  >
+                    Удалить
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+
+      <div aria-live="polite" class="admin__feedback admin__feedback_delete">
+        @switch (deleteState()) {
+          @case (publishStates.publishing) {
+            <p class="admin__status" i18n="@@admin.deleteInProgress">Удаляем забег…</p>
+          }
+          @case (publishStates.success) {
+            <p class="admin__saved" i18n="@@admin.deleteSuccess">Забег удалён.</p>
+          }
+          @case (publishStates.authError) {
+            <p class="admin__error" i18n="@@admin.deleteAuthError" role="alert">Токен не подходит: нет доступа к репозиторию sundayrun.</p>
+          }
+          @case (publishStates.error) {
+            <p class="admin__error" i18n="@@admin.deleteError" role="alert">Не удалось удалить забег. Попробуйте ещё раз.</p>
+          }
+        }
+      </div>
+    </section>
   }
 </main>
