@@ -1,0 +1,94 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+.participants-table {
+  @include c.card;
+
+  overflow-x: auto;
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  &__header {
+    @include t.text('label', 'medium');
+
+    padding: 14px 16px;
+    color: var(--text-secondary);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  &__row_unverified {
+    background: var(--accent-glow);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  &__cell {
+    @include t.text('body', 'medium');
+
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+
+    &_mono {
+      font-family: var(--mono);
+    }
+
+    &_note {
+      min-width: 180px;
+    }
+  }
+
+  &__gender-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__gender-toggle {
+    @include t.text('label', 'medium');
+
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      border-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+
+    &:hover {
+      border-color: var(--border-hover);
+    }
+
+    &_active {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+      color: var(--accent);
+    }
+  }
+
+  &__note-input {
+    @include t.text('body', 'medium');
+
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.2s var(--ease);
+
+    &:hover {
+      border-color: var(--border-hover);
+    }
+
+    &:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+  }
+}

@@ -1,0 +1,131 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/section' as s;
+@use 'styles/status' as st;
+@use 'styles/typography' as t;
+
+.races {
+  @include s.section;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__title {
+    @include t.text('display', 'medium');
+
+    color: var(--text);
+  }
+
+  &__admin {
+    @include c.card;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    gap: 12px;
+  }
+
+  &__admin-hint {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__upload {
+    @include b.button-accent;
+  }
+
+  &__status {
+    @include st.status-text;
+  }
+
+  &__error {
+    @include st.error-text;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 16px;
+    list-style: none;
+  }
+
+  &__race {
+    @include c.card;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    gap: 12px;
+  }
+
+  &__race-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__race-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__race-date {
+    @include t.text('body', 'large');
+
+    color: var(--text-secondary);
+  }
+
+  &__race-place {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__race-count {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__race-pdf {
+    @include b.button-outline;
+  }
+
+  &__race-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__race-protocol {
+    @include b.button-accent;
+  }
+
+  &__cdn-note {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
+  &__organizer {
+    @include t.text('label', 'small');
+
+    align-self: flex-start;
+    color: var(--text-muted);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--text-secondary);
+    }
+  }
+}

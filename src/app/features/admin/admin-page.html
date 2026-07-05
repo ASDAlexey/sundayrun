@@ -1,0 +1,44 @@
+<main class="admin" id="main" tabindex="-1">
+  <section class="admin__card">
+    <h1 class="admin__title" i18n="@@admin.title">Вход для организатора</h1>
+
+    @if (isAdmin()) {
+      <p class="admin__saved" i18n="@@admin.tokenSaved">Токен сохранён — режим организатора включён.</p>
+
+      <button class="admin__clear" i18n="@@admin.clear" type="button" (click)="clear()">Удалить токен</button>
+    } @else {
+      <p class="admin__hint" i18n="@@admin.hint">Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий protocols.</p>
+
+      <label class="admin__label" for="admin-token" i18n="@@admin.tokenLabel">GitHub-токен</label>
+
+      <input #tokenInput autocomplete="off" class="admin__input" id="admin-token" type="password" />
+
+      <button
+        class="admin__save"
+        i18n="@@admin.save"
+        type="button"
+        [disabled]="status() === statuses.checking"
+        (click)="save(tokenInput.value)"
+      >
+        Сохранить
+      </button>
+
+      <div aria-live="polite" class="admin__feedback">
+        @switch (status()) {
+          @case (statuses.empty) {
+            <p class="admin__error" i18n="@@admin.emptyToken" role="alert">Введите токен.</p>
+          }
+          @case (statuses.checking) {
+            <p class="admin__status" i18n="@@admin.checking">Проверяем токен…</p>
+          }
+          @case (statuses.unauthorized) {
+            <p class="admin__error" i18n="@@admin.unauthorized" role="alert">Токен не подходит: нет доступа к репозиторию protocols.</p>
+          }
+          @case (statuses.error) {
+            <p class="admin__error" i18n="@@admin.error" role="alert">Не удалось проверить токен. Попробуйте ещё раз.</p>
+          }
+        }
+      </div>
+    }
+  </section>
+</main>

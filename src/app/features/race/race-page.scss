@@ -1,0 +1,102 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/section' as s;
+@use 'styles/status' as st;
+@use 'styles/table' as tbl;
+@use 'styles/typography' as t;
+
+.race {
+  @include s.section;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__header {
+    @include c.card;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    gap: 12px;
+  }
+
+  &__header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    @include t.text('display', 'medium');
+
+    color: var(--text);
+  }
+
+  &__date {
+    @include t.text('body', 'large');
+
+    color: var(--text-secondary);
+  }
+
+  &__place {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__count {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__pdf {
+    @include b.button-outline;
+  }
+
+  &__status {
+    @include st.status-text;
+  }
+
+  &__error {
+    @include st.error-text;
+  }
+
+  &__table-wrap {
+    @include tbl.wrap;
+  }
+
+  &__table {
+    @include tbl.table;
+  }
+
+  &__th {
+    @include tbl.header-cell;
+  }
+
+  &__td {
+    @include tbl.cell;
+
+    &_mono {
+      font-family: var(--mono);
+    }
+  }
+
+  &__athlete {
+    @include tbl.link;
+  }
+
+  &__not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  &__back {
+    @include b.button-outline;
+  }
+}

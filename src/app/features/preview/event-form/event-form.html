@@ -1,0 +1,37 @@
+<form class="event-form" [formGroup]="form">
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.number">Номер забега</span>
+
+    <input class="event-form__input" formControlName="number" min="1" type="number" />
+  </label>
+
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.date">Дата</span>
+
+    <input class="event-form__input" formControlName="dateIso" type="date" />
+  </label>
+
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.city">Город</span>
+
+    <input class="event-form__input" formControlName="city" type="text" />
+  </label>
+
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.park">Парк</span>
+
+    <input class="event-form__input" formControlName="park" type="text" />
+  </label>
+
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.club">Клуб</span>
+
+    <input class="event-form__input" formControlName="clubName" type="text" />
+  </label>
+
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.chairman">Председатель клуба</span>
+
+    <input class="event-form__input" formControlName="chairman" type="text" />
+  </label>
+</form>

@@ -1,0 +1,80 @@
+<main class="race" id="main" tabindex="-1">
+  <p aria-live="polite" class="race__status" role="status">
+    @switch (status()) {
+      @case (statuses.loading) {
+        <span i18n="@@race.loading">Загружаем протокол…</span>
+      }
+      @case (statuses.notFound) {
+        <span i18n="@@race.notFound">Такой протокол не найден.</span>
+      }
+    }
+  </p>
+
+  @switch (status()) {
+    @case (statuses.ready) {
+      @if (race(); as view) {
+        <header class="race__header">
+          <div class="race__header-info">
+            <h1 class="race__title" i18n="@@race.title">Пробег № {{ view.number }}</h1>
+
+            <p class="race__date">{{ view.dateLong }}</p>
+
+            <p class="race__place">{{ view.city }}, {{ view.park }}</p>
+
+            <p class="race__count" i18n="@@race.participantCount">Участников: {{ view.participantCount }}</p>
+          </div>
+
+          <a class="race__pdf" i18n="@@race.pdf" rel="noopener" target="_blank" [attr.aria-label]="view.pdfAriaLabel" [href]="view.pdfUrl">
+            PDF
+          </a>
+        </header>
+
+        <div class="race__table-wrap">
+          <table class="race__table">
+            <thead>
+              <tr>
+                <th class="race__th" i18n="@@race.table.index" scope="col">№</th>
+                <th class="race__th" i18n="@@race.table.athlete" scope="col">Спортсмен</th>
+                <th class="race__th" i18n="@@race.table.time23" scope="col">Время 2,3 км</th>
+                <th class="race__th" i18n="@@race.table.time5" scope="col">Время 5 км</th>
+                <th class="race__th" i18n="@@race.table.gender" scope="col">Пол</th>
+                <th class="race__th" i18n="@@race.table.placeM" scope="col">Место М</th>
+                <th class="race__th" i18n="@@race.table.placeF" scope="col">Место Ж</th>
+                <th class="race__th" i18n="@@race.table.club" scope="col">Клуб</th>
+                <th class="race__th" i18n="@@race.table.note" scope="col">Примечание</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (row of view.rows; track row.index) {
+                <tr class="race__row">
+                  <td class="race__td">{{ row.index }}</td>
+                  <td class="race__td">
+                    <a class="race__athlete" [attr.aria-label]="row.athleteAriaLabel" [routerLink]="row.athleteLink">
+                      {{ row.fullName }}
+                    </a>
+                  </td>
+                  <td class="race__td race__td_mono">{{ row.time23 }}</td>
+                  <td class="race__td race__td_mono">{{ row.time5 }}</td>
+                  <td class="race__td">{{ row.genderText }}</td>
+                  <td class="race__td">{{ row.placeMText }}</td>
+                  <td class="race__td">{{ row.placeFText }}</td>
+                  <td class="race__td">{{ row.club }}</td>
+                  <td class="race__td">{{ row.note }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+    @case (statuses.notFound) {
+      <div class="race__not-found">
+        <a class="race__back" i18n="@@race.backHome" [routerLink]="homeLink">К списку забегов</a>
+      </div>
+    }
+    @case (statuses.error) {
+      <p class="race__error" i18n="@@race.error" role="alert">Не удалось загрузить протокол.</p>
+    }
+  }
+</main>

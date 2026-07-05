@@ -1,0 +1,164 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/field' as f;
+@use 'styles/section' as s;
+@use 'styles/status' as st;
+@use 'styles/table' as tbl;
+@use 'styles/typography' as t;
+
+.athlete {
+  @include s.section;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__title {
+    @include t.text('display', 'medium');
+
+    color: var(--text);
+  }
+
+  &__counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__counter {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__status {
+    @include st.status-text;
+  }
+
+  &__error {
+    @include st.error-text;
+  }
+
+  &__records {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 8px;
+  }
+
+  &__records-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__best {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  &__year-bests {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 4px;
+    list-style: none;
+  }
+
+  &__year-best {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__runs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__controls {
+    @include c.card;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    padding: 24px;
+    gap: 16px;
+  }
+
+  &__filter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__filter-label {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__filter-select {
+    @include f.field;
+  }
+
+  &__sorts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__sort {
+    @include b.button-toggle;
+
+    &_active {
+      @include b.button-toggle-active;
+    }
+  }
+
+  &__table-wrap {
+    @include tbl.wrap;
+  }
+
+  &__table {
+    @include tbl.table;
+  }
+
+  &__th {
+    @include tbl.header-cell;
+  }
+
+  &__td {
+    @include tbl.cell;
+
+    &_mono {
+      font-family: var(--mono);
+    }
+  }
+
+  &__race {
+    @include tbl.link;
+  }
+
+  &__not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  &__back {
+    @include b.button-outline;
+  }
+}

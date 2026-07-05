@@ -1,0 +1,98 @@
+<main class="result" id="main" tabindex="-1">
+  @switch (status()) {
+    @case (statuses.generating) {
+      <p aria-live="polite" class="result__status" i18n="@@result.generating" role="status">Генерируем PDF…</p>
+    }
+    @case (statuses.ready) {
+      <h1 class="result__title" i18n="@@result.title">Протокол готов</h1>
+
+      <p class="result__summary">{{ summary() }}</p>
+
+      @if (previewUrl(); as url) {
+        <iframe class="result__preview" i18n-title="@@result.previewTitle" title="Предпросмотр протокола" [src]="url"></iframe>
+      }
+
+      <div class="result__actions">
+        @if (objectUrl(); as href) {
+          <a class="result__download" i18n="@@result.download" [download]="fileName()" [href]="href">Скачать PDF</a>
+        }
+
+        @if (canShare()) {
+          <button class="result__share" i18n="@@result.share" type="button" (click)="share()">Поделиться</button>
+        }
+      </div>
+
+      <section class="result__vk">
+        <label class="result__vk-label" for="vk-description" i18n="@@result.vkDescriptionLabel">Описание для ВК</label>
+
+        <textarea
+          #vkText
+          class="result__vk-text"
+          id="vk-description"
+          [value]="description()"
+          (input)="onDescriptionInput(vkText.value)"
+        ></textarea>
+
+        <div class="result__vk-actions">
+          <button class="result__copy" type="button" (click)="copyDescription()">
+            @if (copied()) {
+              <span i18n="@@result.copied">Скопировано</span>
+            } @else {
+              <span i18n="@@result.copyDescription">Скопировать описание</span>
+            }
+          </button>
+
+          <button class="result__vk-open" i18n="@@result.vkOpen" type="button" (click)="openVk()">Открыть репост ВК</button>
+        </div>
+      </section>
+
+      @if (isAdmin()) {
+        <section class="result__publish">
+          <button
+            class="result__publish-button"
+            i18n="@@result.publish"
+            type="button"
+            [disabled]="publishState() === publishStates.publishing"
+            (click)="publish()"
+          >
+            Опубликовать в архив
+          </button>
+
+          <div aria-live="polite" class="result__publish-feedback">
+            @switch (publishState()) {
+              @case (publishStates.publishing) {
+                <p class="result__publish-status" i18n="@@result.publishing">Публикуем…</p>
+              }
+              @case (publishStates.success) {
+                <p class="result__publish-status">
+                  <span i18n="@@result.published">Опубликовано</span>
+
+                  @if (publishedPdfUrl(); as url) {
+                    <a class="result__publish-link" i18n="@@result.publishedLink" rel="noopener" target="_blank" [href]="url">
+                      PDF в архиве
+                    </a>
+                  }
+                </p>
+              }
+              @case (publishStates.authError) {
+                <p class="result__publish-error" role="alert">
+                  <span i18n="@@result.publishAuthError">Нет доступа к GitHub: токен отсутствует или истёк.</span>
+
+                  <a class="result__publish-admin" i18n="@@result.publishAdminLink" [routerLink]="adminLink">Обновить токен</a>
+                </p>
+              }
+              @case (publishStates.error) {
+                <p class="result__publish-error" i18n="@@result.publishError" role="alert">Не удалось опубликовать</p>
+              }
+            }
+          </div>
+        </section>
+      }
+    }
+    @case (statuses.error) {
+      <p class="result__error" i18n="@@result.error" role="alert">Не удалось сгенерировать PDF</p>
+
+      <button class="result__back" i18n="@@result.back" type="button" (click)="back()">Назад к предпросмотру</button>
+    }
+  }
+</main>

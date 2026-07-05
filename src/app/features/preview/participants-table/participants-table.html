@@ -1,0 +1,70 @@
+<div class="participants-table">
+  <table class="participants-table__table">
+    <thead>
+      <tr>
+        <th class="participants-table__header" i18n="@@preview.table.index" scope="col">№</th>
+        <th class="participants-table__header" i18n="@@preview.table.name" scope="col">ФИО</th>
+        <th class="participants-table__header" i18n="@@preview.table.time" scope="col">Время</th>
+        <th class="participants-table__header" i18n="@@preview.table.distance" scope="col">Дистанция</th>
+        <th class="participants-table__header" i18n="@@preview.table.gender" scope="col">Пол</th>
+        <th class="participants-table__header" i18n="@@preview.table.note" scope="col">Примечание</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (row of rows(); track row.participant.id) {
+        <tr class="participants-table__row" [class.participants-table__row_unverified]="row.unverified">
+          <td class="participants-table__cell">{{ $index + 1 }}</td>
+          <td class="participants-table__cell">
+            {{ row.participant.fullName }}
+
+            @if (row.unverified) {
+              <span class="visually-hidden" i18n="@@preview.table.unverifiedGender">пол не определён</span>
+            }
+          </td>
+          <td class="participants-table__cell participants-table__cell_mono">{{ row.timeText }}</td>
+          <td class="participants-table__cell">{{ row.distanceText }}</td>
+          <td class="participants-table__cell">
+            <div class="participants-table__gender-group">
+              <button
+                aria-label="Мужской"
+                class="participants-table__gender-toggle"
+                i18n="@@preview.table.male"
+                i18n-aria-label="@@preview.table.maleAriaLabel"
+                type="button"
+                [attr.aria-pressed]="row.isMale"
+                [class.participants-table__gender-toggle_active]="row.isMale"
+                (click)="setMale(row.participant.id)"
+              >
+                М
+              </button>
+
+              <button
+                aria-label="Женский"
+                class="participants-table__gender-toggle"
+                i18n="@@preview.table.female"
+                i18n-aria-label="@@preview.table.femaleAriaLabel"
+                type="button"
+                [attr.aria-pressed]="row.isFemale"
+                [class.participants-table__gender-toggle_active]="row.isFemale"
+                (click)="setFemale(row.participant.id)"
+              >
+                Ж
+              </button>
+            </div>
+          </td>
+          <td class="participants-table__cell participants-table__cell_note">
+            <input
+              #noteInput
+              class="participants-table__note-input"
+              type="text"
+              [attr.aria-label]="row.noteAriaLabel"
+              [value]="row.participant.note"
+              (change)="onNoteChange(row.participant.id, noteInput.value)"
+            />
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

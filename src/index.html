@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Воскресный парковый пробег — протоколы</title>
+    <base href="/" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="Конвертер результатов паркового пробега из Excel в PDF-протокол и архив всех забегов." name="description" />
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+  </head>
+  <body>
+    <!-- spa-github-pages: 404.html stores the requested deep link before bouncing to the locale root. -->
+    <script>
+      (function () {
+        // sessionStorage may be unavailable (private mode, blocked cookies); the app must still bootstrap.
+        try {
+          var spaRedirect = sessionStorage.getItem('parkrun:spa-redirect');
+          if (spaRedirect) {
+            sessionStorage.removeItem('parkrun:spa-redirect');
+            history.replaceState(null, '', spaRedirect);
+          }
+        } catch (storageError) {}
+      })();
+    </script>
+    <app-root></app-root>
+  </body>
+</html>

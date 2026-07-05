@@ -1,0 +1,64 @@
+<main class="races" id="main" tabindex="-1">
+  <h1 class="races__title" i18n="@@races.title">Воскресный парковый пробег</h1>
+
+  @if (isAdmin()) {
+    <section class="races__admin">
+      <p class="races__admin-hint" i18n="@@races.adminHint">Режим организатора включён.</p>
+
+      <a class="races__upload" i18n="@@races.upload" [routerLink]="uploadLink">Загрузить забег</a>
+    </section>
+  }
+
+  <p aria-live="polite" class="races__status" role="status">
+    @switch (status()) {
+      @case (statuses.loading) {
+        <span i18n="@@races.loading">Загружаем список забегов…</span>
+      }
+      @case (statuses.empty) {
+        <span i18n="@@races.empty">Опубликованных забегов пока нет.</span>
+      }
+    }
+  </p>
+
+  @switch (status()) {
+    @case (statuses.ready) {
+      <ul class="races__list">
+        @for (race of races(); track race.slug) {
+          <li class="races__race">
+            <div class="races__race-info">
+              <h2 class="races__race-title" i18n="@@races.raceTitle">Пробег № {{ race.number }}</h2>
+
+              <p class="races__race-date">{{ race.dateLong }}</p>
+
+              <p class="races__race-place">{{ race.city }}, {{ race.park }}</p>
+
+              <p class="races__race-count" i18n="@@races.participantCount">Участников: {{ race.participantCount }}</p>
+            </div>
+
+            <div class="races__race-actions">
+              <a class="races__race-protocol" i18n="@@races.protocolOnline" [routerLink]="race.protocolLink">Протокол онлайн</a>
+
+              <a
+                class="races__race-pdf"
+                i18n="@@races.pdf"
+                rel="noopener"
+                target="_blank"
+                [attr.aria-label]="race.pdfAriaLabel"
+                [href]="race.pdfUrl"
+              >
+                PDF
+              </a>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+    @case (statuses.error) {
+      <p class="races__error" i18n="@@races.error" role="alert">Не удалось загрузить список забегов.</p>
+    }
+  }
+
+  <p class="races__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
+
+  <a class="races__organizer" i18n="@@races.forOrganizer" [routerLink]="adminLink">для организатора</a>
+</main>

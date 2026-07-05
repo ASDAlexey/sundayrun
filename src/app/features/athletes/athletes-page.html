@@ -1,0 +1,94 @@
+<main class="athletes" id="main" tabindex="-1">
+  <h1 class="athletes__title" i18n="@@athletes.title">Атлеты</h1>
+
+  <p aria-live="polite" class="athletes__status" role="status">
+    @switch (status()) {
+      @case (statuses.loading) {
+        <span i18n="@@athletes.loading">Загружаем историю атлетов…</span>
+      }
+      @case (statuses.empty) {
+        <span i18n="@@athletes.empty">История появится после первых опубликованных протоколов.</span>
+      }
+    }
+  </p>
+
+  @switch (status()) {
+    @case (statuses.ready) {
+      <div class="athletes__controls">
+        <div class="athletes__search">
+          <label class="athletes__search-label" for="athletes-search" i18n="@@athletes.searchLabel">Поиск по имени</label>
+
+          <input
+            #searchInput
+            class="athletes__search-input"
+            id="athletes-search"
+            type="search"
+            [value]="query()"
+            (input)="onQueryChange(searchInput.value)"
+          />
+        </div>
+
+        <div class="athletes__sorts">
+          <button
+            class="athletes__sort"
+            i18n="@@athletes.sortByBestTime"
+            type="button"
+            [attr.aria-pressed]="sort() === sorts.bestTime"
+            [class.athletes__sort_active]="sort() === sorts.bestTime"
+            (click)="setSort(sorts.bestTime)"
+          >
+            По лучшему времени
+          </button>
+
+          <button
+            class="athletes__sort"
+            i18n="@@athletes.sortByParticipations"
+            type="button"
+            [attr.aria-pressed]="sort() === sorts.participations"
+            [class.athletes__sort_active]="sort() === sorts.participations"
+            (click)="setSort(sorts.participations)"
+          >
+            По числу участий
+          </button>
+        </div>
+      </div>
+
+      <p aria-live="polite" class="athletes__status" role="status">
+        @if (items().length === 0) {
+          <span i18n="@@athletes.noMatches">По такому запросу никого не нашлось.</span>
+        }
+      </p>
+
+      @if (items().length > 0) {
+        <div class="athletes__table-wrap">
+          <table class="athletes__table">
+            <thead>
+              <tr>
+                <th class="athletes__th" i18n="@@athletes.table.name" scope="col">Спортсмен</th>
+                <th class="athletes__th" i18n="@@athletes.table.bestTime" scope="col">Лучшее время (5 км)</th>
+                <th class="athletes__th" i18n="@@athletes.table.participations" scope="col">Участий</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (item of items(); track item.key) {
+                <tr class="athletes__row">
+                  <td class="athletes__td">
+                    <a class="athletes__athlete" [routerLink]="item.link">{{ item.displayName }}</a>
+                  </td>
+                  <td class="athletes__td athletes__td_mono">{{ item.bestTimeText }}</td>
+                  <td class="athletes__td">{{ item.participationCount }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+    @case (statuses.error) {
+      <p class="athletes__error" i18n="@@athletes.error" role="alert">Не удалось загрузить историю атлетов.</p>
+    }
+  }
+
+  <p class="athletes__cdn-note" i18n="@@athletes.cdnNote">Данные могут обновляться с небольшой задержкой после публикации.</p>
+</main>

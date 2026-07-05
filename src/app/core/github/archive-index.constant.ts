@@ -1,0 +1,1 @@
+export const ARCHIVE_INDEX_SCHEMA_VERSION = 1;

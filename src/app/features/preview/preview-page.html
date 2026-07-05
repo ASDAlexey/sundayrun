@@ -1,0 +1,41 @@
+<main class="preview" id="main" tabindex="-1">
+  <h1 class="preview__title" i18n="@@preview.title">Предпросмотр протокола</h1>
+
+  @if (hasUnverified()) {
+    <p aria-live="polite" class="preview__warning" i18n="@@preview.unverifiedWarning" role="status">
+      Проверьте пол у {{ unknownGenderCount() }} участников
+    </p>
+  }
+
+  <app-event-form />
+
+  <div class="preview__history">
+    <button
+      class="preview__history-button"
+      i18n="@@preview.applyHistoryNotes"
+      type="button"
+      [disabled]="!canApplyHistoryNotes()"
+      (click)="applyHistoryNotes()"
+    >
+      Подставить примечания из истории
+    </button>
+
+    <p aria-live="polite" class="preview__history-status">
+      @if (historyStatus() === historyStatuses.loading) {
+        <span i18n="@@preview.historyLoading">Загружаем историю…</span>
+      }
+    </p>
+
+    @if (historyStatus() === historyStatuses.error) {
+      <p class="preview__history-error" i18n="@@preview.historyError" role="alert">Не удалось загрузить историю</p>
+    }
+  </div>
+
+  <app-participants-table />
+
+  <div class="preview__actions">
+    <button class="preview__generate" i18n="@@preview.generate" type="button" [disabled]="!canGenerate()" (click)="generate()">
+      Сгенерировать протокол
+    </button>
+  </div>
+</main>
