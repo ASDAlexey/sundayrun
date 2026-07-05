@@ -46,6 +46,46 @@
         <source>Не удалось проверить токен. Попробуйте ещё раз.</source>
         <target>Could not verify the token. Please try again.</target>
       </trans-unit>
+      <trans-unit id="admin.metaTitle" datatype="html">
+        <source>Объявление на главной</source>
+        <target>Announcement on the home page</target>
+      </trans-unit>
+      <trans-unit id="admin.metaHint" datatype="html">
+        <source>Время старта и сообщение о забеге показываются всем на главной странице.</source>
+        <target>The start time and the race announcement are shown to everyone on the home page.</target>
+      </trans-unit>
+      <trans-unit id="admin.startTimeLabel" datatype="html">
+        <source>Время старта</source>
+        <target>Start time</target>
+      </trans-unit>
+      <trans-unit id="admin.announcementLabel" datatype="html">
+        <source>Сообщение о забеге</source>
+        <target>Race announcement</target>
+      </trans-unit>
+      <trans-unit id="admin.metaSave" datatype="html">
+        <source> Опубликовать объявление </source>
+        <target> Publish the announcement </target>
+      </trans-unit>
+      <trans-unit id="admin.metaSaving" datatype="html">
+        <source>Публикуем объявление…</source>
+        <target>Publishing the announcement…</target>
+      </trans-unit>
+      <trans-unit id="admin.metaSaved" datatype="html">
+        <source>Объявление опубликовано.</source>
+        <target>The announcement has been published.</target>
+      </trans-unit>
+      <trans-unit id="admin.metaAuthError" datatype="html">
+        <source>Токен не подходит: нет доступа к репозиторию protocols.</source>
+        <target>The token does not work: no access to the protocols repository.</target>
+      </trans-unit>
+      <trans-unit id="admin.metaError" datatype="html">
+        <source>Не удалось опубликовать объявление. Попробуйте ещё раз.</source>
+        <target>Could not publish the announcement. Please try again.</target>
+      </trans-unit>
+      <trans-unit id="races.startTime" datatype="html">
+        <source>Каждое воскресенье · старт в <x id="INTERPOLATION" equiv-text="{{ siteMeta().startTime }}"/></source>
+        <target>Every Sunday · start at <x id="INTERPOLATION" equiv-text="{{ siteMeta().startTime }}"/></target>
+      </trans-unit>
       <trans-unit id="preview.event.number" datatype="html">
         <source>Номер забега</source>
         <target>Race number</target>
