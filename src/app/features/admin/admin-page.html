@@ -7,7 +7,7 @@
 
       <button class="admin__clear" i18n="@@admin.clear" type="button" (click)="clear()">Удалить токен</button>
     } @else {
-      <p class="admin__hint" i18n="@@admin.hint">Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий protocols.</p>
+      <p class="admin__hint" i18n="@@admin.hint">Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий sundayrun.</p>
 
       <a class="admin__help" i18n="@@admin.tokenHelp" rel="noopener" target="_blank" [href]="tokenHelpUrl">
         Как создать токен — пошаговая инструкция
@@ -36,7 +36,7 @@
             <p class="admin__status" i18n="@@admin.checking">Проверяем токен…</p>
           }
           @case (statuses.unauthorized) {
-            <p class="admin__error" i18n="@@admin.unauthorized" role="alert">Токен не подходит: нет доступа к репозиторию protocols.</p>
+            <p class="admin__error" i18n="@@admin.unauthorized" role="alert">Токен не подходит: нет доступа к репозиторию sundayrun.</p>
           }
           @case (statuses.error) {
             <p class="admin__error" i18n="@@admin.error" role="alert">Не удалось проверить токен. Попробуйте ещё раз.</p>
@@ -79,7 +79,7 @@
             <p class="admin__saved" i18n="@@admin.metaSaved">Объявление опубликовано.</p>
           }
           @case (publishStates.authError) {
-            <p class="admin__error" i18n="@@admin.metaAuthError" role="alert">Токен не подходит: нет доступа к репозиторию protocols.</p>
+            <p class="admin__error" i18n="@@admin.metaAuthError" role="alert">Токен не подходит: нет доступа к репозиторию sundayrun.</p>
           }
           @case (publishStates.error) {
             <p class="admin__error" i18n="@@admin.metaError" role="alert">Не удалось опубликовать объявление. Попробуйте ещё раз.</p>
