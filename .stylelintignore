@@ -1,0 +1,9 @@
+*.html
+*.js
+*.ts
+dist
+coverage
+.angular
+_legacy
+src/styles/_tokens.scss
+src/styles/_typography.scss

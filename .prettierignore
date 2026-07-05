@@ -1,0 +1,6 @@
+dist
+coverage
+.angular
+_legacy
+content
+src/locale
