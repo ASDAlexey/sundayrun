@@ -1,32 +1,35 @@
-<div class="race-card">
-  <div class="race-card__info">
-    <h3 class="race-card__title" i18n="@@races.raceTitle">Пробег № {{ race().number }}</h3>
+<mat-card appearance="outlined" class="race-card">
+  <mat-card-header class="race-card__info">
+    <h3 class="race-card__title" i18n="@@races.raceTitle" matCardTitle>Пробег № {{ race().number }}</h3>
 
     <p class="race-card__date">{{ race().dateLong }}</p>
 
     <p class="race-card__place">{{ race().city }}, {{ race().park }}</p>
 
     <p class="race-card__count" i18n="@@races.participantCount">Участников: {{ race().participantCount }}</p>
-  </div>
+  </mat-card-header>
 
   @if (race().stats.length > 0) {
-    <ul class="race-card__stats">
-      @for (stat of race().stats; track stat.label) {
-        <li class="race-card__stat">
-          <span class="race-card__stat-label">{{ stat.label }}</span>
+    <mat-card-content>
+      <ul class="race-card__stats">
+        @for (stat of race().stats; track stat.label) {
+          <li class="race-card__stat">
+            <span class="race-card__stat-label">{{ stat.label }}</span>
 
-          <span class="race-card__stat-value">{{ stat.value }}</span>
-        </li>
-      }
-    </ul>
+            <span class="race-card__stat-value">{{ stat.value }}</span>
+          </li>
+        }
+      </ul>
+    </mat-card-content>
   }
 
-  <div class="race-card__actions">
-    <a class="race-card__protocol" i18n="@@races.protocolOnline" [routerLink]="race().protocolLink">Протокол онлайн</a>
+  <mat-card-actions class="race-card__actions">
+    <a class="race-card__protocol" i18n="@@races.protocolOnline" matButton="outlined" [routerLink]="race().protocolLink">Протокол онлайн</a>
 
     <a
       class="race-card__pdf"
       i18n="@@races.pdf"
+      matButton
       rel="noopener"
       target="_blank"
       [attr.aria-label]="race().pdfAriaLabel"
@@ -34,5 +37,5 @@
     >
       PDF
     </a>
-  </div>
-</div>
+  </mat-card-actions>
+</mat-card>

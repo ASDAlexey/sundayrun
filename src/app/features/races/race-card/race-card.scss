@@ -1,20 +1,17 @@
-@use 'styles/buttons' as b;
-@use 'styles/card' as c;
 @use 'styles/typography' as t;
 
+// The card surface (border, radius, background) now comes from mat-card;
+// the tokens below pin the outlined appearance to the Litely palette.
 .race-card {
-  @include c.card;
+  --mat-card-outlined-container-color: var(--surface);
+  --mat-card-outlined-outline-color: var(--border);
 
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24px;
-  gap: 12px;
+  height: 100%;
 
   &__info {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 4px;
   }
 
@@ -74,13 +71,5 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-  }
-
-  &__protocol {
-    @include b.button-accent;
-  }
-
-  &__pdf {
-    @include b.button-outline;
   }
 }

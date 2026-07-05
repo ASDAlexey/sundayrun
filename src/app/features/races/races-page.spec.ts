@@ -1,5 +1,7 @@
 import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSelect } from '@angular/material/select';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 
 import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
@@ -110,7 +112,13 @@ describe('RacesPage', () => {
 
     fixture.detectChanges();
 
-    const options = [...fixture.nativeElement.querySelectorAll('.races__filter-select option')].map((option) => option.value);
+    // mat-select stamps its options into the overlay only once opened.
+    const select: MatSelect = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+
+    select.open();
+    fixture.detectChanges();
+
+    const options = select.options.map((option) => option.value);
 
     expect(options).toEqual([ALL_YEARS_VALUE, ...EXPECTED_YEARS]);
   });

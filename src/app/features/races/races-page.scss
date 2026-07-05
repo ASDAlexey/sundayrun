@@ -1,4 +1,3 @@
-@use 'styles/field' as f;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
@@ -60,6 +59,10 @@
     }
   }
 
+  &__status-spinner {
+    margin: 0 auto 12px;
+  }
+
   &__error {
     @include st.error-text;
   }
@@ -71,15 +74,7 @@
     gap: 8px;
   }
 
-  &__filter-label {
-    @include t.text('label', 'medium');
-
-    color: var(--text-secondary);
-  }
-
   &__filter-select {
-    @include f.field;
-
     min-width: 160px;
   }
 

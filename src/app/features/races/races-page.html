@@ -9,28 +9,37 @@
 
   @if (status() === statuses.ready) {
     <div class="races__filter">
-      <label class="races__filter-label" for="races-year" i18n="@@races.yearLabel">Год</label>
+      <mat-form-field appearance="outline">
+        <mat-label class="races__filter-label" i18n="@@races.yearLabel">Год</mat-label>
 
-      <select #yearSelect class="races__filter-select" id="races-year" (change)="onYearChange(yearSelect.value)">
-        <option i18n="@@races.allYears" [value]="allValue">Все годы</option>
+        <mat-select
+          class="races__filter-select"
+          id="races-year"
+          [value]="year() ?? allValue"
+          (selectionChange)="onYearChange($event.value)"
+        >
+          <mat-option i18n="@@races.allYears" [value]="allValue">Все годы</mat-option>
 
-        @for (raceYear of years(); track raceYear) {
-          <option [value]="raceYear">{{ raceYear }}</option>
-        }
-      </select>
+          @for (raceYear of years(); track raceYear) {
+            <mat-option [value]="raceYear">{{ raceYear }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
   }
 
-  <p aria-live="polite" class="races__status" role="status">
+  <div aria-live="polite" class="races__status" role="status">
     @switch (status()) {
       @case (statuses.loading) {
+        <mat-progress-spinner class="races__status-spinner" mode="indeterminate" [diameter]="24" />
+
         <span i18n="@@races.loading">Загружаем список забегов…</span>
       }
       @case (statuses.empty) {
         <span i18n="@@races.empty">Опубликованных забегов пока нет.</span>
       }
     }
-  </p>
+  </div>
 
   @switch (status()) {
     @case (statuses.ready) {

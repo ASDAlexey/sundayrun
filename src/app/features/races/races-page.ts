@@ -1,4 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 
 import { isoYear } from '../../core/history/iso-year';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
@@ -12,7 +15,7 @@ import { RaceListItem } from './races-page.interface';
 /** The full race list (newest first, as served) with a year filter; each card links to the protocol page. */
 @Component({
   selector: 'app-races-page',
-  imports: [RaceCard],
+  imports: [MatFormFieldModule, MatProgressSpinnerModule, MatSelectModule, RaceCard],
   templateUrl: './races-page.html',
   styleUrl: './races-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
