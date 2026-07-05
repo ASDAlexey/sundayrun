@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, DOCUMENT, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { CREATOR_SITE_URL, HOME_PAGE_LINK, MAIN_CONTENT_ID, RACES_LIST_PAGE_LINK, VK_COMMUNITY_URL } from './app.constant';
@@ -7,7 +9,7 @@ import { RECORDS_PAGE_LINK } from './features/records/records-page.constant';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

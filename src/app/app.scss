@@ -21,21 +21,33 @@
     content: '';
   }
 
+  // <mat-toolbar> — keep it a transparent layout wrapper so the header
+  // stays translucent/branded instead of the Material surface color.
   &__inner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     max-width: var(--maxw);
+    height: auto;
+    min-height: 0;
     margin: 0 auto;
     padding: 18px 24px;
     gap: 16px;
+    background: transparent;
+    color: var(--text);
+    white-space: normal;
   }
 
+  // Material anchor button hosting the logo + two-line title.
   &__brand {
     display: flex;
     align-items: center;
+    height: auto;
+    padding: 0;
     gap: 14px;
+    border-radius: var(--radius-sm);
+    text-align: left;
   }
 
   &__mark {
@@ -72,9 +84,12 @@
     gap: 6px;
   }
 
+  // Material anchor buttons — brand paddings, radius and colors
+  // override the default M3 pill shape and label color.
   &__nav-link {
     @include t.text('label', 'medium');
 
+    height: auto;
     padding: 10px 14px;
     border-radius: var(--radius-xs);
     color: var(--text-secondary);

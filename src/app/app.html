@@ -1,8 +1,8 @@
 <a class="skip-link" href="#main" i18n="@@app.skipToContent" (click)="skipToMain($event)">К содержимому</a>
 
 <header class="shell-header">
-  <div class="shell-header__inner">
-    <a class="shell-header__brand" [routerLink]="homeLink">
+  <mat-toolbar class="shell-header__inner">
+    <a class="shell-header__brand" matButton [routerLink]="homeLink">
       <img alt="" class="shell-header__mark" height="160" src="logo-mark.webp" width="160" />
 
       <span class="shell-header__titles">
@@ -13,15 +13,27 @@
     </a>
 
     <nav aria-label="Основные разделы" class="shell-header__nav" i18n-aria-label="@@app.navLabel">
-      <a class="shell-header__nav-link" i18n="@@app.navRaces" routerLinkActive="shell-header__nav-link_active" [routerLink]="racesLink">
+      <a
+        class="shell-header__nav-link"
+        i18n="@@app.navRaces"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="racesLink"
+      >
         Забеги
       </a>
 
-      <a class="shell-header__nav-link" i18n="@@app.navRecords" routerLinkActive="shell-header__nav-link_active" [routerLink]="recordsLink">
+      <a
+        class="shell-header__nav-link"
+        i18n="@@app.navRecords"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="recordsLink"
+      >
         Рекорды
       </a>
     </nav>
-  </div>
+  </mat-toolbar>
 </header>
 
 <router-outlet />
