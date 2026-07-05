@@ -1,0 +1,132 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Cancel superseded PR runs only: a push to main must never kill an in-flight deploy.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Format check (Prettier)
+        run: bun run prettier:check
+
+      - name: Lint (ESLint)
+        run: bun run eslint
+
+      - name: Lint (Stylelint)
+        run: bun run stylelint:check
+
+      - name: Circular dependencies (madge)
+        run: bun run madge
+
+      - name: Unit tests + 100% coverage
+        run: bun run test:coverage
+
+  build:
+    needs: quality
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build (RU + EN)
+        run: bun run build -- --base-href "/${{ github.event.repository.name }}/"
+
+      - name: Smoke-check build output
+        run: |
+          test -f dist/parkrun/browser/ru/index.html
+          test -f dist/parkrun/browser/en/index.html
+          grep -q 'base href="/${{ github.event.repository.name }}/ru/"' dist/parkrun/browser/ru/index.html
+          grep -q 'base href="/${{ github.event.repository.name }}/en/"' dist/parkrun/browser/en/index.html
+
+      - name: Add root redirect to RU locale
+        run: |
+          cat > dist/parkrun/browser/index.html <<'EOF'
+          <!doctype html>
+          <html lang="ru">
+            <head>
+              <meta charset="utf-8" />
+              <title>Воскресный парковый пробег</title>
+              <meta http-equiv="refresh" content="0; url=./ru/" />
+              <link rel="canonical" href="./ru/" />
+              <script>
+                location.replace('./ru/');
+              </script>
+            </head>
+            <body>
+              <a href="./ru/">Перейти к приложению</a>
+            </body>
+          </html>
+          EOF
+
+      # spa-github-pages: Pages serves 404.html for unknown deep links (e.g. /parkrun/ru/admin
+      # after a refresh). Remember the requested url, bounce to the locale root, and let the
+      # inline script in src/index.html restore the route before Angular bootstraps.
+      - name: Add SPA 404 fallback
+        run: |
+          cat > dist/parkrun/browser/404.html <<'EOF'
+          <!doctype html>
+          <html lang="ru">
+            <head>
+              <meta charset="utf-8" />
+              <title>Воскресный парковый пробег</title>
+              <script>
+                // sessionStorage may be unavailable (private mode, blocked cookies); the bounce must still happen.
+                try {
+                  sessionStorage.setItem('parkrun:spa-redirect', location.pathname + location.search + location.hash);
+                } catch (storageError) {}
+                var spaLocale = location.pathname.indexOf('/en/') !== -1 ? 'en/' : 'ru/';
+                location.replace('/${{ github.event.repository.name }}/' + spaLocale);
+              </script>
+            </head>
+            <body></body>
+          </html>
+          EOF
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/parkrun/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
