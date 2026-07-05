@@ -5,11 +5,11 @@
 ## Сделано в коде
 
 - **`src/index.html`** — расширенные `title`/`description`/`keywords`, `author`, `theme-color`;
-  Open Graph (`og:*` + `og:image` 1200×630) и Twitter Cards; `hreflang` (ru/en/x-default);
+  Open Graph (`og:*` + `og:image` 1200×630) и Twitter Cards; `hreflang` (ru/x-default; en-локаль отключена);
   JSON-LD (`WebSite`, `SportsOrganization` КЛБ «Легенда» с `sameAs` на VK, `EventSeries` пробега);
   `preconnect`/`dns-prefetch` к `cdn.jsdelivr.net`.
 - **Заголовки страниц** — `title` у каждого маршрута в `app.routes.ts` (локализованы через `$localize`).
-- **`public/sitemap.xml`** — главная и «Участники» в обеих локалях с `xhtml:link hreflang`.
+- **`public/sitemap.xml`** — главная, «Все забеги» и «Участники» (ru).
   Страницы забегов (`/races/<slug>`) в sitemap не перечислены — поисковики находят их по внутренним
   ссылкам с главной; генерация полного sitemap при публикации забега — идея на будущее (ROADMAP).
 - **Графика** — favicon (`favicon.ico`, `logo-mark.png`), `apple-touch-icon.png`, `og-image.jpg`

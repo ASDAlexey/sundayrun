@@ -19,12 +19,6 @@
         "sourceLocale": {
           "code": "ru",
           "subPath": "ru"
-        },
-        "locales": {
-          "en": {
-            "translation": "src/locale/messages.en.xlf",
-            "subPath": "en"
-          }
         }
       },
       "architect": {
@@ -60,7 +54,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kB",
+                  "maximumWarning": "8kB",
                   "maximumError": "12kB"
                 }
               ],
@@ -70,9 +64,6 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
-            },
-            "en": {
-              "localize": ["en"]
             },
             "test": {
               "localize": ["ru"],
@@ -92,9 +83,6 @@
             },
             "development": {
               "buildTarget": "parkrun:build:development"
-            },
-            "en": {
-              "buildTarget": "parkrun:build:development,en"
             }
           },
           "defaultConfiguration": "development"

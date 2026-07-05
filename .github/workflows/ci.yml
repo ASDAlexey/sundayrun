@@ -3,6 +3,10 @@ name: CI / Deploy
 on:
   push:
     branches: [main]
+    # Protocol publications from /admin commit only under data/ — the site itself
+    # is unchanged, so skip the rebuild; the app reads data through jsDelivr.
+    paths-ignore:
+      - 'data/**'
   pull_request:
   workflow_dispatch:
 
@@ -58,15 +62,13 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build (RU + EN)
+      - name: Build (RU)
         run: bun run build -- --base-href "/${{ github.event.repository.name }}/"
 
       - name: Smoke-check build output
         run: |
           test -f dist/parkrun/browser/ru/index.html
-          test -f dist/parkrun/browser/en/index.html
           grep -q 'base href="/${{ github.event.repository.name }}/ru/"' dist/parkrun/browser/ru/index.html
-          grep -q 'base href="/${{ github.event.repository.name }}/en/"' dist/parkrun/browser/en/index.html
 
       - name: Add root redirect to RU locale
         run: |
@@ -106,8 +108,7 @@ jobs:
                 try {
                   sessionStorage.setItem('parkrun:spa-redirect', location.pathname + location.search + location.hash);
                 } catch (storageError) {}
-                var spaLocale = location.pathname.indexOf('/en/') !== -1 ? 'en/' : 'ru/';
-                location.replace('/${{ github.event.repository.name }}/' + spaLocale + 'index.csr.html');
+                location.replace('/${{ github.event.repository.name }}/ru/index.csr.html');
               </script>
             </head>
             <body></body>

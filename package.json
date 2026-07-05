@@ -4,7 +4,6 @@
   "description": "Воскресный парковый пробег — конвертер Excel-результатов в PDF-протокол с архивом (Angular 22, RU/EN).",
   "scripts": {
     "start": "ng serve",
-    "start:en": "ng serve --configuration=en",
     "build": "ng build --localize",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
