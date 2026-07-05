@@ -272,8 +272,8 @@
 
   &__course-zoom {
     @include t.text('label', 'small');
-    z-index: 1;
 
+    z-index: 1;
     position: absolute;
     right: 14px;
     bottom: 14px;
