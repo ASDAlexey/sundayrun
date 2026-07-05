@@ -55,7 +55,7 @@
 
 ## Фаза 6 — Публикация и архив ✅
 
-- ✅ `github/github-storage.service.ts` — атомарный коммит в публичный репозиторий `protocols` через GitHub Git Data API (токен организатора, localStorage через `github/admin-token.service.ts`, retry в ядре коммита, баннер при 401 на `/result`)
+- ✅ `github/github-storage.service.ts` — атомарный коммит в публичный репозиторий `sundayrun` через GitHub Git Data API (токен организатора, localStorage через `github/admin-token.service.ts`, retry в ядре коммита, баннер при 401 на `/result`)
 - ✅ Один коммит = `events/<дата>/{source.xlsx, protocol.pdf, results.json}` + обновлённые `index.json` и `athletes.json`; кнопка «Опубликовать в архив» на `/result`, после успеха репост ВК ссылается на PDF в архиве (sha-pinned jsDelivr url)
 - ✅ **Главная страница `/` — список забегов, сверху самый свежий** (`github/archive.service.ts`: `index.json` через jsDelivr CDN; raw.githubusercontent не используем — блокируется в РФ). Просмотр/скачивание PDF прямо из списка, отдельные состояния «пусто» и «ошибка сети», пометка о задержке CDN
 - ✅ **Админ-режим**: сверху главной — блок «Загрузить забег» (вход в мастер `/upload`), виден только админу (в браузере сохранён GitHub-токен организатора). Остальные посетители — только просмотр. Вход в админ-режим — неприметная ссылка «для организатора» → `/admin` (проверка fine-grained PAT, сохранение/удаление); `adminGuard` закрывает `/upload`, `/preview`, `/result`
@@ -66,7 +66,7 @@
 - ✅ **Доимпорт старой истории**: `github/history.service.ts` читает `athletes.json` авторизованным Contents API (jsDelivr отдал бы устаревший кэш при серийной загрузке); `ProtocolStateService.applyAutoNotes()` пересчитывает примечания всех участников через `buildAutoNote` поверх `historyBeforeDate` (история отсекается до даты события — перепубликация и доимпорт не сравнивают атлета с самим собой и с будущими результатами); на `/preview` кнопка «Подставить примечания из истории» (заблокирована без даты события, статусы загрузки/ошибки). Порядок доимпорта: от старых к новым; перепубликация идемпотентна
 - ✅ **A11y-проход**: глобальный `:focus-visible`-outline, скип-линк «К содержимому» → `#main` на всех страницах, утилита `.visually-hidden`; `role="alert"` на ошибках и `aria-live="polite"`/`role="status"` на статусах (upload, preview, result, admin, races); `<th scope="col">` и скрытая пометка «пол не определён» в таблице участников; уникальные aria-label примечаний и PDF-ссылок (через `$localize` — i18n-атрибуты с интерполяцией компилятор отбрасывает)
 - ✅ **CI/деплой**: prettier:check и madge в quality-джобе; build/deploy также по `workflow_dispatch`; smoke-проверка сборки (ru/en index + base href); корневой редирект `/` → `/ru/` продублирован скриптом; SPA-fallback `404.html` (spa-github-pages: сохранение пути в sessionStorage + восстановление в `index.html`); deploy в отдельной concurrency-группе `pages` без cancel-in-progress
-- ✅ README переписан (роли, настройка репозитория `protocols`, PAT, доимпорт, деплой Pages), ARCHITECTURE дополнена
+- ✅ README переписан (роли, настройка репозитория `sundayrun`, PAT, доимпорт, деплой Pages), ARCHITECTURE дополнена
 
 ## Фаза 8 — Страницы атлетов ✅
 
