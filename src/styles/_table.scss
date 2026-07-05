@@ -1,0 +1,47 @@
+// ===========================================================
+//  Data table — shared card-wrapped table treatment
+//  (race protocol, athletes list, athlete runs).
+// ===========================================================
+
+@use 'card' as c;
+@use 'typography' as t;
+
+@mixin wrap {
+  @include c.card;
+
+  overflow-x: auto;
+}
+
+@mixin table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@mixin header-cell {
+  @include t.text('label', 'medium');
+
+  padding: 14px 16px;
+  color: var(--text-secondary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+@mixin cell {
+  @include t.text('body', 'medium');
+
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+// An accent in-table link (athlete or race). --------------------
+
+@mixin link {
+  color: var(--accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

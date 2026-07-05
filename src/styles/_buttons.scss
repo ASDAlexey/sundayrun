@@ -1,0 +1,72 @@
+// ===========================================================
+//  Shared button treatments — accent CTA and outlined action.
+//  Apply to <button> and <a> alike; :disabled is a no-op on links.
+// ===========================================================
+
+@use 'typography' as t;
+
+@mixin button-accent {
+  @include t.button-label;
+
+  padding: 12px 24px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s var(--ease);
+
+  &:hover {
+    background: var(--accent-light);
+  }
+
+  &:disabled {
+    background: var(--surface-hover);
+    color: var(--text-muted);
+    cursor: default;
+  }
+}
+
+@mixin button-outline {
+  @include t.button-label;
+
+  padding: 12px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease);
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+// A small pressable toggle (sort switches); pair with button-toggle-active. --
+
+@mixin button-toggle {
+  @include t.text('label', 'medium');
+
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    border-color 0.2s var(--ease),
+    color 0.2s var(--ease);
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+@mixin button-toggle-active {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  color: var(--accent);
+}

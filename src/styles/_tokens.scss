@@ -1,0 +1,48 @@
+// ===========================================================
+//  Design tokens — Litely design language
+//  Dark · amber/gold signature · cool counter-glow for depth
+//  Inter + JetBrains Mono
+// ===========================================================
+
+:root {
+  --bg: #060607;
+  --bg-alt: #0a0a0d;
+  --bg-subtle: #101013;
+  --surface: #131316;
+  --surface-hover: #1b1b20;
+  --border: #232329;
+  --border-hover: #36363f;
+
+  --text: #f2f2f0;
+  --text-secondary: #a2a2a0;
+  --text-muted: #82827f;
+
+  // Signature accent — warm amber/gold
+  --accent: #f5a524;
+  --accent-light: #fcd34d;
+  --accent-warm: #fb8c3c;
+  --accent-deep: #c2740f;
+
+  // Cool counter-tone — used only for atmospheric depth (glow), never for text
+  --accent-cool: #3b6dff;
+  --accent-blue: #3b6dff;
+
+  --accent-glow: rgba(245, 165, 36, 0.14);
+  --accent-line: rgba(245, 165, 36, 0.32);
+  --accent-atmosphere: rgba(245, 165, 36, 0.06); // faint top vignette behind the page
+  --accent-contrast: #1a1205; // dark ink for text on warm-accent fills
+  --green: #34d399;
+  --white: #fff;
+  --black: #000;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+
+  --maxw: 1100px;
+
+  --font: 'Inter Variable', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
+  --mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}

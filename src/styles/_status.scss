@@ -1,0 +1,17 @@
+// ===========================================================
+//  Status feedback text — neutral progress and warm error notes.
+// ===========================================================
+
+@use 'typography' as t;
+
+@mixin status-text {
+  @include t.text('body', 'medium');
+
+  color: var(--text-secondary);
+}
+
+@mixin error-text {
+  @include t.text('body', 'medium');
+
+  color: var(--accent-warm);
+}

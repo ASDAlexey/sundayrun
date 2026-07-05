@@ -1,0 +1,9 @@
+// ===========================================================
+//  Card panel — shared surface treatment for content blocks.
+// ===========================================================
+
+@mixin card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}

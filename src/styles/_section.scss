@@ -1,0 +1,9 @@
+// ===========================================================
+//  Page section — centered content column with page paddings.
+// ===========================================================
+
+@mixin section {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
