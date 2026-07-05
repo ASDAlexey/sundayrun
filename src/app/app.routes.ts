@@ -3,7 +3,9 @@ import { Routes } from '@angular/router';
 import { AdminPage } from './features/admin/admin-page';
 import { AthletePage } from './features/athlete/athlete-page';
 import { AthletesPage } from './features/athletes/athletes-page';
+import { HomePage } from './features/home/home-page';
 import { RacePage } from './features/race/race-page';
+import { RecordsPage } from './features/records/records-page';
 import { RacesPage } from './features/races/races-page';
 
 import { adminGuard } from './features/admin/admin.guard';
@@ -16,7 +18,17 @@ export const routes: Routes = [
   {
     path: '',
     title: $localize`:@@title.races:Воскресный парковый пробег в Таганроге — протоколы и результаты`,
+    component: HomePage,
+  },
+  {
+    path: 'races',
+    title: $localize`:@@title.racesList:Все забеги — Воскресный парковый пробег`,
     component: RacesPage,
+  },
+  {
+    path: 'records',
+    title: $localize`:@@title.records:Лучшие результаты — Воскресный парковый пробег`,
+    component: RecordsPage,
   },
   {
     path: 'admin',

@@ -1,0 +1,107 @@
+<main class="home" id="main" tabindex="-1">
+  <header class="home__hero">
+    <p class="home__eyebrow" i18n="@@races.eyebrow">Таганрог · ПКиО им. Горького</p>
+
+    <h1 class="home__title" i18n="@@races.title">Воскресный <span class="home__title-accent">парковый пробег</span></h1>
+
+    <p class="home__tagline" i18n="@@races.tagline">Протоколы, результаты и история каждого участника.</p>
+  </header>
+
+  @if (hasAnnouncement()) {
+    <section class="home__announce">
+      @if (siteMeta().startTime !== '') {
+        <p class="home__announce-time" i18n="@@races.startTime">Каждое воскресенье · старт в {{ siteMeta().startTime }}</p>
+      }
+
+      @if (siteMeta().announcement !== '') {
+        <p class="home__announce-text">{{ siteMeta().announcement }}</p>
+      }
+    </section>
+  }
+
+  @if (isAdmin()) {
+    <section class="home__admin">
+      <p class="home__admin-hint" i18n="@@races.adminHint">Режим организатора включён.</p>
+
+      <a class="home__upload" i18n="@@races.upload" [routerLink]="uploadLink">Загрузить забег</a>
+    </section>
+  }
+
+  <section class="home__latest">
+    <div class="home__latest-head">
+      <h2 class="home__latest-title" i18n="@@home.latestTitle">Последние забеги</h2>
+
+      <a class="home__latest-all" i18n="@@home.allRaces" [routerLink]="racesLink">Все забеги</a>
+    </div>
+
+    <p aria-live="polite" class="home__status" role="status">
+      @switch (status()) {
+        @case (statuses.loading) {
+          <span i18n="@@races.loading">Загружаем список забегов…</span>
+        }
+        @case (statuses.empty) {
+          <span i18n="@@races.empty">Опубликованных забегов пока нет.</span>
+        }
+      }
+    </p>
+
+    @switch (status()) {
+      @case (statuses.ready) {
+        <ul class="home__latest-list">
+          @for (race of latestRaces(); track race.slug) {
+            <li class="home__latest-item">
+              <app-race-card [race]="race" />
+            </li>
+          }
+        </ul>
+
+        <a class="home__all-cta" i18n="@@home.allRacesCta" [routerLink]="racesLink">Все забеги →</a>
+      }
+      @case (statuses.error) {
+        <p class="home__error" i18n="@@races.error" role="alert">Не удалось загрузить список забегов.</p>
+      }
+    }
+  </section>
+
+  <section class="home__course">
+    <div class="home__course-info">
+      <p class="home__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
+
+      <h2 class="home__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
+
+      <p class="home__course-text" i18n="@@races.courseText">
+        Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
+      </p>
+
+      <a class="home__course-vk" i18n="@@races.courseVk" rel="noopener" target="_blank" [href]="vkUrl">Сообщество ВКонтакте</a>
+    </div>
+
+    <a
+      aria-label="Открыть схему трассы в полном размере"
+      class="home__course-figure"
+      href="course-5k.webp"
+      i18n-aria-label="@@races.courseZoomLabel"
+      rel="noopener"
+      target="_blank"
+    >
+      <picture class="home__course-picture">
+        <source srcset="course-5k.avif" type="image/avif" />
+
+        <img
+          alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
+          class="home__course-map"
+          decoding="async"
+          height="962"
+          i18n-alt="@@races.courseAlt"
+          loading="lazy"
+          src="course-5k.webp"
+          width="962"
+        />
+      </picture>
+
+      <span aria-hidden="true" class="home__course-zoom" i18n="@@races.courseZoom">Открыть схему</span>
+    </a>
+  </section>
+
+  <p class="home__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
+</main>

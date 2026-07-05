@@ -2,30 +2,10 @@
   <header class="races__hero">
     <p class="races__eyebrow" i18n="@@races.eyebrow">Таганрог · ПКиО им. Горького</p>
 
-    <h1 class="races__title" i18n="@@races.title">Воскресный <span class="races__title-accent">парковый пробег</span></h1>
+    <h1 class="races__title" i18n="@@races.listTitle">Все забеги</h1>
 
-    <p class="races__tagline" i18n="@@races.tagline">Протоколы, результаты и история каждого участника.</p>
+    <p class="races__tagline" i18n="@@races.listTagline">Полный архив протоколов — от свежих к первым.</p>
   </header>
-
-  @if (hasAnnouncement()) {
-    <section class="races__announce">
-      @if (siteMeta().startTime !== '') {
-        <p class="races__announce-time" i18n="@@races.startTime">Каждое воскресенье · старт в {{ siteMeta().startTime }}</p>
-      }
-
-      @if (siteMeta().announcement !== '') {
-        <p class="races__announce-text">{{ siteMeta().announcement }}</p>
-      }
-    </section>
-  }
-
-  @if (isAdmin()) {
-    <section class="races__admin">
-      <p class="races__admin-hint" i18n="@@races.adminHint">Режим организатора включён.</p>
-
-      <a class="races__upload" i18n="@@races.upload" [routerLink]="uploadLink">Загрузить забег</a>
-    </section>
-  }
 
   <p aria-live="polite" class="races__status" role="status">
     @switch (status()) {
@@ -43,30 +23,7 @@
       <ul class="races__list">
         @for (race of races(); track race.slug) {
           <li class="races__race">
-            <div class="races__race-info">
-              <h2 class="races__race-title" i18n="@@races.raceTitle">Пробег № {{ race.number }}</h2>
-
-              <p class="races__race-date">{{ race.dateLong }}</p>
-
-              <p class="races__race-place">{{ race.city }}, {{ race.park }}</p>
-
-              <p class="races__race-count" i18n="@@races.participantCount">Участников: {{ race.participantCount }}</p>
-            </div>
-
-            <div class="races__race-actions">
-              <a class="races__race-protocol" i18n="@@races.protocolOnline" [routerLink]="race.protocolLink">Протокол онлайн</a>
-
-              <a
-                class="races__race-pdf"
-                i18n="@@races.pdf"
-                rel="noopener"
-                target="_blank"
-                [attr.aria-label]="race.pdfAriaLabel"
-                [href]="race.pdfUrl"
-              >
-                PDF
-              </a>
-            </div>
+            <app-race-card [race]="race" />
           </li>
         }
       </ul>
@@ -75,46 +32,6 @@
       <p class="races__error" i18n="@@races.error" role="alert">Не удалось загрузить список забегов.</p>
     }
   }
-
-  <section class="races__course">
-    <div class="races__course-info">
-      <p class="races__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
-
-      <h2 class="races__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
-
-      <p class="races__course-text" i18n="@@races.courseText">
-        Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
-      </p>
-
-      <a class="races__course-vk" i18n="@@races.courseVk" rel="noopener" target="_blank" [href]="vkUrl">Сообщество ВКонтакте</a>
-    </div>
-
-    <a
-      aria-label="Открыть схему трассы в полном размере"
-      class="races__course-figure"
-      href="course-5k.webp"
-      i18n-aria-label="@@races.courseZoomLabel"
-      rel="noopener"
-      target="_blank"
-    >
-      <picture class="races__course-picture">
-        <source srcset="course-5k.avif" type="image/avif" />
-
-        <img
-          alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
-          class="races__course-map"
-          decoding="async"
-          height="962"
-          i18n-alt="@@races.courseAlt"
-          loading="lazy"
-          src="course-5k.webp"
-          width="962"
-        />
-      </picture>
-
-      <span aria-hidden="true" class="races__course-zoom" i18n="@@races.courseZoom">Открыть схему</span>
-    </a>
-  </section>
 
   <p class="races__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
 </main>

@@ -1,0 +1,321 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/section' as s;
+@use 'styles/status' as st;
+@use 'styles/typography' as t;
+
+.home {
+  @include s.section;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__hero {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0 8px;
+    gap: 14px;
+  }
+
+  &__eyebrow {
+    @include t.text('label', 'medium');
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--accent);
+
+    &::before {
+      width: 28px;
+      height: 1px;
+      background: var(--accent-line);
+      content: '';
+    }
+  }
+
+  &__title {
+    @include t.text('display', 'large');
+
+    color: var(--text);
+  }
+
+  &__title-accent {
+    @include t.gradient-text;
+  }
+
+  &__tagline {
+    @include t.text('body', 'large');
+
+    max-width: 52ch;
+    color: var(--text-secondary);
+  }
+
+  &__announce {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 8px;
+    border-left: 3px solid var(--accent);
+  }
+
+  &__announce-time {
+    @include t.text('title', 'medium');
+
+    color: var(--accent);
+  }
+
+  &__announce-text {
+    @include t.text('body', 'large');
+
+    max-width: 70ch;
+    color: var(--text);
+    white-space: pre-line;
+  }
+
+  &__admin {
+    @include c.card;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    gap: 12px;
+  }
+
+  &__admin-hint {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__upload {
+    @include b.button-accent;
+  }
+
+  &__latest {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__latest-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__latest-title {
+    @include t.text('title', 'large');
+
+    color: var(--text);
+  }
+
+  &__latest-all {
+    @include t.text('label', 'medium');
+
+    color: var(--accent);
+    transition: color 0.2s var(--ease);
+
+    &::after {
+      content: ' →';
+    }
+
+    &:hover {
+      color: var(--accent-light);
+    }
+  }
+
+  &__latest-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 16px;
+    list-style: none;
+  }
+
+  &__all-cta {
+    @include b.button-outline;
+
+    align-self: center;
+  }
+
+  &__status {
+    @include st.status-text;
+
+    // Loading and empty states render a message inside the live region;
+    // give it a quiet panel so the page never looks abandoned.
+    &:has(span) {
+      padding: 32px;
+      border: 1px dashed var(--border-hover);
+      border-radius: var(--radius);
+      background: var(--bg-subtle);
+      text-align: center;
+    }
+  }
+
+  &__error {
+    @include st.error-text;
+  }
+
+  &__course {
+    @include c.card;
+
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(260px, 420px);
+    overflow: hidden;
+  }
+
+  @media (width <= 720px) {
+    &__course {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__course-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px;
+    gap: 12px;
+  }
+
+  &__course-eyebrow {
+    @include t.text('label', 'medium');
+
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  &__course-title {
+    @include t.text('title', 'large');
+
+    color: var(--text);
+  }
+
+  &__course-text {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__course-vk {
+    @include t.text('label', 'medium');
+
+    color: var(--accent);
+    transition: color 0.2s var(--ease);
+
+    &::after {
+      content: ' ↗';
+    }
+
+    &:hover {
+      color: var(--accent-light);
+    }
+  }
+
+  // The course map is a light-mode raster; a warm mute + vignette lets it
+  // sit inside the dark card instead of glowing like a foreign screenshot.
+  &__course-figure {
+    display: block;
+    position: relative;
+    min-height: 360px;
+    overflow: hidden;
+    border-left: 1px solid var(--border);
+    background: var(--bg-subtle);
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(120% 95% at 55% 45%, transparent 55%, color-mix(in srgb, var(--bg) 45%, transparent) 100%),
+        linear-gradient(to right, color-mix(in srgb, var(--bg) 35%, transparent), transparent 20%);
+      content: '';
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease);
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      opacity: 0.35;
+    }
+  }
+
+  &__course-picture {
+    display: contents;
+  }
+
+  &__course-map {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    filter: saturate(0.68) brightness(0.86) contrast(1.02) sepia(0.16);
+    transition:
+      filter 0.4s var(--ease),
+      transform 0.4s var(--ease);
+  }
+
+  &__course-figure:hover &__course-map,
+  &__course-figure:focus-visible &__course-map {
+    transform: scale(1.02);
+    filter: saturate(0.94) brightness(0.96) contrast(1.02) sepia(0.04);
+  }
+
+  &__course-zoom {
+    @include t.text('label', 'small');
+    z-index: 1;
+
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    padding: 7px 13px;
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius-xs);
+    backdrop-filter: blur(6px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    color: var(--text-secondary);
+    transition:
+      color 0.2s var(--ease),
+      border-color 0.2s var(--ease);
+
+    &::after {
+      content: ' ↗';
+      color: var(--accent);
+    }
+  }
+
+  &__course-figure:hover &__course-zoom,
+  &__course-figure:focus-visible &__course-zoom {
+    border-color: var(--accent-line);
+    color: var(--text);
+  }
+
+  @media (width <= 720px) {
+    &__course-figure {
+      aspect-ratio: 1;
+      border-top: 1px solid var(--border);
+      border-left: 0;
+
+      &::after {
+        background:
+          radial-gradient(120% 95% at 55% 45%, transparent 55%, color-mix(in srgb, var(--bg) 45%, transparent) 100%),
+          linear-gradient(to bottom, color-mix(in srgb, var(--bg) 35%, transparent), transparent 20%);
+      }
+    }
+  }
+
+  &__cdn-note {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+}

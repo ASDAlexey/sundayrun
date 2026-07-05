@@ -5,6 +5,8 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 // the organiser wizard depends on localStorage.
 export const serverRoutes: ServerRoute[] = [
   { path: '', renderMode: RenderMode.Prerender },
+  { path: 'races', renderMode: RenderMode.Prerender },
+  { path: 'records', renderMode: RenderMode.Prerender },
   { path: 'admin', renderMode: RenderMode.Prerender },
   { path: 'athletes', renderMode: RenderMode.Prerender },
   { path: '**', renderMode: RenderMode.Client },

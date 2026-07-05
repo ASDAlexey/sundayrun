@@ -10,5 +10,8 @@ export const VK_COMMUNITY_URL = 'https://vk.com/parkgorkogoruntgn';
 /** The public athletes archive, linked from the header navigation. */
 export const ATHLETES_PAGE_LINK = '/athletes';
 
-/** The home page, linked from the header brand and navigation. */
+/** The home page, linked from the header brand. */
 export const HOME_PAGE_LINK = '/';
+
+/** The full race list, linked from the header navigation. */
+export const RACES_LIST_PAGE_LINK = '/races';

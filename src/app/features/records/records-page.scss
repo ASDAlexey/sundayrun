@@ -1,8 +1,9 @@
+@use 'styles/card' as c;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
 
-.races {
+.records {
   @include s.section;
 
   display: flex;
@@ -63,16 +64,85 @@
     @include st.error-text;
   }
 
+  &__boards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  &__board {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 16px;
+  }
+
+  &__board-title {
+    @include t.text('title', 'large');
+
+    color: var(--text);
+  }
+
   &__list {
     display: flex;
     flex-direction: column;
     margin: 0;
     padding: 0;
-    gap: 16px;
+    gap: 4px;
     list-style: none;
   }
 
-  &__cdn-note {
+  &__row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto auto;
+    align-items: baseline;
+    padding: 8px 0;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__place {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__athlete {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+    transition: color 0.2s var(--ease);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__time {
+    @include t.text('title', 'medium');
+
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__date {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+    transition: color 0.2s var(--ease);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__note {
     @include t.text('label', 'small');
 
     color: var(--text-muted);

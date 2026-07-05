@@ -13,14 +13,12 @@
     </a>
 
     <nav aria-label="Основные разделы" class="shell-header__nav" i18n-aria-label="@@app.navLabel">
-      <a
-        class="shell-header__nav-link"
-        i18n="@@app.navRaces"
-        routerLinkActive="shell-header__nav-link_active"
-        [routerLink]="homeLink"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
+      <a class="shell-header__nav-link" i18n="@@app.navRaces" routerLinkActive="shell-header__nav-link_active" [routerLink]="racesLink">
         Забеги
+      </a>
+
+      <a class="shell-header__nav-link" i18n="@@app.navRecords" routerLinkActive="shell-header__nav-link_active" [routerLink]="recordsLink">
+        Рекорды
       </a>
 
       <a

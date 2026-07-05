@@ -1,0 +1,67 @@
+<main class="records" id="main" tabindex="-1">
+  <header class="records__hero">
+    <p class="records__eyebrow" i18n="@@records.eyebrow">5 км · за всё время</p>
+
+    <h1 class="records__title" i18n="@@records.title">Лучшие результаты</h1>
+
+    <p class="records__tagline" i18n="@@records.tagline">Самые быстрые финишеры пятикилометровой дистанции за всю историю пробега.</p>
+  </header>
+
+  <p aria-live="polite" class="records__status" role="status">
+    @switch (status()) {
+      @case (statuses.loading) {
+        <span i18n="@@records.loading">Загружаем историю результатов…</span>
+      }
+      @case (statuses.empty) {
+        <span i18n="@@records.empty">Рекорды появятся после первых опубликованных протоколов.</span>
+      }
+    }
+  </p>
+
+  @switch (status()) {
+    @case (statuses.ready) {
+      <div class="records__boards">
+        <section class="records__board">
+          <h2 class="records__board-title" i18n="@@records.men">Мужчины</h2>
+
+          <ol class="records__list">
+            @for (row of men(); track row.key) {
+              <li class="records__row">
+                <span class="records__place">{{ row.place }}</span>
+
+                <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                <span class="records__time">{{ row.timeText }}</span>
+
+                <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+              </li>
+            }
+          </ol>
+        </section>
+
+        <section class="records__board">
+          <h2 class="records__board-title" i18n="@@records.women">Женщины</h2>
+
+          <ol class="records__list">
+            @for (row of women(); track row.key) {
+              <li class="records__row">
+                <span class="records__place">{{ row.place }}</span>
+
+                <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                <span class="records__time">{{ row.timeText }}</span>
+
+                <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+              </li>
+            }
+          </ol>
+        </section>
+      </div>
+
+      <p class="records__note" i18n="@@records.note">Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.</p>
+    }
+    @case (statuses.error) {
+      <p class="records__error" i18n="@@records.error" role="alert">Не удалось загрузить историю результатов.</p>
+    }
+  }
+</main>

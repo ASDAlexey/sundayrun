@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://asdalexey.github.io/sundayrun/ru/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://asdalexey.github.io/sundayrun/ru/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://asdalexey.github.io/sundayrun/en/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://asdalexey.github.io/sundayrun/en/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://asdalexey.github.io/sundayrun/ru/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://asdalexey.github.io/sundayrun/en/"/>
+    <loc>https://asdalexey.github.io/sundayrun/ru/races</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://asdalexey.github.io/sundayrun/ru/athletes</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://asdalexey.github.io/sundayrun/ru/athletes"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://asdalexey.github.io/sundayrun/en/athletes"/>
+    <loc>https://asdalexey.github.io/sundayrun/ru/records</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://asdalexey.github.io/sundayrun/en/athletes</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://asdalexey.github.io/sundayrun/ru/athletes"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://asdalexey.github.io/sundayrun/en/athletes"/>
+    <loc>https://asdalexey.github.io/sundayrun/ru/athletes</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.7</priority>
   </url>
 </urlset>

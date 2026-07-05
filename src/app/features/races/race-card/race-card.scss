@@ -1,0 +1,59 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+.race-card {
+  @include c.card;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  gap: 12px;
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__date {
+    @include t.text('body', 'large');
+
+    color: var(--text-secondary);
+  }
+
+  &__place {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__count {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__protocol {
+    @include b.button-accent;
+  }
+
+  &__pdf {
+    @include b.button-outline;
+  }
+}
