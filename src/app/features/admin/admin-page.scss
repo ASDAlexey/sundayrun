@@ -1,6 +1,3 @@
-@use 'styles/buttons' as b;
-@use 'styles/card' as c;
-@use 'styles/field' as f;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
@@ -15,12 +12,13 @@
   gap: 24px;
 
   &__card {
-    @include c.card;
-
-    display: flex;
-    flex-direction: column;
     width: 100%;
     max-width: 560px;
+  }
+
+  &__card-content {
+    display: flex;
+    flex-direction: column;
     padding: 40px;
     gap: 16px;
   }
@@ -65,29 +63,16 @@
     }
   }
 
-  &__label {
-    @include t.text('label', 'medium');
-
-    color: var(--text-muted);
-  }
-
-  &__input {
-    @include f.field;
+  &__field {
+    width: 100%;
 
     &_time {
       align-self: flex-start;
+      width: auto;
     }
   }
 
-  &__textarea {
-    @include f.field;
-
-    resize: vertical;
-  }
-
   &__save {
-    @include b.button-accent;
-
     align-self: flex-start;
   }
 
@@ -98,14 +83,10 @@
     gap: 12px;
   }
 
-  &__upload {
-    @include b.button-accent;
-  }
-
-  &__clear {
-    @include b.button-outline;
-
-    align-self: flex-start;
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   &__status {
@@ -143,28 +124,8 @@
     gap: 8px;
   }
 
-  &__race-delete,
-  &__race-cancel {
-    @include b.button-outline;
-
-    padding: 8px 16px;
-  }
-
   &__race-confirm {
-    @include b.button-outline;
-
-    padding: 8px 16px;
-    border-color: var(--accent-warm);
-    color: var(--accent-warm);
-
-    &:hover {
-      border-color: var(--accent-warm);
-    }
-
-    &:disabled {
-      border-color: var(--border);
-      color: var(--text-muted);
-      cursor: default;
-    }
+    --mat-button-filled-container-color: var(--accent-warm);
+    --mat-button-filled-label-text-color: var(--accent-contrast);
   }
 }
