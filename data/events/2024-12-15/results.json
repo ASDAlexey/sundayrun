@@ -1,0 +1,39 @@
+{
+  "event": {
+    "number": 2.11,
+    "dateIso": "2024-12-15",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "8:57",
+      "time5": "19:44",
+      "totalMs": 1184000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Назарова Вероника",
+      "time23": "11:23",
+      "time5": "25:11",
+      "totalMs": 1511000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

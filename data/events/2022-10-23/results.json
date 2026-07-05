@@ -1,0 +1,52 @@
+{
+  "event": {
+    "number": 256,
+    "dateIso": "2022-10-23",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Цопкало Николай",
+      "time23": "",
+      "time5": "19:26",
+      "totalMs": 1166000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Троилин Антон",
+      "time23": "",
+      "time5": "21:04",
+      "totalMs": 1264000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Цопкало Людмила",
+      "time23": "",
+      "time5": "23:31",
+      "totalMs": 1411000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

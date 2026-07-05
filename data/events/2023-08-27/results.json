@@ -1,0 +1,78 @@
+{
+  "event": {
+    "number": 294,
+    "dateIso": "2023-08-27",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Аминов Артем",
+      "time23": "09:24",
+      "time5": "20:04",
+      "totalMs": 1204000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 2,
+      "fullName": "Троилин Антон",
+      "time23": "09:24",
+      "time5": "20:04",
+      "totalMs": 1204000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Зубкова Наталья",
+      "time23": "12:15",
+      "time5": "27:37",
+      "totalMs": 1657000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Аминова Оксана",
+      "time23": "13:53",
+      "time5": "30:42",
+      "totalMs": 1842000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 5,
+      "fullName": "Беликов Дмитрий",
+      "time23": "13:53",
+      "time5": "30:42",
+      "totalMs": 1842000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

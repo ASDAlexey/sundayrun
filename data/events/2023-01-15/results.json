@@ -1,0 +1,130 @@
+{
+  "event": {
+    "number": 266,
+    "dateIso": "2023-01-15",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "08:19",
+      "time5": "18:04",
+      "totalMs": 1084000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Корнеев Игорь",
+      "time23": "08:38",
+      "time5": "19:06",
+      "totalMs": 1146000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Ширшов Денис",
+      "time23": "09:32",
+      "time5": "20:49",
+      "totalMs": 1249000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Троилин Антон",
+      "time23": "09:34",
+      "time5": "21:23",
+      "totalMs": 1283000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Рыковская Мария",
+      "time23": "10:25",
+      "time5": "22:49",
+      "totalMs": 1369000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 6,
+      "fullName": "Цопкало Николай",
+      "time23": "10:24",
+      "time5": "22:49",
+      "totalMs": 1369000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Цопкало Людмила",
+      "time23": "12:19",
+      "time5": "27:22",
+      "totalMs": 1642000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Зубкова Наталья",
+      "time23": "12:55",
+      "time5": "28:32",
+      "totalMs": 1712000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Шаповалов Глеб",
+      "time23": "",
+      "time5": "36:26",
+      "totalMs": 2186000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

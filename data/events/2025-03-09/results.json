@@ -1,0 +1,117 @@
+{
+  "event": {
+    "number": 2.23,
+    "dateIso": "2025-03-09",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кострюков Максим",
+      "time23": "8:41",
+      "time5": "18:41",
+      "totalMs": 1121000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "12:02",
+      "time5": "25:40",
+      "totalMs": 1540000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Нургалин Руслан",
+      "time23": "12:02",
+      "time5": "25:40",
+      "totalMs": 1540000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:58",
+      "time5": "28:10",
+      "totalMs": 1690000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Цопкало Людмила",
+      "time23": "12:58",
+      "time5": "28:10",
+      "totalMs": 1690000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Цопкало Николай",
+      "time23": "12:02",
+      "time5": "30:07",
+      "totalMs": 1807000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Климачкин Валерий",
+      "time23": "15:12",
+      "time5": "33:00",
+      "totalMs": 1980000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Ковалева Анастасия",
+      "time23": "15:12",
+      "time5": "33:00",
+      "totalMs": 1980000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

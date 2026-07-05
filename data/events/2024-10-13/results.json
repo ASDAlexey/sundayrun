@@ -1,0 +1,91 @@
+{
+  "event": {
+    "number": 2.2,
+    "dateIso": "2024-10-13",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "08:44",
+      "time5": "18:58",
+      "totalMs": 1138000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Макрецов Матвей",
+      "time23": "10:07",
+      "time5": "20:59",
+      "totalMs": 1259000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "10:07",
+      "time5": "21:01",
+      "totalMs": 1261000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Куловеров Владимир",
+      "time23": "09:23",
+      "time5": "21:12",
+      "totalMs": 1272000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Сивопляс Николь",
+      "time23": "10:09",
+      "time5": "22:39",
+      "totalMs": 1359000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Новиков Сергей",
+      "time23": "10:11",
+      "time5": "23:20",
+      "totalMs": 1400000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

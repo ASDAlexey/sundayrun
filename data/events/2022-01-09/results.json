@@ -1,0 +1,104 @@
+{
+  "event": {
+    "number": 221,
+    "dateIso": "2022-01-09",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Цопкало Николай",
+      "time23": "09:32",
+      "time5": "20:31",
+      "totalMs": 1231000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Юрьев Евгений",
+      "time23": "09:32",
+      "time5": "21:09",
+      "totalMs": 1269000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Попов Алексей",
+      "time23": "10:12",
+      "time5": "21:29",
+      "totalMs": 1289000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Демиденко Евгений",
+      "time23": "10:12",
+      "time5": "21:31",
+      "totalMs": 1291000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Сергеева Ирина",
+      "time23": "11:25",
+      "time5": "24:54",
+      "totalMs": 1494000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:17",
+      "time5": "27:29",
+      "totalMs": 1649000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Тубольцева Ольга",
+      "time23": "16:31",
+      "time5": "35:41",
+      "totalMs": 2141000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": "Первое участие"
+    }
+  ],
+  "schemaVersion": 1
+}

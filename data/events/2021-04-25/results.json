@@ -1,0 +1,143 @@
+{
+  "event": {
+    "number": 189,
+    "dateIso": "2021-04-25",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Салимгареев Влад",
+      "time23": "09:34",
+      "time5": "20:47",
+      "totalMs": 1247000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Шаклон Сергей",
+      "time23": "09:34",
+      "time5": "21:07",
+      "totalMs": 1267000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Кваша Никита",
+      "time23": "10:18",
+      "time5": "22:14",
+      "totalMs": 1334000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Михайленко Руслан",
+      "time23": "10:27",
+      "time5": "22:16",
+      "totalMs": 1336000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Новиков Сергей",
+      "time23": "11:36",
+      "time5": "22:20",
+      "totalMs": 1340000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Евдокимов Степан",
+      "time23": "10:18",
+      "time5": "22:24",
+      "totalMs": 1344000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Скляр Артем",
+      "time23": "10:19",
+      "time5": "23:04",
+      "totalMs": 1384000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Соловьёва Ольга",
+      "time23": "11:25",
+      "time5": "24:48",
+      "totalMs": 1488000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": "ЛР (было 25:16)"
+    },
+    {
+      "index": 9,
+      "fullName": "Беликов Дмитрий",
+      "time23": "11:24",
+      "time5": "25:22",
+      "totalMs": 1522000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 8,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 10,
+      "fullName": "Рыбачок Наталья",
+      "time23": "15:24",
+      "time5": "33:22",
+      "totalMs": 2002000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

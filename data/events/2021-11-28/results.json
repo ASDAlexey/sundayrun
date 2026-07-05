@@ -1,0 +1,130 @@
+{
+  "event": {
+    "number": 216,
+    "dateIso": "2021-11-28",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Ширшов Денис",
+      "time23": "",
+      "time5": "22:14",
+      "totalMs": 1334000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Лавров Сергей",
+      "time23": "",
+      "time5": "22:59",
+      "totalMs": 1379000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Юрьев Евгений",
+      "time23": "",
+      "time5": "23:03",
+      "totalMs": 1383000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Цопкало Николай",
+      "time23": "",
+      "time5": "23:19",
+      "totalMs": 1399000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Евдокимов Степан",
+      "time23": "",
+      "time5": "25:02",
+      "totalMs": 1502000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Сергеева Ирина",
+      "time23": "",
+      "time5": "25:47",
+      "totalMs": 1547000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Дзюбак Сергей",
+      "time23": "",
+      "time5": "27:15",
+      "totalMs": 1635000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Кравченко Ксения",
+      "time23": "",
+      "time5": "27:21",
+      "totalMs": 1641000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 9,
+      "fullName": "Кваша Никита",
+      "time23": "",
+      "time5": "DNF",
+      "totalMs": null,
+      "distanceKm": null,
+      "gender": "M",
+      "placeM": null,
+      "placeF": null,
+      "club": "",
+      "note": "DNF"
+    }
+  ],
+  "schemaVersion": 1
+}

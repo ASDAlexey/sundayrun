@@ -1,0 +1,78 @@
+{
+  "event": {
+    "number": 250,
+    "dateIso": "2022-09-04",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "07:58",
+      "time5": "17:14",
+      "totalMs": 1034000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": "Лучший результат 2022 г."
+    },
+    {
+      "index": 2,
+      "fullName": "Троилин Антон",
+      "time23": "09:06",
+      "time5": "19:57",
+      "totalMs": 1197000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 20:01)"
+    },
+    {
+      "index": 3,
+      "fullName": "Сергеева Ирина",
+      "time23": "10:46",
+      "time5": "23:42",
+      "totalMs": 1422000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Беликов Дмитрий",
+      "time23": "12:20",
+      "time5": "27:00",
+      "totalMs": 1620000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Зубкова Наталья",
+      "time23": "12:20",
+      "time5": "27:00",
+      "totalMs": 1620000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -1,0 +1,91 @@
+{
+  "event": {
+    "number": 277,
+    "dateIso": "2023-04-09",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "08:49",
+      "time5": "19:27",
+      "totalMs": 1167000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 19:31)"
+    },
+    {
+      "index": 2,
+      "fullName": "Дорожкин Михаил",
+      "time23": "10:28",
+      "time5": "22:29",
+      "totalMs": 1349000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Нургалин Руслан",
+      "time23": "10:28",
+      "time5": "22:39",
+      "totalMs": 1359000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Корнеев Игорь",
+      "time23": "10:33",
+      "time5": "22:57",
+      "totalMs": 1377000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "10:06",
+      "time5": "23:56",
+      "totalMs": 1436000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Зубкова Наталья",
+      "time23": "12:45",
+      "time5": "28:23",
+      "totalMs": 1703000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

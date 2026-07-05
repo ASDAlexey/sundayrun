@@ -1,0 +1,39 @@
+{
+  "event": {
+    "number": 133,
+    "dateIso": "2019-12-01",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Дзюбак Сергей",
+      "time23": "",
+      "time5": "25:32",
+      "totalMs": 1532000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Назарова Вероника",
+      "time23": "",
+      "time5": "25:50",
+      "totalMs": 1550000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

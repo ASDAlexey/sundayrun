@@ -89,20 +89,31 @@
       <a class="races__course-vk" i18n="@@races.courseVk" rel="noopener" target="_blank" [href]="vkUrl">Сообщество ВКонтакте</a>
     </div>
 
-    <picture class="races__course-picture">
-      <source srcset="course-5k.avif" type="image/avif" />
+    <a
+      aria-label="Открыть схему трассы в полном размере"
+      class="races__course-figure"
+      href="course-5k.webp"
+      i18n-aria-label="@@races.courseZoomLabel"
+      rel="noopener"
+      target="_blank"
+    >
+      <picture class="races__course-picture">
+        <source srcset="course-5k.avif" type="image/avif" />
 
-      <img
-        alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
-        class="races__course-map"
-        decoding="async"
-        height="962"
-        i18n-alt="@@races.courseAlt"
-        loading="lazy"
-        src="course-5k.webp"
-        width="962"
-      />
-    </picture>
+        <img
+          alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
+          class="races__course-map"
+          decoding="async"
+          height="962"
+          i18n-alt="@@races.courseAlt"
+          loading="lazy"
+          src="course-5k.webp"
+          width="962"
+        />
+      </picture>
+
+      <span aria-hidden="true" class="races__course-zoom" i18n="@@races.courseZoom">Открыть схему</span>
+    </a>
   </section>
 
   <p class="races__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>

@@ -1,0 +1,104 @@
+{
+  "event": {
+    "number": 121,
+    "dateIso": "2019-08-25",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "",
+      "time5": "18:52",
+      "totalMs": 1132000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Дзюбак Сергей",
+      "time23": "",
+      "time5": "25:28",
+      "totalMs": 1528000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Плетнев Вячеслав",
+      "time23": "",
+      "time5": "25:38",
+      "totalMs": 1538000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Плетнева Юлия",
+      "time23": "",
+      "time5": "26:51",
+      "totalMs": 1611000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Илларионов Денис",
+      "time23": "",
+      "time5": "27:44",
+      "totalMs": 1664000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Третьякова Мария",
+      "time23": "",
+      "time5": "28:35",
+      "totalMs": 1715000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Назарова Вероника",
+      "time23": "",
+      "time5": "DNF",
+      "totalMs": null,
+      "distanceKm": null,
+      "gender": "F",
+      "placeM": null,
+      "placeF": null,
+      "club": "",
+      "note": "DNF Детский забег"
+    }
+  ],
+  "schemaVersion": 1
+}

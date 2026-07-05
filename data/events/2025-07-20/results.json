@@ -1,0 +1,104 @@
+{
+  "event": {
+    "number": 2.42,
+    "dateIso": "2025-07-20",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "8:54",
+      "time5": "19:29",
+      "totalMs": 1169000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Дорожкин Михаил",
+      "time23": "10:08",
+      "time5": "21:25",
+      "totalMs": 1285000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Новиков Сергей",
+      "time23": "10:08",
+      "time5": "21:31",
+      "totalMs": 1291000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Климачкин Валерий",
+      "time23": "10:13",
+      "time5": "22:30",
+      "totalMs": 1350000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "10:13",
+      "time5": "22:30",
+      "totalMs": 1350000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:38",
+      "time5": "27:34",
+      "totalMs": 1654000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Ищенко Альбина",
+      "time23": "13:03",
+      "time5": "28:15",
+      "totalMs": 1695000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

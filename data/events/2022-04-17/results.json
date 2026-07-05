@@ -1,0 +1,130 @@
+{
+  "event": {
+    "number": 233,
+    "dateIso": "2022-04-17",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Куловеров Владимир",
+      "time23": "09:47",
+      "time5": "21:16",
+      "totalMs": 1276000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Скляр Артем",
+      "time23": "10:40",
+      "time5": "23:25",
+      "totalMs": 1405000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Фарафонова Екатерина",
+      "time23": "10:40",
+      "time5": "23:31",
+      "totalMs": 1411000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": "ЛР (было 24:04)"
+    },
+    {
+      "index": 4,
+      "fullName": "Торопов Юрий",
+      "time23": "10:33",
+      "time5": "24:20",
+      "totalMs": 1460000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Демиденко Евгений",
+      "time23": "11:41",
+      "time5": "25:05",
+      "totalMs": 1505000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Цопкало Николай",
+      "time23": "11:41",
+      "time5": "25:05",
+      "totalMs": 1505000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Зубкова Наталья",
+      "time23": "13:25",
+      "time5": "30:38",
+      "totalMs": 1838000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Курд Олег",
+      "time23": "13:25",
+      "time5": "30:38",
+      "totalMs": 1838000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Перевалов Евгений",
+      "time23": "13:25",
+      "time5": "30:38",
+      "totalMs": 1838000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

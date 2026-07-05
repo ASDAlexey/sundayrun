@@ -1,0 +1,143 @@
+{
+  "event": {
+    "number": 186,
+    "dateIso": "2021-04-04",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Ширшов Денис",
+      "time23": "09:12",
+      "time5": "20:25",
+      "totalMs": 1225000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Кваша Никита",
+      "time23": "10:35",
+      "time5": "22:14",
+      "totalMs": 1334000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Лавров Сергей",
+      "time23": "10:34",
+      "time5": "22:16",
+      "totalMs": 1336000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Губарев Евгений",
+      "time23": "10:35",
+      "time5": "22:19",
+      "totalMs": 1339000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 22:34)"
+    },
+    {
+      "index": 5,
+      "fullName": "Демиденко Евгений",
+      "time23": "11:04",
+      "time5": "24:23",
+      "totalMs": 1463000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Фарафонова Екатерина",
+      "time23": "11:18",
+      "time5": "25:19",
+      "totalMs": 1519000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Беликов Дмитрий",
+      "time23": "11:26",
+      "time5": "26:50",
+      "totalMs": 1610000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Цопкало Людмила",
+      "time23": "12:00",
+      "time5": "27:02",
+      "totalMs": 1622000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Цопкало Николай",
+      "time23": "12:00",
+      "time5": "27:02",
+      "totalMs": 1622000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 10,
+      "fullName": "Шаповалов Глеб",
+      "time23": "13:58",
+      "time5": "31:21",
+      "totalMs": 1881000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 8,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 35:20)"
+    }
+  ],
+  "schemaVersion": 1
+}

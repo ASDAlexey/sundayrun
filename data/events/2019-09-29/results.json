@@ -1,0 +1,78 @@
+{
+  "event": {
+    "number": 124,
+    "dateIso": "2019-09-29",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "09:28",
+      "time5": "20:27",
+      "totalMs": 1227000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Цопкало Николай",
+      "time23": "09:28",
+      "time5": "20:29",
+      "totalMs": 1229000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Ширшов Денис",
+      "time23": "09:28",
+      "time5": "20:39",
+      "totalMs": 1239000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Юрьев Евгений",
+      "time23": "09:44",
+      "time5": "21:18",
+      "totalMs": 1278000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Цопкало Людмила",
+      "time23": "11:25",
+      "time5": "25:15",
+      "totalMs": 1515000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

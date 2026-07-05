@@ -1,0 +1,117 @@
+{
+  "event": {
+    "number": 176,
+    "dateIso": "2021-01-17",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Лавров Сергей",
+      "time23": "",
+      "time5": "22:44",
+      "totalMs": 1364000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Цопкало Николай",
+      "time23": "",
+      "time5": "23:03",
+      "totalMs": 1383000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Губарев Евгений",
+      "time23": "",
+      "time5": "23:13",
+      "totalMs": 1393000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 23:14)"
+    },
+    {
+      "index": 4,
+      "fullName": "Демиденко Евгений",
+      "time23": "",
+      "time5": "24:49",
+      "totalMs": 1489000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Горелов Григорий",
+      "time23": "",
+      "time5": "27:00",
+      "totalMs": 1620000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 6,
+      "fullName": "Дзюбак Сергей",
+      "time23": "",
+      "time5": "27:03",
+      "totalMs": 1623000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Цопкало Людмила",
+      "time23": "",
+      "time5": "27:26",
+      "totalMs": 1646000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Карпенко Мила",
+      "time23": "",
+      "time5": "33:38",
+      "totalMs": 2018000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

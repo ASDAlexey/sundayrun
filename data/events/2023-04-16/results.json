@@ -1,0 +1,78 @@
+{
+  "event": {
+    "number": 278,
+    "dateIso": "2023-04-16",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "08:59",
+      "time5": "19:48",
+      "totalMs": 1188000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Ашмановичус Алексей",
+      "time23": "09:41",
+      "time5": "22:05",
+      "totalMs": 1325000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 3,
+      "fullName": "Дорожкин Михаил",
+      "time23": "09:50",
+      "time5": "22:05",
+      "totalMs": 1325000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Беликов Дмитрий",
+      "time23": "12:49",
+      "time5": "28:26",
+      "totalMs": 1706000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Зубкова Наталья",
+      "time23": "12:51",
+      "time5": "28:26",
+      "totalMs": 1706000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

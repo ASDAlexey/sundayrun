@@ -1,0 +1,130 @@
+{
+  "event": {
+    "number": 2.21,
+    "dateIso": "2025-02-23",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кострюков Максим",
+      "time23": "9:15",
+      "time5": "19:50",
+      "totalMs": 1190000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Литвиненко Милош",
+      "time23": "9:15",
+      "time5": "19:50",
+      "totalMs": 1190000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Куловеров Владимир",
+      "time23": "9:40",
+      "time5": "21:42",
+      "totalMs": 1302000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Демиденко Евгений",
+      "time23": "10:28",
+      "time5": "22:11",
+      "totalMs": 1331000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "10:28",
+      "time5": "22:11",
+      "totalMs": 1331000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Климачкин Валерий",
+      "time23": "10:29",
+      "time5": "23:40",
+      "totalMs": 1420000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Сивопляс Николь",
+      "time23": "11:09",
+      "time5": "24:32",
+      "totalMs": 1472000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Курина Елизавета",
+      "time23": "11:09",
+      "time5": "25:23",
+      "totalMs": 1523000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:27",
+      "time5": "28:11",
+      "totalMs": 1691000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

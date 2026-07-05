@@ -1,0 +1,39 @@
+{
+  "event": {
+    "number": 2.7,
+    "dateIso": "2026-02-08",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "10:33",
+      "time5": "22:37",
+      "totalMs": 1357000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Троилин Антон",
+      "time23": "10:43",
+      "time5": "23:59",
+      "totalMs": 1439000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -1,0 +1,143 @@
+{
+  "event": {
+    "number": 159,
+    "dateIso": "2020-09-13",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Салимгареев Влад",
+      "time23": "09:25",
+      "time5": "20:31",
+      "totalMs": 1231000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Демиденко Евгений",
+      "time23": "09:25",
+      "time5": "20:39",
+      "totalMs": 1239000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 20:40)"
+    },
+    {
+      "index": 3,
+      "fullName": "Скляр Артем",
+      "time23": "09:50",
+      "time5": "23:03",
+      "totalMs": 1383000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Черников Ярослав",
+      "time23": "",
+      "time5": "27:00",
+      "totalMs": 1620000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 5,
+      "fullName": "Иошт Елена",
+      "time23": "14:22",
+      "time5": "29:18",
+      "totalMs": 1758000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Бублей Ирина",
+      "time23": "14:27",
+      "time5": "31:38",
+      "totalMs": 1898000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": "ЛР (было 34:38)"
+    },
+    {
+      "index": 7,
+      "fullName": "Игнатченко Юрий",
+      "time23": "14:27",
+      "time5": "31:38",
+      "totalMs": 1898000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Рыбачок Наталья",
+      "time23": "14:45",
+      "time5": "32:43",
+      "totalMs": 1963000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Семенова Дарина",
+      "time23": "14:27",
+      "time5": "32:45",
+      "totalMs": 1965000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 4,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 10,
+      "fullName": "Карпенко Мила",
+      "time23": "14:45",
+      "time5": "33:23",
+      "totalMs": 2003000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 5,
+      "club": "",
+      "note": "Первое участие"
+    }
+  ],
+  "schemaVersion": 1
+}

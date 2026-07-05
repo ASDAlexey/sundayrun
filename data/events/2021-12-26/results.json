@@ -1,0 +1,104 @@
+{
+  "event": {
+    "number": 220,
+    "dateIso": "2021-12-26",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Юрьев Евгений",
+      "time23": "",
+      "time5": "21:02",
+      "totalMs": 1262000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Попов Алексей",
+      "time23": "",
+      "time5": "22:39",
+      "totalMs": 1359000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Ширшов Денис",
+      "time23": "",
+      "time5": "22:51",
+      "totalMs": 1371000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Фарафонова Екатерина",
+      "time23": "",
+      "time5": "25:56",
+      "totalMs": 1556000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Цопкало Николай",
+      "time23": "",
+      "time5": "25:56",
+      "totalMs": 1556000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Кравченко Ксения",
+      "time23": "",
+      "time5": "26:27",
+      "totalMs": 1587000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Цопкало Людмила",
+      "time23": "",
+      "time5": "29:45",
+      "totalMs": 1785000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -1,0 +1,117 @@
+{
+  "event": {
+    "number": 151,
+    "dateIso": "2020-07-12",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Курд Артем",
+      "time23": "",
+      "time5": "21:50",
+      "totalMs": 1310000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Новиков Сергей",
+      "time23": "",
+      "time5": "23:07",
+      "totalMs": 1387000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Цопкало Николай",
+      "time23": "",
+      "time5": "23:07",
+      "totalMs": 1387000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Дзюбак Сергей",
+      "time23": "",
+      "time5": "25:55",
+      "totalMs": 1555000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Иошт Елена",
+      "time23": "",
+      "time5": "28:21",
+      "totalMs": 1701000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Беликов Дмитрий",
+      "time23": "",
+      "time5": "30:08",
+      "totalMs": 1808000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Игнатченко Юрий",
+      "time23": "",
+      "time5": "30:08",
+      "totalMs": 1808000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Курд Олег",
+      "time23": "",
+      "time5": "30:27",
+      "totalMs": 1827000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

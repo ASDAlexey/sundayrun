@@ -1,0 +1,130 @@
+{
+  "event": {
+    "number": 2.53,
+    "dateIso": "2025-10-12",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "8:00",
+      "time5": "17:50",
+      "totalMs": 1070000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Кострюков Максим",
+      "time23": "8:03",
+      "time5": "18:31",
+      "totalMs": 1111000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Дорожкин Михаил",
+      "time23": "9:34",
+      "time5": "20:37",
+      "totalMs": 1237000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Цопкало Николай",
+      "time23": "10:27",
+      "time5": "22:41",
+      "totalMs": 1361000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Кириленко Роман",
+      "time23": "10:54",
+      "time5": "23:01",
+      "totalMs": 1381000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Климачкин Валерий",
+      "time23": "11:02",
+      "time5": "24:05",
+      "totalMs": 1445000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Харин Сергей",
+      "time23": "11:02",
+      "time5": "24:05",
+      "totalMs": 1445000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Демиденко Евгений",
+      "time23": "12:02",
+      "time5": "26:30",
+      "totalMs": 1590000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Ищенко Альбина",
+      "time23": "12:31",
+      "time5": "27:15",
+      "totalMs": 1635000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

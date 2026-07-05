@@ -1,0 +1,130 @@
+{
+  "event": {
+    "number": 2.58,
+    "dateIso": "2025-11-16",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "08:12",
+      "time5": "18:01",
+      "totalMs": 1081000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "08:22",
+      "time5": "18:11",
+      "totalMs": 1091000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Троилин Антон",
+      "time23": "08:20",
+      "time5": "18:22",
+      "totalMs": 1102000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Кабенов Арман",
+      "time23": "08:22",
+      "time5": "19:33",
+      "totalMs": 1173000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Дорожкин Михаил",
+      "time23": "09:01",
+      "time5": "20:08",
+      "totalMs": 1208000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Матросов Александр",
+      "time23": "09:14",
+      "time5": "20:38",
+      "totalMs": 1238000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Воронова Евгения",
+      "time23": "11:10",
+      "time5": "24:51",
+      "totalMs": 1491000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Дзюбак Сергей",
+      "time23": "13:24",
+      "time5": "28:56",
+      "totalMs": 1736000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Диденко Ольга",
+      "time23": "12:17",
+      "time5": "31:18",
+      "totalMs": 1878000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

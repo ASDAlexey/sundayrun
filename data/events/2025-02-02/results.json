@@ -1,0 +1,117 @@
+{
+  "event": {
+    "number": 2.18,
+    "dateIso": "2025-02-02",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "8:54",
+      "time5": "19:29",
+      "totalMs": 1169000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Шацкий Влад",
+      "time23": "10:38",
+      "time5": "23:35",
+      "totalMs": 1415000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Климачкин Валерий",
+      "time23": "10:59",
+      "time5": "23:44",
+      "totalMs": 1424000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "11:00",
+      "time5": "24:14",
+      "totalMs": 1454000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Нургалин Руслан",
+      "time23": "11:00",
+      "time5": "24:14",
+      "totalMs": 1454000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Цопкало Николай",
+      "time23": "11:00",
+      "time5": "24:14",
+      "totalMs": 1454000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Зубрицкий Андрей",
+      "time23": "10:58",
+      "time5": "25:48",
+      "totalMs": 1548000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:24",
+      "time5": "27:42",
+      "totalMs": 1662000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

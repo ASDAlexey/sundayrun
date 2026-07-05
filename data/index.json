@@ -1,0 +1,3242 @@
+{
+  "events": [
+    {
+      "slug": "2026-02-22",
+      "dateIso": "2026-02-22",
+      "number": 2.72,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2026-02-22/source.xlsx",
+        "protocolPdf": "events/2026-02-22/protocol.pdf",
+        "resultsJson": "events/2026-02-22/results.json"
+      }
+    },
+    {
+      "slug": "2026-02-15",
+      "dateIso": "2026-02-15",
+      "number": 2.71,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2026-02-15/source.xlsx",
+        "protocolPdf": "events/2026-02-15/protocol.pdf",
+        "resultsJson": "events/2026-02-15/results.json"
+      }
+    },
+    {
+      "slug": "2026-02-08",
+      "dateIso": "2026-02-08",
+      "number": 2.7,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2026-02-08/source.xlsx",
+        "protocolPdf": "events/2026-02-08/protocol.pdf",
+        "resultsJson": "events/2026-02-08/results.json"
+      }
+    },
+    {
+      "slug": "2026-02-01",
+      "dateIso": "2026-02-01",
+      "number": 2.69,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2026-02-01/source.xlsx",
+        "protocolPdf": "events/2026-02-01/protocol.pdf",
+        "resultsJson": "events/2026-02-01/results.json"
+      }
+    },
+    {
+      "slug": "2026-01-25",
+      "dateIso": "2026-01-25",
+      "number": 2.68,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2026-01-25/source.xlsx",
+        "protocolPdf": "events/2026-01-25/protocol.pdf",
+        "resultsJson": "events/2026-01-25/results.json"
+      }
+    },
+    {
+      "slug": "2026-01-18",
+      "dateIso": "2026-01-18",
+      "number": 2.67,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2026-01-18/source.xlsx",
+        "protocolPdf": "events/2026-01-18/protocol.pdf",
+        "resultsJson": "events/2026-01-18/results.json"
+      }
+    },
+    {
+      "slug": "2026-01-04",
+      "dateIso": "2026-01-04",
+      "number": 2.65,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2026-01-04/source.xlsx",
+        "protocolPdf": "events/2026-01-04/protocol.pdf",
+        "resultsJson": "events/2026-01-04/results.json"
+      }
+    },
+    {
+      "slug": "2025-12-28",
+      "dateIso": "2025-12-28",
+      "number": 2.64,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2025-12-28/source.xlsx",
+        "protocolPdf": "events/2025-12-28/protocol.pdf",
+        "resultsJson": "events/2025-12-28/results.json"
+      }
+    },
+    {
+      "slug": "2025-12-21",
+      "dateIso": "2025-12-21",
+      "number": 2.63,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2025-12-21/source.xlsx",
+        "protocolPdf": "events/2025-12-21/protocol.pdf",
+        "resultsJson": "events/2025-12-21/results.json"
+      }
+    },
+    {
+      "slug": "2025-12-14",
+      "dateIso": "2025-12-14",
+      "number": 2.62,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2025-12-14/source.xlsx",
+        "protocolPdf": "events/2025-12-14/protocol.pdf",
+        "resultsJson": "events/2025-12-14/results.json"
+      }
+    },
+    {
+      "slug": "2025-12-07",
+      "dateIso": "2025-12-07",
+      "number": 2.61,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2025-12-07/source.xlsx",
+        "protocolPdf": "events/2025-12-07/protocol.pdf",
+        "resultsJson": "events/2025-12-07/results.json"
+      }
+    },
+    {
+      "slug": "2025-11-23",
+      "dateIso": "2025-11-23",
+      "number": 2.59,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2025-11-23/source.xlsx",
+        "protocolPdf": "events/2025-11-23/protocol.pdf",
+        "resultsJson": "events/2025-11-23/results.json"
+      }
+    },
+    {
+      "slug": "2025-11-16",
+      "dateIso": "2025-11-16",
+      "number": 2.58,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-11-16/source.xlsx",
+        "protocolPdf": "events/2025-11-16/protocol.pdf",
+        "resultsJson": "events/2025-11-16/results.json"
+      }
+    },
+    {
+      "slug": "2025-11-09",
+      "dateIso": "2025-11-09",
+      "number": 2.57,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2025-11-09/source.xlsx",
+        "protocolPdf": "events/2025-11-09/protocol.pdf",
+        "resultsJson": "events/2025-11-09/results.json"
+      }
+    },
+    {
+      "slug": "2025-11-02",
+      "dateIso": "2025-11-02",
+      "number": 2.56,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2025-11-02/source.xlsx",
+        "protocolPdf": "events/2025-11-02/protocol.pdf",
+        "resultsJson": "events/2025-11-02/results.json"
+      }
+    },
+    {
+      "slug": "2025-10-26",
+      "dateIso": "2025-10-26",
+      "number": 2.55,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2025-10-26/source.xlsx",
+        "protocolPdf": "events/2025-10-26/protocol.pdf",
+        "resultsJson": "events/2025-10-26/results.json"
+      }
+    },
+    {
+      "slug": "2025-10-19",
+      "dateIso": "2025-10-19",
+      "number": 2.54,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-10-19/source.xlsx",
+        "protocolPdf": "events/2025-10-19/protocol.pdf",
+        "resultsJson": "events/2025-10-19/results.json"
+      }
+    },
+    {
+      "slug": "2025-10-12",
+      "dateIso": "2025-10-12",
+      "number": 2.53,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-10-12/source.xlsx",
+        "protocolPdf": "events/2025-10-12/protocol.pdf",
+        "resultsJson": "events/2025-10-12/results.json"
+      }
+    },
+    {
+      "slug": "2025-10-05",
+      "dateIso": "2025-10-05",
+      "number": 2.52,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2025-10-05/source.xlsx",
+        "protocolPdf": "events/2025-10-05/protocol.pdf",
+        "resultsJson": "events/2025-10-05/results.json"
+      }
+    },
+    {
+      "slug": "2025-09-28",
+      "dateIso": "2025-09-28",
+      "number": 2.51,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2025-09-28/source.xlsx",
+        "protocolPdf": "events/2025-09-28/protocol.pdf",
+        "resultsJson": "events/2025-09-28/results.json"
+      }
+    },
+    {
+      "slug": "2025-09-21",
+      "dateIso": "2025-09-21",
+      "number": 2.5,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2025-09-21/source.xlsx",
+        "protocolPdf": "events/2025-09-21/protocol.pdf",
+        "resultsJson": "events/2025-09-21/results.json"
+      }
+    },
+    {
+      "slug": "2025-09-07",
+      "dateIso": "2025-09-07",
+      "number": 2.49,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2025-09-07/source.xlsx",
+        "protocolPdf": "events/2025-09-07/protocol.pdf",
+        "resultsJson": "events/2025-09-07/results.json"
+      }
+    },
+    {
+      "slug": "2025-08-31",
+      "dateIso": "2025-08-31",
+      "number": 2.48,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2025-08-31/source.xlsx",
+        "protocolPdf": "events/2025-08-31/protocol.pdf",
+        "resultsJson": "events/2025-08-31/results.json"
+      }
+    },
+    {
+      "slug": "2025-08-24",
+      "dateIso": "2025-08-24",
+      "number": 2.47,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2025-08-24/source.xlsx",
+        "protocolPdf": "events/2025-08-24/protocol.pdf",
+        "resultsJson": "events/2025-08-24/results.json"
+      }
+    },
+    {
+      "slug": "2025-08-17",
+      "dateIso": "2025-08-17",
+      "number": 2.46,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2025-08-17/source.xlsx",
+        "protocolPdf": "events/2025-08-17/protocol.pdf",
+        "resultsJson": "events/2025-08-17/results.json"
+      }
+    },
+    {
+      "slug": "2025-08-10",
+      "dateIso": "2025-08-10",
+      "number": 2.45,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2025-08-10/source.xlsx",
+        "protocolPdf": "events/2025-08-10/protocol.pdf",
+        "resultsJson": "events/2025-08-10/results.json"
+      }
+    },
+    {
+      "slug": "2025-08-03",
+      "dateIso": "2025-08-03",
+      "number": 2.44,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2025-08-03/source.xlsx",
+        "protocolPdf": "events/2025-08-03/protocol.pdf",
+        "resultsJson": "events/2025-08-03/results.json"
+      }
+    },
+    {
+      "slug": "2025-07-31",
+      "dateIso": "2025-07-31",
+      "number": 2.43,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-07-31/source.xlsx",
+        "protocolPdf": "events/2025-07-31/protocol.pdf",
+        "resultsJson": "events/2025-07-31/results.json"
+      }
+    },
+    {
+      "slug": "2025-07-20",
+      "dateIso": "2025-07-20",
+      "number": 2.42,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2025-07-20/source.xlsx",
+        "protocolPdf": "events/2025-07-20/protocol.pdf",
+        "resultsJson": "events/2025-07-20/results.json"
+      }
+    },
+    {
+      "slug": "2025-07-13",
+      "dateIso": "2025-07-13",
+      "number": 2.41,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2025-07-13/source.xlsx",
+        "protocolPdf": "events/2025-07-13/protocol.pdf",
+        "resultsJson": "events/2025-07-13/results.json"
+      }
+    },
+    {
+      "slug": "2025-07-06",
+      "dateIso": "2025-07-06",
+      "number": 2.4,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2025-07-06/source.xlsx",
+        "protocolPdf": "events/2025-07-06/protocol.pdf",
+        "resultsJson": "events/2025-07-06/results.json"
+      }
+    },
+    {
+      "slug": "2025-06-29",
+      "dateIso": "2025-06-29",
+      "number": 2.39,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2025-06-29/source.xlsx",
+        "protocolPdf": "events/2025-06-29/protocol.pdf",
+        "resultsJson": "events/2025-06-29/results.json"
+      }
+    },
+    {
+      "slug": "2025-06-22",
+      "dateIso": "2025-06-22",
+      "number": 2.38,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 15,
+      "files": {
+        "sourceXlsx": "events/2025-06-22/source.xlsx",
+        "protocolPdf": "events/2025-06-22/protocol.pdf",
+        "resultsJson": "events/2025-06-22/results.json"
+      }
+    },
+    {
+      "slug": "2025-06-15",
+      "dateIso": "2025-06-15",
+      "number": 2.37,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2025-06-15/source.xlsx",
+        "protocolPdf": "events/2025-06-15/protocol.pdf",
+        "resultsJson": "events/2025-06-15/results.json"
+      }
+    },
+    {
+      "slug": "2025-06-08",
+      "dateIso": "2025-06-08",
+      "number": 2.36,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2025-06-08/source.xlsx",
+        "protocolPdf": "events/2025-06-08/protocol.pdf",
+        "resultsJson": "events/2025-06-08/results.json"
+      }
+    },
+    {
+      "slug": "2025-06-01",
+      "dateIso": "2025-06-01",
+      "number": 2.35,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2025-06-01/source.xlsx",
+        "protocolPdf": "events/2025-06-01/protocol.pdf",
+        "resultsJson": "events/2025-06-01/results.json"
+      }
+    },
+    {
+      "slug": "2025-05-25",
+      "dateIso": "2025-05-25",
+      "number": 2.34,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2025-05-25/source.xlsx",
+        "protocolPdf": "events/2025-05-25/protocol.pdf",
+        "resultsJson": "events/2025-05-25/results.json"
+      }
+    },
+    {
+      "slug": "2025-05-18",
+      "dateIso": "2025-05-18",
+      "number": 2.33,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2025-05-18/source.xlsx",
+        "protocolPdf": "events/2025-05-18/protocol.pdf",
+        "resultsJson": "events/2025-05-18/results.json"
+      }
+    },
+    {
+      "slug": "2025-05-10",
+      "dateIso": "2025-05-10",
+      "number": 2.32,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-05-10/source.xlsx",
+        "protocolPdf": "events/2025-05-10/protocol.pdf",
+        "resultsJson": "events/2025-05-10/results.json"
+      }
+    },
+    {
+      "slug": "2025-05-04",
+      "dateIso": "2025-05-04",
+      "number": 2.31,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2025-05-04/source.xlsx",
+        "protocolPdf": "events/2025-05-04/protocol.pdf",
+        "resultsJson": "events/2025-05-04/results.json"
+      }
+    },
+    {
+      "slug": "2025-04-27",
+      "dateIso": "2025-04-27",
+      "number": 2.3,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2025-04-27/source.xlsx",
+        "protocolPdf": "events/2025-04-27/protocol.pdf",
+        "resultsJson": "events/2025-04-27/results.json"
+      }
+    },
+    {
+      "slug": "2025-04-20",
+      "dateIso": "2025-04-20",
+      "number": 2.29,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2025-04-20/source.xlsx",
+        "protocolPdf": "events/2025-04-20/protocol.pdf",
+        "resultsJson": "events/2025-04-20/results.json"
+      }
+    },
+    {
+      "slug": "2025-04-13",
+      "dateIso": "2025-04-13",
+      "number": 2.28,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2025-04-13/source.xlsx",
+        "protocolPdf": "events/2025-04-13/protocol.pdf",
+        "resultsJson": "events/2025-04-13/results.json"
+      }
+    },
+    {
+      "slug": "2025-04-06",
+      "dateIso": "2025-04-06",
+      "number": 2.27,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2025-04-06/source.xlsx",
+        "protocolPdf": "events/2025-04-06/protocol.pdf",
+        "resultsJson": "events/2025-04-06/results.json"
+      }
+    },
+    {
+      "slug": "2025-03-30",
+      "dateIso": "2025-03-30",
+      "number": 2.26,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2025-03-30/source.xlsx",
+        "protocolPdf": "events/2025-03-30/protocol.pdf",
+        "resultsJson": "events/2025-03-30/results.json"
+      }
+    },
+    {
+      "slug": "2025-03-23",
+      "dateIso": "2025-03-23",
+      "number": 2.25,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2025-03-23/source.xlsx",
+        "protocolPdf": "events/2025-03-23/protocol.pdf",
+        "resultsJson": "events/2025-03-23/results.json"
+      }
+    },
+    {
+      "slug": "2025-03-16",
+      "dateIso": "2025-03-16",
+      "number": 2.24,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 19,
+      "files": {
+        "sourceXlsx": "events/2025-03-16/source.xlsx",
+        "protocolPdf": "events/2025-03-16/protocol.pdf",
+        "resultsJson": "events/2025-03-16/results.json"
+      }
+    },
+    {
+      "slug": "2025-03-09",
+      "dateIso": "2025-03-09",
+      "number": 2.23,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2025-03-09/source.xlsx",
+        "protocolPdf": "events/2025-03-09/protocol.pdf",
+        "resultsJson": "events/2025-03-09/results.json"
+      }
+    },
+    {
+      "slug": "2025-03-02",
+      "dateIso": "2025-03-02",
+      "number": 2.22,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2025-03-02/source.xlsx",
+        "protocolPdf": "events/2025-03-02/protocol.pdf",
+        "resultsJson": "events/2025-03-02/results.json"
+      }
+    },
+    {
+      "slug": "2025-02-23",
+      "dateIso": "2025-02-23",
+      "number": 2.21,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-02-23/source.xlsx",
+        "protocolPdf": "events/2025-02-23/protocol.pdf",
+        "resultsJson": "events/2025-02-23/results.json"
+      }
+    },
+    {
+      "slug": "2025-02-16",
+      "dateIso": "2025-02-16",
+      "number": 2.2,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2025-02-16/source.xlsx",
+        "protocolPdf": "events/2025-02-16/protocol.pdf",
+        "resultsJson": "events/2025-02-16/results.json"
+      }
+    },
+    {
+      "slug": "2025-02-09",
+      "dateIso": "2025-02-09",
+      "number": 2.19,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2025-02-09/source.xlsx",
+        "protocolPdf": "events/2025-02-09/protocol.pdf",
+        "resultsJson": "events/2025-02-09/results.json"
+      }
+    },
+    {
+      "slug": "2025-02-02",
+      "dateIso": "2025-02-02",
+      "number": 2.18,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2025-02-02/source.xlsx",
+        "protocolPdf": "events/2025-02-02/protocol.pdf",
+        "resultsJson": "events/2025-02-02/results.json"
+      }
+    },
+    {
+      "slug": "2025-01-26",
+      "dateIso": "2025-01-26",
+      "number": 2.17,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-01-26/source.xlsx",
+        "protocolPdf": "events/2025-01-26/protocol.pdf",
+        "resultsJson": "events/2025-01-26/results.json"
+      }
+    },
+    {
+      "slug": "2025-01-19",
+      "dateIso": "2025-01-19",
+      "number": 2.16,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2025-01-19/source.xlsx",
+        "protocolPdf": "events/2025-01-19/protocol.pdf",
+        "resultsJson": "events/2025-01-19/results.json"
+      }
+    },
+    {
+      "slug": "2025-01-12",
+      "dateIso": "2025-01-12",
+      "number": 2.15,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2025-01-12/source.xlsx",
+        "protocolPdf": "events/2025-01-12/protocol.pdf",
+        "resultsJson": "events/2025-01-12/results.json"
+      }
+    },
+    {
+      "slug": "2025-01-05",
+      "dateIso": "2025-01-05",
+      "number": 2.14,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2025-01-05/source.xlsx",
+        "protocolPdf": "events/2025-01-05/protocol.pdf",
+        "resultsJson": "events/2025-01-05/results.json"
+      }
+    },
+    {
+      "slug": "2024-12-29",
+      "dateIso": "2024-12-29",
+      "number": 2.13,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 17,
+      "files": {
+        "sourceXlsx": "events/2024-12-29/source.xlsx",
+        "protocolPdf": "events/2024-12-29/protocol.pdf",
+        "resultsJson": "events/2024-12-29/results.json"
+      }
+    },
+    {
+      "slug": "2024-12-22",
+      "dateIso": "2024-12-22",
+      "number": 2.12,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2024-12-22/source.xlsx",
+        "protocolPdf": "events/2024-12-22/protocol.pdf",
+        "resultsJson": "events/2024-12-22/results.json"
+      }
+    },
+    {
+      "slug": "2024-12-15",
+      "dateIso": "2024-12-15",
+      "number": 2.11,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2024-12-15/source.xlsx",
+        "protocolPdf": "events/2024-12-15/protocol.pdf",
+        "resultsJson": "events/2024-12-15/results.json"
+      }
+    },
+    {
+      "slug": "2024-12-08",
+      "dateIso": "2024-12-08",
+      "number": 2.1,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2024-12-08/source.xlsx",
+        "protocolPdf": "events/2024-12-08/protocol.pdf",
+        "resultsJson": "events/2024-12-08/results.json"
+      }
+    },
+    {
+      "slug": "2024-12-01",
+      "dateIso": "2024-12-01",
+      "number": 2.9,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2024-12-01/source.xlsx",
+        "protocolPdf": "events/2024-12-01/protocol.pdf",
+        "resultsJson": "events/2024-12-01/results.json"
+      }
+    },
+    {
+      "slug": "2024-11-24",
+      "dateIso": "2024-11-24",
+      "number": 2.8,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2024-11-24/source.xlsx",
+        "protocolPdf": "events/2024-11-24/protocol.pdf",
+        "resultsJson": "events/2024-11-24/results.json"
+      }
+    },
+    {
+      "slug": "2024-11-17",
+      "dateIso": "2024-11-17",
+      "number": 2.7,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2024-11-17/source.xlsx",
+        "protocolPdf": "events/2024-11-17/protocol.pdf",
+        "resultsJson": "events/2024-11-17/results.json"
+      }
+    },
+    {
+      "slug": "2024-11-10",
+      "dateIso": "2024-11-10",
+      "number": 2.6,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2024-11-10/source.xlsx",
+        "protocolPdf": "events/2024-11-10/protocol.pdf",
+        "resultsJson": "events/2024-11-10/results.json"
+      }
+    },
+    {
+      "slug": "2024-11-03",
+      "dateIso": "2024-11-03",
+      "number": 2.5,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2024-11-03/source.xlsx",
+        "protocolPdf": "events/2024-11-03/protocol.pdf",
+        "resultsJson": "events/2024-11-03/results.json"
+      }
+    },
+    {
+      "slug": "2024-10-27",
+      "dateIso": "2024-10-27",
+      "number": 2.4,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 18,
+      "files": {
+        "sourceXlsx": "events/2024-10-27/source.xlsx",
+        "protocolPdf": "events/2024-10-27/protocol.pdf",
+        "resultsJson": "events/2024-10-27/results.json"
+      }
+    },
+    {
+      "slug": "2024-10-20",
+      "dateIso": "2024-10-20",
+      "number": 2.3,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2024-10-20/source.xlsx",
+        "protocolPdf": "events/2024-10-20/protocol.pdf",
+        "resultsJson": "events/2024-10-20/results.json"
+      }
+    },
+    {
+      "slug": "2024-10-13",
+      "dateIso": "2024-10-13",
+      "number": 2.2,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2024-10-13/source.xlsx",
+        "protocolPdf": "events/2024-10-13/protocol.pdf",
+        "resultsJson": "events/2024-10-13/results.json"
+      }
+    },
+    {
+      "slug": "2024-10-06",
+      "dateIso": "2024-10-06",
+      "number": 2.1,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2024-10-06/source.xlsx",
+        "protocolPdf": "events/2024-10-06/protocol.pdf",
+        "resultsJson": "events/2024-10-06/results.json"
+      }
+    },
+    {
+      "slug": "2023-09-10",
+      "dateIso": "2023-09-10",
+      "number": 296,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2023-09-10/source.xlsx",
+        "protocolPdf": "events/2023-09-10/protocol.pdf",
+        "resultsJson": "events/2023-09-10/results.json"
+      }
+    },
+    {
+      "slug": "2023-09-03",
+      "dateIso": "2023-09-03",
+      "number": 295,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 1,
+      "files": {
+        "sourceXlsx": "events/2023-09-03/source.xlsx",
+        "protocolPdf": "events/2023-09-03/protocol.pdf",
+        "resultsJson": "events/2023-09-03/results.json"
+      }
+    },
+    {
+      "slug": "2023-08-27",
+      "dateIso": "2023-08-27",
+      "number": 294,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2023-08-27/source.xlsx",
+        "protocolPdf": "events/2023-08-27/protocol.pdf",
+        "resultsJson": "events/2023-08-27/results.json"
+      }
+    },
+    {
+      "slug": "2023-08-20",
+      "dateIso": "2023-08-20",
+      "number": 293,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2023-08-20/source.xlsx",
+        "protocolPdf": "events/2023-08-20/protocol.pdf",
+        "resultsJson": "events/2023-08-20/results.json"
+      }
+    },
+    {
+      "slug": "2023-08-13",
+      "dateIso": "2023-08-13",
+      "number": 292,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2023-08-13/source.xlsx",
+        "protocolPdf": "events/2023-08-13/protocol.pdf",
+        "resultsJson": "events/2023-08-13/results.json"
+      }
+    },
+    {
+      "slug": "2023-08-06",
+      "dateIso": "2023-08-06",
+      "number": 291,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2023-08-06/source.xlsx",
+        "protocolPdf": "events/2023-08-06/protocol.pdf",
+        "resultsJson": "events/2023-08-06/results.json"
+      }
+    },
+    {
+      "slug": "2023-07-23",
+      "dateIso": "2023-07-23",
+      "number": 290,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2023-07-23/source.xlsx",
+        "protocolPdf": "events/2023-07-23/protocol.pdf",
+        "resultsJson": "events/2023-07-23/results.json"
+      }
+    },
+    {
+      "slug": "2023-07-16",
+      "dateIso": "2023-07-16",
+      "number": 289,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2023-07-16/source.xlsx",
+        "protocolPdf": "events/2023-07-16/protocol.pdf",
+        "resultsJson": "events/2023-07-16/results.json"
+      }
+    },
+    {
+      "slug": "2023-07-09",
+      "dateIso": "2023-07-09",
+      "number": 288,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2023-07-09/source.xlsx",
+        "protocolPdf": "events/2023-07-09/protocol.pdf",
+        "resultsJson": "events/2023-07-09/results.json"
+      }
+    },
+    {
+      "slug": "2023-07-02",
+      "dateIso": "2023-07-02",
+      "number": 287,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2023-07-02/source.xlsx",
+        "protocolPdf": "events/2023-07-02/protocol.pdf",
+        "resultsJson": "events/2023-07-02/results.json"
+      }
+    },
+    {
+      "slug": "2023-06-18",
+      "dateIso": "2023-06-18",
+      "number": 286,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2023-06-18/source.xlsx",
+        "protocolPdf": "events/2023-06-18/protocol.pdf",
+        "resultsJson": "events/2023-06-18/results.json"
+      }
+    },
+    {
+      "slug": "2023-06-11",
+      "dateIso": "2023-06-11",
+      "number": 285,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2023-06-11/source.xlsx",
+        "protocolPdf": "events/2023-06-11/protocol.pdf",
+        "resultsJson": "events/2023-06-11/results.json"
+      }
+    },
+    {
+      "slug": "2023-06-04",
+      "dateIso": "2023-06-04",
+      "number": 284,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2023-06-04/source.xlsx",
+        "protocolPdf": "events/2023-06-04/protocol.pdf",
+        "resultsJson": "events/2023-06-04/results.json"
+      }
+    },
+    {
+      "slug": "2023-05-21",
+      "dateIso": "2023-05-21",
+      "number": 283,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2023-05-21/source.xlsx",
+        "protocolPdf": "events/2023-05-21/protocol.pdf",
+        "resultsJson": "events/2023-05-21/results.json"
+      }
+    },
+    {
+      "slug": "2023-05-14",
+      "dateIso": "2023-05-14",
+      "number": 282,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2023-05-14/source.xlsx",
+        "protocolPdf": "events/2023-05-14/protocol.pdf",
+        "resultsJson": "events/2023-05-14/results.json"
+      }
+    },
+    {
+      "slug": "2023-05-07",
+      "dateIso": "2023-05-07",
+      "number": 281,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2023-05-07/source.xlsx",
+        "protocolPdf": "events/2023-05-07/protocol.pdf",
+        "resultsJson": "events/2023-05-07/results.json"
+      }
+    },
+    {
+      "slug": "2023-04-30",
+      "dateIso": "2023-04-30",
+      "number": 280,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 22,
+      "files": {
+        "sourceXlsx": "events/2023-04-30/source.xlsx",
+        "protocolPdf": "events/2023-04-30/protocol.pdf",
+        "resultsJson": "events/2023-04-30/results.json"
+      }
+    },
+    {
+      "slug": "2023-04-23",
+      "dateIso": "2023-04-23",
+      "number": 279,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2023-04-23/source.xlsx",
+        "protocolPdf": "events/2023-04-23/protocol.pdf",
+        "resultsJson": "events/2023-04-23/results.json"
+      }
+    },
+    {
+      "slug": "2023-04-16",
+      "dateIso": "2023-04-16",
+      "number": 278,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2023-04-16/source.xlsx",
+        "protocolPdf": "events/2023-04-16/protocol.pdf",
+        "resultsJson": "events/2023-04-16/results.json"
+      }
+    },
+    {
+      "slug": "2023-04-09",
+      "dateIso": "2023-04-09",
+      "number": 277,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2023-04-09/source.xlsx",
+        "protocolPdf": "events/2023-04-09/protocol.pdf",
+        "resultsJson": "events/2023-04-09/results.json"
+      }
+    },
+    {
+      "slug": "2023-04-02",
+      "dateIso": "2023-04-02",
+      "number": 276,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2023-04-02/source.xlsx",
+        "protocolPdf": "events/2023-04-02/protocol.pdf",
+        "resultsJson": "events/2023-04-02/results.json"
+      }
+    },
+    {
+      "slug": "2023-03-26",
+      "dateIso": "2023-03-26",
+      "number": 275,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2023-03-26/source.xlsx",
+        "protocolPdf": "events/2023-03-26/protocol.pdf",
+        "resultsJson": "events/2023-03-26/results.json"
+      }
+    },
+    {
+      "slug": "2023-03-19",
+      "dateIso": "2023-03-19",
+      "number": 274,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2023-03-19/source.xlsx",
+        "protocolPdf": "events/2023-03-19/protocol.pdf",
+        "resultsJson": "events/2023-03-19/results.json"
+      }
+    },
+    {
+      "slug": "2023-03-12",
+      "dateIso": "2023-03-12",
+      "number": 273,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2023-03-12/source.xlsx",
+        "protocolPdf": "events/2023-03-12/protocol.pdf",
+        "resultsJson": "events/2023-03-12/results.json"
+      }
+    },
+    {
+      "slug": "2023-03-05",
+      "dateIso": "2023-03-05",
+      "number": 272,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2023-03-05/source.xlsx",
+        "protocolPdf": "events/2023-03-05/protocol.pdf",
+        "resultsJson": "events/2023-03-05/results.json"
+      }
+    },
+    {
+      "slug": "2023-02-26",
+      "dateIso": "2023-02-26",
+      "number": 271,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 15,
+      "files": {
+        "sourceXlsx": "events/2023-02-26/source.xlsx",
+        "protocolPdf": "events/2023-02-26/protocol.pdf",
+        "resultsJson": "events/2023-02-26/results.json"
+      }
+    },
+    {
+      "slug": "2023-02-12",
+      "dateIso": "2023-02-12",
+      "number": 270,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2023-02-12/source.xlsx",
+        "protocolPdf": "events/2023-02-12/protocol.pdf",
+        "resultsJson": "events/2023-02-12/results.json"
+      }
+    },
+    {
+      "slug": "2023-02-05",
+      "dateIso": "2023-02-05",
+      "number": 269,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2023-02-05/source.xlsx",
+        "protocolPdf": "events/2023-02-05/protocol.pdf",
+        "resultsJson": "events/2023-02-05/results.json"
+      }
+    },
+    {
+      "slug": "2023-01-29",
+      "dateIso": "2023-01-29",
+      "number": 268,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 22,
+      "files": {
+        "sourceXlsx": "events/2023-01-29/source.xlsx",
+        "protocolPdf": "events/2023-01-29/protocol.pdf",
+        "resultsJson": "events/2023-01-29/results.json"
+      }
+    },
+    {
+      "slug": "2023-01-22",
+      "dateIso": "2023-01-22",
+      "number": 267,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2023-01-22/source.xlsx",
+        "protocolPdf": "events/2023-01-22/protocol.pdf",
+        "resultsJson": "events/2023-01-22/results.json"
+      }
+    },
+    {
+      "slug": "2023-01-15",
+      "dateIso": "2023-01-15",
+      "number": 266,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2023-01-15/source.xlsx",
+        "protocolPdf": "events/2023-01-15/protocol.pdf",
+        "resultsJson": "events/2023-01-15/results.json"
+      }
+    },
+    {
+      "slug": "2023-01-08",
+      "dateIso": "2023-01-08",
+      "number": 265,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2023-01-08/source.xlsx",
+        "protocolPdf": "events/2023-01-08/protocol.pdf",
+        "resultsJson": "events/2023-01-08/results.json"
+      }
+    },
+    {
+      "slug": "2022-12-25",
+      "dateIso": "2022-12-25",
+      "number": 264,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2022-12-25/source.xlsx",
+        "protocolPdf": "events/2022-12-25/protocol.pdf",
+        "resultsJson": "events/2022-12-25/results.json"
+      }
+    },
+    {
+      "slug": "2022-12-18",
+      "dateIso": "2022-12-18",
+      "number": 263,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2022-12-18/source.xlsx",
+        "protocolPdf": "events/2022-12-18/protocol.pdf",
+        "resultsJson": "events/2022-12-18/results.json"
+      }
+    },
+    {
+      "slug": "2022-12-11",
+      "dateIso": "2022-12-11",
+      "number": 262,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2022-12-11/source.xlsx",
+        "protocolPdf": "events/2022-12-11/protocol.pdf",
+        "resultsJson": "events/2022-12-11/results.json"
+      }
+    },
+    {
+      "slug": "2022-12-04",
+      "dateIso": "2022-12-04",
+      "number": 261,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2022-12-04/source.xlsx",
+        "protocolPdf": "events/2022-12-04/protocol.pdf",
+        "resultsJson": "events/2022-12-04/results.json"
+      }
+    },
+    {
+      "slug": "2022-11-20",
+      "dateIso": "2022-11-20",
+      "number": 260,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2022-11-20/source.xlsx",
+        "protocolPdf": "events/2022-11-20/protocol.pdf",
+        "resultsJson": "events/2022-11-20/results.json"
+      }
+    },
+    {
+      "slug": "2022-11-13",
+      "dateIso": "2022-11-13",
+      "number": 259,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2022-11-13/source.xlsx",
+        "protocolPdf": "events/2022-11-13/protocol.pdf",
+        "resultsJson": "events/2022-11-13/results.json"
+      }
+    },
+    {
+      "slug": "2022-10-30",
+      "dateIso": "2022-10-30",
+      "number": 257,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2022-10-30/source.xlsx",
+        "protocolPdf": "events/2022-10-30/protocol.pdf",
+        "resultsJson": "events/2022-10-30/results.json"
+      }
+    },
+    {
+      "slug": "2022-10-23",
+      "dateIso": "2022-10-23",
+      "number": 256,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2022-10-23/source.xlsx",
+        "protocolPdf": "events/2022-10-23/protocol.pdf",
+        "resultsJson": "events/2022-10-23/results.json"
+      }
+    },
+    {
+      "slug": "2022-10-16",
+      "dateIso": "2022-10-16",
+      "number": 255,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2022-10-16/source.xlsx",
+        "protocolPdf": "events/2022-10-16/protocol.pdf",
+        "resultsJson": "events/2022-10-16/results.json"
+      }
+    },
+    {
+      "slug": "2022-10-09",
+      "dateIso": "2022-10-09",
+      "number": 254,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2022-10-09/source.xlsx",
+        "protocolPdf": "events/2022-10-09/protocol.pdf",
+        "resultsJson": "events/2022-10-09/results.json"
+      }
+    },
+    {
+      "slug": "2022-10-02",
+      "dateIso": "2022-10-02",
+      "number": 253,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2022-10-02/source.xlsx",
+        "protocolPdf": "events/2022-10-02/protocol.pdf",
+        "resultsJson": "events/2022-10-02/results.json"
+      }
+    },
+    {
+      "slug": "2022-09-25",
+      "dateIso": "2022-09-25",
+      "number": 252,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2022-09-25/source.xlsx",
+        "protocolPdf": "events/2022-09-25/protocol.pdf",
+        "resultsJson": "events/2022-09-25/results.json"
+      }
+    },
+    {
+      "slug": "2022-09-18",
+      "dateIso": "2022-09-18",
+      "number": 251,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2022-09-18/source.xlsx",
+        "protocolPdf": "events/2022-09-18/protocol.pdf",
+        "resultsJson": "events/2022-09-18/results.json"
+      }
+    },
+    {
+      "slug": "2022-09-04",
+      "dateIso": "2022-09-04",
+      "number": 250,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2022-09-04/source.xlsx",
+        "protocolPdf": "events/2022-09-04/protocol.pdf",
+        "resultsJson": "events/2022-09-04/results.json"
+      }
+    },
+    {
+      "slug": "2022-08-21",
+      "dateIso": "2022-08-21",
+      "number": 249,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 15,
+      "files": {
+        "sourceXlsx": "events/2022-08-21/source.xlsx",
+        "protocolPdf": "events/2022-08-21/protocol.pdf",
+        "resultsJson": "events/2022-08-21/results.json"
+      }
+    },
+    {
+      "slug": "2022-08-14",
+      "dateIso": "2022-08-14",
+      "number": 248,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2022-08-14/source.xlsx",
+        "protocolPdf": "events/2022-08-14/protocol.pdf",
+        "resultsJson": "events/2022-08-14/results.json"
+      }
+    },
+    {
+      "slug": "2022-08-07",
+      "dateIso": "2022-08-07",
+      "number": 247,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2022-08-07/source.xlsx",
+        "protocolPdf": "events/2022-08-07/protocol.pdf",
+        "resultsJson": "events/2022-08-07/results.json"
+      }
+    },
+    {
+      "slug": "2022-07-31",
+      "dateIso": "2022-07-31",
+      "number": 246,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 18,
+      "files": {
+        "sourceXlsx": "events/2022-07-31/source.xlsx",
+        "protocolPdf": "events/2022-07-31/protocol.pdf",
+        "resultsJson": "events/2022-07-31/results.json"
+      }
+    },
+    {
+      "slug": "2022-07-24",
+      "dateIso": "2022-07-24",
+      "number": 245,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2022-07-24/source.xlsx",
+        "protocolPdf": "events/2022-07-24/protocol.pdf",
+        "resultsJson": "events/2022-07-24/results.json"
+      }
+    },
+    {
+      "slug": "2022-07-17",
+      "dateIso": "2022-07-17",
+      "number": 244,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2022-07-17/source.xlsx",
+        "protocolPdf": "events/2022-07-17/protocol.pdf",
+        "resultsJson": "events/2022-07-17/results.json"
+      }
+    },
+    {
+      "slug": "2022-07-10",
+      "dateIso": "2022-07-10",
+      "number": 243,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 19,
+      "files": {
+        "sourceXlsx": "events/2022-07-10/source.xlsx",
+        "protocolPdf": "events/2022-07-10/protocol.pdf",
+        "resultsJson": "events/2022-07-10/results.json"
+      }
+    },
+    {
+      "slug": "2022-07-03",
+      "dateIso": "2022-07-03",
+      "number": 242,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2022-07-03/source.xlsx",
+        "protocolPdf": "events/2022-07-03/protocol.pdf",
+        "resultsJson": "events/2022-07-03/results.json"
+      }
+    },
+    {
+      "slug": "2022-06-26",
+      "dateIso": "2022-06-26",
+      "number": 241,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2022-06-26/source.xlsx",
+        "protocolPdf": "events/2022-06-26/protocol.pdf",
+        "resultsJson": "events/2022-06-26/results.json"
+      }
+    },
+    {
+      "slug": "2022-06-19",
+      "dateIso": "2022-06-19",
+      "number": 240,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2022-06-19/source.xlsx",
+        "protocolPdf": "events/2022-06-19/protocol.pdf",
+        "resultsJson": "events/2022-06-19/results.json"
+      }
+    },
+    {
+      "slug": "2022-06-12",
+      "dateIso": "2022-06-12",
+      "number": 239,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2022-06-12/source.xlsx",
+        "protocolPdf": "events/2022-06-12/protocol.pdf",
+        "resultsJson": "events/2022-06-12/results.json"
+      }
+    },
+    {
+      "slug": "2022-06-05",
+      "dateIso": "2022-06-05",
+      "number": 238,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2022-06-05/source.xlsx",
+        "protocolPdf": "events/2022-06-05/protocol.pdf",
+        "resultsJson": "events/2022-06-05/results.json"
+      }
+    },
+    {
+      "slug": "2022-05-15",
+      "dateIso": "2022-05-15",
+      "number": 237,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2022-05-15/source.xlsx",
+        "protocolPdf": "events/2022-05-15/protocol.pdf",
+        "resultsJson": "events/2022-05-15/results.json"
+      }
+    },
+    {
+      "slug": "2022-05-08",
+      "dateIso": "2022-05-08",
+      "number": 236,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2022-05-08/source.xlsx",
+        "protocolPdf": "events/2022-05-08/protocol.pdf",
+        "resultsJson": "events/2022-05-08/results.json"
+      }
+    },
+    {
+      "slug": "2022-05-01",
+      "dateIso": "2022-05-01",
+      "number": 235,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2022-05-01/source.xlsx",
+        "protocolPdf": "events/2022-05-01/protocol.pdf",
+        "resultsJson": "events/2022-05-01/results.json"
+      }
+    },
+    {
+      "slug": "2022-04-24",
+      "dateIso": "2022-04-24",
+      "number": 234,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 18,
+      "files": {
+        "sourceXlsx": "events/2022-04-24/source.xlsx",
+        "protocolPdf": "events/2022-04-24/protocol.pdf",
+        "resultsJson": "events/2022-04-24/results.json"
+      }
+    },
+    {
+      "slug": "2022-04-17",
+      "dateIso": "2022-04-17",
+      "number": 233,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2022-04-17/source.xlsx",
+        "protocolPdf": "events/2022-04-17/protocol.pdf",
+        "resultsJson": "events/2022-04-17/results.json"
+      }
+    },
+    {
+      "slug": "2022-04-10",
+      "dateIso": "2022-04-10",
+      "number": 232,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2022-04-10/source.xlsx",
+        "protocolPdf": "events/2022-04-10/protocol.pdf",
+        "resultsJson": "events/2022-04-10/results.json"
+      }
+    },
+    {
+      "slug": "2022-04-03",
+      "dateIso": "2022-04-03",
+      "number": 231,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2022-04-03/source.xlsx",
+        "protocolPdf": "events/2022-04-03/protocol.pdf",
+        "resultsJson": "events/2022-04-03/results.json"
+      }
+    },
+    {
+      "slug": "2022-03-27",
+      "dateIso": "2022-03-27",
+      "number": 230,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2022-03-27/source.xlsx",
+        "protocolPdf": "events/2022-03-27/protocol.pdf",
+        "resultsJson": "events/2022-03-27/results.json"
+      }
+    },
+    {
+      "slug": "2022-03-20",
+      "dateIso": "2022-03-20",
+      "number": 229,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2022-03-20/source.xlsx",
+        "protocolPdf": "events/2022-03-20/protocol.pdf",
+        "resultsJson": "events/2022-03-20/results.json"
+      }
+    },
+    {
+      "slug": "2022-03-13",
+      "dateIso": "2022-03-13",
+      "number": 228,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 17,
+      "files": {
+        "sourceXlsx": "events/2022-03-13/source.xlsx",
+        "protocolPdf": "events/2022-03-13/protocol.pdf",
+        "resultsJson": "events/2022-03-13/results.json"
+      }
+    },
+    {
+      "slug": "2022-02-27",
+      "dateIso": "2022-02-27",
+      "number": 227,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2022-02-27/source.xlsx",
+        "protocolPdf": "events/2022-02-27/protocol.pdf",
+        "resultsJson": "events/2022-02-27/results.json"
+      }
+    },
+    {
+      "slug": "2022-02-20",
+      "dateIso": "2022-02-20",
+      "number": 226,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2022-02-20/source.xlsx",
+        "protocolPdf": "events/2022-02-20/protocol.pdf",
+        "resultsJson": "events/2022-02-20/results.json"
+      }
+    },
+    {
+      "slug": "2022-02-13",
+      "dateIso": "2022-02-13",
+      "number": 225,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2022-02-13/source.xlsx",
+        "protocolPdf": "events/2022-02-13/protocol.pdf",
+        "resultsJson": "events/2022-02-13/results.json"
+      }
+    },
+    {
+      "slug": "2022-02-06",
+      "dateIso": "2022-02-06",
+      "number": 224,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2022-02-06/source.xlsx",
+        "protocolPdf": "events/2022-02-06/protocol.pdf",
+        "resultsJson": "events/2022-02-06/results.json"
+      }
+    },
+    {
+      "slug": "2022-01-23",
+      "dateIso": "2022-01-23",
+      "number": 223,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2022-01-23/source.xlsx",
+        "protocolPdf": "events/2022-01-23/protocol.pdf",
+        "resultsJson": "events/2022-01-23/results.json"
+      }
+    },
+    {
+      "slug": "2022-01-16",
+      "dateIso": "2022-01-16",
+      "number": 222,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2022-01-16/source.xlsx",
+        "protocolPdf": "events/2022-01-16/protocol.pdf",
+        "resultsJson": "events/2022-01-16/results.json"
+      }
+    },
+    {
+      "slug": "2022-01-09",
+      "dateIso": "2022-01-09",
+      "number": 221,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2022-01-09/source.xlsx",
+        "protocolPdf": "events/2022-01-09/protocol.pdf",
+        "resultsJson": "events/2022-01-09/results.json"
+      }
+    },
+    {
+      "slug": "2021-12-26",
+      "dateIso": "2021-12-26",
+      "number": 220,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2021-12-26/source.xlsx",
+        "protocolPdf": "events/2021-12-26/protocol.pdf",
+        "resultsJson": "events/2021-12-26/results.json"
+      }
+    },
+    {
+      "slug": "2021-12-19",
+      "dateIso": "2021-12-19",
+      "number": 219,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2021-12-19/source.xlsx",
+        "protocolPdf": "events/2021-12-19/protocol.pdf",
+        "resultsJson": "events/2021-12-19/results.json"
+      }
+    },
+    {
+      "slug": "2021-12-12",
+      "dateIso": "2021-12-12",
+      "number": 218,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2021-12-12/source.xlsx",
+        "protocolPdf": "events/2021-12-12/protocol.pdf",
+        "resultsJson": "events/2021-12-12/results.json"
+      }
+    },
+    {
+      "slug": "2021-12-05",
+      "dateIso": "2021-12-05",
+      "number": 217,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2021-12-05/source.xlsx",
+        "protocolPdf": "events/2021-12-05/protocol.pdf",
+        "resultsJson": "events/2021-12-05/results.json"
+      }
+    },
+    {
+      "slug": "2021-11-28",
+      "dateIso": "2021-11-28",
+      "number": 216,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2021-11-28/source.xlsx",
+        "protocolPdf": "events/2021-11-28/protocol.pdf",
+        "resultsJson": "events/2021-11-28/results.json"
+      }
+    },
+    {
+      "slug": "2021-11-14",
+      "dateIso": "2021-11-14",
+      "number": 215,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2021-11-14/source.xlsx",
+        "protocolPdf": "events/2021-11-14/protocol.pdf",
+        "resultsJson": "events/2021-11-14/results.json"
+      }
+    },
+    {
+      "slug": "2021-11-07",
+      "dateIso": "2021-11-07",
+      "number": 214,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2021-11-07/source.xlsx",
+        "protocolPdf": "events/2021-11-07/protocol.pdf",
+        "resultsJson": "events/2021-11-07/results.json"
+      }
+    },
+    {
+      "slug": "2021-10-31",
+      "dateIso": "2021-10-31",
+      "number": 213,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 25,
+      "files": {
+        "sourceXlsx": "events/2021-10-31/source.xlsx",
+        "protocolPdf": "events/2021-10-31/protocol.pdf",
+        "resultsJson": "events/2021-10-31/results.json"
+      }
+    },
+    {
+      "slug": "2021-10-24",
+      "dateIso": "2021-10-24",
+      "number": 212,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2021-10-24/source.xlsx",
+        "protocolPdf": "events/2021-10-24/protocol.pdf",
+        "resultsJson": "events/2021-10-24/results.json"
+      }
+    },
+    {
+      "slug": "2021-10-17",
+      "dateIso": "2021-10-17",
+      "number": 211,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2021-10-17/source.xlsx",
+        "protocolPdf": "events/2021-10-17/protocol.pdf",
+        "resultsJson": "events/2021-10-17/results.json"
+      }
+    },
+    {
+      "slug": "2021-10-10",
+      "dateIso": "2021-10-10",
+      "number": 210,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 21,
+      "files": {
+        "sourceXlsx": "events/2021-10-10/source.xlsx",
+        "protocolPdf": "events/2021-10-10/protocol.pdf",
+        "resultsJson": "events/2021-10-10/results.json"
+      }
+    },
+    {
+      "slug": "2021-10-03",
+      "dateIso": "2021-10-03",
+      "number": 209,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 20,
+      "files": {
+        "sourceXlsx": "events/2021-10-03/source.xlsx",
+        "protocolPdf": "events/2021-10-03/protocol.pdf",
+        "resultsJson": "events/2021-10-03/results.json"
+      }
+    },
+    {
+      "slug": "2021-09-19",
+      "dateIso": "2021-09-19",
+      "number": 208,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2021-09-19/source.xlsx",
+        "protocolPdf": "events/2021-09-19/protocol.pdf",
+        "resultsJson": "events/2021-09-19/results.json"
+      }
+    },
+    {
+      "slug": "2021-09-12",
+      "dateIso": "2021-09-12",
+      "number": 207,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2021-09-12/source.xlsx",
+        "protocolPdf": "events/2021-09-12/protocol.pdf",
+        "resultsJson": "events/2021-09-12/results.json"
+      }
+    },
+    {
+      "slug": "2021-09-05",
+      "dateIso": "2021-09-05",
+      "number": 206,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2021-09-05/source.xlsx",
+        "protocolPdf": "events/2021-09-05/protocol.pdf",
+        "resultsJson": "events/2021-09-05/results.json"
+      }
+    },
+    {
+      "slug": "2021-08-29",
+      "dateIso": "2021-08-29",
+      "number": 205,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2021-08-29/source.xlsx",
+        "protocolPdf": "events/2021-08-29/protocol.pdf",
+        "resultsJson": "events/2021-08-29/results.json"
+      }
+    },
+    {
+      "slug": "2021-08-22",
+      "dateIso": "2021-08-22",
+      "number": 204,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2021-08-22/source.xlsx",
+        "protocolPdf": "events/2021-08-22/protocol.pdf",
+        "resultsJson": "events/2021-08-22/results.json"
+      }
+    },
+    {
+      "slug": "2021-08-15",
+      "dateIso": "2021-08-15",
+      "number": 203,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2021-08-15/source.xlsx",
+        "protocolPdf": "events/2021-08-15/protocol.pdf",
+        "resultsJson": "events/2021-08-15/results.json"
+      }
+    },
+    {
+      "slug": "2021-08-08",
+      "dateIso": "2021-08-08",
+      "number": 202,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2021-08-08/source.xlsx",
+        "protocolPdf": "events/2021-08-08/protocol.pdf",
+        "resultsJson": "events/2021-08-08/results.json"
+      }
+    },
+    {
+      "slug": "2021-08-01",
+      "dateIso": "2021-08-01",
+      "number": 201,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2021-08-01/source.xlsx",
+        "protocolPdf": "events/2021-08-01/protocol.pdf",
+        "resultsJson": "events/2021-08-01/results.json"
+      }
+    },
+    {
+      "slug": "2021-07-25",
+      "dateIso": "2021-07-25",
+      "number": 200,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 20,
+      "files": {
+        "sourceXlsx": "events/2021-07-25/source.xlsx",
+        "protocolPdf": "events/2021-07-25/protocol.pdf",
+        "resultsJson": "events/2021-07-25/results.json"
+      }
+    },
+    {
+      "slug": "2021-07-18",
+      "dateIso": "2021-07-18",
+      "number": 199,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2021-07-18/source.xlsx",
+        "protocolPdf": "events/2021-07-18/protocol.pdf",
+        "resultsJson": "events/2021-07-18/results.json"
+      }
+    },
+    {
+      "slug": "2021-07-11",
+      "dateIso": "2021-07-11",
+      "number": 198,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2021-07-11/source.xlsx",
+        "protocolPdf": "events/2021-07-11/protocol.pdf",
+        "resultsJson": "events/2021-07-11/results.json"
+      }
+    },
+    {
+      "slug": "2021-07-04",
+      "dateIso": "2021-07-04",
+      "number": 197,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2021-07-04/source.xlsx",
+        "protocolPdf": "events/2021-07-04/protocol.pdf",
+        "resultsJson": "events/2021-07-04/results.json"
+      }
+    },
+    {
+      "slug": "2021-06-27",
+      "dateIso": "2021-06-27",
+      "number": 196,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2021-06-27/source.xlsx",
+        "protocolPdf": "events/2021-06-27/protocol.pdf",
+        "resultsJson": "events/2021-06-27/results.json"
+      }
+    },
+    {
+      "slug": "2021-06-20",
+      "dateIso": "2021-06-20",
+      "number": 195,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2021-06-20/source.xlsx",
+        "protocolPdf": "events/2021-06-20/protocol.pdf",
+        "resultsJson": "events/2021-06-20/results.json"
+      }
+    },
+    {
+      "slug": "2021-06-13",
+      "dateIso": "2021-06-13",
+      "number": 194,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2021-06-13/source.xlsx",
+        "protocolPdf": "events/2021-06-13/protocol.pdf",
+        "resultsJson": "events/2021-06-13/results.json"
+      }
+    },
+    {
+      "slug": "2021-06-06",
+      "dateIso": "2021-06-06",
+      "number": 193,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 19,
+      "files": {
+        "sourceXlsx": "events/2021-06-06/source.xlsx",
+        "protocolPdf": "events/2021-06-06/protocol.pdf",
+        "resultsJson": "events/2021-06-06/results.json"
+      }
+    },
+    {
+      "slug": "2021-05-30",
+      "dateIso": "2021-05-30",
+      "number": 192,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2021-05-30/source.xlsx",
+        "protocolPdf": "events/2021-05-30/protocol.pdf",
+        "resultsJson": "events/2021-05-30/results.json"
+      }
+    },
+    {
+      "slug": "2021-05-16",
+      "dateIso": "2021-05-16",
+      "number": 191,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 18,
+      "files": {
+        "sourceXlsx": "events/2021-05-16/source.xlsx",
+        "protocolPdf": "events/2021-05-16/protocol.pdf",
+        "resultsJson": "events/2021-05-16/results.json"
+      }
+    },
+    {
+      "slug": "2021-05-02",
+      "dateIso": "2021-05-02",
+      "number": 190,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2021-05-02/source.xlsx",
+        "protocolPdf": "events/2021-05-02/protocol.pdf",
+        "resultsJson": "events/2021-05-02/results.json"
+      }
+    },
+    {
+      "slug": "2021-04-25",
+      "dateIso": "2021-04-25",
+      "number": 189,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2021-04-25/source.xlsx",
+        "protocolPdf": "events/2021-04-25/protocol.pdf",
+        "resultsJson": "events/2021-04-25/results.json"
+      }
+    },
+    {
+      "slug": "2021-04-18",
+      "dateIso": "2021-04-18",
+      "number": 188,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2021-04-18/source.xlsx",
+        "protocolPdf": "events/2021-04-18/protocol.pdf",
+        "resultsJson": "events/2021-04-18/results.json"
+      }
+    },
+    {
+      "slug": "2021-04-11",
+      "dateIso": "2021-04-11",
+      "number": 187,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2021-04-11/source.xlsx",
+        "protocolPdf": "events/2021-04-11/protocol.pdf",
+        "resultsJson": "events/2021-04-11/results.json"
+      }
+    },
+    {
+      "slug": "2021-04-04",
+      "dateIso": "2021-04-04",
+      "number": 186,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2021-04-04/source.xlsx",
+        "protocolPdf": "events/2021-04-04/protocol.pdf",
+        "resultsJson": "events/2021-04-04/results.json"
+      }
+    },
+    {
+      "slug": "2021-03-28",
+      "dateIso": "2021-03-28",
+      "number": 185,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 16,
+      "files": {
+        "sourceXlsx": "events/2021-03-28/source.xlsx",
+        "protocolPdf": "events/2021-03-28/protocol.pdf",
+        "resultsJson": "events/2021-03-28/results.json"
+      }
+    },
+    {
+      "slug": "2021-03-21",
+      "dateIso": "2021-03-21",
+      "number": 184,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2021-03-21/source.xlsx",
+        "protocolPdf": "events/2021-03-21/protocol.pdf",
+        "resultsJson": "events/2021-03-21/results.json"
+      }
+    },
+    {
+      "slug": "2021-03-14",
+      "dateIso": "2021-03-14",
+      "number": 183,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2021-03-14/source.xlsx",
+        "protocolPdf": "events/2021-03-14/protocol.pdf",
+        "resultsJson": "events/2021-03-14/results.json"
+      }
+    },
+    {
+      "slug": "2021-03-07",
+      "dateIso": "2021-03-07",
+      "number": 182,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 18,
+      "files": {
+        "sourceXlsx": "events/2021-03-07/source.xlsx",
+        "protocolPdf": "events/2021-03-07/protocol.pdf",
+        "resultsJson": "events/2021-03-07/results.json"
+      }
+    },
+    {
+      "slug": "2021-02-28",
+      "dateIso": "2021-02-28",
+      "number": 181,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2021-02-28/source.xlsx",
+        "protocolPdf": "events/2021-02-28/protocol.pdf",
+        "resultsJson": "events/2021-02-28/results.json"
+      }
+    },
+    {
+      "slug": "2021-02-21",
+      "dateIso": "2021-02-21",
+      "number": 180,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2021-02-21/source.xlsx",
+        "protocolPdf": "events/2021-02-21/protocol.pdf",
+        "resultsJson": "events/2021-02-21/results.json"
+      }
+    },
+    {
+      "slug": "2021-02-14",
+      "dateIso": "2021-02-14",
+      "number": 179,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2021-02-14/source.xlsx",
+        "protocolPdf": "events/2021-02-14/protocol.pdf",
+        "resultsJson": "events/2021-02-14/results.json"
+      }
+    },
+    {
+      "slug": "2021-02-07",
+      "dateIso": "2021-02-07",
+      "number": 178,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2021-02-07/source.xlsx",
+        "protocolPdf": "events/2021-02-07/protocol.pdf",
+        "resultsJson": "events/2021-02-07/results.json"
+      }
+    },
+    {
+      "slug": "2021-01-31",
+      "dateIso": "2021-01-31",
+      "number": 177,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2021-01-31/source.xlsx",
+        "protocolPdf": "events/2021-01-31/protocol.pdf",
+        "resultsJson": "events/2021-01-31/results.json"
+      }
+    },
+    {
+      "slug": "2021-01-17",
+      "dateIso": "2021-01-17",
+      "number": 176,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2021-01-17/source.xlsx",
+        "protocolPdf": "events/2021-01-17/protocol.pdf",
+        "resultsJson": "events/2021-01-17/results.json"
+      }
+    },
+    {
+      "slug": "2021-01-10",
+      "dateIso": "2021-01-10",
+      "number": 175,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2021-01-10/source.xlsx",
+        "protocolPdf": "events/2021-01-10/protocol.pdf",
+        "resultsJson": "events/2021-01-10/results.json"
+      }
+    },
+    {
+      "slug": "2021-01-03",
+      "dateIso": "2021-01-03",
+      "number": 174,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 18,
+      "files": {
+        "sourceXlsx": "events/2021-01-03/source.xlsx",
+        "protocolPdf": "events/2021-01-03/protocol.pdf",
+        "resultsJson": "events/2021-01-03/results.json"
+      }
+    },
+    {
+      "slug": "2020-12-20",
+      "dateIso": "2020-12-20",
+      "number": 173,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2020-12-20/source.xlsx",
+        "protocolPdf": "events/2020-12-20/protocol.pdf",
+        "resultsJson": "events/2020-12-20/results.json"
+      }
+    },
+    {
+      "slug": "2020-12-13",
+      "dateIso": "2020-12-13",
+      "number": 172,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2020-12-13/source.xlsx",
+        "protocolPdf": "events/2020-12-13/protocol.pdf",
+        "resultsJson": "events/2020-12-13/results.json"
+      }
+    },
+    {
+      "slug": "2020-12-06",
+      "dateIso": "2020-12-06",
+      "number": 171,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2020-12-06/source.xlsx",
+        "protocolPdf": "events/2020-12-06/protocol.pdf",
+        "resultsJson": "events/2020-12-06/results.json"
+      }
+    },
+    {
+      "slug": "2020-11-29",
+      "dateIso": "2020-11-29",
+      "number": 170,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2020-11-29/source.xlsx",
+        "protocolPdf": "events/2020-11-29/protocol.pdf",
+        "resultsJson": "events/2020-11-29/results.json"
+      }
+    },
+    {
+      "slug": "2020-11-22",
+      "dateIso": "2020-11-22",
+      "number": 169,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2020-11-22/source.xlsx",
+        "protocolPdf": "events/2020-11-22/protocol.pdf",
+        "resultsJson": "events/2020-11-22/results.json"
+      }
+    },
+    {
+      "slug": "2020-11-15",
+      "dateIso": "2020-11-15",
+      "number": 168,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2020-11-15/source.xlsx",
+        "protocolPdf": "events/2020-11-15/protocol.pdf",
+        "resultsJson": "events/2020-11-15/results.json"
+      }
+    },
+    {
+      "slug": "2020-11-08",
+      "dateIso": "2020-11-08",
+      "number": 167,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2020-11-08/source.xlsx",
+        "protocolPdf": "events/2020-11-08/protocol.pdf",
+        "resultsJson": "events/2020-11-08/results.json"
+      }
+    },
+    {
+      "slug": "2020-11-01",
+      "dateIso": "2020-11-01",
+      "number": 166,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2020-11-01/source.xlsx",
+        "protocolPdf": "events/2020-11-01/protocol.pdf",
+        "resultsJson": "events/2020-11-01/results.json"
+      }
+    },
+    {
+      "slug": "2020-10-25",
+      "dateIso": "2020-10-25",
+      "number": 165,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 11,
+      "files": {
+        "sourceXlsx": "events/2020-10-25/source.xlsx",
+        "protocolPdf": "events/2020-10-25/protocol.pdf",
+        "resultsJson": "events/2020-10-25/results.json"
+      }
+    },
+    {
+      "slug": "2020-10-18",
+      "dateIso": "2020-10-18",
+      "number": 164,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2020-10-18/source.xlsx",
+        "protocolPdf": "events/2020-10-18/protocol.pdf",
+        "resultsJson": "events/2020-10-18/results.json"
+      }
+    },
+    {
+      "slug": "2020-10-11",
+      "dateIso": "2020-10-11",
+      "number": 163,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2020-10-11/source.xlsx",
+        "protocolPdf": "events/2020-10-11/protocol.pdf",
+        "resultsJson": "events/2020-10-11/results.json"
+      }
+    },
+    {
+      "slug": "2020-10-04",
+      "dateIso": "2020-10-04",
+      "number": 162,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2020-10-04/source.xlsx",
+        "protocolPdf": "events/2020-10-04/protocol.pdf",
+        "resultsJson": "events/2020-10-04/results.json"
+      }
+    },
+    {
+      "slug": "2020-09-27",
+      "dateIso": "2020-09-27",
+      "number": 161,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2020-09-27/source.xlsx",
+        "protocolPdf": "events/2020-09-27/protocol.pdf",
+        "resultsJson": "events/2020-09-27/results.json"
+      }
+    },
+    {
+      "slug": "2020-09-20",
+      "dateIso": "2020-09-20",
+      "number": 160,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2020-09-20/source.xlsx",
+        "protocolPdf": "events/2020-09-20/protocol.pdf",
+        "resultsJson": "events/2020-09-20/results.json"
+      }
+    },
+    {
+      "slug": "2020-09-13",
+      "dateIso": "2020-09-13",
+      "number": 159,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2020-09-13/source.xlsx",
+        "protocolPdf": "events/2020-09-13/protocol.pdf",
+        "resultsJson": "events/2020-09-13/results.json"
+      }
+    },
+    {
+      "slug": "2020-09-06",
+      "dateIso": "2020-09-06",
+      "number": 158,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2020-09-06/source.xlsx",
+        "protocolPdf": "events/2020-09-06/protocol.pdf",
+        "resultsJson": "events/2020-09-06/results.json"
+      }
+    },
+    {
+      "slug": "2020-08-30",
+      "dateIso": "2020-08-30",
+      "number": 157,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2020-08-30/source.xlsx",
+        "protocolPdf": "events/2020-08-30/protocol.pdf",
+        "resultsJson": "events/2020-08-30/results.json"
+      }
+    },
+    {
+      "slug": "2020-08-16",
+      "dateIso": "2020-08-16",
+      "number": 156,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 15,
+      "files": {
+        "sourceXlsx": "events/2020-08-16/source.xlsx",
+        "protocolPdf": "events/2020-08-16/protocol.pdf",
+        "resultsJson": "events/2020-08-16/results.json"
+      }
+    },
+    {
+      "slug": "2020-08-09",
+      "dateIso": "2020-08-09",
+      "number": 155,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2020-08-09/source.xlsx",
+        "protocolPdf": "events/2020-08-09/protocol.pdf",
+        "resultsJson": "events/2020-08-09/results.json"
+      }
+    },
+    {
+      "slug": "2020-08-02",
+      "dateIso": "2020-08-02",
+      "number": 154,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2020-08-02/source.xlsx",
+        "protocolPdf": "events/2020-08-02/protocol.pdf",
+        "resultsJson": "events/2020-08-02/results.json"
+      }
+    },
+    {
+      "slug": "2020-07-26",
+      "dateIso": "2020-07-26",
+      "number": 153,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2020-07-26/source.xlsx",
+        "protocolPdf": "events/2020-07-26/protocol.pdf",
+        "resultsJson": "events/2020-07-26/results.json"
+      }
+    },
+    {
+      "slug": "2020-07-19",
+      "dateIso": "2020-07-19",
+      "number": 152,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 15,
+      "files": {
+        "sourceXlsx": "events/2020-07-19/source.xlsx",
+        "protocolPdf": "events/2020-07-19/protocol.pdf",
+        "resultsJson": "events/2020-07-19/results.json"
+      }
+    },
+    {
+      "slug": "2020-07-12",
+      "dateIso": "2020-07-12",
+      "number": 151,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2020-07-12/source.xlsx",
+        "protocolPdf": "events/2020-07-12/protocol.pdf",
+        "resultsJson": "events/2020-07-12/results.json"
+      }
+    },
+    {
+      "slug": "2020-07-05",
+      "dateIso": "2020-07-05",
+      "number": 150,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2020-07-05/source.xlsx",
+        "protocolPdf": "events/2020-07-05/protocol.pdf",
+        "resultsJson": "events/2020-07-05/results.json"
+      }
+    },
+    {
+      "slug": "2020-03-22",
+      "dateIso": "2020-03-22",
+      "number": 149,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2020-03-22/source.xlsx",
+        "protocolPdf": "events/2020-03-22/protocol.pdf",
+        "resultsJson": "events/2020-03-22/results.json"
+      }
+    },
+    {
+      "slug": "2020-03-15",
+      "dateIso": "2020-03-15",
+      "number": 148,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 13,
+      "files": {
+        "sourceXlsx": "events/2020-03-15/source.xlsx",
+        "protocolPdf": "events/2020-03-15/protocol.pdf",
+        "resultsJson": "events/2020-03-15/results.json"
+      }
+    },
+    {
+      "slug": "2020-03-08",
+      "dateIso": "2020-03-08",
+      "number": 147,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 22,
+      "files": {
+        "sourceXlsx": "events/2020-03-08/source.xlsx",
+        "protocolPdf": "events/2020-03-08/protocol.pdf",
+        "resultsJson": "events/2020-03-08/results.json"
+      }
+    },
+    {
+      "slug": "2020-03-01",
+      "dateIso": "2020-03-01",
+      "number": 146,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 14,
+      "files": {
+        "sourceXlsx": "events/2020-03-01/source.xlsx",
+        "protocolPdf": "events/2020-03-01/protocol.pdf",
+        "resultsJson": "events/2020-03-01/results.json"
+      }
+    },
+    {
+      "slug": "2020-02-23",
+      "dateIso": "2020-02-23",
+      "number": 145,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2020-02-23/source.xlsx",
+        "protocolPdf": "events/2020-02-23/protocol.pdf",
+        "resultsJson": "events/2020-02-23/results.json"
+      }
+    },
+    {
+      "slug": "2020-02-16",
+      "dateIso": "2020-02-16",
+      "number": 144,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2020-02-16/source.xlsx",
+        "protocolPdf": "events/2020-02-16/protocol.pdf",
+        "resultsJson": "events/2020-02-16/results.json"
+      }
+    },
+    {
+      "slug": "2020-02-09",
+      "dateIso": "2020-02-09",
+      "number": 143,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2020-02-09/source.xlsx",
+        "protocolPdf": "events/2020-02-09/protocol.pdf",
+        "resultsJson": "events/2020-02-09/results.json"
+      }
+    },
+    {
+      "slug": "2020-02-02",
+      "dateIso": "2020-02-02",
+      "number": 142,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2020-02-02/source.xlsx",
+        "protocolPdf": "events/2020-02-02/protocol.pdf",
+        "resultsJson": "events/2020-02-02/results.json"
+      }
+    },
+    {
+      "slug": "2020-01-26",
+      "dateIso": "2020-01-26",
+      "number": 141,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2020-01-26/source.xlsx",
+        "protocolPdf": "events/2020-01-26/protocol.pdf",
+        "resultsJson": "events/2020-01-26/results.json"
+      }
+    },
+    {
+      "slug": "2020-01-19",
+      "dateIso": "2020-01-19",
+      "number": 140,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2020-01-19/source.xlsx",
+        "protocolPdf": "events/2020-01-19/protocol.pdf",
+        "resultsJson": "events/2020-01-19/results.json"
+      }
+    },
+    {
+      "slug": "2020-01-12",
+      "dateIso": "2020-01-12",
+      "number": 139,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2020-01-12/source.xlsx",
+        "protocolPdf": "events/2020-01-12/protocol.pdf",
+        "resultsJson": "events/2020-01-12/results.json"
+      }
+    },
+    {
+      "slug": "2020-01-05",
+      "dateIso": "2020-01-05",
+      "number": 138,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2020-01-05/source.xlsx",
+        "protocolPdf": "events/2020-01-05/protocol.pdf",
+        "resultsJson": "events/2020-01-05/results.json"
+      }
+    },
+    {
+      "slug": "2019-12-29",
+      "dateIso": "2019-12-29",
+      "number": 137,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 15,
+      "files": {
+        "sourceXlsx": "events/2019-12-29/source.xlsx",
+        "protocolPdf": "events/2019-12-29/protocol.pdf",
+        "resultsJson": "events/2019-12-29/results.json"
+      }
+    },
+    {
+      "slug": "2019-12-22",
+      "dateIso": "2019-12-22",
+      "number": 136,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2019-12-22/source.xlsx",
+        "protocolPdf": "events/2019-12-22/protocol.pdf",
+        "resultsJson": "events/2019-12-22/results.json"
+      }
+    },
+    {
+      "slug": "2019-12-15",
+      "dateIso": "2019-12-15",
+      "number": 135,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2019-12-15/source.xlsx",
+        "protocolPdf": "events/2019-12-15/protocol.pdf",
+        "resultsJson": "events/2019-12-15/results.json"
+      }
+    },
+    {
+      "slug": "2019-12-08",
+      "dateIso": "2019-12-08",
+      "number": 134,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 3,
+      "files": {
+        "sourceXlsx": "events/2019-12-08/source.xlsx",
+        "protocolPdf": "events/2019-12-08/protocol.pdf",
+        "resultsJson": "events/2019-12-08/results.json"
+      }
+    },
+    {
+      "slug": "2019-12-01",
+      "dateIso": "2019-12-01",
+      "number": 133,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2019-12-01/source.xlsx",
+        "protocolPdf": "events/2019-12-01/protocol.pdf",
+        "resultsJson": "events/2019-12-01/results.json"
+      }
+    },
+    {
+      "slug": "2019-11-24",
+      "dateIso": "2019-11-24",
+      "number": 132,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2019-11-24/source.xlsx",
+        "protocolPdf": "events/2019-11-24/protocol.pdf",
+        "resultsJson": "events/2019-11-24/results.json"
+      }
+    },
+    {
+      "slug": "2019-11-17",
+      "dateIso": "2019-11-17",
+      "number": 131,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 4,
+      "files": {
+        "sourceXlsx": "events/2019-11-17/source.xlsx",
+        "protocolPdf": "events/2019-11-17/protocol.pdf",
+        "resultsJson": "events/2019-11-17/results.json"
+      }
+    },
+    {
+      "slug": "2019-11-10",
+      "dateIso": "2019-11-10",
+      "number": 130,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 8,
+      "files": {
+        "sourceXlsx": "events/2019-11-10/source.xlsx",
+        "protocolPdf": "events/2019-11-10/protocol.pdf",
+        "resultsJson": "events/2019-11-10/results.json"
+      }
+    },
+    {
+      "slug": "2019-11-03",
+      "dateIso": "2019-11-03",
+      "number": 129,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 2,
+      "files": {
+        "sourceXlsx": "events/2019-11-03/source.xlsx",
+        "protocolPdf": "events/2019-11-03/protocol.pdf",
+        "resultsJson": "events/2019-11-03/results.json"
+      }
+    },
+    {
+      "slug": "2019-10-27",
+      "dateIso": "2019-10-27",
+      "number": 128,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2019-10-27/source.xlsx",
+        "protocolPdf": "events/2019-10-27/protocol.pdf",
+        "resultsJson": "events/2019-10-27/results.json"
+      }
+    },
+    {
+      "slug": "2019-10-20",
+      "dateIso": "2019-10-20",
+      "number": 127,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2019-10-20/source.xlsx",
+        "protocolPdf": "events/2019-10-20/protocol.pdf",
+        "resultsJson": "events/2019-10-20/results.json"
+      }
+    },
+    {
+      "slug": "2019-10-13",
+      "dateIso": "2019-10-13",
+      "number": 126,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 6,
+      "files": {
+        "sourceXlsx": "events/2019-10-13/source.xlsx",
+        "protocolPdf": "events/2019-10-13/protocol.pdf",
+        "resultsJson": "events/2019-10-13/results.json"
+      }
+    },
+    {
+      "slug": "2019-10-06",
+      "dateIso": "2019-10-06",
+      "number": 125,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2019-10-06/source.xlsx",
+        "protocolPdf": "events/2019-10-06/protocol.pdf",
+        "resultsJson": "events/2019-10-06/results.json"
+      }
+    },
+    {
+      "slug": "2019-09-29",
+      "dateIso": "2019-09-29",
+      "number": 124,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2019-09-29/source.xlsx",
+        "protocolPdf": "events/2019-09-29/protocol.pdf",
+        "resultsJson": "events/2019-09-29/results.json"
+      }
+    },
+    {
+      "slug": "2019-09-22",
+      "dateIso": "2019-09-22",
+      "number": 123,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2019-09-22/source.xlsx",
+        "protocolPdf": "events/2019-09-22/protocol.pdf",
+        "resultsJson": "events/2019-09-22/results.json"
+      }
+    },
+    {
+      "slug": "2019-09-01",
+      "dateIso": "2019-09-01",
+      "number": 122,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 10,
+      "files": {
+        "sourceXlsx": "events/2019-09-01/source.xlsx",
+        "protocolPdf": "events/2019-09-01/protocol.pdf",
+        "resultsJson": "events/2019-09-01/results.json"
+      }
+    },
+    {
+      "slug": "2019-08-25",
+      "dateIso": "2019-08-25",
+      "number": 121,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2019-08-25/source.xlsx",
+        "protocolPdf": "events/2019-08-25/protocol.pdf",
+        "resultsJson": "events/2019-08-25/results.json"
+      }
+    },
+    {
+      "slug": "2019-08-18",
+      "dateIso": "2019-08-18",
+      "number": 120,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 9,
+      "files": {
+        "sourceXlsx": "events/2019-08-18/source.xlsx",
+        "protocolPdf": "events/2019-08-18/protocol.pdf",
+        "resultsJson": "events/2019-08-18/results.json"
+      }
+    },
+    {
+      "slug": "2019-08-11",
+      "dateIso": "2019-08-11",
+      "number": 119,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 5,
+      "files": {
+        "sourceXlsx": "events/2019-08-11/source.xlsx",
+        "protocolPdf": "events/2019-08-11/protocol.pdf",
+        "resultsJson": "events/2019-08-11/results.json"
+      }
+    },
+    {
+      "slug": "2019-08-04",
+      "dateIso": "2019-08-04",
+      "number": 118,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 7,
+      "files": {
+        "sourceXlsx": "events/2019-08-04/source.xlsx",
+        "protocolPdf": "events/2019-08-04/protocol.pdf",
+        "resultsJson": "events/2019-08-04/results.json"
+      }
+    },
+    {
+      "slug": "2019-07-28",
+      "dateIso": "2019-07-28",
+      "number": 117,
+      "city": "г. Таганрог",
+      "park": "ПКиО им. Горького",
+      "participantCount": 12,
+      "files": {
+        "sourceXlsx": "events/2019-07-28/source.xlsx",
+        "protocolPdf": "events/2019-07-28/protocol.pdf",
+        "resultsJson": "events/2019-07-28/results.json"
+      }
+    }
+  ],
+  "schemaVersion": 1
+}

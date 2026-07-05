@@ -1,0 +1,143 @@
+{
+  "event": {
+    "number": 161,
+    "dateIso": "2020-09-27",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Салимгареев Влад",
+      "time23": "09:08",
+      "time5": "20:17",
+      "totalMs": 1217000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 20:27)"
+    },
+    {
+      "index": 2,
+      "fullName": "Ширшов Денис",
+      "time23": "09:08",
+      "time5": "20:18",
+      "totalMs": 1218000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 20:28)"
+    },
+    {
+      "index": 3,
+      "fullName": "Шацкий Владислав",
+      "time23": "09:11",
+      "time5": "20:51",
+      "totalMs": 1251000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Дзюбак Сергей",
+      "time23": "11:09",
+      "time5": "24:42",
+      "totalMs": 1482000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Черников Ярослав",
+      "time23": "11:09",
+      "time5": "24:44",
+      "totalMs": 1484000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 27:00)"
+    },
+    {
+      "index": 6,
+      "fullName": "Цопкало Николай",
+      "time23": "12:15",
+      "time5": "25:45",
+      "totalMs": 1545000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Губарев Евгений",
+      "time23": "12:15",
+      "time5": "25:46",
+      "totalMs": 1546000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Игнатченко Юрий",
+      "time23": "12:48",
+      "time5": "28:44",
+      "totalMs": 1724000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 8,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Иошт Елена",
+      "time23": "12:48",
+      "time5": "28:44",
+      "totalMs": 1724000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 10,
+      "fullName": "Карпенко Мила",
+      "time23": "14:35",
+      "time5": "33:26",
+      "totalMs": 2006000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

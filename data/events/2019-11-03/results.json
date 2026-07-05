@@ -1,0 +1,39 @@
+{
+  "event": {
+    "number": 129,
+    "dateIso": "2019-11-03",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Дзюбак Сергей",
+      "time23": "",
+      "time5": "26:57",
+      "totalMs": 1617000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Курд Олег",
+      "time23": "",
+      "time5": "27:12",
+      "totalMs": 1632000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

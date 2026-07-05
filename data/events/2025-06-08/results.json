@@ -1,0 +1,52 @@
+{
+  "event": {
+    "number": 2.36,
+    "dateIso": "2025-06-08",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Ковальков Ярослав",
+      "time23": "12:50",
+      "time5": "26:46",
+      "totalMs": 1606000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Поддубская Татьяна",
+      "time23": "12:50",
+      "time5": "27:16",
+      "totalMs": 1636000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:50",
+      "time5": "27:16",
+      "totalMs": 1636000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

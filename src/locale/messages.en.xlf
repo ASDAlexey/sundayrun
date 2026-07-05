@@ -666,6 +666,14 @@
         <source>Схема трассы 5 км — два круга по ПКиО им. Горького</source>
         <target>5 km course map — two laps around Gorky Central Park</target>
       </trans-unit>
+      <trans-unit id="races.courseZoomLabel" datatype="html">
+        <source>Открыть схему трассы в полном размере</source>
+        <target>Open the full-size course map</target>
+      </trans-unit>
+      <trans-unit id="races.courseZoom" datatype="html">
+        <source>Открыть схему</source>
+        <target>View full map</target>
+      </trans-unit>
       <trans-unit id="app.footerCreatorSite" datatype="html">
         <source>asdalexey.github.io</source>
         <target>asdalexey.github.io</target>

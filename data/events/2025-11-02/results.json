@@ -1,0 +1,91 @@
+{
+  "event": {
+    "number": 2.56,
+    "dateIso": "2025-11-02",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "08:39",
+      "time5": "18:53",
+      "totalMs": 1133000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Дорожкин Михаил",
+      "time23": "11:49",
+      "time5": "27:35",
+      "totalMs": 1655000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Новиков Сергей",
+      "time23": "12:51",
+      "time5": "27:50",
+      "totalMs": 1670000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Цопкало Николай",
+      "time23": "12:51",
+      "time5": "27:50",
+      "totalMs": 1670000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Цопкало Людмила",
+      "time23": "12:51",
+      "time5": "27:50",
+      "totalMs": 1670000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:51",
+      "time5": "27:59",
+      "totalMs": 1679000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

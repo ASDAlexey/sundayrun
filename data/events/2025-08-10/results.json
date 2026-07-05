@@ -1,0 +1,78 @@
+{
+  "event": {
+    "number": 2.45,
+    "dateIso": "2025-08-10",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "8:54",
+      "time5": "19:42",
+      "totalMs": 1182000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Матросов Александр",
+      "time23": "9:41",
+      "time5": "21:27",
+      "totalMs": 1287000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Матросов Егор",
+      "time23": "12:14",
+      "time5": "27:12",
+      "totalMs": 1632000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:30",
+      "time5": "27:23",
+      "totalMs": 1643000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Матросов Илья",
+      "time23": "13:59",
+      "time5": "31:46",
+      "totalMs": 1906000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

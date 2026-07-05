@@ -1,0 +1,65 @@
+{
+  "event": {
+    "number": 2.5,
+    "dateIso": "2024-11-03",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "08:47",
+      "time5": "19:18",
+      "totalMs": 1158000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Дзюбак Сергей",
+      "time23": "11:57",
+      "time5": "26:44",
+      "totalMs": 1604000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Чикалов Николай",
+      "time23": "11:58",
+      "time5": "27:35",
+      "totalMs": 1655000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Чикалова Виктория",
+      "time23": "14:49",
+      "time5": "29:05",
+      "totalMs": 1745000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

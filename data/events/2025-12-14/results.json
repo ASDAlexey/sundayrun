@@ -1,0 +1,143 @@
+{
+  "event": {
+    "number": 2.62,
+    "dateIso": "2025-12-14",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "08:30",
+      "time5": "18:48",
+      "totalMs": 1128000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Матросов Александр",
+      "time23": "09:38",
+      "time5": "21:25",
+      "totalMs": 1285000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "11:47",
+      "time5": "23:11",
+      "totalMs": 1391000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:04",
+      "time5": "26:25",
+      "totalMs": 1585000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Матросов Егор",
+      "time23": "13:25",
+      "time5": "26:39",
+      "totalMs": 1599000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Зубкова Наталья",
+      "time23": "12:09",
+      "time5": "26:41",
+      "totalMs": 1601000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Ищенко Альбина",
+      "time23": "12:52",
+      "time5": "28:10",
+      "totalMs": 1690000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Матросов Илья",
+      "time23": "12:40",
+      "time5": "28:31",
+      "totalMs": 1711000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Демиденко Евгений",
+      "time23": "12:59",
+      "time5": "28:34",
+      "totalMs": 1714000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 10,
+      "fullName": "Цопкало Людмила",
+      "time23": "14:26",
+      "time5": "28:59",
+      "totalMs": 1739000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

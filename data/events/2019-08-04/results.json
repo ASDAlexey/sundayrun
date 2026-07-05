@@ -1,0 +1,104 @@
+{
+  "event": {
+    "number": 118,
+    "dateIso": "2019-08-04",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "08:48",
+      "time5": "18:40",
+      "totalMs": 1120000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Куловеров Владимир",
+      "time23": "10:23",
+      "time5": "25:12",
+      "totalMs": 1512000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Дзюбак Сергей",
+      "time23": "11:19",
+      "time5": "25:17",
+      "totalMs": 1517000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Назарова Вероника",
+      "time23": "11:23",
+      "time5": "25:31",
+      "totalMs": 1531000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Сергеева Ирина",
+      "time23": "12:00",
+      "time5": "26:43",
+      "totalMs": 1603000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Плетнев Вячеслав",
+      "time23": "12:36",
+      "time5": "28:04",
+      "totalMs": 1684000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Плетнева Юлия",
+      "time23": "12:36",
+      "time5": "28:09",
+      "totalMs": 1689000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": "Детский забег"
+    }
+  ],
+  "schemaVersion": 1
+}

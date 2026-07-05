@@ -1,0 +1,117 @@
+{
+  "event": {
+    "number": 2.72,
+    "dateIso": "2026-02-22",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "9:26",
+      "time5": "20:59",
+      "totalMs": 1259000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "11:08",
+      "time5": "23:51",
+      "totalMs": 1431000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Волочек Павел",
+      "time23": "11:07",
+      "time5": "23:52",
+      "totalMs": 1432000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Новиков Сергей",
+      "time23": "11:09",
+      "time5": "25:24",
+      "totalMs": 1524000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Дзюбак Сергей",
+      "time23": "13:47",
+      "time5": "31:14",
+      "totalMs": 1874000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Цопкало Людмила",
+      "time23": "15:57",
+      "time5": "33:56",
+      "totalMs": 2036000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Лекомцева Татьяна",
+      "time23": "15:57",
+      "time5": "33:57",
+      "totalMs": 2037000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Ищенко Альбина",
+      "time23": "15:52",
+      "time5": "33:58",
+      "totalMs": 2038000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

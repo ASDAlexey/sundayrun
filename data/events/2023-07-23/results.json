@@ -1,0 +1,65 @@
+{
+  "event": {
+    "number": 290,
+    "dateIso": "2023-07-23",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "08:56",
+      "time5": "19:41",
+      "totalMs": 1181000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Торопов Юрий",
+      "time23": "11:26",
+      "time5": "26:43",
+      "totalMs": 1603000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Беликов Дмитрий",
+      "time23": "12:42",
+      "time5": "28:27",
+      "totalMs": 1707000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Зубкова Наталья",
+      "time23": "12:42",
+      "time5": "28:28",
+      "totalMs": 1708000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

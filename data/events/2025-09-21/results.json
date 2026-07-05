@@ -1,0 +1,91 @@
+{
+  "event": {
+    "number": 2.5,
+    "dateIso": "2025-09-21",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "8:35",
+      "time5": "18:54",
+      "totalMs": 1134000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Цопкало Людмила",
+      "time23": "11:23",
+      "time5": "24:44",
+      "totalMs": 1484000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Кострюков Максим",
+      "time23": "11:10",
+      "time5": "24:47",
+      "totalMs": 1487000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "11:23",
+      "time5": "24:47",
+      "totalMs": 1487000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Ищенко Альбина",
+      "time23": "11:42",
+      "time5": "25:52",
+      "totalMs": 1552000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Дзюбак Сергей",
+      "time23": "11:42",
+      "time5": "26:07",
+      "totalMs": 1567000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

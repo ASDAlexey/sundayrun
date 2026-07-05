@@ -1,0 +1,104 @@
+{
+  "event": {
+    "number": 2.48,
+    "dateIso": "2025-08-31",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Аминов Артем",
+      "time23": "8:43",
+      "time5": "19:25",
+      "totalMs": 1165000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Троилин Антон",
+      "time23": "8:44",
+      "time5": "19:30",
+      "totalMs": 1170000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Клюева Мария",
+      "time23": "10:50",
+      "time5": "22:10",
+      "totalMs": 1330000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Аминов Владислав",
+      "time23": "",
+      "time5": "28:19",
+      "totalMs": 1699000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Тузова Валентина",
+      "time23": "14:01",
+      "time5": "30:26",
+      "totalMs": 1826000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Цыганкова Татьяна",
+      "time23": "15:27",
+      "time5": "32:46",
+      "totalMs": 1966000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Аминова Оксана",
+      "time23": "",
+      "time5": "32:55",
+      "totalMs": 1975000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 4,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

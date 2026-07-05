@@ -1,0 +1,65 @@
+{
+  "event": {
+    "number": 231,
+    "dateIso": "2022-04-03",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Куловеров Владимир",
+      "time23": "09:14",
+      "time5": "20:59",
+      "totalMs": 1259000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Перевалов Евгений",
+      "time23": "11:00",
+      "time5": "24:33",
+      "totalMs": 1473000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Беликов Дмитрий",
+      "time23": "13:50",
+      "time5": "28:22",
+      "totalMs": 1702000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Зубкова Наталья",
+      "time23": "13:50",
+      "time5": "28:22",
+      "totalMs": 1702000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": "Первое участие"
+    }
+  ],
+  "schemaVersion": 1
+}

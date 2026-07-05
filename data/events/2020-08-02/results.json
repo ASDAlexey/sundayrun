@@ -1,0 +1,130 @@
+{
+  "event": {
+    "number": 154,
+    "dateIso": "2020-08-02",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Кияшко Дмитрий",
+      "time23": "",
+      "time5": "18:25",
+      "totalMs": 1105000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Куловеров Владимир",
+      "time23": "",
+      "time5": "20:45",
+      "totalMs": 1245000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Шаклон Сергей",
+      "time23": "",
+      "time5": "20:46",
+      "totalMs": 1246000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Ткачук Алексей",
+      "time23": "",
+      "time5": "21:25",
+      "totalMs": 1285000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Беликов Дмитрий",
+      "time23": "",
+      "time5": "25:13",
+      "totalMs": 1513000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Дзюбак Сергей",
+      "time23": "",
+      "time5": "25:13",
+      "totalMs": 1513000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Назарова Вероника",
+      "time23": "",
+      "time5": "25:54",
+      "totalMs": 1554000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Каземиров Александр",
+      "time23": "",
+      "time5": "26:15",
+      "totalMs": 1575000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 9,
+      "fullName": "Иошт Елена",
+      "time23": "",
+      "time5": "27:31",
+      "totalMs": 1651000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

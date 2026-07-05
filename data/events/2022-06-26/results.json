@@ -1,0 +1,91 @@
+{
+  "event": {
+    "number": 241,
+    "dateIso": "2022-06-26",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "10:36",
+      "time5": "21:51",
+      "totalMs": 1311000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Перевалов Евгений",
+      "time23": "11:04",
+      "time5": "23:51",
+      "totalMs": 1431000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Прудников Сергей",
+      "time23": "11:24",
+      "time5": "24:47",
+      "totalMs": 1487000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Беликов Дмитрий",
+      "time23": "11:21",
+      "time5": "25:53",
+      "totalMs": 1553000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Зубкова Наталья",
+      "time23": "11:23",
+      "time5": "25:54",
+      "totalMs": 1554000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": "ЛР (было 26:51)"
+    },
+    {
+      "index": 6,
+      "fullName": "Рябыш Дмитрий",
+      "time23": "11:48",
+      "time5": "28:27",
+      "totalMs": 1707000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

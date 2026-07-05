@@ -1,0 +1,143 @@
+{
+  "event": {
+    "number": 236,
+    "dateIso": "2022-05-08",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Юрьев Евгений",
+      "time23": "09:19",
+      "time5": "20:39",
+      "totalMs": 1239000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Куловеров Владимир",
+      "time23": "09:19",
+      "time5": "20:46",
+      "totalMs": 1246000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Троилин Антон",
+      "time23": "09:46",
+      "time5": "21:17",
+      "totalMs": 1277000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 22:04)"
+    },
+    {
+      "index": 4,
+      "fullName": "Лавров Сергей",
+      "time23": "09:58",
+      "time5": "21:38",
+      "totalMs": 1298000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Беликов Владимир",
+      "time23": "09:58",
+      "time5": "22:33",
+      "totalMs": 1353000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": "Первое участие"
+    },
+    {
+      "index": 6,
+      "fullName": "Сергеева Ирина",
+      "time23": "10:30",
+      "time5": "23:34",
+      "totalMs": 1414000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Дзюбак Сергей",
+      "time23": "11:22",
+      "time5": "24:53",
+      "totalMs": 1493000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Демиденко Евгений",
+      "time23": "11:36",
+      "time5": "25:00",
+      "totalMs": 1500000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 7,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Зубкова Наталья",
+      "time23": "13:34",
+      "time5": "30:37",
+      "totalMs": 1837000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 10,
+      "fullName": "Иошт Елена",
+      "time23": "15:30",
+      "time5": "33:34",
+      "totalMs": 2014000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

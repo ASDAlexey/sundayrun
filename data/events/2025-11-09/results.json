@@ -1,0 +1,143 @@
+{
+  "event": {
+    "number": 2.57,
+    "dateIso": "2025-11-09",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Хахуцкий Виктор",
+      "time23": "10:40",
+      "time5": "22:40",
+      "totalMs": 1360000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Цопкало Николай",
+      "time23": "10:40",
+      "time5": "22:40",
+      "totalMs": 1360000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Цопкало Людмила",
+      "time23": "12:06",
+      "time5": "26:22",
+      "totalMs": 1582000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:58",
+      "time5": "28:01",
+      "totalMs": 1681000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Ищенко Альбина",
+      "time23": "12:58",
+      "time5": "28:01",
+      "totalMs": 1681000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Лекомцева Татьяна",
+      "time23": "13:36",
+      "time5": "30:16",
+      "totalMs": 1816000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 3,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Диденко Ольга",
+      "time23": "13:36",
+      "time5": "30:27",
+      "totalMs": 1827000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 4,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Воронова Евгения",
+      "time23": "13:36",
+      "time5": "31:11",
+      "totalMs": 1871000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 5,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 9,
+      "fullName": "Топчиева Ирина",
+      "time23": "13:36",
+      "time5": "31:11",
+      "totalMs": 1871000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 6,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 10,
+      "fullName": "Хандыга Наталья",
+      "time23": "13:58",
+      "time5": "31:49",
+      "totalMs": 1909000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 7,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -1,0 +1,52 @@
+{
+  "event": {
+    "number": 2.1,
+    "dateIso": "2024-12-08",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "9:02",
+      "time5": "19:57",
+      "totalMs": 1197000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Демиденко Евгений",
+      "time23": "10:10",
+      "time5": "21:50",
+      "totalMs": 1310000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 3,
+      "fullName": "Цопкало Николай",
+      "time23": "10:10",
+      "time5": "22:22",
+      "totalMs": 1342000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}

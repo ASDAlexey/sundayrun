@@ -1,0 +1,117 @@
+{
+  "event": {
+    "number": 262,
+    "dateIso": "2022-12-11",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Корнеев Игорь",
+      "time23": "",
+      "time5": "19:12",
+      "totalMs": 1152000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 2,
+      "fullName": "Нургалин Руслан",
+      "time23": "",
+      "time5": "20:40",
+      "totalMs": 1240000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": "ЛР (было 21:14)"
+    },
+    {
+      "index": 3,
+      "fullName": "Цопкало Николай",
+      "time23": "",
+      "time5": "20:40",
+      "totalMs": 1240000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 4,
+      "fullName": "Троилин Антон",
+      "time23": "",
+      "time5": "21:10",
+      "totalMs": 1270000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 5,
+      "fullName": "Ширшов Денис",
+      "time23": "",
+      "time5": "21:37",
+      "totalMs": 1297000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Цопкало Людмила",
+      "time23": "",
+      "time5": "25:55",
+      "totalMs": 1555000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "fullName": "Беликов Дмитрий",
+      "time23": "",
+      "time5": "28:43",
+      "totalMs": 1723000,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 8,
+      "fullName": "Зубкова Наталья",
+      "time23": "",
+      "time5": "28:43",
+      "totalMs": 1723000,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": ""
+    }
+  ],
+  "schemaVersion": 1
+}
