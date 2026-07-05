@@ -77,13 +77,20 @@
       <a class="races__course-vk" i18n="@@races.courseVk" rel="noopener" target="_blank" [href]="vkUrl">Сообщество ВКонтакте</a>
     </div>
 
-    <img
-      alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
-      class="races__course-map"
-      i18n-alt="@@races.courseAlt"
-      loading="lazy"
-      src="course-5k.jpg"
-    />
+    <picture class="races__course-picture">
+      <source srcset="course-5k.avif" type="image/avif" />
+
+      <img
+        alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
+        class="races__course-map"
+        decoding="async"
+        height="962"
+        i18n-alt="@@races.courseAlt"
+        loading="lazy"
+        src="course-5k.webp"
+        width="962"
+      />
+    </picture>
   </section>
 
   <p class="races__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>

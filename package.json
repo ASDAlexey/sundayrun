@@ -31,8 +31,6 @@
     "@angular/localize": "^22.0.2",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
-    "@fontsource-variable/inter": "^5.2.8",
-    "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "fflate": "^0.8.2",
     "pdfmake": "^0.2.12",
     "rxjs": "~7.8.0",

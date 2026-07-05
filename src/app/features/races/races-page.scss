@@ -212,6 +212,10 @@
     }
   }
 
+  &__course-picture {
+    display: contents;
+  }
+
   &__course-map {
     display: block;
     width: 100%;
@@ -221,6 +225,10 @@
   }
 
   @media (width <= 720px) {
+    &__course-picture {
+      display: contents;
+    }
+
     &__course-map {
       border-top: 1px solid var(--border);
       border-left: 0;

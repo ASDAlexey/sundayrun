@@ -42,11 +42,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "node_modules/@fontsource-variable/inter/index.css",
-              "node_modules/@fontsource-variable/jetbrains-mono/index.css",
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "stylePreprocessorOptions": {
               "includePaths": ["src"]
             },

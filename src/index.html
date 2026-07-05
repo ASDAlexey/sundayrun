@@ -17,8 +17,53 @@
     <link href="https://cdn.jsdelivr.net" rel="preconnect" />
     <link href="https://cdn.jsdelivr.net" rel="dns-prefetch" />
 
+    <!-- Fonts are self-hosted with stable names (relative to <base href>) so they can be
+         preloaded — this kills the font-swap layout shift. Subsets: latin + cyrillic. -->
+    <link as="font" crossorigin href="fonts/inter-cyrillic-wght-normal.woff2" rel="preload" type="font/woff2" />
+    <link as="font" crossorigin href="fonts/inter-latin-wght-normal.woff2" rel="preload" type="font/woff2" />
+    <link as="font" crossorigin href="fonts/jetbrains-mono-cyrillic-wght-normal.woff2" rel="preload" type="font/woff2" />
+    <link as="font" crossorigin href="fonts/jetbrains-mono-latin-wght-normal.woff2" rel="preload" type="font/woff2" />
+    <style>
+      @font-face {
+        font-style: normal;
+        font-weight: 100 900;
+        src: url('fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+        font-family: 'Inter Variable';
+        font-display: swap;
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+          U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-style: normal;
+        font-weight: 100 900;
+        src: url('fonts/inter-cyrillic-wght-normal.woff2') format('woff2-variations');
+        font-family: 'Inter Variable';
+        font-display: swap;
+        unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+      }
+      @font-face {
+        font-style: normal;
+        font-weight: 100 800;
+        src: url('fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations');
+        font-family: 'JetBrains Mono Variable';
+        font-display: swap;
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+          U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-style: normal;
+        font-weight: 100 800;
+        src: url('fonts/jetbrains-mono-cyrillic-wght-normal.woff2') format('woff2-variations');
+        font-family: 'JetBrains Mono Variable';
+        font-display: swap;
+        unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+      }
+    </style>
+
     <link href="favicon.ico" rel="icon" sizes="32x32" type="image/x-icon" />
-    <link href="logo-mark.png" rel="icon" sizes="256x256" type="image/png" />
+    <link href="logo-mark.webp" rel="icon" sizes="160x160" type="image/webp" />
     <link href="apple-touch-icon.png" rel="apple-touch-icon" />
 
     <!-- The locale builds share this file; ru is the primary language, hreflang links both. -->
@@ -34,7 +79,7 @@
       property="og:description"
     />
     <meta content="https://asdalexey.github.io/sundayrun/ru/" property="og:url" />
-    <meta content="https://asdalexey.github.io/sundayrun/ru/og-image.png" property="og:image" />
+    <meta content="https://asdalexey.github.io/sundayrun/ru/og-image.jpg" property="og:image" />
     <meta content="1200" property="og:image:width" />
     <meta content="630" property="og:image:height" />
     <meta content="Воскресный парковый пробег — протоколы и результаты, Таганрог" property="og:image:alt" />
@@ -47,7 +92,7 @@
       content="Результаты и PDF-протоколы воскресных забегов в ПКиО им. Горького. История каждого участника."
       name="twitter:description"
     />
-    <meta content="https://asdalexey.github.io/sundayrun/ru/og-image.png" name="twitter:image" />
+    <meta content="https://asdalexey.github.io/sundayrun/ru/og-image.jpg" name="twitter:image" />
 
     <script type="application/ld+json">
       {
