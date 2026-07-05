@@ -95,5 +95,43 @@
     </a>
   </section>
 
+  @if (statsView(); as stats) {
+    <section class="home__stats">
+      <h2 class="home__stats-title" i18n="@@home.statsTitle">Общая статистика</h2>
+
+      <dl class="home__stats-grid">
+        <div class="home__stats-item">
+          <dt class="home__stats-label" i18n="@@home.statsEvents">забегов проведено</dt>
+
+          <dd class="home__stats-value">{{ stats.events }}</dd>
+        </div>
+
+        <div class="home__stats-item">
+          <dt class="home__stats-label" i18n="@@home.statsFinishes">всего финишей</dt>
+
+          <dd class="home__stats-value">{{ stats.finishes }}</dd>
+        </div>
+
+        <div class="home__stats-item">
+          <dt class="home__stats-label" i18n="@@home.statsFinishers">уникальных финишёров</dt>
+
+          <dd class="home__stats-value">{{ stats.finishers }}</dd>
+        </div>
+
+        <div class="home__stats-item">
+          <dt class="home__stats-label" i18n="@@home.statsAvgFinishes">финишей на участника</dt>
+
+          <dd class="home__stats-value">{{ stats.averageFinishes }}</dd>
+        </div>
+
+        <div class="home__stats-item">
+          <dt class="home__stats-label" i18n="@@home.statsAvgTime">среднее время на 5 км</dt>
+
+          <dd class="home__stats-value">{{ stats.averageTime }}</dd>
+        </div>
+      </dl>
+    </section>
+  }
+
   <p class="home__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
 </main>

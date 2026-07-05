@@ -298,6 +298,49 @@
     }
   }
 
+  &__stats {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 24px;
+  }
+
+  &__stats-title {
+    @include t.text('title', 'large');
+
+    color: var(--text);
+  }
+
+  &__stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    margin: 0;
+    gap: 24px 16px;
+  }
+
+  // Column-reverse keeps the dt/dd source order valid while the number renders above its label.
+  &__stats-item {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+  }
+
+  &__stats-value {
+    @include t.stat-value;
+
+    margin: 0;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__stats-label {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+  }
+
   &__cdn-note {
     @include t.text('label', 'small');
 

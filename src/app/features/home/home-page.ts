@@ -3,14 +3,27 @@ import { RouterLink } from '@angular/router';
 
 import { VK_COMMUNITY_URL } from '../../app.constant';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
+import { computeOverallStats } from '../../core/history/overall-stats';
+import { OverallStats } from '../../core/history/overall-stats.interface';
+import { formatDuration } from '../../core/time/duration';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
+import { AthletesService } from '../../github/athletes.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { toRaceListItem } from '../races/race-list-item';
 import { RaceCard } from '../races/race-card/race-card';
 import { RacesStatus, RacesStatusType } from '../races/races-page.enum';
 import { RaceListItem } from '../races/races-page.interface';
-import { HOME_META_TRANSFER_KEY, HOME_RACES_TRANSFER_KEY, LATEST_RACES_COUNT, RACES_PAGE_LINK } from './home-page.constant';
+import {
+  HOME_META_TRANSFER_KEY,
+  HOME_RACES_TRANSFER_KEY,
+  HOME_STATS_TRANSFER_KEY,
+  LATEST_RACES_COUNT,
+  RACES_PAGE_LINK,
+  STATS_AVERAGE_FORMAT,
+  STATS_NUMBER_FORMAT,
+} from './home-page.constant';
+import { HomeStatsView } from './home-page.interface';
 
 /** The landing page: hero, announcement, the latest races preview and the course card. */
 @Component({
@@ -23,11 +36,14 @@ import { HOME_META_TRANSFER_KEY, HOME_RACES_TRANSFER_KEY, LATEST_RACES_COUNT, RA
 export class HomePage {
   readonly #archive = inject(ArchiveService);
   readonly #siteMeta = inject(SiteMetaService);
+  readonly #athletes = inject(AthletesService);
+  readonly #stats = signal<OverallStats | null>(null);
 
   readonly status = signal<RacesStatusType>(RacesStatus.loading);
   readonly latestRaces = signal<RaceListItem[]>([]);
   readonly siteMeta = signal(EMPTY_SITE_META);
   readonly hasAnnouncement = computed(() => this.siteMeta().startTime !== '' || this.siteMeta().announcement !== '');
+  readonly statsView = computed(() => toStatsView(this.#stats()));
 
   protected readonly statuses = RacesStatus;
   protected readonly racesLink = RACES_PAGE_LINK;
@@ -49,6 +65,13 @@ export class HomePage {
       apply: (meta) => this.siteMeta.set(meta),
       onError: () => this.siteMeta.set(EMPTY_SITE_META),
     });
+    // Only the tiny computed totals travel through TransferState, never the athletes history itself.
+    loadWithTransfer({
+      key: HOME_STATS_TRANSFER_KEY,
+      load: () => this.#loadStats(),
+      apply: (stats) => this.#stats.set(stats),
+      onError: () => this.#stats.set(null),
+    });
   }
 
   /** Only the preview slice travels through TransferState — the full index would bloat the HTML. */
@@ -62,4 +85,23 @@ export class HomePage {
     this.latestRaces.set(races);
     this.status.set(races.length === 0 ? RacesStatus.empty : RacesStatus.ready);
   }
+
+  async #loadStats(): Promise<OverallStats> {
+    return computeOverallStats(await this.#athletes.loadHistory());
+  }
+}
+
+/** Formats the totals for display; the block hides until at least one event is published. */
+function toStatsView(stats: OverallStats | null): HomeStatsView | null {
+  if (stats === null || stats.eventsCount === 0) {
+    return null;
+  }
+
+  return {
+    events: STATS_NUMBER_FORMAT.format(stats.eventsCount),
+    finishes: STATS_NUMBER_FORMAT.format(stats.finishesCount),
+    finishers: STATS_NUMBER_FORMAT.format(stats.finishersCount),
+    averageFinishes: STATS_AVERAGE_FORMAT.format(stats.averageFinishes),
+    averageTime: formatDuration(stats.averageTimeMs),
+  };
 }
