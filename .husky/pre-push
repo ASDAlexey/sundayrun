@@ -1,0 +1,8 @@
+echo '----------- Type-check (app + specs) --------------'
+bunx tsc -p tsconfig.app.json --noEmit
+bunx tsc -p tsconfig.spec.json --noEmit
+
+echo '----------- Stylelint --------------'
+bun run stylelint:check
+
+echo '----------- Pre-push checks done --------------'

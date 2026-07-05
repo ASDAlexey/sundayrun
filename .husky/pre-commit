@@ -1,0 +1,4 @@
+echo '-------------- Prettier (staged) --------------'
+bunx pretty-quick --staged
+
+echo '-------------- Pre-commit checks done --------------'
