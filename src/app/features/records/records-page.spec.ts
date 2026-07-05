@@ -9,6 +9,7 @@ import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { RecordsPage } from './records-page';
+import { ALL_GENDERS_VALUE } from './records-page.constant';
 import { RecordsStatus } from './records-page.enum';
 import {
   EXPECTED_MEN_NAMES,
@@ -114,7 +115,7 @@ describe('RecordsPage', () => {
 
     expect(page.men().length).toBe(EXPECTED_MEN_NAMES.length);
 
-    page.setGender(Gender.male);
+    page.onGenderChange(Gender.male);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelectorAll('.records__board').length).toBe(1);
@@ -129,9 +130,10 @@ describe('RecordsPage', () => {
 
     expect(page.noMatches(), 'Быстров is male, so the female board stays empty').toBe(true);
 
-    page.setGender(null);
+    page.onGenderChange(ALL_GENDERS_VALUE);
 
     expect(page.noMatches()).toBe(false);
+    expect(page.gender(), 'the "all" toggle maps the sentinel back to null').toBeNull();
   });
 
   it('shows the empty state without history and the error state on a load failure', async () => {

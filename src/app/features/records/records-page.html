@@ -9,79 +9,65 @@
     </p>
   </header>
 
-  <p aria-live="polite" class="records__status" role="status">
+  <div aria-live="polite" class="records__status" role="status">
     @switch (status()) {
       @case (statuses.loading) {
+        <mat-progress-spinner class="records__spinner" mode="indeterminate" [diameter]="24" />
+
         <span i18n="@@records.loading">Загружаем историю результатов…</span>
       }
       @case (statuses.empty) {
         <span i18n="@@records.empty">Рекорды появятся после первых опубликованных протоколов.</span>
       }
     }
-  </p>
+  </div>
 
   @switch (status()) {
     @case (statuses.ready) {
       <div class="records__controls">
-        <div class="records__search">
-          <label class="records__search-label" for="records-search" i18n="@@records.searchLabel">Поиск по имени</label>
+        <mat-form-field appearance="outline" class="records__search">
+          <mat-label class="records__search-label" i18n="@@records.searchLabel">Поиск по имени</mat-label>
 
           <input
             #searchInput
             class="records__search-input"
             id="records-search"
+            matInput
             type="search"
             [value]="query()"
             (input)="onQueryChange(searchInput.value)"
           />
-        </div>
+        </mat-form-field>
 
-        <div class="records__filter">
-          <label class="records__filter-label" for="records-year" i18n="@@records.yearLabel">Год</label>
+        <mat-form-field appearance="outline" class="records__filter">
+          <mat-label class="records__filter-label" i18n="@@records.yearLabel">Год</mat-label>
 
-          <select #yearSelect class="records__filter-select" id="records-year" (change)="onYearChange(yearSelect.value)">
-            <option i18n="@@records.allYears" [value]="allYearsValue">Все годы</option>
+          <mat-select
+            class="records__filter-select"
+            id="records-year"
+            [value]="year() ?? allYearsValue"
+            (selectionChange)="onYearChange($event.value)"
+          >
+            <mat-option i18n="@@records.allYears" [value]="allYearsValue">Все годы</mat-option>
 
             @for (boardYear of years(); track boardYear) {
-              <option [value]="boardYear">{{ boardYear }}</option>
+              <mat-option [value]="boardYear">{{ boardYear }}</mat-option>
             }
-          </select>
-        </div>
+          </mat-select>
+        </mat-form-field>
 
-        <div class="records__genders">
-          <button
-            class="records__gender"
-            i18n="@@records.genderAll"
-            type="button"
-            [attr.aria-pressed]="gender() === null"
-            [class.records__gender_active]="gender() === null"
-            (click)="setGender(null)"
-          >
-            Все
-          </button>
+        <mat-button-toggle-group
+          class="records__genders"
+          hideSingleSelectionIndicator
+          [value]="gender() ?? allGendersValue"
+          (change)="onGenderChange($event.value)"
+        >
+          <mat-button-toggle class="records__gender" i18n="@@records.genderAll" [value]="allGendersValue">Все</mat-button-toggle>
 
-          <button
-            class="records__gender"
-            i18n="@@records.genderMen"
-            type="button"
-            [attr.aria-pressed]="gender() === genders.male"
-            [class.records__gender_active]="gender() === genders.male"
-            (click)="setGender(genders.male)"
-          >
-            Мужчины
-          </button>
+          <mat-button-toggle class="records__gender" i18n="@@records.genderMen" [value]="genders.male">Мужчины</mat-button-toggle>
 
-          <button
-            class="records__gender"
-            i18n="@@records.genderWomen"
-            type="button"
-            [attr.aria-pressed]="gender() === genders.female"
-            [class.records__gender_active]="gender() === genders.female"
-            (click)="setGender(genders.female)"
-          >
-            Женщины
-          </button>
-        </div>
+          <mat-button-toggle class="records__gender" i18n="@@records.genderWomen" [value]="genders.female">Женщины</mat-button-toggle>
+        </mat-button-toggle-group>
       </div>
 
       <p aria-live="polite" class="records__status" role="status">

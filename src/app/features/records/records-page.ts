@@ -1,6 +1,11 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
@@ -14,14 +19,22 @@ import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
-import { RECORDS_ROW_HEIGHT_PX } from './records-page.constant';
+import { ALL_GENDERS_VALUE, RECORDS_ROW_HEIGHT_PX } from './records-page.constant';
 import { RecordsStatus, RecordsStatusType } from './records-page.enum';
 import { BestResultView } from './records-page.interface';
 
 /** Full 5 km leaderboards with a name search, season and gender filters, and virtual scroll. */
 @Component({
   selector: 'app-records-page',
-  imports: [RouterLink, ScrollingModule],
+  imports: [
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    RouterLink,
+    ScrollingModule,
+  ],
   templateUrl: './records-page.html',
   styleUrl: './records-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +64,7 @@ export class RecordsPage {
   protected readonly statuses = RecordsStatus;
   protected readonly genders = Gender;
   protected readonly allYearsValue = ALL_YEARS_VALUE;
+  protected readonly allGendersValue = ALL_GENDERS_VALUE;
   protected readonly rowHeightPx = RECORDS_ROW_HEIGHT_PX;
 
   constructor() {
@@ -70,6 +84,11 @@ export class RecordsPage {
 
   setGender(gender: GenderType | null): void {
     this.gender.set(gender);
+  }
+
+  /** The toggle group carries the "all" sentinel because a toggle value cannot be `null`. */
+  onGenderChange(value: GenderType | typeof ALL_GENDERS_VALUE): void {
+    this.setGender(value === ALL_GENDERS_VALUE ? null : value);
   }
 
   async #load(): Promise<void> {
