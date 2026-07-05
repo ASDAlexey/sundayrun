@@ -8,9 +8,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2026-02-22/source.xlsx",
-        "protocolPdf": "events/2026-02-22/protocol.pdf",
-        "resultsJson": "events/2026-02-22/results.json"
+        "sourceXlsx": "data/events/2026-02-22/source.xlsx",
+        "protocolPdf": "data/events/2026-02-22/protocol.pdf",
+        "resultsJson": "data/events/2026-02-22/results.json"
       }
     },
     {
@@ -21,9 +21,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2026-02-15/source.xlsx",
-        "protocolPdf": "events/2026-02-15/protocol.pdf",
-        "resultsJson": "events/2026-02-15/results.json"
+        "sourceXlsx": "data/events/2026-02-15/source.xlsx",
+        "protocolPdf": "data/events/2026-02-15/protocol.pdf",
+        "resultsJson": "data/events/2026-02-15/results.json"
       }
     },
     {
@@ -34,9 +34,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2026-02-08/source.xlsx",
-        "protocolPdf": "events/2026-02-08/protocol.pdf",
-        "resultsJson": "events/2026-02-08/results.json"
+        "sourceXlsx": "data/events/2026-02-08/source.xlsx",
+        "protocolPdf": "data/events/2026-02-08/protocol.pdf",
+        "resultsJson": "data/events/2026-02-08/results.json"
       }
     },
     {
@@ -47,9 +47,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2026-02-01/source.xlsx",
-        "protocolPdf": "events/2026-02-01/protocol.pdf",
-        "resultsJson": "events/2026-02-01/results.json"
+        "sourceXlsx": "data/events/2026-02-01/source.xlsx",
+        "protocolPdf": "data/events/2026-02-01/protocol.pdf",
+        "resultsJson": "data/events/2026-02-01/results.json"
       }
     },
     {
@@ -60,9 +60,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2026-01-25/source.xlsx",
-        "protocolPdf": "events/2026-01-25/protocol.pdf",
-        "resultsJson": "events/2026-01-25/results.json"
+        "sourceXlsx": "data/events/2026-01-25/source.xlsx",
+        "protocolPdf": "data/events/2026-01-25/protocol.pdf",
+        "resultsJson": "data/events/2026-01-25/results.json"
       }
     },
     {
@@ -73,9 +73,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2026-01-18/source.xlsx",
-        "protocolPdf": "events/2026-01-18/protocol.pdf",
-        "resultsJson": "events/2026-01-18/results.json"
+        "sourceXlsx": "data/events/2026-01-18/source.xlsx",
+        "protocolPdf": "data/events/2026-01-18/protocol.pdf",
+        "resultsJson": "data/events/2026-01-18/results.json"
       }
     },
     {
@@ -86,9 +86,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2026-01-04/source.xlsx",
-        "protocolPdf": "events/2026-01-04/protocol.pdf",
-        "resultsJson": "events/2026-01-04/results.json"
+        "sourceXlsx": "data/events/2026-01-04/source.xlsx",
+        "protocolPdf": "data/events/2026-01-04/protocol.pdf",
+        "resultsJson": "data/events/2026-01-04/results.json"
       }
     },
     {
@@ -99,9 +99,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2025-12-28/source.xlsx",
-        "protocolPdf": "events/2025-12-28/protocol.pdf",
-        "resultsJson": "events/2025-12-28/results.json"
+        "sourceXlsx": "data/events/2025-12-28/source.xlsx",
+        "protocolPdf": "data/events/2025-12-28/protocol.pdf",
+        "resultsJson": "data/events/2025-12-28/results.json"
       }
     },
     {
@@ -112,9 +112,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2025-12-21/source.xlsx",
-        "protocolPdf": "events/2025-12-21/protocol.pdf",
-        "resultsJson": "events/2025-12-21/results.json"
+        "sourceXlsx": "data/events/2025-12-21/source.xlsx",
+        "protocolPdf": "data/events/2025-12-21/protocol.pdf",
+        "resultsJson": "data/events/2025-12-21/results.json"
       }
     },
     {
@@ -125,9 +125,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2025-12-14/source.xlsx",
-        "protocolPdf": "events/2025-12-14/protocol.pdf",
-        "resultsJson": "events/2025-12-14/results.json"
+        "sourceXlsx": "data/events/2025-12-14/source.xlsx",
+        "protocolPdf": "data/events/2025-12-14/protocol.pdf",
+        "resultsJson": "data/events/2025-12-14/results.json"
       }
     },
     {
@@ -138,9 +138,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2025-12-07/source.xlsx",
-        "protocolPdf": "events/2025-12-07/protocol.pdf",
-        "resultsJson": "events/2025-12-07/results.json"
+        "sourceXlsx": "data/events/2025-12-07/source.xlsx",
+        "protocolPdf": "data/events/2025-12-07/protocol.pdf",
+        "resultsJson": "data/events/2025-12-07/results.json"
       }
     },
     {
@@ -151,9 +151,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2025-11-23/source.xlsx",
-        "protocolPdf": "events/2025-11-23/protocol.pdf",
-        "resultsJson": "events/2025-11-23/results.json"
+        "sourceXlsx": "data/events/2025-11-23/source.xlsx",
+        "protocolPdf": "data/events/2025-11-23/protocol.pdf",
+        "resultsJson": "data/events/2025-11-23/results.json"
       }
     },
     {
@@ -164,9 +164,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-11-16/source.xlsx",
-        "protocolPdf": "events/2025-11-16/protocol.pdf",
-        "resultsJson": "events/2025-11-16/results.json"
+        "sourceXlsx": "data/events/2025-11-16/source.xlsx",
+        "protocolPdf": "data/events/2025-11-16/protocol.pdf",
+        "resultsJson": "data/events/2025-11-16/results.json"
       }
     },
     {
@@ -177,9 +177,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2025-11-09/source.xlsx",
-        "protocolPdf": "events/2025-11-09/protocol.pdf",
-        "resultsJson": "events/2025-11-09/results.json"
+        "sourceXlsx": "data/events/2025-11-09/source.xlsx",
+        "protocolPdf": "data/events/2025-11-09/protocol.pdf",
+        "resultsJson": "data/events/2025-11-09/results.json"
       }
     },
     {
@@ -190,9 +190,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2025-11-02/source.xlsx",
-        "protocolPdf": "events/2025-11-02/protocol.pdf",
-        "resultsJson": "events/2025-11-02/results.json"
+        "sourceXlsx": "data/events/2025-11-02/source.xlsx",
+        "protocolPdf": "data/events/2025-11-02/protocol.pdf",
+        "resultsJson": "data/events/2025-11-02/results.json"
       }
     },
     {
@@ -203,9 +203,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2025-10-26/source.xlsx",
-        "protocolPdf": "events/2025-10-26/protocol.pdf",
-        "resultsJson": "events/2025-10-26/results.json"
+        "sourceXlsx": "data/events/2025-10-26/source.xlsx",
+        "protocolPdf": "data/events/2025-10-26/protocol.pdf",
+        "resultsJson": "data/events/2025-10-26/results.json"
       }
     },
     {
@@ -216,9 +216,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-10-19/source.xlsx",
-        "protocolPdf": "events/2025-10-19/protocol.pdf",
-        "resultsJson": "events/2025-10-19/results.json"
+        "sourceXlsx": "data/events/2025-10-19/source.xlsx",
+        "protocolPdf": "data/events/2025-10-19/protocol.pdf",
+        "resultsJson": "data/events/2025-10-19/results.json"
       }
     },
     {
@@ -229,9 +229,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-10-12/source.xlsx",
-        "protocolPdf": "events/2025-10-12/protocol.pdf",
-        "resultsJson": "events/2025-10-12/results.json"
+        "sourceXlsx": "data/events/2025-10-12/source.xlsx",
+        "protocolPdf": "data/events/2025-10-12/protocol.pdf",
+        "resultsJson": "data/events/2025-10-12/results.json"
       }
     },
     {
@@ -242,9 +242,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2025-10-05/source.xlsx",
-        "protocolPdf": "events/2025-10-05/protocol.pdf",
-        "resultsJson": "events/2025-10-05/results.json"
+        "sourceXlsx": "data/events/2025-10-05/source.xlsx",
+        "protocolPdf": "data/events/2025-10-05/protocol.pdf",
+        "resultsJson": "data/events/2025-10-05/results.json"
       }
     },
     {
@@ -255,9 +255,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2025-09-28/source.xlsx",
-        "protocolPdf": "events/2025-09-28/protocol.pdf",
-        "resultsJson": "events/2025-09-28/results.json"
+        "sourceXlsx": "data/events/2025-09-28/source.xlsx",
+        "protocolPdf": "data/events/2025-09-28/protocol.pdf",
+        "resultsJson": "data/events/2025-09-28/results.json"
       }
     },
     {
@@ -268,9 +268,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2025-09-21/source.xlsx",
-        "protocolPdf": "events/2025-09-21/protocol.pdf",
-        "resultsJson": "events/2025-09-21/results.json"
+        "sourceXlsx": "data/events/2025-09-21/source.xlsx",
+        "protocolPdf": "data/events/2025-09-21/protocol.pdf",
+        "resultsJson": "data/events/2025-09-21/results.json"
       }
     },
     {
@@ -281,9 +281,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2025-09-07/source.xlsx",
-        "protocolPdf": "events/2025-09-07/protocol.pdf",
-        "resultsJson": "events/2025-09-07/results.json"
+        "sourceXlsx": "data/events/2025-09-07/source.xlsx",
+        "protocolPdf": "data/events/2025-09-07/protocol.pdf",
+        "resultsJson": "data/events/2025-09-07/results.json"
       }
     },
     {
@@ -294,9 +294,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2025-08-31/source.xlsx",
-        "protocolPdf": "events/2025-08-31/protocol.pdf",
-        "resultsJson": "events/2025-08-31/results.json"
+        "sourceXlsx": "data/events/2025-08-31/source.xlsx",
+        "protocolPdf": "data/events/2025-08-31/protocol.pdf",
+        "resultsJson": "data/events/2025-08-31/results.json"
       }
     },
     {
@@ -307,9 +307,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2025-08-24/source.xlsx",
-        "protocolPdf": "events/2025-08-24/protocol.pdf",
-        "resultsJson": "events/2025-08-24/results.json"
+        "sourceXlsx": "data/events/2025-08-24/source.xlsx",
+        "protocolPdf": "data/events/2025-08-24/protocol.pdf",
+        "resultsJson": "data/events/2025-08-24/results.json"
       }
     },
     {
@@ -320,9 +320,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2025-08-17/source.xlsx",
-        "protocolPdf": "events/2025-08-17/protocol.pdf",
-        "resultsJson": "events/2025-08-17/results.json"
+        "sourceXlsx": "data/events/2025-08-17/source.xlsx",
+        "protocolPdf": "data/events/2025-08-17/protocol.pdf",
+        "resultsJson": "data/events/2025-08-17/results.json"
       }
     },
     {
@@ -333,9 +333,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2025-08-10/source.xlsx",
-        "protocolPdf": "events/2025-08-10/protocol.pdf",
-        "resultsJson": "events/2025-08-10/results.json"
+        "sourceXlsx": "data/events/2025-08-10/source.xlsx",
+        "protocolPdf": "data/events/2025-08-10/protocol.pdf",
+        "resultsJson": "data/events/2025-08-10/results.json"
       }
     },
     {
@@ -346,9 +346,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2025-08-03/source.xlsx",
-        "protocolPdf": "events/2025-08-03/protocol.pdf",
-        "resultsJson": "events/2025-08-03/results.json"
+        "sourceXlsx": "data/events/2025-08-03/source.xlsx",
+        "protocolPdf": "data/events/2025-08-03/protocol.pdf",
+        "resultsJson": "data/events/2025-08-03/results.json"
       }
     },
     {
@@ -359,9 +359,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-07-31/source.xlsx",
-        "protocolPdf": "events/2025-07-31/protocol.pdf",
-        "resultsJson": "events/2025-07-31/results.json"
+        "sourceXlsx": "data/events/2025-07-31/source.xlsx",
+        "protocolPdf": "data/events/2025-07-31/protocol.pdf",
+        "resultsJson": "data/events/2025-07-31/results.json"
       }
     },
     {
@@ -372,9 +372,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2025-07-20/source.xlsx",
-        "protocolPdf": "events/2025-07-20/protocol.pdf",
-        "resultsJson": "events/2025-07-20/results.json"
+        "sourceXlsx": "data/events/2025-07-20/source.xlsx",
+        "protocolPdf": "data/events/2025-07-20/protocol.pdf",
+        "resultsJson": "data/events/2025-07-20/results.json"
       }
     },
     {
@@ -385,9 +385,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2025-07-13/source.xlsx",
-        "protocolPdf": "events/2025-07-13/protocol.pdf",
-        "resultsJson": "events/2025-07-13/results.json"
+        "sourceXlsx": "data/events/2025-07-13/source.xlsx",
+        "protocolPdf": "data/events/2025-07-13/protocol.pdf",
+        "resultsJson": "data/events/2025-07-13/results.json"
       }
     },
     {
@@ -398,9 +398,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2025-07-06/source.xlsx",
-        "protocolPdf": "events/2025-07-06/protocol.pdf",
-        "resultsJson": "events/2025-07-06/results.json"
+        "sourceXlsx": "data/events/2025-07-06/source.xlsx",
+        "protocolPdf": "data/events/2025-07-06/protocol.pdf",
+        "resultsJson": "data/events/2025-07-06/results.json"
       }
     },
     {
@@ -411,9 +411,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2025-06-29/source.xlsx",
-        "protocolPdf": "events/2025-06-29/protocol.pdf",
-        "resultsJson": "events/2025-06-29/results.json"
+        "sourceXlsx": "data/events/2025-06-29/source.xlsx",
+        "protocolPdf": "data/events/2025-06-29/protocol.pdf",
+        "resultsJson": "data/events/2025-06-29/results.json"
       }
     },
     {
@@ -424,9 +424,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 15,
       "files": {
-        "sourceXlsx": "events/2025-06-22/source.xlsx",
-        "protocolPdf": "events/2025-06-22/protocol.pdf",
-        "resultsJson": "events/2025-06-22/results.json"
+        "sourceXlsx": "data/events/2025-06-22/source.xlsx",
+        "protocolPdf": "data/events/2025-06-22/protocol.pdf",
+        "resultsJson": "data/events/2025-06-22/results.json"
       }
     },
     {
@@ -437,9 +437,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2025-06-15/source.xlsx",
-        "protocolPdf": "events/2025-06-15/protocol.pdf",
-        "resultsJson": "events/2025-06-15/results.json"
+        "sourceXlsx": "data/events/2025-06-15/source.xlsx",
+        "protocolPdf": "data/events/2025-06-15/protocol.pdf",
+        "resultsJson": "data/events/2025-06-15/results.json"
       }
     },
     {
@@ -450,9 +450,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2025-06-08/source.xlsx",
-        "protocolPdf": "events/2025-06-08/protocol.pdf",
-        "resultsJson": "events/2025-06-08/results.json"
+        "sourceXlsx": "data/events/2025-06-08/source.xlsx",
+        "protocolPdf": "data/events/2025-06-08/protocol.pdf",
+        "resultsJson": "data/events/2025-06-08/results.json"
       }
     },
     {
@@ -463,9 +463,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2025-06-01/source.xlsx",
-        "protocolPdf": "events/2025-06-01/protocol.pdf",
-        "resultsJson": "events/2025-06-01/results.json"
+        "sourceXlsx": "data/events/2025-06-01/source.xlsx",
+        "protocolPdf": "data/events/2025-06-01/protocol.pdf",
+        "resultsJson": "data/events/2025-06-01/results.json"
       }
     },
     {
@@ -476,9 +476,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2025-05-25/source.xlsx",
-        "protocolPdf": "events/2025-05-25/protocol.pdf",
-        "resultsJson": "events/2025-05-25/results.json"
+        "sourceXlsx": "data/events/2025-05-25/source.xlsx",
+        "protocolPdf": "data/events/2025-05-25/protocol.pdf",
+        "resultsJson": "data/events/2025-05-25/results.json"
       }
     },
     {
@@ -489,9 +489,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2025-05-18/source.xlsx",
-        "protocolPdf": "events/2025-05-18/protocol.pdf",
-        "resultsJson": "events/2025-05-18/results.json"
+        "sourceXlsx": "data/events/2025-05-18/source.xlsx",
+        "protocolPdf": "data/events/2025-05-18/protocol.pdf",
+        "resultsJson": "data/events/2025-05-18/results.json"
       }
     },
     {
@@ -502,9 +502,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-05-10/source.xlsx",
-        "protocolPdf": "events/2025-05-10/protocol.pdf",
-        "resultsJson": "events/2025-05-10/results.json"
+        "sourceXlsx": "data/events/2025-05-10/source.xlsx",
+        "protocolPdf": "data/events/2025-05-10/protocol.pdf",
+        "resultsJson": "data/events/2025-05-10/results.json"
       }
     },
     {
@@ -515,9 +515,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2025-05-04/source.xlsx",
-        "protocolPdf": "events/2025-05-04/protocol.pdf",
-        "resultsJson": "events/2025-05-04/results.json"
+        "sourceXlsx": "data/events/2025-05-04/source.xlsx",
+        "protocolPdf": "data/events/2025-05-04/protocol.pdf",
+        "resultsJson": "data/events/2025-05-04/results.json"
       }
     },
     {
@@ -528,9 +528,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2025-04-27/source.xlsx",
-        "protocolPdf": "events/2025-04-27/protocol.pdf",
-        "resultsJson": "events/2025-04-27/results.json"
+        "sourceXlsx": "data/events/2025-04-27/source.xlsx",
+        "protocolPdf": "data/events/2025-04-27/protocol.pdf",
+        "resultsJson": "data/events/2025-04-27/results.json"
       }
     },
     {
@@ -541,9 +541,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2025-04-20/source.xlsx",
-        "protocolPdf": "events/2025-04-20/protocol.pdf",
-        "resultsJson": "events/2025-04-20/results.json"
+        "sourceXlsx": "data/events/2025-04-20/source.xlsx",
+        "protocolPdf": "data/events/2025-04-20/protocol.pdf",
+        "resultsJson": "data/events/2025-04-20/results.json"
       }
     },
     {
@@ -554,9 +554,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2025-04-13/source.xlsx",
-        "protocolPdf": "events/2025-04-13/protocol.pdf",
-        "resultsJson": "events/2025-04-13/results.json"
+        "sourceXlsx": "data/events/2025-04-13/source.xlsx",
+        "protocolPdf": "data/events/2025-04-13/protocol.pdf",
+        "resultsJson": "data/events/2025-04-13/results.json"
       }
     },
     {
@@ -567,9 +567,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2025-04-06/source.xlsx",
-        "protocolPdf": "events/2025-04-06/protocol.pdf",
-        "resultsJson": "events/2025-04-06/results.json"
+        "sourceXlsx": "data/events/2025-04-06/source.xlsx",
+        "protocolPdf": "data/events/2025-04-06/protocol.pdf",
+        "resultsJson": "data/events/2025-04-06/results.json"
       }
     },
     {
@@ -580,9 +580,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2025-03-30/source.xlsx",
-        "protocolPdf": "events/2025-03-30/protocol.pdf",
-        "resultsJson": "events/2025-03-30/results.json"
+        "sourceXlsx": "data/events/2025-03-30/source.xlsx",
+        "protocolPdf": "data/events/2025-03-30/protocol.pdf",
+        "resultsJson": "data/events/2025-03-30/results.json"
       }
     },
     {
@@ -593,9 +593,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2025-03-23/source.xlsx",
-        "protocolPdf": "events/2025-03-23/protocol.pdf",
-        "resultsJson": "events/2025-03-23/results.json"
+        "sourceXlsx": "data/events/2025-03-23/source.xlsx",
+        "protocolPdf": "data/events/2025-03-23/protocol.pdf",
+        "resultsJson": "data/events/2025-03-23/results.json"
       }
     },
     {
@@ -606,9 +606,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 19,
       "files": {
-        "sourceXlsx": "events/2025-03-16/source.xlsx",
-        "protocolPdf": "events/2025-03-16/protocol.pdf",
-        "resultsJson": "events/2025-03-16/results.json"
+        "sourceXlsx": "data/events/2025-03-16/source.xlsx",
+        "protocolPdf": "data/events/2025-03-16/protocol.pdf",
+        "resultsJson": "data/events/2025-03-16/results.json"
       }
     },
     {
@@ -619,9 +619,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2025-03-09/source.xlsx",
-        "protocolPdf": "events/2025-03-09/protocol.pdf",
-        "resultsJson": "events/2025-03-09/results.json"
+        "sourceXlsx": "data/events/2025-03-09/source.xlsx",
+        "protocolPdf": "data/events/2025-03-09/protocol.pdf",
+        "resultsJson": "data/events/2025-03-09/results.json"
       }
     },
     {
@@ -632,9 +632,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2025-03-02/source.xlsx",
-        "protocolPdf": "events/2025-03-02/protocol.pdf",
-        "resultsJson": "events/2025-03-02/results.json"
+        "sourceXlsx": "data/events/2025-03-02/source.xlsx",
+        "protocolPdf": "data/events/2025-03-02/protocol.pdf",
+        "resultsJson": "data/events/2025-03-02/results.json"
       }
     },
     {
@@ -645,9 +645,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-02-23/source.xlsx",
-        "protocolPdf": "events/2025-02-23/protocol.pdf",
-        "resultsJson": "events/2025-02-23/results.json"
+        "sourceXlsx": "data/events/2025-02-23/source.xlsx",
+        "protocolPdf": "data/events/2025-02-23/protocol.pdf",
+        "resultsJson": "data/events/2025-02-23/results.json"
       }
     },
     {
@@ -658,9 +658,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2025-02-16/source.xlsx",
-        "protocolPdf": "events/2025-02-16/protocol.pdf",
-        "resultsJson": "events/2025-02-16/results.json"
+        "sourceXlsx": "data/events/2025-02-16/source.xlsx",
+        "protocolPdf": "data/events/2025-02-16/protocol.pdf",
+        "resultsJson": "data/events/2025-02-16/results.json"
       }
     },
     {
@@ -671,9 +671,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2025-02-09/source.xlsx",
-        "protocolPdf": "events/2025-02-09/protocol.pdf",
-        "resultsJson": "events/2025-02-09/results.json"
+        "sourceXlsx": "data/events/2025-02-09/source.xlsx",
+        "protocolPdf": "data/events/2025-02-09/protocol.pdf",
+        "resultsJson": "data/events/2025-02-09/results.json"
       }
     },
     {
@@ -684,9 +684,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2025-02-02/source.xlsx",
-        "protocolPdf": "events/2025-02-02/protocol.pdf",
-        "resultsJson": "events/2025-02-02/results.json"
+        "sourceXlsx": "data/events/2025-02-02/source.xlsx",
+        "protocolPdf": "data/events/2025-02-02/protocol.pdf",
+        "resultsJson": "data/events/2025-02-02/results.json"
       }
     },
     {
@@ -697,9 +697,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-01-26/source.xlsx",
-        "protocolPdf": "events/2025-01-26/protocol.pdf",
-        "resultsJson": "events/2025-01-26/results.json"
+        "sourceXlsx": "data/events/2025-01-26/source.xlsx",
+        "protocolPdf": "data/events/2025-01-26/protocol.pdf",
+        "resultsJson": "data/events/2025-01-26/results.json"
       }
     },
     {
@@ -710,9 +710,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2025-01-19/source.xlsx",
-        "protocolPdf": "events/2025-01-19/protocol.pdf",
-        "resultsJson": "events/2025-01-19/results.json"
+        "sourceXlsx": "data/events/2025-01-19/source.xlsx",
+        "protocolPdf": "data/events/2025-01-19/protocol.pdf",
+        "resultsJson": "data/events/2025-01-19/results.json"
       }
     },
     {
@@ -723,9 +723,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2025-01-12/source.xlsx",
-        "protocolPdf": "events/2025-01-12/protocol.pdf",
-        "resultsJson": "events/2025-01-12/results.json"
+        "sourceXlsx": "data/events/2025-01-12/source.xlsx",
+        "protocolPdf": "data/events/2025-01-12/protocol.pdf",
+        "resultsJson": "data/events/2025-01-12/results.json"
       }
     },
     {
@@ -736,9 +736,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2025-01-05/source.xlsx",
-        "protocolPdf": "events/2025-01-05/protocol.pdf",
-        "resultsJson": "events/2025-01-05/results.json"
+        "sourceXlsx": "data/events/2025-01-05/source.xlsx",
+        "protocolPdf": "data/events/2025-01-05/protocol.pdf",
+        "resultsJson": "data/events/2025-01-05/results.json"
       }
     },
     {
@@ -749,9 +749,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 17,
       "files": {
-        "sourceXlsx": "events/2024-12-29/source.xlsx",
-        "protocolPdf": "events/2024-12-29/protocol.pdf",
-        "resultsJson": "events/2024-12-29/results.json"
+        "sourceXlsx": "data/events/2024-12-29/source.xlsx",
+        "protocolPdf": "data/events/2024-12-29/protocol.pdf",
+        "resultsJson": "data/events/2024-12-29/results.json"
       }
     },
     {
@@ -762,9 +762,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2024-12-22/source.xlsx",
-        "protocolPdf": "events/2024-12-22/protocol.pdf",
-        "resultsJson": "events/2024-12-22/results.json"
+        "sourceXlsx": "data/events/2024-12-22/source.xlsx",
+        "protocolPdf": "data/events/2024-12-22/protocol.pdf",
+        "resultsJson": "data/events/2024-12-22/results.json"
       }
     },
     {
@@ -775,9 +775,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2024-12-15/source.xlsx",
-        "protocolPdf": "events/2024-12-15/protocol.pdf",
-        "resultsJson": "events/2024-12-15/results.json"
+        "sourceXlsx": "data/events/2024-12-15/source.xlsx",
+        "protocolPdf": "data/events/2024-12-15/protocol.pdf",
+        "resultsJson": "data/events/2024-12-15/results.json"
       }
     },
     {
@@ -788,9 +788,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2024-12-08/source.xlsx",
-        "protocolPdf": "events/2024-12-08/protocol.pdf",
-        "resultsJson": "events/2024-12-08/results.json"
+        "sourceXlsx": "data/events/2024-12-08/source.xlsx",
+        "protocolPdf": "data/events/2024-12-08/protocol.pdf",
+        "resultsJson": "data/events/2024-12-08/results.json"
       }
     },
     {
@@ -801,9 +801,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2024-12-01/source.xlsx",
-        "protocolPdf": "events/2024-12-01/protocol.pdf",
-        "resultsJson": "events/2024-12-01/results.json"
+        "sourceXlsx": "data/events/2024-12-01/source.xlsx",
+        "protocolPdf": "data/events/2024-12-01/protocol.pdf",
+        "resultsJson": "data/events/2024-12-01/results.json"
       }
     },
     {
@@ -814,9 +814,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2024-11-24/source.xlsx",
-        "protocolPdf": "events/2024-11-24/protocol.pdf",
-        "resultsJson": "events/2024-11-24/results.json"
+        "sourceXlsx": "data/events/2024-11-24/source.xlsx",
+        "protocolPdf": "data/events/2024-11-24/protocol.pdf",
+        "resultsJson": "data/events/2024-11-24/results.json"
       }
     },
     {
@@ -827,9 +827,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2024-11-17/source.xlsx",
-        "protocolPdf": "events/2024-11-17/protocol.pdf",
-        "resultsJson": "events/2024-11-17/results.json"
+        "sourceXlsx": "data/events/2024-11-17/source.xlsx",
+        "protocolPdf": "data/events/2024-11-17/protocol.pdf",
+        "resultsJson": "data/events/2024-11-17/results.json"
       }
     },
     {
@@ -840,9 +840,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2024-11-10/source.xlsx",
-        "protocolPdf": "events/2024-11-10/protocol.pdf",
-        "resultsJson": "events/2024-11-10/results.json"
+        "sourceXlsx": "data/events/2024-11-10/source.xlsx",
+        "protocolPdf": "data/events/2024-11-10/protocol.pdf",
+        "resultsJson": "data/events/2024-11-10/results.json"
       }
     },
     {
@@ -853,9 +853,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2024-11-03/source.xlsx",
-        "protocolPdf": "events/2024-11-03/protocol.pdf",
-        "resultsJson": "events/2024-11-03/results.json"
+        "sourceXlsx": "data/events/2024-11-03/source.xlsx",
+        "protocolPdf": "data/events/2024-11-03/protocol.pdf",
+        "resultsJson": "data/events/2024-11-03/results.json"
       }
     },
     {
@@ -866,9 +866,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 18,
       "files": {
-        "sourceXlsx": "events/2024-10-27/source.xlsx",
-        "protocolPdf": "events/2024-10-27/protocol.pdf",
-        "resultsJson": "events/2024-10-27/results.json"
+        "sourceXlsx": "data/events/2024-10-27/source.xlsx",
+        "protocolPdf": "data/events/2024-10-27/protocol.pdf",
+        "resultsJson": "data/events/2024-10-27/results.json"
       }
     },
     {
@@ -879,9 +879,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2024-10-20/source.xlsx",
-        "protocolPdf": "events/2024-10-20/protocol.pdf",
-        "resultsJson": "events/2024-10-20/results.json"
+        "sourceXlsx": "data/events/2024-10-20/source.xlsx",
+        "protocolPdf": "data/events/2024-10-20/protocol.pdf",
+        "resultsJson": "data/events/2024-10-20/results.json"
       }
     },
     {
@@ -892,9 +892,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2024-10-13/source.xlsx",
-        "protocolPdf": "events/2024-10-13/protocol.pdf",
-        "resultsJson": "events/2024-10-13/results.json"
+        "sourceXlsx": "data/events/2024-10-13/source.xlsx",
+        "protocolPdf": "data/events/2024-10-13/protocol.pdf",
+        "resultsJson": "data/events/2024-10-13/results.json"
       }
     },
     {
@@ -905,9 +905,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2024-10-06/source.xlsx",
-        "protocolPdf": "events/2024-10-06/protocol.pdf",
-        "resultsJson": "events/2024-10-06/results.json"
+        "sourceXlsx": "data/events/2024-10-06/source.xlsx",
+        "protocolPdf": "data/events/2024-10-06/protocol.pdf",
+        "resultsJson": "data/events/2024-10-06/results.json"
       }
     },
     {
@@ -918,9 +918,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2023-09-10/source.xlsx",
-        "protocolPdf": "events/2023-09-10/protocol.pdf",
-        "resultsJson": "events/2023-09-10/results.json"
+        "sourceXlsx": "data/events/2023-09-10/source.xlsx",
+        "protocolPdf": "data/events/2023-09-10/protocol.pdf",
+        "resultsJson": "data/events/2023-09-10/results.json"
       }
     },
     {
@@ -931,9 +931,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 1,
       "files": {
-        "sourceXlsx": "events/2023-09-03/source.xlsx",
-        "protocolPdf": "events/2023-09-03/protocol.pdf",
-        "resultsJson": "events/2023-09-03/results.json"
+        "sourceXlsx": "data/events/2023-09-03/source.xlsx",
+        "protocolPdf": "data/events/2023-09-03/protocol.pdf",
+        "resultsJson": "data/events/2023-09-03/results.json"
       }
     },
     {
@@ -944,9 +944,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2023-08-27/source.xlsx",
-        "protocolPdf": "events/2023-08-27/protocol.pdf",
-        "resultsJson": "events/2023-08-27/results.json"
+        "sourceXlsx": "data/events/2023-08-27/source.xlsx",
+        "protocolPdf": "data/events/2023-08-27/protocol.pdf",
+        "resultsJson": "data/events/2023-08-27/results.json"
       }
     },
     {
@@ -957,9 +957,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2023-08-20/source.xlsx",
-        "protocolPdf": "events/2023-08-20/protocol.pdf",
-        "resultsJson": "events/2023-08-20/results.json"
+        "sourceXlsx": "data/events/2023-08-20/source.xlsx",
+        "protocolPdf": "data/events/2023-08-20/protocol.pdf",
+        "resultsJson": "data/events/2023-08-20/results.json"
       }
     },
     {
@@ -970,9 +970,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2023-08-13/source.xlsx",
-        "protocolPdf": "events/2023-08-13/protocol.pdf",
-        "resultsJson": "events/2023-08-13/results.json"
+        "sourceXlsx": "data/events/2023-08-13/source.xlsx",
+        "protocolPdf": "data/events/2023-08-13/protocol.pdf",
+        "resultsJson": "data/events/2023-08-13/results.json"
       }
     },
     {
@@ -983,9 +983,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2023-08-06/source.xlsx",
-        "protocolPdf": "events/2023-08-06/protocol.pdf",
-        "resultsJson": "events/2023-08-06/results.json"
+        "sourceXlsx": "data/events/2023-08-06/source.xlsx",
+        "protocolPdf": "data/events/2023-08-06/protocol.pdf",
+        "resultsJson": "data/events/2023-08-06/results.json"
       }
     },
     {
@@ -996,9 +996,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2023-07-23/source.xlsx",
-        "protocolPdf": "events/2023-07-23/protocol.pdf",
-        "resultsJson": "events/2023-07-23/results.json"
+        "sourceXlsx": "data/events/2023-07-23/source.xlsx",
+        "protocolPdf": "data/events/2023-07-23/protocol.pdf",
+        "resultsJson": "data/events/2023-07-23/results.json"
       }
     },
     {
@@ -1009,9 +1009,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2023-07-16/source.xlsx",
-        "protocolPdf": "events/2023-07-16/protocol.pdf",
-        "resultsJson": "events/2023-07-16/results.json"
+        "sourceXlsx": "data/events/2023-07-16/source.xlsx",
+        "protocolPdf": "data/events/2023-07-16/protocol.pdf",
+        "resultsJson": "data/events/2023-07-16/results.json"
       }
     },
     {
@@ -1022,9 +1022,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2023-07-09/source.xlsx",
-        "protocolPdf": "events/2023-07-09/protocol.pdf",
-        "resultsJson": "events/2023-07-09/results.json"
+        "sourceXlsx": "data/events/2023-07-09/source.xlsx",
+        "protocolPdf": "data/events/2023-07-09/protocol.pdf",
+        "resultsJson": "data/events/2023-07-09/results.json"
       }
     },
     {
@@ -1035,9 +1035,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2023-07-02/source.xlsx",
-        "protocolPdf": "events/2023-07-02/protocol.pdf",
-        "resultsJson": "events/2023-07-02/results.json"
+        "sourceXlsx": "data/events/2023-07-02/source.xlsx",
+        "protocolPdf": "data/events/2023-07-02/protocol.pdf",
+        "resultsJson": "data/events/2023-07-02/results.json"
       }
     },
     {
@@ -1048,9 +1048,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2023-06-18/source.xlsx",
-        "protocolPdf": "events/2023-06-18/protocol.pdf",
-        "resultsJson": "events/2023-06-18/results.json"
+        "sourceXlsx": "data/events/2023-06-18/source.xlsx",
+        "protocolPdf": "data/events/2023-06-18/protocol.pdf",
+        "resultsJson": "data/events/2023-06-18/results.json"
       }
     },
     {
@@ -1061,9 +1061,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2023-06-11/source.xlsx",
-        "protocolPdf": "events/2023-06-11/protocol.pdf",
-        "resultsJson": "events/2023-06-11/results.json"
+        "sourceXlsx": "data/events/2023-06-11/source.xlsx",
+        "protocolPdf": "data/events/2023-06-11/protocol.pdf",
+        "resultsJson": "data/events/2023-06-11/results.json"
       }
     },
     {
@@ -1074,9 +1074,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2023-06-04/source.xlsx",
-        "protocolPdf": "events/2023-06-04/protocol.pdf",
-        "resultsJson": "events/2023-06-04/results.json"
+        "sourceXlsx": "data/events/2023-06-04/source.xlsx",
+        "protocolPdf": "data/events/2023-06-04/protocol.pdf",
+        "resultsJson": "data/events/2023-06-04/results.json"
       }
     },
     {
@@ -1087,9 +1087,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2023-05-21/source.xlsx",
-        "protocolPdf": "events/2023-05-21/protocol.pdf",
-        "resultsJson": "events/2023-05-21/results.json"
+        "sourceXlsx": "data/events/2023-05-21/source.xlsx",
+        "protocolPdf": "data/events/2023-05-21/protocol.pdf",
+        "resultsJson": "data/events/2023-05-21/results.json"
       }
     },
     {
@@ -1100,9 +1100,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2023-05-14/source.xlsx",
-        "protocolPdf": "events/2023-05-14/protocol.pdf",
-        "resultsJson": "events/2023-05-14/results.json"
+        "sourceXlsx": "data/events/2023-05-14/source.xlsx",
+        "protocolPdf": "data/events/2023-05-14/protocol.pdf",
+        "resultsJson": "data/events/2023-05-14/results.json"
       }
     },
     {
@@ -1113,9 +1113,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2023-05-07/source.xlsx",
-        "protocolPdf": "events/2023-05-07/protocol.pdf",
-        "resultsJson": "events/2023-05-07/results.json"
+        "sourceXlsx": "data/events/2023-05-07/source.xlsx",
+        "protocolPdf": "data/events/2023-05-07/protocol.pdf",
+        "resultsJson": "data/events/2023-05-07/results.json"
       }
     },
     {
@@ -1126,9 +1126,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 22,
       "files": {
-        "sourceXlsx": "events/2023-04-30/source.xlsx",
-        "protocolPdf": "events/2023-04-30/protocol.pdf",
-        "resultsJson": "events/2023-04-30/results.json"
+        "sourceXlsx": "data/events/2023-04-30/source.xlsx",
+        "protocolPdf": "data/events/2023-04-30/protocol.pdf",
+        "resultsJson": "data/events/2023-04-30/results.json"
       }
     },
     {
@@ -1139,9 +1139,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2023-04-23/source.xlsx",
-        "protocolPdf": "events/2023-04-23/protocol.pdf",
-        "resultsJson": "events/2023-04-23/results.json"
+        "sourceXlsx": "data/events/2023-04-23/source.xlsx",
+        "protocolPdf": "data/events/2023-04-23/protocol.pdf",
+        "resultsJson": "data/events/2023-04-23/results.json"
       }
     },
     {
@@ -1152,9 +1152,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2023-04-16/source.xlsx",
-        "protocolPdf": "events/2023-04-16/protocol.pdf",
-        "resultsJson": "events/2023-04-16/results.json"
+        "sourceXlsx": "data/events/2023-04-16/source.xlsx",
+        "protocolPdf": "data/events/2023-04-16/protocol.pdf",
+        "resultsJson": "data/events/2023-04-16/results.json"
       }
     },
     {
@@ -1165,9 +1165,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2023-04-09/source.xlsx",
-        "protocolPdf": "events/2023-04-09/protocol.pdf",
-        "resultsJson": "events/2023-04-09/results.json"
+        "sourceXlsx": "data/events/2023-04-09/source.xlsx",
+        "protocolPdf": "data/events/2023-04-09/protocol.pdf",
+        "resultsJson": "data/events/2023-04-09/results.json"
       }
     },
     {
@@ -1178,9 +1178,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2023-04-02/source.xlsx",
-        "protocolPdf": "events/2023-04-02/protocol.pdf",
-        "resultsJson": "events/2023-04-02/results.json"
+        "sourceXlsx": "data/events/2023-04-02/source.xlsx",
+        "protocolPdf": "data/events/2023-04-02/protocol.pdf",
+        "resultsJson": "data/events/2023-04-02/results.json"
       }
     },
     {
@@ -1191,9 +1191,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2023-03-26/source.xlsx",
-        "protocolPdf": "events/2023-03-26/protocol.pdf",
-        "resultsJson": "events/2023-03-26/results.json"
+        "sourceXlsx": "data/events/2023-03-26/source.xlsx",
+        "protocolPdf": "data/events/2023-03-26/protocol.pdf",
+        "resultsJson": "data/events/2023-03-26/results.json"
       }
     },
     {
@@ -1204,9 +1204,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2023-03-19/source.xlsx",
-        "protocolPdf": "events/2023-03-19/protocol.pdf",
-        "resultsJson": "events/2023-03-19/results.json"
+        "sourceXlsx": "data/events/2023-03-19/source.xlsx",
+        "protocolPdf": "data/events/2023-03-19/protocol.pdf",
+        "resultsJson": "data/events/2023-03-19/results.json"
       }
     },
     {
@@ -1217,9 +1217,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2023-03-12/source.xlsx",
-        "protocolPdf": "events/2023-03-12/protocol.pdf",
-        "resultsJson": "events/2023-03-12/results.json"
+        "sourceXlsx": "data/events/2023-03-12/source.xlsx",
+        "protocolPdf": "data/events/2023-03-12/protocol.pdf",
+        "resultsJson": "data/events/2023-03-12/results.json"
       }
     },
     {
@@ -1230,9 +1230,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2023-03-05/source.xlsx",
-        "protocolPdf": "events/2023-03-05/protocol.pdf",
-        "resultsJson": "events/2023-03-05/results.json"
+        "sourceXlsx": "data/events/2023-03-05/source.xlsx",
+        "protocolPdf": "data/events/2023-03-05/protocol.pdf",
+        "resultsJson": "data/events/2023-03-05/results.json"
       }
     },
     {
@@ -1243,9 +1243,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 15,
       "files": {
-        "sourceXlsx": "events/2023-02-26/source.xlsx",
-        "protocolPdf": "events/2023-02-26/protocol.pdf",
-        "resultsJson": "events/2023-02-26/results.json"
+        "sourceXlsx": "data/events/2023-02-26/source.xlsx",
+        "protocolPdf": "data/events/2023-02-26/protocol.pdf",
+        "resultsJson": "data/events/2023-02-26/results.json"
       }
     },
     {
@@ -1256,9 +1256,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2023-02-12/source.xlsx",
-        "protocolPdf": "events/2023-02-12/protocol.pdf",
-        "resultsJson": "events/2023-02-12/results.json"
+        "sourceXlsx": "data/events/2023-02-12/source.xlsx",
+        "protocolPdf": "data/events/2023-02-12/protocol.pdf",
+        "resultsJson": "data/events/2023-02-12/results.json"
       }
     },
     {
@@ -1269,9 +1269,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2023-02-05/source.xlsx",
-        "protocolPdf": "events/2023-02-05/protocol.pdf",
-        "resultsJson": "events/2023-02-05/results.json"
+        "sourceXlsx": "data/events/2023-02-05/source.xlsx",
+        "protocolPdf": "data/events/2023-02-05/protocol.pdf",
+        "resultsJson": "data/events/2023-02-05/results.json"
       }
     },
     {
@@ -1282,9 +1282,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 22,
       "files": {
-        "sourceXlsx": "events/2023-01-29/source.xlsx",
-        "protocolPdf": "events/2023-01-29/protocol.pdf",
-        "resultsJson": "events/2023-01-29/results.json"
+        "sourceXlsx": "data/events/2023-01-29/source.xlsx",
+        "protocolPdf": "data/events/2023-01-29/protocol.pdf",
+        "resultsJson": "data/events/2023-01-29/results.json"
       }
     },
     {
@@ -1295,9 +1295,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2023-01-22/source.xlsx",
-        "protocolPdf": "events/2023-01-22/protocol.pdf",
-        "resultsJson": "events/2023-01-22/results.json"
+        "sourceXlsx": "data/events/2023-01-22/source.xlsx",
+        "protocolPdf": "data/events/2023-01-22/protocol.pdf",
+        "resultsJson": "data/events/2023-01-22/results.json"
       }
     },
     {
@@ -1308,9 +1308,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2023-01-15/source.xlsx",
-        "protocolPdf": "events/2023-01-15/protocol.pdf",
-        "resultsJson": "events/2023-01-15/results.json"
+        "sourceXlsx": "data/events/2023-01-15/source.xlsx",
+        "protocolPdf": "data/events/2023-01-15/protocol.pdf",
+        "resultsJson": "data/events/2023-01-15/results.json"
       }
     },
     {
@@ -1321,9 +1321,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2023-01-08/source.xlsx",
-        "protocolPdf": "events/2023-01-08/protocol.pdf",
-        "resultsJson": "events/2023-01-08/results.json"
+        "sourceXlsx": "data/events/2023-01-08/source.xlsx",
+        "protocolPdf": "data/events/2023-01-08/protocol.pdf",
+        "resultsJson": "data/events/2023-01-08/results.json"
       }
     },
     {
@@ -1334,9 +1334,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2022-12-25/source.xlsx",
-        "protocolPdf": "events/2022-12-25/protocol.pdf",
-        "resultsJson": "events/2022-12-25/results.json"
+        "sourceXlsx": "data/events/2022-12-25/source.xlsx",
+        "protocolPdf": "data/events/2022-12-25/protocol.pdf",
+        "resultsJson": "data/events/2022-12-25/results.json"
       }
     },
     {
@@ -1347,9 +1347,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2022-12-18/source.xlsx",
-        "protocolPdf": "events/2022-12-18/protocol.pdf",
-        "resultsJson": "events/2022-12-18/results.json"
+        "sourceXlsx": "data/events/2022-12-18/source.xlsx",
+        "protocolPdf": "data/events/2022-12-18/protocol.pdf",
+        "resultsJson": "data/events/2022-12-18/results.json"
       }
     },
     {
@@ -1360,9 +1360,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2022-12-11/source.xlsx",
-        "protocolPdf": "events/2022-12-11/protocol.pdf",
-        "resultsJson": "events/2022-12-11/results.json"
+        "sourceXlsx": "data/events/2022-12-11/source.xlsx",
+        "protocolPdf": "data/events/2022-12-11/protocol.pdf",
+        "resultsJson": "data/events/2022-12-11/results.json"
       }
     },
     {
@@ -1373,9 +1373,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2022-12-04/source.xlsx",
-        "protocolPdf": "events/2022-12-04/protocol.pdf",
-        "resultsJson": "events/2022-12-04/results.json"
+        "sourceXlsx": "data/events/2022-12-04/source.xlsx",
+        "protocolPdf": "data/events/2022-12-04/protocol.pdf",
+        "resultsJson": "data/events/2022-12-04/results.json"
       }
     },
     {
@@ -1386,9 +1386,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2022-11-20/source.xlsx",
-        "protocolPdf": "events/2022-11-20/protocol.pdf",
-        "resultsJson": "events/2022-11-20/results.json"
+        "sourceXlsx": "data/events/2022-11-20/source.xlsx",
+        "protocolPdf": "data/events/2022-11-20/protocol.pdf",
+        "resultsJson": "data/events/2022-11-20/results.json"
       }
     },
     {
@@ -1399,9 +1399,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2022-11-13/source.xlsx",
-        "protocolPdf": "events/2022-11-13/protocol.pdf",
-        "resultsJson": "events/2022-11-13/results.json"
+        "sourceXlsx": "data/events/2022-11-13/source.xlsx",
+        "protocolPdf": "data/events/2022-11-13/protocol.pdf",
+        "resultsJson": "data/events/2022-11-13/results.json"
       }
     },
     {
@@ -1412,9 +1412,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2022-10-30/source.xlsx",
-        "protocolPdf": "events/2022-10-30/protocol.pdf",
-        "resultsJson": "events/2022-10-30/results.json"
+        "sourceXlsx": "data/events/2022-10-30/source.xlsx",
+        "protocolPdf": "data/events/2022-10-30/protocol.pdf",
+        "resultsJson": "data/events/2022-10-30/results.json"
       }
     },
     {
@@ -1425,9 +1425,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2022-10-23/source.xlsx",
-        "protocolPdf": "events/2022-10-23/protocol.pdf",
-        "resultsJson": "events/2022-10-23/results.json"
+        "sourceXlsx": "data/events/2022-10-23/source.xlsx",
+        "protocolPdf": "data/events/2022-10-23/protocol.pdf",
+        "resultsJson": "data/events/2022-10-23/results.json"
       }
     },
     {
@@ -1438,9 +1438,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2022-10-16/source.xlsx",
-        "protocolPdf": "events/2022-10-16/protocol.pdf",
-        "resultsJson": "events/2022-10-16/results.json"
+        "sourceXlsx": "data/events/2022-10-16/source.xlsx",
+        "protocolPdf": "data/events/2022-10-16/protocol.pdf",
+        "resultsJson": "data/events/2022-10-16/results.json"
       }
     },
     {
@@ -1451,9 +1451,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2022-10-09/source.xlsx",
-        "protocolPdf": "events/2022-10-09/protocol.pdf",
-        "resultsJson": "events/2022-10-09/results.json"
+        "sourceXlsx": "data/events/2022-10-09/source.xlsx",
+        "protocolPdf": "data/events/2022-10-09/protocol.pdf",
+        "resultsJson": "data/events/2022-10-09/results.json"
       }
     },
     {
@@ -1464,9 +1464,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2022-10-02/source.xlsx",
-        "protocolPdf": "events/2022-10-02/protocol.pdf",
-        "resultsJson": "events/2022-10-02/results.json"
+        "sourceXlsx": "data/events/2022-10-02/source.xlsx",
+        "protocolPdf": "data/events/2022-10-02/protocol.pdf",
+        "resultsJson": "data/events/2022-10-02/results.json"
       }
     },
     {
@@ -1477,9 +1477,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2022-09-25/source.xlsx",
-        "protocolPdf": "events/2022-09-25/protocol.pdf",
-        "resultsJson": "events/2022-09-25/results.json"
+        "sourceXlsx": "data/events/2022-09-25/source.xlsx",
+        "protocolPdf": "data/events/2022-09-25/protocol.pdf",
+        "resultsJson": "data/events/2022-09-25/results.json"
       }
     },
     {
@@ -1490,9 +1490,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2022-09-18/source.xlsx",
-        "protocolPdf": "events/2022-09-18/protocol.pdf",
-        "resultsJson": "events/2022-09-18/results.json"
+        "sourceXlsx": "data/events/2022-09-18/source.xlsx",
+        "protocolPdf": "data/events/2022-09-18/protocol.pdf",
+        "resultsJson": "data/events/2022-09-18/results.json"
       }
     },
     {
@@ -1503,9 +1503,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2022-09-04/source.xlsx",
-        "protocolPdf": "events/2022-09-04/protocol.pdf",
-        "resultsJson": "events/2022-09-04/results.json"
+        "sourceXlsx": "data/events/2022-09-04/source.xlsx",
+        "protocolPdf": "data/events/2022-09-04/protocol.pdf",
+        "resultsJson": "data/events/2022-09-04/results.json"
       }
     },
     {
@@ -1516,9 +1516,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 15,
       "files": {
-        "sourceXlsx": "events/2022-08-21/source.xlsx",
-        "protocolPdf": "events/2022-08-21/protocol.pdf",
-        "resultsJson": "events/2022-08-21/results.json"
+        "sourceXlsx": "data/events/2022-08-21/source.xlsx",
+        "protocolPdf": "data/events/2022-08-21/protocol.pdf",
+        "resultsJson": "data/events/2022-08-21/results.json"
       }
     },
     {
@@ -1529,9 +1529,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2022-08-14/source.xlsx",
-        "protocolPdf": "events/2022-08-14/protocol.pdf",
-        "resultsJson": "events/2022-08-14/results.json"
+        "sourceXlsx": "data/events/2022-08-14/source.xlsx",
+        "protocolPdf": "data/events/2022-08-14/protocol.pdf",
+        "resultsJson": "data/events/2022-08-14/results.json"
       }
     },
     {
@@ -1542,9 +1542,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2022-08-07/source.xlsx",
-        "protocolPdf": "events/2022-08-07/protocol.pdf",
-        "resultsJson": "events/2022-08-07/results.json"
+        "sourceXlsx": "data/events/2022-08-07/source.xlsx",
+        "protocolPdf": "data/events/2022-08-07/protocol.pdf",
+        "resultsJson": "data/events/2022-08-07/results.json"
       }
     },
     {
@@ -1555,9 +1555,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 18,
       "files": {
-        "sourceXlsx": "events/2022-07-31/source.xlsx",
-        "protocolPdf": "events/2022-07-31/protocol.pdf",
-        "resultsJson": "events/2022-07-31/results.json"
+        "sourceXlsx": "data/events/2022-07-31/source.xlsx",
+        "protocolPdf": "data/events/2022-07-31/protocol.pdf",
+        "resultsJson": "data/events/2022-07-31/results.json"
       }
     },
     {
@@ -1568,9 +1568,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2022-07-24/source.xlsx",
-        "protocolPdf": "events/2022-07-24/protocol.pdf",
-        "resultsJson": "events/2022-07-24/results.json"
+        "sourceXlsx": "data/events/2022-07-24/source.xlsx",
+        "protocolPdf": "data/events/2022-07-24/protocol.pdf",
+        "resultsJson": "data/events/2022-07-24/results.json"
       }
     },
     {
@@ -1581,9 +1581,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2022-07-17/source.xlsx",
-        "protocolPdf": "events/2022-07-17/protocol.pdf",
-        "resultsJson": "events/2022-07-17/results.json"
+        "sourceXlsx": "data/events/2022-07-17/source.xlsx",
+        "protocolPdf": "data/events/2022-07-17/protocol.pdf",
+        "resultsJson": "data/events/2022-07-17/results.json"
       }
     },
     {
@@ -1594,9 +1594,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 19,
       "files": {
-        "sourceXlsx": "events/2022-07-10/source.xlsx",
-        "protocolPdf": "events/2022-07-10/protocol.pdf",
-        "resultsJson": "events/2022-07-10/results.json"
+        "sourceXlsx": "data/events/2022-07-10/source.xlsx",
+        "protocolPdf": "data/events/2022-07-10/protocol.pdf",
+        "resultsJson": "data/events/2022-07-10/results.json"
       }
     },
     {
@@ -1607,9 +1607,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2022-07-03/source.xlsx",
-        "protocolPdf": "events/2022-07-03/protocol.pdf",
-        "resultsJson": "events/2022-07-03/results.json"
+        "sourceXlsx": "data/events/2022-07-03/source.xlsx",
+        "protocolPdf": "data/events/2022-07-03/protocol.pdf",
+        "resultsJson": "data/events/2022-07-03/results.json"
       }
     },
     {
@@ -1620,9 +1620,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2022-06-26/source.xlsx",
-        "protocolPdf": "events/2022-06-26/protocol.pdf",
-        "resultsJson": "events/2022-06-26/results.json"
+        "sourceXlsx": "data/events/2022-06-26/source.xlsx",
+        "protocolPdf": "data/events/2022-06-26/protocol.pdf",
+        "resultsJson": "data/events/2022-06-26/results.json"
       }
     },
     {
@@ -1633,9 +1633,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2022-06-19/source.xlsx",
-        "protocolPdf": "events/2022-06-19/protocol.pdf",
-        "resultsJson": "events/2022-06-19/results.json"
+        "sourceXlsx": "data/events/2022-06-19/source.xlsx",
+        "protocolPdf": "data/events/2022-06-19/protocol.pdf",
+        "resultsJson": "data/events/2022-06-19/results.json"
       }
     },
     {
@@ -1646,9 +1646,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2022-06-12/source.xlsx",
-        "protocolPdf": "events/2022-06-12/protocol.pdf",
-        "resultsJson": "events/2022-06-12/results.json"
+        "sourceXlsx": "data/events/2022-06-12/source.xlsx",
+        "protocolPdf": "data/events/2022-06-12/protocol.pdf",
+        "resultsJson": "data/events/2022-06-12/results.json"
       }
     },
     {
@@ -1659,9 +1659,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2022-06-05/source.xlsx",
-        "protocolPdf": "events/2022-06-05/protocol.pdf",
-        "resultsJson": "events/2022-06-05/results.json"
+        "sourceXlsx": "data/events/2022-06-05/source.xlsx",
+        "protocolPdf": "data/events/2022-06-05/protocol.pdf",
+        "resultsJson": "data/events/2022-06-05/results.json"
       }
     },
     {
@@ -1672,9 +1672,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2022-05-15/source.xlsx",
-        "protocolPdf": "events/2022-05-15/protocol.pdf",
-        "resultsJson": "events/2022-05-15/results.json"
+        "sourceXlsx": "data/events/2022-05-15/source.xlsx",
+        "protocolPdf": "data/events/2022-05-15/protocol.pdf",
+        "resultsJson": "data/events/2022-05-15/results.json"
       }
     },
     {
@@ -1685,9 +1685,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2022-05-08/source.xlsx",
-        "protocolPdf": "events/2022-05-08/protocol.pdf",
-        "resultsJson": "events/2022-05-08/results.json"
+        "sourceXlsx": "data/events/2022-05-08/source.xlsx",
+        "protocolPdf": "data/events/2022-05-08/protocol.pdf",
+        "resultsJson": "data/events/2022-05-08/results.json"
       }
     },
     {
@@ -1698,9 +1698,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2022-05-01/source.xlsx",
-        "protocolPdf": "events/2022-05-01/protocol.pdf",
-        "resultsJson": "events/2022-05-01/results.json"
+        "sourceXlsx": "data/events/2022-05-01/source.xlsx",
+        "protocolPdf": "data/events/2022-05-01/protocol.pdf",
+        "resultsJson": "data/events/2022-05-01/results.json"
       }
     },
     {
@@ -1711,9 +1711,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 18,
       "files": {
-        "sourceXlsx": "events/2022-04-24/source.xlsx",
-        "protocolPdf": "events/2022-04-24/protocol.pdf",
-        "resultsJson": "events/2022-04-24/results.json"
+        "sourceXlsx": "data/events/2022-04-24/source.xlsx",
+        "protocolPdf": "data/events/2022-04-24/protocol.pdf",
+        "resultsJson": "data/events/2022-04-24/results.json"
       }
     },
     {
@@ -1724,9 +1724,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2022-04-17/source.xlsx",
-        "protocolPdf": "events/2022-04-17/protocol.pdf",
-        "resultsJson": "events/2022-04-17/results.json"
+        "sourceXlsx": "data/events/2022-04-17/source.xlsx",
+        "protocolPdf": "data/events/2022-04-17/protocol.pdf",
+        "resultsJson": "data/events/2022-04-17/results.json"
       }
     },
     {
@@ -1737,9 +1737,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2022-04-10/source.xlsx",
-        "protocolPdf": "events/2022-04-10/protocol.pdf",
-        "resultsJson": "events/2022-04-10/results.json"
+        "sourceXlsx": "data/events/2022-04-10/source.xlsx",
+        "protocolPdf": "data/events/2022-04-10/protocol.pdf",
+        "resultsJson": "data/events/2022-04-10/results.json"
       }
     },
     {
@@ -1750,9 +1750,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2022-04-03/source.xlsx",
-        "protocolPdf": "events/2022-04-03/protocol.pdf",
-        "resultsJson": "events/2022-04-03/results.json"
+        "sourceXlsx": "data/events/2022-04-03/source.xlsx",
+        "protocolPdf": "data/events/2022-04-03/protocol.pdf",
+        "resultsJson": "data/events/2022-04-03/results.json"
       }
     },
     {
@@ -1763,9 +1763,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2022-03-27/source.xlsx",
-        "protocolPdf": "events/2022-03-27/protocol.pdf",
-        "resultsJson": "events/2022-03-27/results.json"
+        "sourceXlsx": "data/events/2022-03-27/source.xlsx",
+        "protocolPdf": "data/events/2022-03-27/protocol.pdf",
+        "resultsJson": "data/events/2022-03-27/results.json"
       }
     },
     {
@@ -1776,9 +1776,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2022-03-20/source.xlsx",
-        "protocolPdf": "events/2022-03-20/protocol.pdf",
-        "resultsJson": "events/2022-03-20/results.json"
+        "sourceXlsx": "data/events/2022-03-20/source.xlsx",
+        "protocolPdf": "data/events/2022-03-20/protocol.pdf",
+        "resultsJson": "data/events/2022-03-20/results.json"
       }
     },
     {
@@ -1789,9 +1789,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 17,
       "files": {
-        "sourceXlsx": "events/2022-03-13/source.xlsx",
-        "protocolPdf": "events/2022-03-13/protocol.pdf",
-        "resultsJson": "events/2022-03-13/results.json"
+        "sourceXlsx": "data/events/2022-03-13/source.xlsx",
+        "protocolPdf": "data/events/2022-03-13/protocol.pdf",
+        "resultsJson": "data/events/2022-03-13/results.json"
       }
     },
     {
@@ -1802,9 +1802,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2022-02-27/source.xlsx",
-        "protocolPdf": "events/2022-02-27/protocol.pdf",
-        "resultsJson": "events/2022-02-27/results.json"
+        "sourceXlsx": "data/events/2022-02-27/source.xlsx",
+        "protocolPdf": "data/events/2022-02-27/protocol.pdf",
+        "resultsJson": "data/events/2022-02-27/results.json"
       }
     },
     {
@@ -1815,9 +1815,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2022-02-20/source.xlsx",
-        "protocolPdf": "events/2022-02-20/protocol.pdf",
-        "resultsJson": "events/2022-02-20/results.json"
+        "sourceXlsx": "data/events/2022-02-20/source.xlsx",
+        "protocolPdf": "data/events/2022-02-20/protocol.pdf",
+        "resultsJson": "data/events/2022-02-20/results.json"
       }
     },
     {
@@ -1828,9 +1828,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2022-02-13/source.xlsx",
-        "protocolPdf": "events/2022-02-13/protocol.pdf",
-        "resultsJson": "events/2022-02-13/results.json"
+        "sourceXlsx": "data/events/2022-02-13/source.xlsx",
+        "protocolPdf": "data/events/2022-02-13/protocol.pdf",
+        "resultsJson": "data/events/2022-02-13/results.json"
       }
     },
     {
@@ -1841,9 +1841,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2022-02-06/source.xlsx",
-        "protocolPdf": "events/2022-02-06/protocol.pdf",
-        "resultsJson": "events/2022-02-06/results.json"
+        "sourceXlsx": "data/events/2022-02-06/source.xlsx",
+        "protocolPdf": "data/events/2022-02-06/protocol.pdf",
+        "resultsJson": "data/events/2022-02-06/results.json"
       }
     },
     {
@@ -1854,9 +1854,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2022-01-23/source.xlsx",
-        "protocolPdf": "events/2022-01-23/protocol.pdf",
-        "resultsJson": "events/2022-01-23/results.json"
+        "sourceXlsx": "data/events/2022-01-23/source.xlsx",
+        "protocolPdf": "data/events/2022-01-23/protocol.pdf",
+        "resultsJson": "data/events/2022-01-23/results.json"
       }
     },
     {
@@ -1867,9 +1867,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2022-01-16/source.xlsx",
-        "protocolPdf": "events/2022-01-16/protocol.pdf",
-        "resultsJson": "events/2022-01-16/results.json"
+        "sourceXlsx": "data/events/2022-01-16/source.xlsx",
+        "protocolPdf": "data/events/2022-01-16/protocol.pdf",
+        "resultsJson": "data/events/2022-01-16/results.json"
       }
     },
     {
@@ -1880,9 +1880,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2022-01-09/source.xlsx",
-        "protocolPdf": "events/2022-01-09/protocol.pdf",
-        "resultsJson": "events/2022-01-09/results.json"
+        "sourceXlsx": "data/events/2022-01-09/source.xlsx",
+        "protocolPdf": "data/events/2022-01-09/protocol.pdf",
+        "resultsJson": "data/events/2022-01-09/results.json"
       }
     },
     {
@@ -1893,9 +1893,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2021-12-26/source.xlsx",
-        "protocolPdf": "events/2021-12-26/protocol.pdf",
-        "resultsJson": "events/2021-12-26/results.json"
+        "sourceXlsx": "data/events/2021-12-26/source.xlsx",
+        "protocolPdf": "data/events/2021-12-26/protocol.pdf",
+        "resultsJson": "data/events/2021-12-26/results.json"
       }
     },
     {
@@ -1906,9 +1906,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2021-12-19/source.xlsx",
-        "protocolPdf": "events/2021-12-19/protocol.pdf",
-        "resultsJson": "events/2021-12-19/results.json"
+        "sourceXlsx": "data/events/2021-12-19/source.xlsx",
+        "protocolPdf": "data/events/2021-12-19/protocol.pdf",
+        "resultsJson": "data/events/2021-12-19/results.json"
       }
     },
     {
@@ -1919,9 +1919,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2021-12-12/source.xlsx",
-        "protocolPdf": "events/2021-12-12/protocol.pdf",
-        "resultsJson": "events/2021-12-12/results.json"
+        "sourceXlsx": "data/events/2021-12-12/source.xlsx",
+        "protocolPdf": "data/events/2021-12-12/protocol.pdf",
+        "resultsJson": "data/events/2021-12-12/results.json"
       }
     },
     {
@@ -1932,9 +1932,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2021-12-05/source.xlsx",
-        "protocolPdf": "events/2021-12-05/protocol.pdf",
-        "resultsJson": "events/2021-12-05/results.json"
+        "sourceXlsx": "data/events/2021-12-05/source.xlsx",
+        "protocolPdf": "data/events/2021-12-05/protocol.pdf",
+        "resultsJson": "data/events/2021-12-05/results.json"
       }
     },
     {
@@ -1945,9 +1945,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2021-11-28/source.xlsx",
-        "protocolPdf": "events/2021-11-28/protocol.pdf",
-        "resultsJson": "events/2021-11-28/results.json"
+        "sourceXlsx": "data/events/2021-11-28/source.xlsx",
+        "protocolPdf": "data/events/2021-11-28/protocol.pdf",
+        "resultsJson": "data/events/2021-11-28/results.json"
       }
     },
     {
@@ -1958,9 +1958,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2021-11-14/source.xlsx",
-        "protocolPdf": "events/2021-11-14/protocol.pdf",
-        "resultsJson": "events/2021-11-14/results.json"
+        "sourceXlsx": "data/events/2021-11-14/source.xlsx",
+        "protocolPdf": "data/events/2021-11-14/protocol.pdf",
+        "resultsJson": "data/events/2021-11-14/results.json"
       }
     },
     {
@@ -1971,9 +1971,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2021-11-07/source.xlsx",
-        "protocolPdf": "events/2021-11-07/protocol.pdf",
-        "resultsJson": "events/2021-11-07/results.json"
+        "sourceXlsx": "data/events/2021-11-07/source.xlsx",
+        "protocolPdf": "data/events/2021-11-07/protocol.pdf",
+        "resultsJson": "data/events/2021-11-07/results.json"
       }
     },
     {
@@ -1984,9 +1984,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 25,
       "files": {
-        "sourceXlsx": "events/2021-10-31/source.xlsx",
-        "protocolPdf": "events/2021-10-31/protocol.pdf",
-        "resultsJson": "events/2021-10-31/results.json"
+        "sourceXlsx": "data/events/2021-10-31/source.xlsx",
+        "protocolPdf": "data/events/2021-10-31/protocol.pdf",
+        "resultsJson": "data/events/2021-10-31/results.json"
       }
     },
     {
@@ -1997,9 +1997,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2021-10-24/source.xlsx",
-        "protocolPdf": "events/2021-10-24/protocol.pdf",
-        "resultsJson": "events/2021-10-24/results.json"
+        "sourceXlsx": "data/events/2021-10-24/source.xlsx",
+        "protocolPdf": "data/events/2021-10-24/protocol.pdf",
+        "resultsJson": "data/events/2021-10-24/results.json"
       }
     },
     {
@@ -2010,9 +2010,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2021-10-17/source.xlsx",
-        "protocolPdf": "events/2021-10-17/protocol.pdf",
-        "resultsJson": "events/2021-10-17/results.json"
+        "sourceXlsx": "data/events/2021-10-17/source.xlsx",
+        "protocolPdf": "data/events/2021-10-17/protocol.pdf",
+        "resultsJson": "data/events/2021-10-17/results.json"
       }
     },
     {
@@ -2023,9 +2023,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 21,
       "files": {
-        "sourceXlsx": "events/2021-10-10/source.xlsx",
-        "protocolPdf": "events/2021-10-10/protocol.pdf",
-        "resultsJson": "events/2021-10-10/results.json"
+        "sourceXlsx": "data/events/2021-10-10/source.xlsx",
+        "protocolPdf": "data/events/2021-10-10/protocol.pdf",
+        "resultsJson": "data/events/2021-10-10/results.json"
       }
     },
     {
@@ -2036,9 +2036,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 20,
       "files": {
-        "sourceXlsx": "events/2021-10-03/source.xlsx",
-        "protocolPdf": "events/2021-10-03/protocol.pdf",
-        "resultsJson": "events/2021-10-03/results.json"
+        "sourceXlsx": "data/events/2021-10-03/source.xlsx",
+        "protocolPdf": "data/events/2021-10-03/protocol.pdf",
+        "resultsJson": "data/events/2021-10-03/results.json"
       }
     },
     {
@@ -2049,9 +2049,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2021-09-19/source.xlsx",
-        "protocolPdf": "events/2021-09-19/protocol.pdf",
-        "resultsJson": "events/2021-09-19/results.json"
+        "sourceXlsx": "data/events/2021-09-19/source.xlsx",
+        "protocolPdf": "data/events/2021-09-19/protocol.pdf",
+        "resultsJson": "data/events/2021-09-19/results.json"
       }
     },
     {
@@ -2062,9 +2062,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2021-09-12/source.xlsx",
-        "protocolPdf": "events/2021-09-12/protocol.pdf",
-        "resultsJson": "events/2021-09-12/results.json"
+        "sourceXlsx": "data/events/2021-09-12/source.xlsx",
+        "protocolPdf": "data/events/2021-09-12/protocol.pdf",
+        "resultsJson": "data/events/2021-09-12/results.json"
       }
     },
     {
@@ -2075,9 +2075,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2021-09-05/source.xlsx",
-        "protocolPdf": "events/2021-09-05/protocol.pdf",
-        "resultsJson": "events/2021-09-05/results.json"
+        "sourceXlsx": "data/events/2021-09-05/source.xlsx",
+        "protocolPdf": "data/events/2021-09-05/protocol.pdf",
+        "resultsJson": "data/events/2021-09-05/results.json"
       }
     },
     {
@@ -2088,9 +2088,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2021-08-29/source.xlsx",
-        "protocolPdf": "events/2021-08-29/protocol.pdf",
-        "resultsJson": "events/2021-08-29/results.json"
+        "sourceXlsx": "data/events/2021-08-29/source.xlsx",
+        "protocolPdf": "data/events/2021-08-29/protocol.pdf",
+        "resultsJson": "data/events/2021-08-29/results.json"
       }
     },
     {
@@ -2101,9 +2101,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2021-08-22/source.xlsx",
-        "protocolPdf": "events/2021-08-22/protocol.pdf",
-        "resultsJson": "events/2021-08-22/results.json"
+        "sourceXlsx": "data/events/2021-08-22/source.xlsx",
+        "protocolPdf": "data/events/2021-08-22/protocol.pdf",
+        "resultsJson": "data/events/2021-08-22/results.json"
       }
     },
     {
@@ -2114,9 +2114,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2021-08-15/source.xlsx",
-        "protocolPdf": "events/2021-08-15/protocol.pdf",
-        "resultsJson": "events/2021-08-15/results.json"
+        "sourceXlsx": "data/events/2021-08-15/source.xlsx",
+        "protocolPdf": "data/events/2021-08-15/protocol.pdf",
+        "resultsJson": "data/events/2021-08-15/results.json"
       }
     },
     {
@@ -2127,9 +2127,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2021-08-08/source.xlsx",
-        "protocolPdf": "events/2021-08-08/protocol.pdf",
-        "resultsJson": "events/2021-08-08/results.json"
+        "sourceXlsx": "data/events/2021-08-08/source.xlsx",
+        "protocolPdf": "data/events/2021-08-08/protocol.pdf",
+        "resultsJson": "data/events/2021-08-08/results.json"
       }
     },
     {
@@ -2140,9 +2140,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2021-08-01/source.xlsx",
-        "protocolPdf": "events/2021-08-01/protocol.pdf",
-        "resultsJson": "events/2021-08-01/results.json"
+        "sourceXlsx": "data/events/2021-08-01/source.xlsx",
+        "protocolPdf": "data/events/2021-08-01/protocol.pdf",
+        "resultsJson": "data/events/2021-08-01/results.json"
       }
     },
     {
@@ -2153,9 +2153,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 20,
       "files": {
-        "sourceXlsx": "events/2021-07-25/source.xlsx",
-        "protocolPdf": "events/2021-07-25/protocol.pdf",
-        "resultsJson": "events/2021-07-25/results.json"
+        "sourceXlsx": "data/events/2021-07-25/source.xlsx",
+        "protocolPdf": "data/events/2021-07-25/protocol.pdf",
+        "resultsJson": "data/events/2021-07-25/results.json"
       }
     },
     {
@@ -2166,9 +2166,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2021-07-18/source.xlsx",
-        "protocolPdf": "events/2021-07-18/protocol.pdf",
-        "resultsJson": "events/2021-07-18/results.json"
+        "sourceXlsx": "data/events/2021-07-18/source.xlsx",
+        "protocolPdf": "data/events/2021-07-18/protocol.pdf",
+        "resultsJson": "data/events/2021-07-18/results.json"
       }
     },
     {
@@ -2179,9 +2179,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2021-07-11/source.xlsx",
-        "protocolPdf": "events/2021-07-11/protocol.pdf",
-        "resultsJson": "events/2021-07-11/results.json"
+        "sourceXlsx": "data/events/2021-07-11/source.xlsx",
+        "protocolPdf": "data/events/2021-07-11/protocol.pdf",
+        "resultsJson": "data/events/2021-07-11/results.json"
       }
     },
     {
@@ -2192,9 +2192,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2021-07-04/source.xlsx",
-        "protocolPdf": "events/2021-07-04/protocol.pdf",
-        "resultsJson": "events/2021-07-04/results.json"
+        "sourceXlsx": "data/events/2021-07-04/source.xlsx",
+        "protocolPdf": "data/events/2021-07-04/protocol.pdf",
+        "resultsJson": "data/events/2021-07-04/results.json"
       }
     },
     {
@@ -2205,9 +2205,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2021-06-27/source.xlsx",
-        "protocolPdf": "events/2021-06-27/protocol.pdf",
-        "resultsJson": "events/2021-06-27/results.json"
+        "sourceXlsx": "data/events/2021-06-27/source.xlsx",
+        "protocolPdf": "data/events/2021-06-27/protocol.pdf",
+        "resultsJson": "data/events/2021-06-27/results.json"
       }
     },
     {
@@ -2218,9 +2218,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2021-06-20/source.xlsx",
-        "protocolPdf": "events/2021-06-20/protocol.pdf",
-        "resultsJson": "events/2021-06-20/results.json"
+        "sourceXlsx": "data/events/2021-06-20/source.xlsx",
+        "protocolPdf": "data/events/2021-06-20/protocol.pdf",
+        "resultsJson": "data/events/2021-06-20/results.json"
       }
     },
     {
@@ -2231,9 +2231,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2021-06-13/source.xlsx",
-        "protocolPdf": "events/2021-06-13/protocol.pdf",
-        "resultsJson": "events/2021-06-13/results.json"
+        "sourceXlsx": "data/events/2021-06-13/source.xlsx",
+        "protocolPdf": "data/events/2021-06-13/protocol.pdf",
+        "resultsJson": "data/events/2021-06-13/results.json"
       }
     },
     {
@@ -2244,9 +2244,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 19,
       "files": {
-        "sourceXlsx": "events/2021-06-06/source.xlsx",
-        "protocolPdf": "events/2021-06-06/protocol.pdf",
-        "resultsJson": "events/2021-06-06/results.json"
+        "sourceXlsx": "data/events/2021-06-06/source.xlsx",
+        "protocolPdf": "data/events/2021-06-06/protocol.pdf",
+        "resultsJson": "data/events/2021-06-06/results.json"
       }
     },
     {
@@ -2257,9 +2257,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2021-05-30/source.xlsx",
-        "protocolPdf": "events/2021-05-30/protocol.pdf",
-        "resultsJson": "events/2021-05-30/results.json"
+        "sourceXlsx": "data/events/2021-05-30/source.xlsx",
+        "protocolPdf": "data/events/2021-05-30/protocol.pdf",
+        "resultsJson": "data/events/2021-05-30/results.json"
       }
     },
     {
@@ -2270,9 +2270,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 18,
       "files": {
-        "sourceXlsx": "events/2021-05-16/source.xlsx",
-        "protocolPdf": "events/2021-05-16/protocol.pdf",
-        "resultsJson": "events/2021-05-16/results.json"
+        "sourceXlsx": "data/events/2021-05-16/source.xlsx",
+        "protocolPdf": "data/events/2021-05-16/protocol.pdf",
+        "resultsJson": "data/events/2021-05-16/results.json"
       }
     },
     {
@@ -2283,9 +2283,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2021-05-02/source.xlsx",
-        "protocolPdf": "events/2021-05-02/protocol.pdf",
-        "resultsJson": "events/2021-05-02/results.json"
+        "sourceXlsx": "data/events/2021-05-02/source.xlsx",
+        "protocolPdf": "data/events/2021-05-02/protocol.pdf",
+        "resultsJson": "data/events/2021-05-02/results.json"
       }
     },
     {
@@ -2296,9 +2296,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2021-04-25/source.xlsx",
-        "protocolPdf": "events/2021-04-25/protocol.pdf",
-        "resultsJson": "events/2021-04-25/results.json"
+        "sourceXlsx": "data/events/2021-04-25/source.xlsx",
+        "protocolPdf": "data/events/2021-04-25/protocol.pdf",
+        "resultsJson": "data/events/2021-04-25/results.json"
       }
     },
     {
@@ -2309,9 +2309,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2021-04-18/source.xlsx",
-        "protocolPdf": "events/2021-04-18/protocol.pdf",
-        "resultsJson": "events/2021-04-18/results.json"
+        "sourceXlsx": "data/events/2021-04-18/source.xlsx",
+        "protocolPdf": "data/events/2021-04-18/protocol.pdf",
+        "resultsJson": "data/events/2021-04-18/results.json"
       }
     },
     {
@@ -2322,9 +2322,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2021-04-11/source.xlsx",
-        "protocolPdf": "events/2021-04-11/protocol.pdf",
-        "resultsJson": "events/2021-04-11/results.json"
+        "sourceXlsx": "data/events/2021-04-11/source.xlsx",
+        "protocolPdf": "data/events/2021-04-11/protocol.pdf",
+        "resultsJson": "data/events/2021-04-11/results.json"
       }
     },
     {
@@ -2335,9 +2335,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2021-04-04/source.xlsx",
-        "protocolPdf": "events/2021-04-04/protocol.pdf",
-        "resultsJson": "events/2021-04-04/results.json"
+        "sourceXlsx": "data/events/2021-04-04/source.xlsx",
+        "protocolPdf": "data/events/2021-04-04/protocol.pdf",
+        "resultsJson": "data/events/2021-04-04/results.json"
       }
     },
     {
@@ -2348,9 +2348,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 16,
       "files": {
-        "sourceXlsx": "events/2021-03-28/source.xlsx",
-        "protocolPdf": "events/2021-03-28/protocol.pdf",
-        "resultsJson": "events/2021-03-28/results.json"
+        "sourceXlsx": "data/events/2021-03-28/source.xlsx",
+        "protocolPdf": "data/events/2021-03-28/protocol.pdf",
+        "resultsJson": "data/events/2021-03-28/results.json"
       }
     },
     {
@@ -2361,9 +2361,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2021-03-21/source.xlsx",
-        "protocolPdf": "events/2021-03-21/protocol.pdf",
-        "resultsJson": "events/2021-03-21/results.json"
+        "sourceXlsx": "data/events/2021-03-21/source.xlsx",
+        "protocolPdf": "data/events/2021-03-21/protocol.pdf",
+        "resultsJson": "data/events/2021-03-21/results.json"
       }
     },
     {
@@ -2374,9 +2374,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2021-03-14/source.xlsx",
-        "protocolPdf": "events/2021-03-14/protocol.pdf",
-        "resultsJson": "events/2021-03-14/results.json"
+        "sourceXlsx": "data/events/2021-03-14/source.xlsx",
+        "protocolPdf": "data/events/2021-03-14/protocol.pdf",
+        "resultsJson": "data/events/2021-03-14/results.json"
       }
     },
     {
@@ -2387,9 +2387,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 18,
       "files": {
-        "sourceXlsx": "events/2021-03-07/source.xlsx",
-        "protocolPdf": "events/2021-03-07/protocol.pdf",
-        "resultsJson": "events/2021-03-07/results.json"
+        "sourceXlsx": "data/events/2021-03-07/source.xlsx",
+        "protocolPdf": "data/events/2021-03-07/protocol.pdf",
+        "resultsJson": "data/events/2021-03-07/results.json"
       }
     },
     {
@@ -2400,9 +2400,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2021-02-28/source.xlsx",
-        "protocolPdf": "events/2021-02-28/protocol.pdf",
-        "resultsJson": "events/2021-02-28/results.json"
+        "sourceXlsx": "data/events/2021-02-28/source.xlsx",
+        "protocolPdf": "data/events/2021-02-28/protocol.pdf",
+        "resultsJson": "data/events/2021-02-28/results.json"
       }
     },
     {
@@ -2413,9 +2413,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2021-02-21/source.xlsx",
-        "protocolPdf": "events/2021-02-21/protocol.pdf",
-        "resultsJson": "events/2021-02-21/results.json"
+        "sourceXlsx": "data/events/2021-02-21/source.xlsx",
+        "protocolPdf": "data/events/2021-02-21/protocol.pdf",
+        "resultsJson": "data/events/2021-02-21/results.json"
       }
     },
     {
@@ -2426,9 +2426,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2021-02-14/source.xlsx",
-        "protocolPdf": "events/2021-02-14/protocol.pdf",
-        "resultsJson": "events/2021-02-14/results.json"
+        "sourceXlsx": "data/events/2021-02-14/source.xlsx",
+        "protocolPdf": "data/events/2021-02-14/protocol.pdf",
+        "resultsJson": "data/events/2021-02-14/results.json"
       }
     },
     {
@@ -2439,9 +2439,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2021-02-07/source.xlsx",
-        "protocolPdf": "events/2021-02-07/protocol.pdf",
-        "resultsJson": "events/2021-02-07/results.json"
+        "sourceXlsx": "data/events/2021-02-07/source.xlsx",
+        "protocolPdf": "data/events/2021-02-07/protocol.pdf",
+        "resultsJson": "data/events/2021-02-07/results.json"
       }
     },
     {
@@ -2452,9 +2452,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2021-01-31/source.xlsx",
-        "protocolPdf": "events/2021-01-31/protocol.pdf",
-        "resultsJson": "events/2021-01-31/results.json"
+        "sourceXlsx": "data/events/2021-01-31/source.xlsx",
+        "protocolPdf": "data/events/2021-01-31/protocol.pdf",
+        "resultsJson": "data/events/2021-01-31/results.json"
       }
     },
     {
@@ -2465,9 +2465,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2021-01-17/source.xlsx",
-        "protocolPdf": "events/2021-01-17/protocol.pdf",
-        "resultsJson": "events/2021-01-17/results.json"
+        "sourceXlsx": "data/events/2021-01-17/source.xlsx",
+        "protocolPdf": "data/events/2021-01-17/protocol.pdf",
+        "resultsJson": "data/events/2021-01-17/results.json"
       }
     },
     {
@@ -2478,9 +2478,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2021-01-10/source.xlsx",
-        "protocolPdf": "events/2021-01-10/protocol.pdf",
-        "resultsJson": "events/2021-01-10/results.json"
+        "sourceXlsx": "data/events/2021-01-10/source.xlsx",
+        "protocolPdf": "data/events/2021-01-10/protocol.pdf",
+        "resultsJson": "data/events/2021-01-10/results.json"
       }
     },
     {
@@ -2491,9 +2491,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 18,
       "files": {
-        "sourceXlsx": "events/2021-01-03/source.xlsx",
-        "protocolPdf": "events/2021-01-03/protocol.pdf",
-        "resultsJson": "events/2021-01-03/results.json"
+        "sourceXlsx": "data/events/2021-01-03/source.xlsx",
+        "protocolPdf": "data/events/2021-01-03/protocol.pdf",
+        "resultsJson": "data/events/2021-01-03/results.json"
       }
     },
     {
@@ -2504,9 +2504,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2020-12-20/source.xlsx",
-        "protocolPdf": "events/2020-12-20/protocol.pdf",
-        "resultsJson": "events/2020-12-20/results.json"
+        "sourceXlsx": "data/events/2020-12-20/source.xlsx",
+        "protocolPdf": "data/events/2020-12-20/protocol.pdf",
+        "resultsJson": "data/events/2020-12-20/results.json"
       }
     },
     {
@@ -2517,9 +2517,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2020-12-13/source.xlsx",
-        "protocolPdf": "events/2020-12-13/protocol.pdf",
-        "resultsJson": "events/2020-12-13/results.json"
+        "sourceXlsx": "data/events/2020-12-13/source.xlsx",
+        "protocolPdf": "data/events/2020-12-13/protocol.pdf",
+        "resultsJson": "data/events/2020-12-13/results.json"
       }
     },
     {
@@ -2530,9 +2530,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2020-12-06/source.xlsx",
-        "protocolPdf": "events/2020-12-06/protocol.pdf",
-        "resultsJson": "events/2020-12-06/results.json"
+        "sourceXlsx": "data/events/2020-12-06/source.xlsx",
+        "protocolPdf": "data/events/2020-12-06/protocol.pdf",
+        "resultsJson": "data/events/2020-12-06/results.json"
       }
     },
     {
@@ -2543,9 +2543,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2020-11-29/source.xlsx",
-        "protocolPdf": "events/2020-11-29/protocol.pdf",
-        "resultsJson": "events/2020-11-29/results.json"
+        "sourceXlsx": "data/events/2020-11-29/source.xlsx",
+        "protocolPdf": "data/events/2020-11-29/protocol.pdf",
+        "resultsJson": "data/events/2020-11-29/results.json"
       }
     },
     {
@@ -2556,9 +2556,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2020-11-22/source.xlsx",
-        "protocolPdf": "events/2020-11-22/protocol.pdf",
-        "resultsJson": "events/2020-11-22/results.json"
+        "sourceXlsx": "data/events/2020-11-22/source.xlsx",
+        "protocolPdf": "data/events/2020-11-22/protocol.pdf",
+        "resultsJson": "data/events/2020-11-22/results.json"
       }
     },
     {
@@ -2569,9 +2569,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2020-11-15/source.xlsx",
-        "protocolPdf": "events/2020-11-15/protocol.pdf",
-        "resultsJson": "events/2020-11-15/results.json"
+        "sourceXlsx": "data/events/2020-11-15/source.xlsx",
+        "protocolPdf": "data/events/2020-11-15/protocol.pdf",
+        "resultsJson": "data/events/2020-11-15/results.json"
       }
     },
     {
@@ -2582,9 +2582,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2020-11-08/source.xlsx",
-        "protocolPdf": "events/2020-11-08/protocol.pdf",
-        "resultsJson": "events/2020-11-08/results.json"
+        "sourceXlsx": "data/events/2020-11-08/source.xlsx",
+        "protocolPdf": "data/events/2020-11-08/protocol.pdf",
+        "resultsJson": "data/events/2020-11-08/results.json"
       }
     },
     {
@@ -2595,9 +2595,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2020-11-01/source.xlsx",
-        "protocolPdf": "events/2020-11-01/protocol.pdf",
-        "resultsJson": "events/2020-11-01/results.json"
+        "sourceXlsx": "data/events/2020-11-01/source.xlsx",
+        "protocolPdf": "data/events/2020-11-01/protocol.pdf",
+        "resultsJson": "data/events/2020-11-01/results.json"
       }
     },
     {
@@ -2608,9 +2608,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 11,
       "files": {
-        "sourceXlsx": "events/2020-10-25/source.xlsx",
-        "protocolPdf": "events/2020-10-25/protocol.pdf",
-        "resultsJson": "events/2020-10-25/results.json"
+        "sourceXlsx": "data/events/2020-10-25/source.xlsx",
+        "protocolPdf": "data/events/2020-10-25/protocol.pdf",
+        "resultsJson": "data/events/2020-10-25/results.json"
       }
     },
     {
@@ -2621,9 +2621,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2020-10-18/source.xlsx",
-        "protocolPdf": "events/2020-10-18/protocol.pdf",
-        "resultsJson": "events/2020-10-18/results.json"
+        "sourceXlsx": "data/events/2020-10-18/source.xlsx",
+        "protocolPdf": "data/events/2020-10-18/protocol.pdf",
+        "resultsJson": "data/events/2020-10-18/results.json"
       }
     },
     {
@@ -2634,9 +2634,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2020-10-11/source.xlsx",
-        "protocolPdf": "events/2020-10-11/protocol.pdf",
-        "resultsJson": "events/2020-10-11/results.json"
+        "sourceXlsx": "data/events/2020-10-11/source.xlsx",
+        "protocolPdf": "data/events/2020-10-11/protocol.pdf",
+        "resultsJson": "data/events/2020-10-11/results.json"
       }
     },
     {
@@ -2647,9 +2647,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2020-10-04/source.xlsx",
-        "protocolPdf": "events/2020-10-04/protocol.pdf",
-        "resultsJson": "events/2020-10-04/results.json"
+        "sourceXlsx": "data/events/2020-10-04/source.xlsx",
+        "protocolPdf": "data/events/2020-10-04/protocol.pdf",
+        "resultsJson": "data/events/2020-10-04/results.json"
       }
     },
     {
@@ -2660,9 +2660,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2020-09-27/source.xlsx",
-        "protocolPdf": "events/2020-09-27/protocol.pdf",
-        "resultsJson": "events/2020-09-27/results.json"
+        "sourceXlsx": "data/events/2020-09-27/source.xlsx",
+        "protocolPdf": "data/events/2020-09-27/protocol.pdf",
+        "resultsJson": "data/events/2020-09-27/results.json"
       }
     },
     {
@@ -2673,9 +2673,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2020-09-20/source.xlsx",
-        "protocolPdf": "events/2020-09-20/protocol.pdf",
-        "resultsJson": "events/2020-09-20/results.json"
+        "sourceXlsx": "data/events/2020-09-20/source.xlsx",
+        "protocolPdf": "data/events/2020-09-20/protocol.pdf",
+        "resultsJson": "data/events/2020-09-20/results.json"
       }
     },
     {
@@ -2686,9 +2686,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2020-09-13/source.xlsx",
-        "protocolPdf": "events/2020-09-13/protocol.pdf",
-        "resultsJson": "events/2020-09-13/results.json"
+        "sourceXlsx": "data/events/2020-09-13/source.xlsx",
+        "protocolPdf": "data/events/2020-09-13/protocol.pdf",
+        "resultsJson": "data/events/2020-09-13/results.json"
       }
     },
     {
@@ -2699,9 +2699,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2020-09-06/source.xlsx",
-        "protocolPdf": "events/2020-09-06/protocol.pdf",
-        "resultsJson": "events/2020-09-06/results.json"
+        "sourceXlsx": "data/events/2020-09-06/source.xlsx",
+        "protocolPdf": "data/events/2020-09-06/protocol.pdf",
+        "resultsJson": "data/events/2020-09-06/results.json"
       }
     },
     {
@@ -2712,9 +2712,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2020-08-30/source.xlsx",
-        "protocolPdf": "events/2020-08-30/protocol.pdf",
-        "resultsJson": "events/2020-08-30/results.json"
+        "sourceXlsx": "data/events/2020-08-30/source.xlsx",
+        "protocolPdf": "data/events/2020-08-30/protocol.pdf",
+        "resultsJson": "data/events/2020-08-30/results.json"
       }
     },
     {
@@ -2725,9 +2725,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 15,
       "files": {
-        "sourceXlsx": "events/2020-08-16/source.xlsx",
-        "protocolPdf": "events/2020-08-16/protocol.pdf",
-        "resultsJson": "events/2020-08-16/results.json"
+        "sourceXlsx": "data/events/2020-08-16/source.xlsx",
+        "protocolPdf": "data/events/2020-08-16/protocol.pdf",
+        "resultsJson": "data/events/2020-08-16/results.json"
       }
     },
     {
@@ -2738,9 +2738,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2020-08-09/source.xlsx",
-        "protocolPdf": "events/2020-08-09/protocol.pdf",
-        "resultsJson": "events/2020-08-09/results.json"
+        "sourceXlsx": "data/events/2020-08-09/source.xlsx",
+        "protocolPdf": "data/events/2020-08-09/protocol.pdf",
+        "resultsJson": "data/events/2020-08-09/results.json"
       }
     },
     {
@@ -2751,9 +2751,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2020-08-02/source.xlsx",
-        "protocolPdf": "events/2020-08-02/protocol.pdf",
-        "resultsJson": "events/2020-08-02/results.json"
+        "sourceXlsx": "data/events/2020-08-02/source.xlsx",
+        "protocolPdf": "data/events/2020-08-02/protocol.pdf",
+        "resultsJson": "data/events/2020-08-02/results.json"
       }
     },
     {
@@ -2764,9 +2764,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2020-07-26/source.xlsx",
-        "protocolPdf": "events/2020-07-26/protocol.pdf",
-        "resultsJson": "events/2020-07-26/results.json"
+        "sourceXlsx": "data/events/2020-07-26/source.xlsx",
+        "protocolPdf": "data/events/2020-07-26/protocol.pdf",
+        "resultsJson": "data/events/2020-07-26/results.json"
       }
     },
     {
@@ -2777,9 +2777,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 15,
       "files": {
-        "sourceXlsx": "events/2020-07-19/source.xlsx",
-        "protocolPdf": "events/2020-07-19/protocol.pdf",
-        "resultsJson": "events/2020-07-19/results.json"
+        "sourceXlsx": "data/events/2020-07-19/source.xlsx",
+        "protocolPdf": "data/events/2020-07-19/protocol.pdf",
+        "resultsJson": "data/events/2020-07-19/results.json"
       }
     },
     {
@@ -2790,9 +2790,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2020-07-12/source.xlsx",
-        "protocolPdf": "events/2020-07-12/protocol.pdf",
-        "resultsJson": "events/2020-07-12/results.json"
+        "sourceXlsx": "data/events/2020-07-12/source.xlsx",
+        "protocolPdf": "data/events/2020-07-12/protocol.pdf",
+        "resultsJson": "data/events/2020-07-12/results.json"
       }
     },
     {
@@ -2803,9 +2803,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2020-07-05/source.xlsx",
-        "protocolPdf": "events/2020-07-05/protocol.pdf",
-        "resultsJson": "events/2020-07-05/results.json"
+        "sourceXlsx": "data/events/2020-07-05/source.xlsx",
+        "protocolPdf": "data/events/2020-07-05/protocol.pdf",
+        "resultsJson": "data/events/2020-07-05/results.json"
       }
     },
     {
@@ -2816,9 +2816,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2020-03-22/source.xlsx",
-        "protocolPdf": "events/2020-03-22/protocol.pdf",
-        "resultsJson": "events/2020-03-22/results.json"
+        "sourceXlsx": "data/events/2020-03-22/source.xlsx",
+        "protocolPdf": "data/events/2020-03-22/protocol.pdf",
+        "resultsJson": "data/events/2020-03-22/results.json"
       }
     },
     {
@@ -2829,9 +2829,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 13,
       "files": {
-        "sourceXlsx": "events/2020-03-15/source.xlsx",
-        "protocolPdf": "events/2020-03-15/protocol.pdf",
-        "resultsJson": "events/2020-03-15/results.json"
+        "sourceXlsx": "data/events/2020-03-15/source.xlsx",
+        "protocolPdf": "data/events/2020-03-15/protocol.pdf",
+        "resultsJson": "data/events/2020-03-15/results.json"
       }
     },
     {
@@ -2842,9 +2842,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 22,
       "files": {
-        "sourceXlsx": "events/2020-03-08/source.xlsx",
-        "protocolPdf": "events/2020-03-08/protocol.pdf",
-        "resultsJson": "events/2020-03-08/results.json"
+        "sourceXlsx": "data/events/2020-03-08/source.xlsx",
+        "protocolPdf": "data/events/2020-03-08/protocol.pdf",
+        "resultsJson": "data/events/2020-03-08/results.json"
       }
     },
     {
@@ -2855,9 +2855,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 14,
       "files": {
-        "sourceXlsx": "events/2020-03-01/source.xlsx",
-        "protocolPdf": "events/2020-03-01/protocol.pdf",
-        "resultsJson": "events/2020-03-01/results.json"
+        "sourceXlsx": "data/events/2020-03-01/source.xlsx",
+        "protocolPdf": "data/events/2020-03-01/protocol.pdf",
+        "resultsJson": "data/events/2020-03-01/results.json"
       }
     },
     {
@@ -2868,9 +2868,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2020-02-23/source.xlsx",
-        "protocolPdf": "events/2020-02-23/protocol.pdf",
-        "resultsJson": "events/2020-02-23/results.json"
+        "sourceXlsx": "data/events/2020-02-23/source.xlsx",
+        "protocolPdf": "data/events/2020-02-23/protocol.pdf",
+        "resultsJson": "data/events/2020-02-23/results.json"
       }
     },
     {
@@ -2881,9 +2881,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2020-02-16/source.xlsx",
-        "protocolPdf": "events/2020-02-16/protocol.pdf",
-        "resultsJson": "events/2020-02-16/results.json"
+        "sourceXlsx": "data/events/2020-02-16/source.xlsx",
+        "protocolPdf": "data/events/2020-02-16/protocol.pdf",
+        "resultsJson": "data/events/2020-02-16/results.json"
       }
     },
     {
@@ -2894,9 +2894,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2020-02-09/source.xlsx",
-        "protocolPdf": "events/2020-02-09/protocol.pdf",
-        "resultsJson": "events/2020-02-09/results.json"
+        "sourceXlsx": "data/events/2020-02-09/source.xlsx",
+        "protocolPdf": "data/events/2020-02-09/protocol.pdf",
+        "resultsJson": "data/events/2020-02-09/results.json"
       }
     },
     {
@@ -2907,9 +2907,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2020-02-02/source.xlsx",
-        "protocolPdf": "events/2020-02-02/protocol.pdf",
-        "resultsJson": "events/2020-02-02/results.json"
+        "sourceXlsx": "data/events/2020-02-02/source.xlsx",
+        "protocolPdf": "data/events/2020-02-02/protocol.pdf",
+        "resultsJson": "data/events/2020-02-02/results.json"
       }
     },
     {
@@ -2920,9 +2920,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2020-01-26/source.xlsx",
-        "protocolPdf": "events/2020-01-26/protocol.pdf",
-        "resultsJson": "events/2020-01-26/results.json"
+        "sourceXlsx": "data/events/2020-01-26/source.xlsx",
+        "protocolPdf": "data/events/2020-01-26/protocol.pdf",
+        "resultsJson": "data/events/2020-01-26/results.json"
       }
     },
     {
@@ -2933,9 +2933,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2020-01-19/source.xlsx",
-        "protocolPdf": "events/2020-01-19/protocol.pdf",
-        "resultsJson": "events/2020-01-19/results.json"
+        "sourceXlsx": "data/events/2020-01-19/source.xlsx",
+        "protocolPdf": "data/events/2020-01-19/protocol.pdf",
+        "resultsJson": "data/events/2020-01-19/results.json"
       }
     },
     {
@@ -2946,9 +2946,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2020-01-12/source.xlsx",
-        "protocolPdf": "events/2020-01-12/protocol.pdf",
-        "resultsJson": "events/2020-01-12/results.json"
+        "sourceXlsx": "data/events/2020-01-12/source.xlsx",
+        "protocolPdf": "data/events/2020-01-12/protocol.pdf",
+        "resultsJson": "data/events/2020-01-12/results.json"
       }
     },
     {
@@ -2959,9 +2959,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2020-01-05/source.xlsx",
-        "protocolPdf": "events/2020-01-05/protocol.pdf",
-        "resultsJson": "events/2020-01-05/results.json"
+        "sourceXlsx": "data/events/2020-01-05/source.xlsx",
+        "protocolPdf": "data/events/2020-01-05/protocol.pdf",
+        "resultsJson": "data/events/2020-01-05/results.json"
       }
     },
     {
@@ -2972,9 +2972,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 15,
       "files": {
-        "sourceXlsx": "events/2019-12-29/source.xlsx",
-        "protocolPdf": "events/2019-12-29/protocol.pdf",
-        "resultsJson": "events/2019-12-29/results.json"
+        "sourceXlsx": "data/events/2019-12-29/source.xlsx",
+        "protocolPdf": "data/events/2019-12-29/protocol.pdf",
+        "resultsJson": "data/events/2019-12-29/results.json"
       }
     },
     {
@@ -2985,9 +2985,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2019-12-22/source.xlsx",
-        "protocolPdf": "events/2019-12-22/protocol.pdf",
-        "resultsJson": "events/2019-12-22/results.json"
+        "sourceXlsx": "data/events/2019-12-22/source.xlsx",
+        "protocolPdf": "data/events/2019-12-22/protocol.pdf",
+        "resultsJson": "data/events/2019-12-22/results.json"
       }
     },
     {
@@ -2998,9 +2998,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2019-12-15/source.xlsx",
-        "protocolPdf": "events/2019-12-15/protocol.pdf",
-        "resultsJson": "events/2019-12-15/results.json"
+        "sourceXlsx": "data/events/2019-12-15/source.xlsx",
+        "protocolPdf": "data/events/2019-12-15/protocol.pdf",
+        "resultsJson": "data/events/2019-12-15/results.json"
       }
     },
     {
@@ -3011,9 +3011,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 3,
       "files": {
-        "sourceXlsx": "events/2019-12-08/source.xlsx",
-        "protocolPdf": "events/2019-12-08/protocol.pdf",
-        "resultsJson": "events/2019-12-08/results.json"
+        "sourceXlsx": "data/events/2019-12-08/source.xlsx",
+        "protocolPdf": "data/events/2019-12-08/protocol.pdf",
+        "resultsJson": "data/events/2019-12-08/results.json"
       }
     },
     {
@@ -3024,9 +3024,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2019-12-01/source.xlsx",
-        "protocolPdf": "events/2019-12-01/protocol.pdf",
-        "resultsJson": "events/2019-12-01/results.json"
+        "sourceXlsx": "data/events/2019-12-01/source.xlsx",
+        "protocolPdf": "data/events/2019-12-01/protocol.pdf",
+        "resultsJson": "data/events/2019-12-01/results.json"
       }
     },
     {
@@ -3037,9 +3037,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2019-11-24/source.xlsx",
-        "protocolPdf": "events/2019-11-24/protocol.pdf",
-        "resultsJson": "events/2019-11-24/results.json"
+        "sourceXlsx": "data/events/2019-11-24/source.xlsx",
+        "protocolPdf": "data/events/2019-11-24/protocol.pdf",
+        "resultsJson": "data/events/2019-11-24/results.json"
       }
     },
     {
@@ -3050,9 +3050,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 4,
       "files": {
-        "sourceXlsx": "events/2019-11-17/source.xlsx",
-        "protocolPdf": "events/2019-11-17/protocol.pdf",
-        "resultsJson": "events/2019-11-17/results.json"
+        "sourceXlsx": "data/events/2019-11-17/source.xlsx",
+        "protocolPdf": "data/events/2019-11-17/protocol.pdf",
+        "resultsJson": "data/events/2019-11-17/results.json"
       }
     },
     {
@@ -3063,9 +3063,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 8,
       "files": {
-        "sourceXlsx": "events/2019-11-10/source.xlsx",
-        "protocolPdf": "events/2019-11-10/protocol.pdf",
-        "resultsJson": "events/2019-11-10/results.json"
+        "sourceXlsx": "data/events/2019-11-10/source.xlsx",
+        "protocolPdf": "data/events/2019-11-10/protocol.pdf",
+        "resultsJson": "data/events/2019-11-10/results.json"
       }
     },
     {
@@ -3076,9 +3076,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 2,
       "files": {
-        "sourceXlsx": "events/2019-11-03/source.xlsx",
-        "protocolPdf": "events/2019-11-03/protocol.pdf",
-        "resultsJson": "events/2019-11-03/results.json"
+        "sourceXlsx": "data/events/2019-11-03/source.xlsx",
+        "protocolPdf": "data/events/2019-11-03/protocol.pdf",
+        "resultsJson": "data/events/2019-11-03/results.json"
       }
     },
     {
@@ -3089,9 +3089,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2019-10-27/source.xlsx",
-        "protocolPdf": "events/2019-10-27/protocol.pdf",
-        "resultsJson": "events/2019-10-27/results.json"
+        "sourceXlsx": "data/events/2019-10-27/source.xlsx",
+        "protocolPdf": "data/events/2019-10-27/protocol.pdf",
+        "resultsJson": "data/events/2019-10-27/results.json"
       }
     },
     {
@@ -3102,9 +3102,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2019-10-20/source.xlsx",
-        "protocolPdf": "events/2019-10-20/protocol.pdf",
-        "resultsJson": "events/2019-10-20/results.json"
+        "sourceXlsx": "data/events/2019-10-20/source.xlsx",
+        "protocolPdf": "data/events/2019-10-20/protocol.pdf",
+        "resultsJson": "data/events/2019-10-20/results.json"
       }
     },
     {
@@ -3115,9 +3115,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 6,
       "files": {
-        "sourceXlsx": "events/2019-10-13/source.xlsx",
-        "protocolPdf": "events/2019-10-13/protocol.pdf",
-        "resultsJson": "events/2019-10-13/results.json"
+        "sourceXlsx": "data/events/2019-10-13/source.xlsx",
+        "protocolPdf": "data/events/2019-10-13/protocol.pdf",
+        "resultsJson": "data/events/2019-10-13/results.json"
       }
     },
     {
@@ -3128,9 +3128,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2019-10-06/source.xlsx",
-        "protocolPdf": "events/2019-10-06/protocol.pdf",
-        "resultsJson": "events/2019-10-06/results.json"
+        "sourceXlsx": "data/events/2019-10-06/source.xlsx",
+        "protocolPdf": "data/events/2019-10-06/protocol.pdf",
+        "resultsJson": "data/events/2019-10-06/results.json"
       }
     },
     {
@@ -3141,9 +3141,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2019-09-29/source.xlsx",
-        "protocolPdf": "events/2019-09-29/protocol.pdf",
-        "resultsJson": "events/2019-09-29/results.json"
+        "sourceXlsx": "data/events/2019-09-29/source.xlsx",
+        "protocolPdf": "data/events/2019-09-29/protocol.pdf",
+        "resultsJson": "data/events/2019-09-29/results.json"
       }
     },
     {
@@ -3154,9 +3154,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2019-09-22/source.xlsx",
-        "protocolPdf": "events/2019-09-22/protocol.pdf",
-        "resultsJson": "events/2019-09-22/results.json"
+        "sourceXlsx": "data/events/2019-09-22/source.xlsx",
+        "protocolPdf": "data/events/2019-09-22/protocol.pdf",
+        "resultsJson": "data/events/2019-09-22/results.json"
       }
     },
     {
@@ -3167,9 +3167,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 10,
       "files": {
-        "sourceXlsx": "events/2019-09-01/source.xlsx",
-        "protocolPdf": "events/2019-09-01/protocol.pdf",
-        "resultsJson": "events/2019-09-01/results.json"
+        "sourceXlsx": "data/events/2019-09-01/source.xlsx",
+        "protocolPdf": "data/events/2019-09-01/protocol.pdf",
+        "resultsJson": "data/events/2019-09-01/results.json"
       }
     },
     {
@@ -3180,9 +3180,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2019-08-25/source.xlsx",
-        "protocolPdf": "events/2019-08-25/protocol.pdf",
-        "resultsJson": "events/2019-08-25/results.json"
+        "sourceXlsx": "data/events/2019-08-25/source.xlsx",
+        "protocolPdf": "data/events/2019-08-25/protocol.pdf",
+        "resultsJson": "data/events/2019-08-25/results.json"
       }
     },
     {
@@ -3193,9 +3193,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 9,
       "files": {
-        "sourceXlsx": "events/2019-08-18/source.xlsx",
-        "protocolPdf": "events/2019-08-18/protocol.pdf",
-        "resultsJson": "events/2019-08-18/results.json"
+        "sourceXlsx": "data/events/2019-08-18/source.xlsx",
+        "protocolPdf": "data/events/2019-08-18/protocol.pdf",
+        "resultsJson": "data/events/2019-08-18/results.json"
       }
     },
     {
@@ -3206,9 +3206,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 5,
       "files": {
-        "sourceXlsx": "events/2019-08-11/source.xlsx",
-        "protocolPdf": "events/2019-08-11/protocol.pdf",
-        "resultsJson": "events/2019-08-11/results.json"
+        "sourceXlsx": "data/events/2019-08-11/source.xlsx",
+        "protocolPdf": "data/events/2019-08-11/protocol.pdf",
+        "resultsJson": "data/events/2019-08-11/results.json"
       }
     },
     {
@@ -3219,9 +3219,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 7,
       "files": {
-        "sourceXlsx": "events/2019-08-04/source.xlsx",
-        "protocolPdf": "events/2019-08-04/protocol.pdf",
-        "resultsJson": "events/2019-08-04/results.json"
+        "sourceXlsx": "data/events/2019-08-04/source.xlsx",
+        "protocolPdf": "data/events/2019-08-04/protocol.pdf",
+        "resultsJson": "data/events/2019-08-04/results.json"
       }
     },
     {
@@ -3232,9 +3232,9 @@
       "park": "ПКиО им. Горького",
       "participantCount": 12,
       "files": {
-        "sourceXlsx": "events/2019-07-28/source.xlsx",
-        "protocolPdf": "events/2019-07-28/protocol.pdf",
-        "resultsJson": "events/2019-07-28/results.json"
+        "sourceXlsx": "data/events/2019-07-28/source.xlsx",
+        "protocolPdf": "data/events/2019-07-28/protocol.pdf",
+        "resultsJson": "data/events/2019-07-28/results.json"
       }
     }
   ],
