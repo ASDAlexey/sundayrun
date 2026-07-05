@@ -37,6 +37,7 @@
                 <th class="race__th" i18n="@@race.table.athlete" scope="col">Спортсмен</th>
                 <th class="race__th" i18n="@@race.table.time23" scope="col">Время 2,3 км</th>
                 <th class="race__th" i18n="@@race.table.time5" scope="col">Время 5 км</th>
+                <th class="race__th" i18n="@@race.table.pace" scope="col">Ср. темп</th>
                 <th class="race__th" i18n="@@race.table.gender" scope="col">Пол</th>
                 <th class="race__th" i18n="@@race.table.placeM" scope="col">Место М</th>
                 <th class="race__th" i18n="@@race.table.placeF" scope="col">Место Ж</th>
@@ -56,6 +57,7 @@
                   </td>
                   <td class="race__td race__td_mono">{{ row.time23 }}</td>
                   <td class="race__td race__td_mono">{{ row.time5 }}</td>
+                  <td class="race__td race__td_mono">{{ row.paceText }}</td>
                   <td class="race__td">{{ row.genderText }}</td>
                   <td class="race__td">{{ row.placeMText }}</td>
                   <td class="race__td">{{ row.placeFText }}</td>

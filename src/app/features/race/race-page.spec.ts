@@ -78,7 +78,7 @@ describe('RacePage', () => {
     expect(pdfLink.getAttribute('target')).toBe('_blank');
     expect(pdfLink.getAttribute('rel')).toBe('noopener');
     expect(pdfLink.getAttribute('aria-label')).toBe(EXPECTED_RACE_VIEW.pdfAriaLabel);
-    expect(headers.length, 'nine protocol columns as in the PDF').toBe(9);
+    expect(headers.length, 'the nine PDF columns plus the average pace').toBe(10);
     expect(
       headers.map((header) => header.getAttribute('scope')),
       'every header is a column header',

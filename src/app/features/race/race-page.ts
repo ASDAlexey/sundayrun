@@ -9,6 +9,7 @@ import { EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
+import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { ResultsService } from '../../github/results.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
@@ -103,12 +104,22 @@ function toRowView(row: ProtocolRow): RaceRowView {
     athleteAriaLabel: $localize`:@@race.athleteAriaLabel:История атлета ${row.fullName}:fullName:`,
     time23: row.time23,
     time5: row.time5,
+    paceText: paceTextOf(row.totalMs, row.distanceKm),
     genderText: genderTextOf(row.gender),
     placeMText: placeTextOf(row.placeM),
     placeFText: placeTextOf(row.placeF),
     club: row.club,
     note: row.note,
   };
+}
+
+/** Average pace over the covered distance (5 or 2.3 km), min/km; DNF rows stay blank. */
+function paceTextOf(totalMs: number | null, distanceKm: number | null): string {
+  if (totalMs === null || distanceKm === null) {
+    return EMPTY_CELL_TEXT;
+  }
+
+  return formatDuration(totalMs / distanceKm);
 }
 
 function genderTextOf(gender: GenderType | null): string {

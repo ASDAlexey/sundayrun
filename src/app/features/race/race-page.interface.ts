@@ -8,6 +8,7 @@ export interface RaceRowView {
   athleteAriaLabel: string;
   time23: string;
   time5: string;
+  paceText: string;
   genderText: string;
   placeMText: string;
   placeFText: string;
