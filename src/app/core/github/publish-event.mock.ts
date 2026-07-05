@@ -64,6 +64,10 @@ export const CONCURRENT_ENTRY: ArchiveIndexEntry = {
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 25,
+  finisherCount: 21,
+  avgTimeMs: 1799000,
+  bestMaleMs: 1102000,
+  bestFemaleMs: 1305000,
   files: {
     sourceXlsx: 'data/events/2026-07-12/source.xlsx',
     protocolPdf: 'data/events/2026-07-12/protocol.pdf',

@@ -1,3 +1,5 @@
+import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
+import { Gender, GenderType } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
 import { ARCHIVE_INDEX_SCHEMA_VERSION } from './archive-index.constant';
@@ -13,6 +15,8 @@ export function parseArchiveIndex(text: string | null): ArchiveIndexFile {
 }
 
 export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveIndexEntry {
+  const finisherTimesMs = fiveKmTimesMs(rows);
+
   return {
     slug: event.dateIso,
     dateIso: event.dateIso,
@@ -20,6 +24,10 @@ export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveI
     city: event.city,
     park: event.park,
     participantCount: rows.length,
+    finisherCount: finisherTimesMs.length,
+    avgTimeMs: averageOf(finisherTimesMs),
+    bestMaleMs: bestOf(rows, Gender.male),
+    bestFemaleMs: bestOf(rows, Gender.female),
     files: eventFilePaths(event.dateIso),
   };
 }
@@ -39,6 +47,27 @@ export function upsertIndexEntry(index: ArchiveIndexFile, entry: ArchiveIndexEnt
 /** Drops the entry with the given slug, keeping the order of the rest. Returns a NEW file object, the input is never mutated. */
 export function removeIndexEntry(index: ArchiveIndexFile, slug: string): ArchiveIndexFile {
   return { ...index, events: index.events.filter((existing) => existing.slug !== slug) };
+}
+
+/** Total times of everyone who finished the full 5 km, optionally narrowed to one gender. */
+function fiveKmTimesMs(rows: ProtocolRow[], gender?: GenderType): number[] {
+  return rows.flatMap((row) =>
+    row.distanceKm === FIVE_KM_DISTANCE_KM && row.totalMs !== null && (gender === undefined || row.gender === gender) ? [row.totalMs] : [],
+  );
+}
+
+function averageOf(timesMs: number[]): number | null {
+  if (timesMs.length === 0) {
+    return null;
+  }
+
+  return Math.round(timesMs.reduce((sum, ms) => sum + ms, 0) / timesMs.length);
+}
+
+function bestOf(rows: ProtocolRow[], gender: GenderType): number | null {
+  const timesMs = fiveKmTimesMs(rows, gender);
+
+  return timesMs.length === 0 ? null : Math.min(...timesMs);
 }
 
 function isArchiveIndexFile(value: unknown): value is ArchiveIndexFile {

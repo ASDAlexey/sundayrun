@@ -3,6 +3,7 @@ import {
   EMPTY_INDEX,
   EXISTING_INDEX,
   EXPECTED_NEW_ENTRY,
+  EXPECTED_NO_FINISHER_ENTRY,
   EXPECTED_UPSERTED_EVENTS,
   INVALID_INDEX_TEXTS,
   NEWER_ENTRY,
@@ -24,8 +25,9 @@ describe('parseArchiveIndex', () => {
 });
 
 describe('buildIndexEntry', () => {
-  it('derives the slug from dateIso, counts every row and points at the event files', () => {
+  it('derives the slug from dateIso, counts every row and aggregates the 5 km finishers', () => {
     expect(buildIndexEntry(RACE_EVENT, PROTOCOL_ROWS)).toEqual(EXPECTED_NEW_ENTRY);
+    expect(buildIndexEntry(RACE_EVENT, PROTOCOL_ROWS.slice(1)), 'no finishers -> null aggregates').toEqual(EXPECTED_NO_FINISHER_ENTRY);
   });
 });
 

@@ -24,6 +24,10 @@ export const NEWER_ENTRY: ArchiveIndexEntry = {
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 20,
+  finisherCount: 18,
+  avgTimeMs: 1862000,
+  bestMaleMs: 1056000,
+  bestFemaleMs: 1238000,
   files: {
     sourceXlsx: 'data/events/2026-07-05/source.xlsx',
     protocolPdf: 'data/events/2026-07-05/protocol.pdf',
@@ -38,6 +42,10 @@ export const OLDER_ENTRY: ArchiveIndexEntry = {
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 15,
+  finisherCount: 12,
+  avgTimeMs: 1753000,
+  bestMaleMs: 1183000,
+  bestFemaleMs: 1360000,
   files: {
     sourceXlsx: 'data/events/2026-06-21/source.xlsx',
     protocolPdf: 'data/events/2026-06-21/protocol.pdf',
@@ -53,10 +61,17 @@ export const STALE_SAME_SLUG_ENTRY: ArchiveIndexEntry = {
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 1,
+  finisherCount: null,
+  avgTimeMs: null,
+  bestMaleMs: null,
+  bestFemaleMs: null,
   files: EXPECTED_EVENT_PATHS,
 };
 
-/** `buildIndexEntry(RACE_EVENT, PROTOCOL_ROWS)`: slug = dateIso, participantCount = rows.length. */
+/**
+ * `buildIndexEntry(RACE_EVENT, PROTOCOL_ROWS)`: slug = dateIso, participantCount = rows.length;
+ * the sole 5 km finisher is a woman, so she is both the average and the female best.
+ */
 export const EXPECTED_NEW_ENTRY: ArchiveIndexEntry = {
   slug: '2026-06-28',
   dateIso: '2026-06-28',
@@ -64,6 +79,25 @@ export const EXPECTED_NEW_ENTRY: ArchiveIndexEntry = {
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 3,
+  finisherCount: 1,
+  avgTimeMs: 1500000,
+  bestMaleMs: null,
+  bestFemaleMs: 1500000,
+  files: EXPECTED_EVENT_PATHS,
+};
+
+/** `buildIndexEntry(RACE_EVENT, PROTOCOL_ROWS.slice(1))`: no 5 km finisher left, so every aggregate is null. */
+export const EXPECTED_NO_FINISHER_ENTRY: ArchiveIndexEntry = {
+  slug: '2026-06-28',
+  dateIso: '2026-06-28',
+  number: 12,
+  city: 'Курск',
+  park: 'Боева дача',
+  participantCount: 2,
+  finisherCount: 0,
+  avgTimeMs: null,
+  bestMaleMs: null,
+  bestFemaleMs: null,
   files: EXPECTED_EVENT_PATHS,
 };
 
