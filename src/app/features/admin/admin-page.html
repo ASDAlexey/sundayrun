@@ -45,4 +45,47 @@
       </div>
     }
   </section>
+
+  @if (isAdmin()) {
+    <section class="admin__card">
+      <h2 class="admin__subtitle" i18n="@@admin.metaTitle">Объявление на главной</h2>
+
+      <p class="admin__hint" i18n="@@admin.metaHint">Время старта и сообщение о забеге показываются всем на главной странице.</p>
+
+      <label class="admin__label" for="admin-start-time" i18n="@@admin.startTimeLabel">Время старта</label>
+
+      <input #startTimeInput class="admin__input admin__input_time" id="admin-start-time" type="time" [value]="meta()?.startTime ?? ''" />
+
+      <label class="admin__label" for="admin-announcement" i18n="@@admin.announcementLabel">Сообщение о забеге</label>
+
+      <textarea #announcementInput class="admin__textarea" id="admin-announcement" rows="4" [value]="meta()?.announcement ?? ''"></textarea>
+
+      <button
+        class="admin__save"
+        i18n="@@admin.metaSave"
+        type="button"
+        [disabled]="meta() === null || metaState() === publishStates.publishing"
+        (click)="saveMeta(startTimeInput.value, announcementInput.value)"
+      >
+        Опубликовать объявление
+      </button>
+
+      <div aria-live="polite" class="admin__feedback admin__feedback_meta">
+        @switch (metaState()) {
+          @case (publishStates.publishing) {
+            <p class="admin__status" i18n="@@admin.metaSaving">Публикуем объявление…</p>
+          }
+          @case (publishStates.success) {
+            <p class="admin__saved" i18n="@@admin.metaSaved">Объявление опубликовано.</p>
+          }
+          @case (publishStates.authError) {
+            <p class="admin__error" i18n="@@admin.metaAuthError" role="alert">Токен не подходит: нет доступа к репозиторию protocols.</p>
+          }
+          @case (publishStates.error) {
+            <p class="admin__error" i18n="@@admin.metaError" role="alert">Не удалось опубликовать объявление. Попробуйте ещё раз.</p>
+          }
+        }
+      </div>
+    </section>
+  }
 </main>

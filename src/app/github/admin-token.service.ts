@@ -2,7 +2,8 @@ import { Injectable, computed, signal } from '@angular/core';
 
 import { checkGithubToken } from '../core/github/token-check';
 import { TokenCheckType } from '../core/github/token-check.enum';
-import { ADMIN_TOKEN_STORAGE_KEY } from './admin-token.constant';
+import { ADMIN_TOKEN_STORAGE_KEY, SSR_NOOP_STORAGE } from './admin-token.constant';
+import { AdminTokenStorage } from './admin-token.type';
 
 /** Keeps the organiser's GitHub PAT in localStorage; a stored token IS the admin role. */
 @Injectable({ providedIn: 'root' })
@@ -27,8 +28,8 @@ export class AdminTokenService {
     return checkGithubToken(token);
   }
 
-  /** Live localStorage access, so specs can stub the global per scenario. */
-  get #storage(): Storage {
-    return localStorage;
+  /** Live localStorage access, so specs can stub the global per scenario; absent during prerender. */
+  get #storage(): AdminTokenStorage {
+    return typeof localStorage === 'undefined' ? SSR_NOOP_STORAGE : localStorage;
   }
 }

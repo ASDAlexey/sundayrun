@@ -58,4 +58,23 @@ describe('AdminTokenService', () => {
     await expect(service.validate(CHECKED_TOKEN)).resolves.toBe(TokenCheck.valid);
     expect(fetchMock).toHaveBeenCalledWith(PROTOCOLS_REPO_API_URL, EXPECTED_CHECK_INIT);
   });
+
+  it('falls back to a noop storage during prerender where localStorage is absent', () => {
+    vi.stubGlobal('localStorage', undefined);
+
+    const service = TestBed.inject(AdminTokenService);
+
+    expect(service.isAdmin()).toBe(false);
+
+    service.save(CHECKED_TOKEN);
+
+    expect(service.token()).toBe(CHECKED_TOKEN);
+
+    service.clear();
+
+    expect(service.token()).toBeNull();
+    expect(getItem).not.toHaveBeenCalled();
+    expect(setItem).not.toHaveBeenCalled();
+    expect(removeItem).not.toHaveBeenCalled();
+  });
 });
