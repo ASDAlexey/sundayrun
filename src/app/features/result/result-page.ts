@@ -1,4 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 
@@ -19,7 +23,7 @@ import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';
 /** The /result page: renders the protocol PDF on entry, previews it and offers download, share, archive publish and VK repost. */
 @Component({
   selector: 'app-result-page',
-  imports: [RouterLink],
+  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, RouterLink],
   templateUrl: './result-page.html',
   styleUrl: './result-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

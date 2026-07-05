@@ -1,6 +1,4 @@
-@use 'styles/buttons' as b;
 @use 'styles/card' as c;
-@use 'styles/field' as f;
 @use 'styles/section' as s;
 @use 'styles/typography' as t;
 
@@ -24,6 +22,12 @@
     color: var(--text-secondary);
   }
 
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
   &__summary {
     @include t.text('body', 'large');
 
@@ -43,17 +47,6 @@
     gap: 12px;
   }
 
-  &__download {
-    @include b.button-accent;
-  }
-
-  &__share,
-  &__copy,
-  &__vk-open,
-  &__back {
-    @include b.button-outline;
-  }
-
   &__back {
     align-self: flex-start;
   }
@@ -67,15 +60,11 @@
     gap: 12px;
   }
 
-  &__vk-label {
-    @include t.text('label', 'medium');
-
-    color: var(--text-muted);
+  &__vk-field {
+    width: 100%;
   }
 
   &__vk-text {
-    @include f.field;
-
     min-height: 140px;
     resize: vertical;
   }
@@ -96,15 +85,12 @@
     gap: 12px;
   }
 
-  &__publish-button {
-    @include b.button-accent;
-  }
-
   &__publish-status {
     @include t.text('body', 'medium');
 
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
     color: var(--text-secondary);
   }
@@ -118,6 +104,7 @@
 
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
     color: var(--accent-warm);
   }
