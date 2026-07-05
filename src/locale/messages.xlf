@@ -1,0 +1,896 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="ru" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="app.skipToContent" datatype="html">
+        <source>К содержимому</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.html</context>
+          <context context-type="linenumber">1,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.title" datatype="html">
+        <source>Вход для организатора</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">3,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.tokenSaved" datatype="html">
+        <source>Токен сохранён — режим организатора включён.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">6,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.clear" datatype="html">
+        <source>Удалить токен</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">8,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.hint" datatype="html">
+        <source>Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий protocols.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">10,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.tokenLabel" datatype="html">
+        <source>GitHub-токен</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">12,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.save" datatype="html">
+        <source> Сохранить </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">23,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.emptyToken" datatype="html">
+        <source>Введите токен.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.checking" datatype="html">
+        <source>Проверяем токен…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.unauthorized" datatype="html">
+        <source>Токен не подходит: нет доступа к репозиторию protocols.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="admin.error" datatype="html">
+        <source>Не удалось проверить токен. Попробуйте ещё раз.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
+          <context context-type="linenumber">38,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.loading" datatype="html">
+        <source>Загружаем историю атлета…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.notFound" datatype="html">
+        <source>Атлет не найден. История могла ещё не обновиться после публикации протокола.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">8,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.participations" datatype="html">
+        <source>Участий: <x id="INTERPOLATION" equiv-text="{{ participationCount() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.finishes" datatype="html">
+        <source>Финишей: <x id="INTERPOLATION" equiv-text="{{ finishCount() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.recordsTitle" datatype="html">
+        <source>Личные рекорды (только 5 км)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.bestAllTime" datatype="html">
+        <source>За всё время: <x id="INTERPOLATION" equiv-text="{{ bestTimeText() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.yearBest" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ best.year }}"/> г. — <x id="INTERPOLATION_1" equiv-text="{{ best.timeText }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">33,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.noRuns" datatype="html">
+        <source>Финишей пока нет.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">41,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.yearLabel" datatype="html">
+        <source>Год</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">49,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.allYears" datatype="html">
+        <source>Все годы</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">52,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.distanceLabel" datatype="html">
+        <source>Дистанция</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">61,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.allDistances" datatype="html">
+        <source>Все дистанции</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.fiveKm" datatype="html">
+        <source>5 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">71,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.twoThreeKm" datatype="html">
+        <source>2,3 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">73,74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.sortByDate" datatype="html">
+        <source> По дате </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">86,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.sortByTime" datatype="html">
+        <source> По времени </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">97,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.noFilteredRuns" datatype="html">
+        <source>Под выбранные фильтры забеги не попали.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">104,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.table.date" datatype="html">
+        <source>Дата</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">113,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.table.distance" datatype="html">
+        <source>Дистанция</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">114,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.table.time" datatype="html">
+        <source>Время</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">115,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.backToList" datatype="html">
+        <source>К списку атлетов</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">138,141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athlete.error" datatype="html">
+        <source>Не удалось загрузить историю атлета.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
+          <context context-type="linenumber">142,146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.title" datatype="html">
+        <source>Атлеты</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.loading" datatype="html">
+        <source>Загружаем историю атлетов…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">7,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.empty" datatype="html">
+        <source>История появится после первых опубликованных протоколов.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">10,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.searchLabel" datatype="html">
+        <source>Поиск по имени</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">19,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.sortByBestTime" datatype="html">
+        <source> По лучшему времени </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">40,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.sortByParticipations" datatype="html">
+        <source> По числу участий </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">51,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.noMatches" datatype="html">
+        <source>По такому запросу никого не нашлось.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">58,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.table.name" datatype="html">
+        <source>Спортсмен</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">67,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.table.bestTime" datatype="html">
+        <source>Лучшее время (5 км)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">68,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.table.participations" datatype="html">
+        <source>Участий</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.error" datatype="html">
+        <source>Не удалось загрузить историю атлетов.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">89,93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="athletes.cdnNote" datatype="html">
+        <source>Данные могут обновляться с небольшой задержкой после публикации.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/athletes/athletes-page.html</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.event.number" datatype="html">
+        <source>Номер забега</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/event-form/event-form.html</context>
+          <context context-type="linenumber">3,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.event.date" datatype="html">
+        <source>Дата</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/event-form/event-form.html</context>
+          <context context-type="linenumber">9,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.event.city" datatype="html">
+        <source>Город</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/event-form/event-form.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.event.park" datatype="html">
+        <source>Парк</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/event-form/event-form.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.event.club" datatype="html">
+        <source>Клуб</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/event-form/event-form.html</context>
+          <context context-type="linenumber">27,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.event.chairman" datatype="html">
+        <source>Председатель клуба</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/event-form/event-form.html</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.index" datatype="html">
+        <source>№</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.name" datatype="html">
+        <source>ФИО</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.time" datatype="html">
+        <source>Время</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">7,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.distance" datatype="html">
+        <source>Дистанция</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.gender" datatype="html">
+        <source>Пол</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.note" datatype="html">
+        <source>Примечание</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">10,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.unverifiedGender" datatype="html">
+        <source>пол не определён</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">22,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.maleAriaLabel" datatype="html">
+        <source>Мужской</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.male" datatype="html">
+        <source> М </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.femaleAriaLabel" datatype="html">
+        <source>Женский</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.female" datatype="html">
+        <source> Ж </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
+          <context context-type="linenumber">52,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.table.noteAriaLabel" datatype="html">
+        <source>Примечание: <x id="fullName" equiv-text="participant.fullName"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.title" datatype="html">
+        <source>Предпросмотр протокола</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.unverifiedWarning" datatype="html">
+        <source> Проверьте пол у <x id="INTERPOLATION" equiv-text="{{ unknownGenderCount() }}"/> участников </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">6,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.applyHistoryNotes" datatype="html">
+        <source> Подставить примечания из истории </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">20,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.historyLoading" datatype="html">
+        <source>Загружаем историю…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">25,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.historyError" datatype="html">
+        <source>Не удалось загрузить историю</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">30,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.generate" datatype="html">
+        <source> Сгенерировать протокол </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">38,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.genderMale" datatype="html">
+        <source>М</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.constant.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.genderFemale" datatype="html">
+        <source>Ж</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.constant.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.loading" datatype="html">
+        <source>Загружаем протокол…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.notFound" datatype="html">
+        <source>Такой протокол не найден.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">8,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.title" datatype="html">
+        <source>Пробег № <x id="INTERPOLATION" equiv-text="{{ view.number }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">18,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.participantCount" datatype="html">
+        <source>Участников: <x id="INTERPOLATION" equiv-text="{{ view.participantCount }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">24,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.pdf" datatype="html">
+        <source> PDF </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">28,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.index" datatype="html">
+        <source>№</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.athlete" datatype="html">
+        <source>Спортсмен</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">37,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.time23" datatype="html">
+        <source>Время 2,3 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.time5" datatype="html">
+        <source>Время 5 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.gender" datatype="html">
+        <source>Пол</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.placeM" datatype="html">
+        <source>Место М</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">41,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.placeF" datatype="html">
+        <source>Место Ж</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">42,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.club" datatype="html">
+        <source>Клуб</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.table.note" datatype="html">
+        <source>Примечание</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.backHome" datatype="html">
+        <source>К списку забегов</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">73,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.error" datatype="html">
+        <source>Не удалось загрузить протокол.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.html</context>
+          <context context-type="linenumber">77,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.pdfAriaLabel" datatype="html">
+        <source>Протокол пробега № <x id="number" equiv-text="file.event.number"/> (PDF)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="race.athleteAriaLabel" datatype="html">
+        <source>История атлета <x id="fullName" equiv-text="row.fullName"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.title" datatype="html">
+        <source>Воскресный парковый пробег</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.adminHint" datatype="html">
+        <source>Режим организатора включён.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">6,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.upload" datatype="html">
+        <source>Загрузить забег</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">8,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.loading" datatype="html">
+        <source>Загружаем список забегов…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.empty" datatype="html">
+        <source>Опубликованных забегов пока нет.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">18,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.raceTitle" datatype="html">
+        <source>Пробег № <x id="INTERPOLATION" equiv-text="{{ race.number }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.participantCount" datatype="html">
+        <source>Участников: <x id="INTERPOLATION" equiv-text="{{ race.participantCount }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">35,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.protocolOnline" datatype="html">
+        <source>Протокол онлайн</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">39,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.pdf" datatype="html">
+        <source> PDF </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">49,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.error" datatype="html">
+        <source>Не удалось загрузить список забегов.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">57,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.cdnNote" datatype="html">
+        <source>Список может обновляться с небольшой задержкой после публикации.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">61,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.forOrganizer" datatype="html">
+        <source>для организатора</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.html</context>
+          <context context-type="linenumber">63,65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="races.pdfAriaLabel" datatype="html">
+        <source>Протокол пробега № <x id="number" equiv-text="entry.number"/> (PDF)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/races/races-page.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.generating" datatype="html">
+        <source>Генерируем PDF…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.title" datatype="html">
+        <source>Протокол готов</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">7,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.previewTitle" datatype="html">
+        <source>Предпросмотр протокола</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">12,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.download" datatype="html">
+        <source>Скачать PDF</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">17,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.share" datatype="html">
+        <source>Поделиться</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.vkDescriptionLabel" datatype="html">
+        <source>Описание для ВК</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">26,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.copied" datatype="html">
+        <source>Скопировано</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.copyDescription" datatype="html">
+        <source>Скопировать описание</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.vkOpen" datatype="html">
+        <source>Открыть репост ВК</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">45,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.publish" datatype="html">
+        <source> Опубликовать в архив </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.publishing" datatype="html">
+        <source>Публикуем…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">64,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.published" datatype="html">
+        <source>Опубликовано</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">68,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.publishedLink" datatype="html">
+        <source> PDF в архиве </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">72,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.publishAuthError" datatype="html">
+        <source>Нет доступа к GitHub: токен отсутствует или истёк.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.publishAdminLink" datatype="html">
+        <source>Обновить токен</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">81,83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.publishError" datatype="html">
+        <source>Не удалось опубликовать</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">85,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.error" datatype="html">
+        <source>Не удалось сгенерировать PDF</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.back" datatype="html">
+        <source>Назад к предпросмотру</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">95,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="upload.title" datatype="html">
+        <source>Загрузка результатов забега</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/upload/upload-page.html</context>
+          <context context-type="linenumber">3,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="upload.hint" datatype="html">
+        <source>Экспорт приложения-секундомера — файл .xlsx с именами, итоговым временем и кругами.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/upload/upload-page.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="upload.zoneAriaLabel" datatype="html">
+        <source>Выбрать файл с результатами</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/upload/upload-page.html</context>
+          <context context-type="linenumber">8,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="upload.zonePrompt" datatype="html">
+        <source>Перетащите файл сюда или нажмите, чтобы выбрать</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/upload/upload-page.html</context>
+          <context context-type="linenumber">20,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="upload.error" datatype="html">
+        <source> Не удалось прочитать файл. Убедитесь, что это .xlsx-экспорт приложения-секундомера. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/upload/upload-page.html</context>
+          <context context-type="linenumber">25,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="shared.fiveKm" datatype="html">
+        <source>5 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/distance-label.constant.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="shared.twoThreeKm" datatype="html">
+        <source>2,3 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/distance-label.constant.ts</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
