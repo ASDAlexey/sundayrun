@@ -12,6 +12,12 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     city: 'Курск',
     park: 'Боева дача',
     participantCount: 20,
+    stats: [
+      { label: 'Финишёров 5 км', value: '18' },
+      { label: 'Ср. время', value: '31:02' },
+      { label: 'Лучшее М', value: '17:36' },
+      { label: 'Лучшее Ж', value: '20:38' },
+    ],
     pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/events/2026-07-05/protocol.pdf',
     pdfAriaLabel: 'Протокол пробега № 13 (PDF)',
   },
@@ -23,6 +29,12 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     city: 'Курск',
     park: 'Боева дача',
     participantCount: 15,
+    stats: [
+      { label: 'Финишёров 5 км', value: '12' },
+      { label: 'Ср. время', value: '29:13' },
+      { label: 'Лучшее М', value: '19:43' },
+      { label: 'Лучшее Ж', value: '22:40' },
+    ],
     pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/events/2026-06-21/protocol.pdf',
     pdfAriaLabel: 'Протокол пробега № 11 (PDF)',
   },
@@ -38,7 +50,10 @@ export const INDEX_LOAD_ERROR_MESSAGE = 'index load failed';
 /** EXISTING_SITE_META.startTime rendered through the @@races.startTime template. */
 export const EXPECTED_ANNOUNCE_TIME_TEXT = 'Каждое воскресенье · старт в 08:00';
 
-/** OLDER_ENTRY moved a year back, so the list spans two distinct years for the filter. */
+/**
+ * OLDER_ENTRY moved a year back, so the list spans two distinct years for the filter.
+ * Its aggregates are nulled to render one card entirely without stat chips.
+ */
 export const PREVIOUS_YEAR_INDEX = {
   schemaVersion: 1,
   events: [
@@ -47,6 +62,10 @@ export const PREVIOUS_YEAR_INDEX = {
       ...OLDER_ENTRY,
       slug: '2025-06-21',
       dateIso: '2025-06-21',
+      finisherCount: null,
+      avgTimeMs: null,
+      bestMaleMs: null,
+      bestFemaleMs: null,
       files: {
         sourceXlsx: 'data/events/2025-06-21/source.xlsx',
         protocolPdf: 'data/events/2025-06-21/protocol.pdf',

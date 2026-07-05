@@ -42,6 +42,33 @@
     color: var(--text-muted);
   }
 
+  &__stats {
+    display: flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    list-style: none;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__stat-label {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
+  &__stat-value {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+    font-family: var(--mono);
+  }
+
   &__actions {
     display: flex;
     flex-wrap: wrap;

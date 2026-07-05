@@ -66,8 +66,12 @@ describe('RacesPage', () => {
     const titles = [...element.querySelectorAll('.race-card__title')].map((node) => node.textContent.trim());
     const pdfLinks = [...element.querySelectorAll('.race-card__pdf')];
     const protocolLinks = [...element.querySelectorAll('.race-card__protocol')];
+    const statValues = [...element.querySelectorAll('.race-card__stat-value')].map((node) => node.textContent.trim());
 
     expect(titles).toEqual(EXPECTED_RACE_TITLES);
+    expect(statValues, 'every stat chip renders its preformatted value').toEqual(
+      EXPECTED_RACE_ITEMS.flatMap((item) => item.stats.map((stat) => stat.value)),
+    );
     expect(
       protocolLinks.map((link) => link.getAttribute('href')),
       'each card links to the online protocol',
@@ -94,6 +98,7 @@ describe('RacesPage', () => {
 
     expect(page.years()).toEqual(EXPECTED_YEARS);
     expect(page.visibleRaces().length, 'no filter by default').toBe(2);
+    expect(page.visibleRaces()[1].stats, 'a pre-stats index entry renders without chips').toEqual([]);
 
     page.onYearChange(EXPECTED_YEARS[1]);
 
