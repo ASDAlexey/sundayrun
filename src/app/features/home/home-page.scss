@@ -75,27 +75,6 @@
     white-space: pre-line;
   }
 
-  &__admin {
-    @include c.card;
-
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    padding: 24px;
-    gap: 12px;
-  }
-
-  &__admin-hint {
-    @include t.text('label', 'medium');
-
-    color: var(--text-muted);
-  }
-
-  &__upload {
-    @include b.button-accent;
-  }
-
   &__latest {
     display: flex;
     flex-direction: column;

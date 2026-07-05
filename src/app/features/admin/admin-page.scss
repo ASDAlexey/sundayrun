@@ -91,6 +91,17 @@
     align-self: flex-start;
   }
 
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__upload {
+    @include b.button-accent;
+  }
+
   &__clear {
     @include b.button-outline;
 

@@ -1,11 +1,11 @@
-import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 
 import { isoYear } from '../../core/history/iso-year';
+import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
 import { toRaceListItem } from './race-list-item';
 import { RaceCard } from './race-card/race-card';
-import { ALL_YEARS_VALUE } from './races-page.constant';
+import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
 import { RacesStatus, RacesStatusType } from './races-page.enum';
 import { RaceListItem } from './races-page.interface';
 
@@ -30,25 +30,29 @@ export class RacesPage {
   protected readonly allValue = ALL_YEARS_VALUE;
 
   constructor() {
-    // Prerender bakes the calm loading state into static HTML; live data arrives after hydration.
-    if (isPlatformBrowser(inject(PLATFORM_ID))) {
-      void this.#load();
-    }
+    // Prerender bakes the full list into the static HTML, so hydration shifts no layout;
+    // the browser still refreshes from the CDN — data lands between deploys.
+    loadWithTransfer({
+      key: RACES_TRANSFER_KEY,
+      load: () => this.#loadRaces(),
+      apply: (races) => this.#applyRaces(races),
+      onError: () => this.status.set(RacesStatus.error),
+    });
   }
 
   onYearChange(value: string): void {
     this.year.set(value === ALL_YEARS_VALUE ? null : value);
   }
 
-  async #load(): Promise<void> {
-    try {
-      const index = await this.#archive.loadIndex();
+  async #loadRaces(): Promise<RaceListItem[]> {
+    const index = await this.#archive.loadIndex();
 
-      this.races.set(index.events.map(toRaceListItem));
-      this.status.set(index.events.length === 0 ? RacesStatus.empty : RacesStatus.ready);
-    } catch {
-      this.status.set(RacesStatus.error);
-    }
+    return index.events.map(toRaceListItem);
+  }
+
+  #applyRaces(races: RaceListItem[]): void {
+    this.races.set(races);
+    this.status.set(races.length === 0 ? RacesStatus.empty : RacesStatus.ready);
   }
 }
 

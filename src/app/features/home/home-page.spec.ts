@@ -1,23 +1,32 @@
-import { PLATFORM_ID, signal } from '@angular/core';
+import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
+import { SiteMetaFile } from '../../core/github/site-meta.interface';
 import { ANNOUNCEMENT_ONLY_SITE_META, EXISTING_SITE_META } from '../../core/github/site-meta.mock';
-import { AdminTokenService } from '../../github/admin-token.service';
 import { ArchiveService } from '../../github/archive.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock';
 import { RacesStatus } from '../races/races-page.enum';
+import { RaceListItem } from '../races/races-page.interface';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { HomePage } from './home-page';
-import { RACES_PAGE_LINK, UPLOAD_PAGE_LINK } from './home-page.constant';
-import { EXPECTED_ANNOUNCE_TIME_TEXT, EXPECTED_RACE_ITEMS, EXPECTED_RACE_TITLES, INDEX_LOAD_ERROR_MESSAGE } from './home-page.mock';
+import { HOME_META_TRANSFER_KEY, HOME_RACES_TRANSFER_KEY, RACES_PAGE_LINK } from './home-page.constant';
+import {
+  BAKED_RACE_ITEMS,
+  EXPECTED_ANNOUNCE_TIME_TEXT,
+  EXPECTED_RACE_ITEMS,
+  EXPECTED_RACE_TITLES,
+  INDEX_LOAD_ERROR_MESSAGE,
+} from './home-page.mock';
+
+const RACES_KEY = makeStateKey<{ data: RaceListItem[] } | null>(HOME_RACES_TRANSFER_KEY);
+const META_KEY = makeStateKey<{ data: SiteMetaFile } | null>(HOME_META_TRANSFER_KEY);
 
 describe('HomePage', () => {
-  const isAdmin = signal(false);
   const loadIndex = vi.fn();
   const loadMeta = vi.fn();
 
@@ -26,7 +35,6 @@ describe('HomePage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    isAdmin.set(false);
     platformId = BROWSER_PLATFORM_ID;
     loadIndex.mockResolvedValue(EXISTING_INDEX);
     loadMeta.mockResolvedValue(EMPTY_SITE_META);
@@ -34,7 +42,6 @@ describe('HomePage', () => {
       providers: [
         provideRouter([]),
         { provide: ArchiveService, useValue: { loadIndex } },
-        { provide: AdminTokenService, useValue: { isAdmin } },
         { provide: SiteMetaService, useValue: { load: loadMeta } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
@@ -53,7 +60,7 @@ describe('HomePage', () => {
     return created;
   }
 
-  it('renders the latest races as cards with the all-races links and hides the admin block for visitors', async () => {
+  it('renders the latest races as cards with the all-races links', async () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -69,7 +76,6 @@ describe('HomePage', () => {
     expect(titles).toEqual(EXPECTED_RACE_TITLES);
     expect(element.querySelector('.home__latest-all').getAttribute('href')).toBe(RACES_PAGE_LINK);
     expect(element.querySelector('.home__all-cta').getAttribute('href')).toBe(RACES_PAGE_LINK);
-    expect(element.querySelector('.home__admin')).toBeNull();
     expect(element.querySelector('.home__course'), 'the course card stays on the landing').not.toBeNull();
     expect(element.querySelector('.home__announce'), 'no announcement block until the organiser publishes one').toBeNull();
   });
@@ -106,15 +112,6 @@ describe('HomePage', () => {
     expect(fixture.nativeElement.querySelector('.home__announce')).toBeNull();
   });
 
-  it('shows the admin upload entry when a token is stored', async () => {
-    isAdmin.set(true);
-    fixture = await createPage();
-
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelector('.home__upload').getAttribute('href')).toBe(UPLOAD_PAGE_LINK);
-  });
-
   it('shows the empty and error states of the race preview', async () => {
     loadIndex.mockResolvedValue(EMPTY_INDEX);
     fixture = await createPage();
@@ -139,12 +136,47 @@ describe('HomePage', () => {
     expect(fixture.nativeElement.querySelector('.home__error').getAttribute('role')).toBe('alert');
   });
 
-  it('does not fetch during prerender and keeps the loading state for hydration', async () => {
+  it('prerender fetches the data, renders the ready state and bakes it into the transfer state', async () => {
     platformId = SERVER_PLATFORM_ID;
+    loadMeta.mockResolvedValue(EXISTING_SITE_META);
     fixture = await createPage();
 
-    expect(loadIndex).not.toHaveBeenCalled();
-    expect(loadMeta, 'the meta read also waits for hydration').not.toHaveBeenCalled();
-    expect(fixture.componentInstance.status()).toBe(RacesStatus.loading);
+    const transferState = TestBed.inject(TransferState);
+
+    expect(fixture.componentInstance.status()).toBe(RacesStatus.ready);
+    expect(fixture.componentInstance.latestRaces()).toEqual(EXPECTED_RACE_ITEMS);
+    expect(transferState.get(RACES_KEY, null)).toEqual({ data: EXPECTED_RACE_ITEMS });
+    expect(transferState.get(META_KEY, null), 'the announcement is baked alongside the preview').toEqual({ data: EXISTING_SITE_META });
+  });
+
+  it('keeps the calm loading state when the prerender fetches fail', async () => {
+    platformId = SERVER_PLATFORM_ID;
+    loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
+    loadMeta.mockRejectedValue(new Error(SITE_META_CDN_ERROR_MESSAGE));
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.status(), 'the browser retry decides the real status').toBe(RacesStatus.loading);
+    expect(TestBed.inject(TransferState).get(RACES_KEY, null)).toBeNull();
+  });
+
+  it('applies the baked races before hydration, then refreshes them from the network', async () => {
+    TestBed.inject(TransferState).set(RACES_KEY, { data: BAKED_RACE_ITEMS });
+    fixture = TestBed.createComponent(HomePage);
+
+    const page = fixture.componentInstance;
+
+    expect(page.status(), 'the baked cards render synchronously, so hydration matches the prerendered HTML').toBe(RacesStatus.ready);
+    expect(page.latestRaces()).toEqual(BAKED_RACE_ITEMS);
+
+    await settle();
+
+    expect(page.latestRaces(), 'the network answer replaces the baked payload').toEqual(EXPECTED_RACE_ITEMS);
+
+    loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
+    fixture.destroy();
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.status(), 'a refresh failure stays silent while baked content is on screen').toBe(RacesStatus.ready);
+    expect(fixture.componentInstance.latestRaces()).toEqual(BAKED_RACE_ITEMS);
   });
 });

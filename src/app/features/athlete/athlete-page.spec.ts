@@ -5,11 +5,11 @@ import { RunsSort } from '../../core/history/athlete-runs.enum';
 import { EXPECTED_ROLLUP_HISTORY, DNF_ONLY_KEY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
 import { AthletesHistory } from '../../core/models/athletes-history.type';
 import { AthletesService } from '../../github/athletes.service';
-import { ATHLETES_PAGE_LINK, NO_BEST_TIME_TEXT } from '../athletes/athletes-page.constant';
+import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
 import { AthletePage } from './athlete-page';
-import { KEY_ROUTE_PARAM } from './athlete-page.constant';
+import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT } from './athlete-page.constant';
 import { AthleteStatus } from './athlete-page.enum';
 import {
   ATHLETE_LOAD_ERROR_MESSAGE,

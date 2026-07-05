@@ -14,7 +14,7 @@ import {
   PATCH_METHOD,
   POST_METHOD,
 } from './github-api.constant';
-import { CommitFile, GitBlobResponse, GitCommitResponse, GitRefResponse, GitTreeResponse } from './github-api.interface';
+import { CommitFile, GitBlobResponse, GitCommitResponse, GitRefResponse, GitTreeEntry, GitTreeResponse } from './github-api.interface';
 import { COMMIT_RETRIES_EXHAUSTED_MESSAGE } from './github-commit.constant';
 import { GithubRequestError } from './github-errors';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
@@ -24,7 +24,8 @@ import { assertAuthorized, assertOk, githubBodyHeaders, githubJson } from './git
 /**
  * Creates ONE commit containing all files produced by `buildFiles` via the Git Data API and
  * fast-forwards the branch: read head ref → read base commit (tree sha) → upload blobs in
- * parallel → create tree → create commit → update ref. Returns the new commit sha. 401/403
+ * parallel (a `base64Content: null` file becomes a `sha: null` tree entry, i.e. a deletion)
+ * → create tree → create commit → update ref. Returns the new commit sha. 401/403
  * anywhere → `GithubAuthError`. A 409/422 on the ref update means the branch moved, so the
  * WHOLE cycle is retried — `buildFiles` is re-invoked on every attempt, so the content is
  * rebuilt against the fresh repository state and a concurrent commit is never overwritten.
@@ -56,20 +57,12 @@ export async function commitFilesAtomically(
 async function attemptCommit(fetchFn: GithubFetchFn, token: string, files: CommitFile[], message: string): Promise<number | string> {
   const headSha = (await githubJson<GitRefResponse>(fetchFn, token, GIT_REF_URL)).object.sha;
   const baseCommit = await githubJson<GitCommitResponse>(fetchFn, token, `${GIT_COMMITS_URL}/${headSha}`);
-  const blobs = await Promise.all(files.map((file) => createBlob(fetchFn, token, file)));
+  const treeEntries = await Promise.all(files.map((file) => createTreeEntry(fetchFn, token, file)));
   const tree = await githubJson<GitTreeResponse>(
     fetchFn,
     token,
     GIT_TREES_URL,
-    postInit({
-      base_tree: baseCommit.tree.sha,
-      tree: files.map((file, index) => ({
-        path: file.path,
-        mode: GIT_TREE_FILE_MODE,
-        type: GIT_TREE_BLOB_TYPE,
-        sha: blobs[index].sha,
-      })),
-    }),
+    postInit({ base_tree: baseCommit.tree.sha, tree: treeEntries }),
   );
   const commit = await githubJson<GitCommitResponse>(
     fetchFn,
@@ -82,8 +75,15 @@ async function attemptCommit(fetchFn: GithubFetchFn, token: string, files: Commi
   return refStatus ?? commit.sha;
 }
 
-function createBlob(fetchFn: GithubFetchFn, token: string, file: CommitFile): Promise<GitBlobResponse> {
-  return githubJson<GitBlobResponse>(fetchFn, token, GIT_BLOBS_URL, postInit({ content: file.base64Content, encoding: GIT_BLOB_ENCODING }));
+/** Uploads the file as a blob, or emits a `sha: null` entry — the Git tree API deletes that path. */
+async function createTreeEntry(fetchFn: GithubFetchFn, token: string, file: CommitFile): Promise<GitTreeEntry> {
+  const sha = file.base64Content === null ? null : (await createBlob(fetchFn, token, file.base64Content)).sha;
+
+  return { path: file.path, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha };
+}
+
+function createBlob(fetchFn: GithubFetchFn, token: string, base64Content: string): Promise<GitBlobResponse> {
+  return githubJson<GitBlobResponse>(fetchFn, token, GIT_BLOBS_URL, postInit({ content: base64Content, encoding: GIT_BLOB_ENCODING }));
 }
 
 /** Fast-forwards the branch ref; returns null on success or the 409/422 status when the update was rejected. */

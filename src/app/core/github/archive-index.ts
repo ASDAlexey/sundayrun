@@ -36,6 +36,11 @@ export function upsertIndexEntry(index: ArchiveIndexFile, entry: ArchiveIndexEnt
   return { ...index, events };
 }
 
+/** Drops the entry with the given slug, keeping the order of the rest. Returns a NEW file object, the input is never mutated. */
+export function removeIndexEntry(index: ArchiveIndexFile, slug: string): ArchiveIndexFile {
+  return { ...index, events: index.events.filter((existing) => existing.slug !== slug) };
+}
+
 function isArchiveIndexFile(value: unknown): value is ArchiveIndexFile {
   return (
     typeof value === 'object' &&

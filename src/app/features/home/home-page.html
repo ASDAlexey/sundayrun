@@ -19,14 +19,6 @@
     </section>
   }
 
-  @if (isAdmin()) {
-    <section class="home__admin">
-      <p class="home__admin-hint" i18n="@@races.adminHint">Режим организатора включён.</p>
-
-      <a class="home__upload" i18n="@@races.upload" [routerLink]="uploadLink">Загрузить забег</a>
-    </section>
-  }
-
   <section class="home__latest">
     <div class="home__latest-head">
       <h2 class="home__latest-title" i18n="@@home.latestTitle">Последние забеги</h2>

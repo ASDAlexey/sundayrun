@@ -1,10 +1,12 @@
 <main class="records" id="main" tabindex="-1">
   <header class="records__hero">
-    <p class="records__eyebrow" i18n="@@records.eyebrow">5 км · за всё время</p>
+    <p class="records__eyebrow" i18n="@@records.eyebrow">5 км · вся история пробега</p>
 
     <h1 class="records__title" i18n="@@records.title">Лучшие результаты</h1>
 
-    <p class="records__tagline" i18n="@@records.tagline">Самые быстрые финишеры пятикилометровой дистанции за всю историю пробега.</p>
+    <p class="records__tagline" i18n="@@records.tagline">
+      Полный зачёт пятикилометровой дистанции: найдите себя по имени и узнайте своё место — за всё время или за отдельный год.
+    </p>
   </header>
 
   <p aria-live="polite" class="records__status" role="status">
@@ -20,43 +22,133 @@
 
   @switch (status()) {
     @case (statuses.ready) {
-      <div class="records__boards">
-        <section class="records__board">
-          <h2 class="records__board-title" i18n="@@records.men">Мужчины</h2>
+      <div class="records__controls">
+        <div class="records__search">
+          <label class="records__search-label" for="records-search" i18n="@@records.searchLabel">Поиск по имени</label>
 
-          <ol class="records__list">
-            @for (row of men(); track row.key) {
-              <li class="records__row">
-                <span class="records__place">{{ row.place }}</span>
+          <input
+            #searchInput
+            class="records__search-input"
+            id="records-search"
+            type="search"
+            [value]="query()"
+            (input)="onQueryChange(searchInput.value)"
+          />
+        </div>
 
-                <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+        <div class="records__filter">
+          <label class="records__filter-label" for="records-year" i18n="@@records.yearLabel">Год</label>
 
-                <span class="records__time">{{ row.timeText }}</span>
+          <select #yearSelect class="records__filter-select" id="records-year" (change)="onYearChange(yearSelect.value)">
+            <option i18n="@@records.allYears" [value]="allYearsValue">Все годы</option>
 
-                <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
-              </li>
+            @for (boardYear of years(); track boardYear) {
+              <option [value]="boardYear">{{ boardYear }}</option>
             }
-          </ol>
-        </section>
+          </select>
+        </div>
 
-        <section class="records__board">
-          <h2 class="records__board-title" i18n="@@records.women">Женщины</h2>
+        <div class="records__genders">
+          <button
+            class="records__gender"
+            i18n="@@records.genderAll"
+            type="button"
+            [attr.aria-pressed]="gender() === null"
+            [class.records__gender_active]="gender() === null"
+            (click)="setGender(null)"
+          >
+            Все
+          </button>
 
-          <ol class="records__list">
-            @for (row of women(); track row.key) {
-              <li class="records__row">
-                <span class="records__place">{{ row.place }}</span>
+          <button
+            class="records__gender"
+            i18n="@@records.genderMen"
+            type="button"
+            [attr.aria-pressed]="gender() === genders.male"
+            [class.records__gender_active]="gender() === genders.male"
+            (click)="setGender(genders.male)"
+          >
+            Мужчины
+          </button>
 
-                <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
-
-                <span class="records__time">{{ row.timeText }}</span>
-
-                <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
-              </li>
-            }
-          </ol>
-        </section>
+          <button
+            class="records__gender"
+            i18n="@@records.genderWomen"
+            type="button"
+            [attr.aria-pressed]="gender() === genders.female"
+            [class.records__gender_active]="gender() === genders.female"
+            (click)="setGender(genders.female)"
+          >
+            Женщины
+          </button>
+        </div>
       </div>
+
+      <p aria-live="polite" class="records__status" role="status">
+        @if (noMatches()) {
+          <span i18n="@@records.noMatches">Ничего не нашлось — измените запрос или фильтры.</span>
+        }
+      </p>
+
+      @if (!noMatches()) {
+        <div class="records__boards">
+          @if (showMen()) {
+            <section class="records__board">
+              <div class="records__board-head">
+                <h2 class="records__board-title" i18n="@@records.men">Мужчины</h2>
+
+                <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ menCount() }}</span>
+              </div>
+
+              @if (men().length > 0) {
+                <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
+                  <ol class="records__list">
+                    <li *cdkVirtualFor="let row of men()" class="records__row">
+                      <span class="records__place">{{ row.place }}</span>
+
+                      <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                      <span class="records__time">{{ row.timeText }}</span>
+
+                      <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+                    </li>
+                  </ol>
+                </cdk-virtual-scroll-viewport>
+              } @else {
+                <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+              }
+            </section>
+          }
+
+          @if (showWomen()) {
+            <section class="records__board">
+              <div class="records__board-head">
+                <h2 class="records__board-title" i18n="@@records.women">Женщины</h2>
+
+                <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ womenCount() }}</span>
+              </div>
+
+              @if (women().length > 0) {
+                <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
+                  <ol class="records__list">
+                    <li *cdkVirtualFor="let row of women()" class="records__row">
+                      <span class="records__place">{{ row.place }}</span>
+
+                      <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                      <span class="records__time">{{ row.timeText }}</span>
+
+                      <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+                    </li>
+                  </ol>
+                </cdk-virtual-scroll-viewport>
+              } @else {
+                <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+              }
+            </section>
+          }
+        </div>
+      }
 
       <p class="records__note" i18n="@@records.note">Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.</p>
     }

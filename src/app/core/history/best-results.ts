@@ -3,28 +3,38 @@ import { GenderType } from '../models/gender.enum';
 import { NAME_COLLATION_LOCALE } from './athletes-list.constant';
 import { BestResult } from './best-results.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
+import { isoYear } from './iso-year';
 
 /**
- * The all-time 5 km leaderboard for one gender: fastest bests first (ties break by name in
- * Russian collation), at most `limit` rows. Athletes without a finished 5 km run are skipped;
- * each row carries the earliest run where the best was set, so the record date is stable.
+ * The full 5 km leaderboard for one gender: fastest bests first (ties break by name in Russian
+ * collation). `year` narrows it to bests set in that year (`bestMsByYear`); `null` ranks
+ * all-time bests. Athletes without a matching finished 5 km run are skipped; each row carries
+ * the earliest run where the best was set, so the record date is stable.
  */
-export function topBestResults(records: AthleteRecord[], gender: GenderType, limit: number): BestResult[] {
+export function bestResults(records: AthleteRecord[], gender: GenderType, year: string | null): BestResult[] {
   return records
     .reduce<BestResult[]>((results, record) => {
-      if (record.gender === gender && record.bestMs !== null) {
-        results.push(toBestResult(record, record.bestMs));
+      const bestMs = year === null ? record.bestMs : (record.bestMsByYear[year] ?? null);
+
+      if (record.gender === gender && bestMs !== null) {
+        results.push(toBestResult(record, bestMs, year));
       }
 
       return results;
     }, [])
-    .sort((left, right) => left.bestMs - right.bestMs || left.displayName.localeCompare(right.displayName, NAME_COLLATION_LOCALE))
-    .slice(0, limit);
+    .sort((left, right) => left.bestMs - right.bestMs || left.displayName.localeCompare(right.displayName, NAME_COLLATION_LOCALE));
 }
 
-function toBestResult(record: AthleteRecord, bestMs: number): BestResult {
+/** Years that have at least one 5 km best, newest first — the options of the year filter. */
+export function bestResultYears(records: AthleteRecord[]): string[] {
+  const years = new Set(records.flatMap((record) => Object.keys(record.bestMsByYear)));
+
+  return [...years].sort((left, right) => right.localeCompare(left));
+}
+
+function toBestResult(record: AthleteRecord, bestMs: number, year: string | null): BestResult {
   const bestRun = record.runs
-    .filter((run) => run.distanceKm === FIVE_KM_DISTANCE_KM && run.timeMs === bestMs)
+    .filter((run) => run.distanceKm === FIVE_KM_DISTANCE_KM && run.timeMs === bestMs && (year === null || isoYear(run.dateIso) === year))
     .reduce((earliest, run) => (run.dateIso < earliest.dateIso ? run : earliest));
 
   return {

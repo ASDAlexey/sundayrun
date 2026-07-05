@@ -1,14 +1,34 @@
 import { Gender } from '../models/gender.enum';
-import { topBestResults } from './best-results';
-import { EXPECTED_FEMALE_LEADERBOARD, EXPECTED_MALE_LEADERBOARD, LEADERBOARD_LIMIT, LEADERBOARD_RECORDS } from './best-results.mock';
+import { bestResults, bestResultYears } from './best-results';
+import {
+  EXPECTED_FEMALE_LEADERBOARD,
+  EXPECTED_MALE_LEADERBOARD,
+  EXPECTED_MALE_YEAR_LEADERBOARD,
+  EXPECTED_YEARS,
+  LEADERBOARD_RECORDS,
+  LEADERBOARD_YEAR,
+} from './best-results.mock';
 
-describe('topBestResults', () => {
-  it('builds gender leaderboards: fastest first, name tie-break, earliest 5 km record run, limit applied', () => {
-    expect(topBestResults(LEADERBOARD_RECORDS, Gender.male, LEADERBOARD_LIMIT)).toEqual(EXPECTED_MALE_LEADERBOARD);
-    expect(
-      topBestResults(LEADERBOARD_RECORDS, Gender.female, LEADERBOARD_LIMIT),
-      'a DNF-only athlete never reaches the leaderboard',
-    ).toEqual(EXPECTED_FEMALE_LEADERBOARD);
-    expect(topBestResults([], Gender.male, LEADERBOARD_LIMIT)).toEqual([]);
+describe('bestResults', () => {
+  it('builds gender leaderboards: fastest first, name tie-break, earliest 5 km record run', () => {
+    expect(bestResults(LEADERBOARD_RECORDS, Gender.male, null)).toEqual(EXPECTED_MALE_LEADERBOARD);
+    expect(bestResults(LEADERBOARD_RECORDS, Gender.female, null), 'a DNF-only athlete never reaches the leaderboard').toEqual(
+      EXPECTED_FEMALE_LEADERBOARD,
+    );
+    expect(bestResults([], Gender.male, null)).toEqual([]);
+  });
+
+  it('narrows the leaderboard to bests set in the given year', () => {
+    expect(bestResults(LEADERBOARD_RECORDS, Gender.male, LEADERBOARD_YEAR)).toEqual(EXPECTED_MALE_YEAR_LEADERBOARD);
+    expect(bestResults(LEADERBOARD_RECORDS, Gender.female, LEADERBOARD_YEAR), 'athletes without a best in that year are skipped').toEqual(
+      [],
+    );
+  });
+});
+
+describe('bestResultYears', () => {
+  it('collects the distinct seasons newest first and stays empty without records', () => {
+    expect(bestResultYears(LEADERBOARD_RECORDS)).toEqual(EXPECTED_YEARS);
+    expect(bestResultYears([])).toEqual([]);
   });
 });

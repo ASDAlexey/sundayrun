@@ -30,6 +30,9 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
 
 export const EXPECTED_RACE_TITLES = ['Пробег № 13', 'Пробег № 11'];
 
+/** A one-card baked payload, distinct from the two-card network answer, to make the refresh visible. */
+export const BAKED_RACE_ITEMS: RaceListItem[] = [EXPECTED_RACE_ITEMS[1]];
+
 export const INDEX_LOAD_ERROR_MESSAGE = 'index load failed';
 
 /** EXISTING_SITE_META.startTime rendered through the @@races.startTime template. */

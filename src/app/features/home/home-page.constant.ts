@@ -3,5 +3,7 @@ export const LATEST_RACES_COUNT = 4;
 
 export const RACES_PAGE_LINK = '/races';
 
-/** routerLink into the publish wizard, shown to the admin only. */
-export const UPLOAD_PAGE_LINK = '/upload';
+/** TransferState keys of the prerendered home payloads (the `ng-state` script). */
+export const HOME_RACES_TRANSFER_KEY = 'home.latestRaces';
+
+export const HOME_META_TRANSFER_KEY = 'home.siteMeta';

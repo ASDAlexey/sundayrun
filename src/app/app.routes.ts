@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 
 import { AdminPage } from './features/admin/admin-page';
 import { AthletePage } from './features/athlete/athlete-page';
-import { AthletesPage } from './features/athletes/athletes-page';
 import { HomePage } from './features/home/home-page';
 import { RacePage } from './features/race/race-page';
 import { RecordsPage } from './features/records/records-page';
@@ -58,11 +57,8 @@ export const routes: Routes = [
     title: $localize`:@@title.race:Протокол пробега — Воскресный парковый пробег`,
     component: RacePage,
   },
-  {
-    path: 'athletes',
-    title: $localize`:@@title.athletes:Участники — Воскресный парковый пробег`,
-    component: AthletesPage,
-  },
+  // The athletes directory merged into /records; old bookmarks land on the leaderboards.
+  { path: 'athletes', redirectTo: 'records' },
   {
     path: 'athletes/:key',
     title: $localize`:@@title.athlete:Участник — Воскресный парковый пробег`,

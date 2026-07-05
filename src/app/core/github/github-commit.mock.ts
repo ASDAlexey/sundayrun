@@ -18,12 +18,18 @@ export const GIT_DATA_SHAS: GitDataShas = {
   newCommitSha: 'new-commit-sha',
 };
 
+/** Two uploads plus one deletion (`base64Content: null`), so a single cycle covers both tree entry kinds. */
 export const COMMIT_FILES: CommitFile[] = [
   { path: 'data/events/2026-06-28/source.xlsx', base64Content: btoa('xlsx') },
   { path: 'data/index.json', base64Content: btoa('{}') },
+  { path: 'data/events/2026-06-21/protocol.pdf', base64Content: null },
 ];
 
-export const EXPECTED_BLOB_BODIES = COMMIT_FILES.map((file) => ({ content: file.base64Content, encoding: 'base64' }));
+/** Only the uploads become blobs; the deletion never reaches the blobs endpoint. */
+export const EXPECTED_BLOB_BODIES = COMMIT_FILES.filter((file) => file.base64Content !== null).map((file) => ({
+  content: file.base64Content,
+  encoding: 'base64',
+}));
 
 export const EXPECTED_TREE_BODY = {
   base_tree: GIT_DATA_SHAS.baseTreeSha,
@@ -31,7 +37,7 @@ export const EXPECTED_TREE_BODY = {
     path: file.path,
     mode: GIT_TREE_FILE_MODE,
     type: GIT_TREE_BLOB_TYPE,
-    sha: `${GIT_DATA_SHAS.blobShaPrefix}${index}`,
+    sha: file.base64Content === null ? null : `${GIT_DATA_SHAS.blobShaPrefix}${index}`,
   })),
 };
 

@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 import { buildSiteMeta } from '../../core/github/site-meta';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
@@ -9,9 +9,8 @@ import { TokenCheck } from '../../core/github/token-check.enum';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { SiteMetaService } from '../../github/site-meta.service';
-import { EMPTY_TOKEN, TOKEN_HELP_URL } from './admin-page.constant';
+import { EMPTY_TOKEN, TOKEN_HELP_URL, UPLOAD_PAGE_LINK } from './admin-page.constant';
 import { TokenSaveStatus, TokenSaveStatusType } from './admin-page.enum';
-import { HOME_ROUTE_COMMANDS } from './admin.guard.constant';
 
 /**
  * The /admin page: the organiser pastes a fine-grained GitHub PAT; a valid one unlocks the
@@ -19,6 +18,7 @@ import { HOME_ROUTE_COMMANDS } from './admin.guard.constant';
  */
 @Component({
   selector: 'app-admin-page',
+  imports: [RouterLink],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +26,6 @@ import { HOME_ROUTE_COMMANDS } from './admin.guard.constant';
 export class AdminPage {
   readonly #adminToken = inject(AdminTokenService);
   readonly #siteMeta = inject(SiteMetaService);
-  readonly #router = inject(Router);
 
   readonly status = signal<TokenSaveStatusType>(TokenSaveStatus.idle);
   readonly isAdmin = this.#adminToken.isAdmin;
@@ -37,6 +36,7 @@ export class AdminPage {
   protected readonly statuses = TokenSaveStatus;
   protected readonly publishStates = PublishState;
   protected readonly tokenHelpUrl = TOKEN_HELP_URL;
+  protected readonly uploadLink = UPLOAD_PAGE_LINK;
 
   constructor() {
     // Prerender ships the page without data; the editor prefill arrives after hydration.
@@ -61,7 +61,8 @@ export class AdminPage {
     if (check === TokenCheck.valid) {
       this.status.set(TokenSaveStatus.valid);
       this.#adminToken.save(token);
-      await this.#router.navigate(HOME_ROUTE_COMMANDS);
+      // The page stays open: the saved card offers «Загрузить забег», and the editor needs its prefill.
+      await this.#loadMeta();
 
       return;
     }

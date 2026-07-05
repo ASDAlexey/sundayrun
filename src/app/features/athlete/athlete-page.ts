@@ -11,9 +11,9 @@ import { AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
-import { ATHLETES_PAGE_LINK, NO_BEST_TIME_TEXT } from '../athletes/athletes-page.constant';
+import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { KEY_ROUTE_PARAM } from './athlete-page.constant';
+import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT } from './athlete-page.constant';
 import { AthleteStatus, AthleteStatusType } from './athlete-page.enum';
 import { AthletePageState, AthleteRunView, YearBestView } from './athlete-page.interface';
 

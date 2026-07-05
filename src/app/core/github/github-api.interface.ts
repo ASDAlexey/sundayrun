@@ -24,8 +24,16 @@ export interface GitTreeResponse {
   sha: string;
 }
 
-/** One file to include into an atomic commit; content is already base64-encoded. */
+/** POST git/trees request entry; `sha: null` deletes the path from the base tree. */
+export interface GitTreeEntry {
+  path: string;
+  mode: string;
+  type: string;
+  sha: string | null;
+}
+
+/** One file to include into an atomic commit; content is already base64-encoded, null deletes the path. */
 export interface CommitFile {
   path: string;
-  base64Content: string;
+  base64Content: string | null;
 }

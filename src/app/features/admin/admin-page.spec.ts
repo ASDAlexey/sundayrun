@@ -1,6 +1,6 @@
 import { PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter } from '@angular/router';
 
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
 import { BUILT_SITE_META, EXISTING_SITE_META, RAW_ANNOUNCEMENT_INPUT } from '../../core/github/site-meta.mock';
@@ -13,16 +13,15 @@ import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { AdminPage } from './admin-page';
+import { UPLOAD_PAGE_LINK } from './admin-page.constant';
 import { TokenSaveStatus } from './admin-page.enum';
 import { PADDED_TOKEN_INPUT, WHITESPACE_TOKEN_INPUT } from './admin-page.mock';
-import { HOME_ROUTE_COMMANDS } from './admin.guard.constant';
 
 describe('AdminPage', () => {
   const isAdmin = signal(false);
   const validate = vi.fn();
   const save = vi.fn();
   const clear = vi.fn();
-  const navigate = vi.fn(() => Promise.resolve(true));
   const metaState = signal<PublishStateType>(PublishState.idle);
   const loadMeta = vi.fn();
   const saveMeta = vi.fn();
@@ -40,9 +39,9 @@ describe('AdminPage', () => {
     saveMeta.mockResolvedValue(undefined);
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         { provide: AdminTokenService, useValue: { isAdmin, validate, save, clear } },
         { provide: SiteMetaService, useValue: { state: metaState, load: loadMeta, save: saveMeta } },
-        { provide: Router, useValue: { navigate } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
     });
@@ -61,7 +60,7 @@ describe('AdminPage', () => {
     return created;
   }
 
-  it('validates the trimmed token, saves it and returns to the race list', async () => {
+  it('validates the trimmed token, saves it and preloads the announcement editor', async () => {
     fixture = await createPage();
 
     const element = fixture.nativeElement;
@@ -81,10 +80,8 @@ describe('AdminPage', () => {
 
     expect(validate).toHaveBeenCalledWith(ADMIN_TOKEN_MOCK);
     expect(save).toHaveBeenCalledWith(ADMIN_TOKEN_MOCK);
-    expect(navigate).toHaveBeenCalledWith(HOME_ROUTE_COMMANDS);
     expect(fixture.componentInstance.status()).toBe(TokenSaveStatus.valid);
-    expect(loadMeta, 'the announcement editor is admin-only, so a visitor triggers no meta read').not.toHaveBeenCalled();
-    expect(fixture.nativeElement.querySelector('.admin__subtitle')).toBeNull();
+    expect(loadMeta, 'the page stays open, so the editor prefill loads right after saving').toHaveBeenCalled();
   });
 
   it('shows empty, unauthorized and generic error messages without saving the token', async () => {
@@ -119,16 +116,17 @@ describe('AdminPage', () => {
 
     expect(fixture.componentInstance.status()).toBe(TokenSaveStatus.error);
     expect(save).not.toHaveBeenCalled();
-    expect(navigate).not.toHaveBeenCalled();
+    expect(loadMeta).not.toHaveBeenCalled();
   });
 
-  it('shows the saved state with a clear button in admin mode', async () => {
+  it('shows the saved state with the upload entry and a clear button in admin mode', async () => {
     isAdmin.set(true);
     fixture = await createPage();
 
     const element = fixture.nativeElement;
 
     expect(element.querySelector('.admin__saved')).not.toBeNull();
+    expect(element.querySelector('.admin__upload').getAttribute('href')).toBe(UPLOAD_PAGE_LINK);
     expect(element.querySelector('.admin__input:not(.admin__input_time)')).toBeNull();
 
     element.querySelector('.admin__clear').click();
@@ -165,7 +163,7 @@ describe('AdminPage', () => {
 
     fixture.detectChanges();
 
-    expect(element.querySelector('.admin__saved + .admin__clear'), 'the token card is still there').not.toBeNull();
+    expect(element.querySelector('.admin__actions .admin__clear'), 'the token card is still there').not.toBeNull();
   });
 
   it('keeps the editor usable on a CDN failure and disables publishing until the prefill settles', async () => {

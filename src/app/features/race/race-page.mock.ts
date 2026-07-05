@@ -1,5 +1,5 @@
+import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_EVENT } from '../../core/github/spec-utils/race-fixtures';
-import { ATHLETES_PAGE_LINK } from '../athletes/athletes-page.constant';
 import { RaceView } from './race-page.interface';
 
 /** The published slug equals the event `dateIso`. */

@@ -1,4 +1,4 @@
-import { PLATFORM_ID } from '@angular/core';
+import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
@@ -7,15 +7,19 @@ import { ArchiveService } from '../../github/archive.service';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { RacesPage } from './races-page';
-import { ALL_YEARS_VALUE } from './races-page.constant';
+import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
 import { RacesStatus } from './races-page.enum';
+import { RaceListItem } from './races-page.interface';
 import {
+  BAKED_RACE_ITEMS,
   EXPECTED_RACE_ITEMS,
   EXPECTED_RACE_TITLES,
   EXPECTED_YEARS,
   INDEX_LOAD_ERROR_MESSAGE,
   PREVIOUS_YEAR_INDEX,
 } from './races-page.mock';
+
+const RACES_KEY = makeStateKey<{ data: RaceListItem[] } | null>(RACES_TRANSFER_KEY);
 
 describe('RacesPage', () => {
   const loadIndex = vi.fn();
@@ -132,11 +136,41 @@ describe('RacesPage', () => {
     expect(fixture.nativeElement.querySelector('.races__error').getAttribute('role')).toBe('alert');
   });
 
-  it('does not fetch during prerender and keeps the loading state for hydration', async () => {
+  it('prerender fetches the list, renders the ready state and bakes it into the transfer state', async () => {
     platformId = SERVER_PLATFORM_ID;
     fixture = await createPage();
 
-    expect(loadIndex).not.toHaveBeenCalled();
-    expect(fixture.componentInstance.status()).toBe(RacesStatus.loading);
+    expect(fixture.componentInstance.status()).toBe(RacesStatus.ready);
+    expect(fixture.componentInstance.races()).toEqual(EXPECTED_RACE_ITEMS);
+    expect(TestBed.inject(TransferState).get(RACES_KEY, null)).toEqual({ data: EXPECTED_RACE_ITEMS });
+
+    loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
+    fixture.destroy();
+    TestBed.inject(TransferState).remove(RACES_KEY);
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.status(), 'a prerender failure keeps the calm loading state').toBe(RacesStatus.loading);
+    expect(TestBed.inject(TransferState).get(RACES_KEY, null)).toBeNull();
+  });
+
+  it('applies the baked list before hydration, then refreshes it from the network', async () => {
+    TestBed.inject(TransferState).set(RACES_KEY, { data: BAKED_RACE_ITEMS });
+    fixture = TestBed.createComponent(RacesPage);
+
+    const page = fixture.componentInstance;
+
+    expect(page.status(), 'the baked cards render synchronously, so hydration matches the prerendered HTML').toBe(RacesStatus.ready);
+    expect(page.races()).toEqual(BAKED_RACE_ITEMS);
+
+    await settle();
+
+    expect(page.races(), 'the network answer replaces the baked payload').toEqual(EXPECTED_RACE_ITEMS);
+
+    loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
+    fixture.destroy();
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.status(), 'a refresh failure stays silent while baked content is on screen').toBe(RacesStatus.ready);
+    expect(fixture.componentInstance.races()).toEqual(BAKED_RACE_ITEMS);
   });
 });

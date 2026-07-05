@@ -5,7 +5,11 @@
     @if (isAdmin()) {
       <p class="admin__saved" i18n="@@admin.tokenSaved">Токен сохранён — режим организатора включён.</p>
 
-      <button class="admin__clear" i18n="@@admin.clear" type="button" (click)="clear()">Удалить токен</button>
+      <div class="admin__actions">
+        <a class="admin__upload" i18n="@@admin.upload" [routerLink]="uploadLink">Загрузить забег</a>
+
+        <button class="admin__clear" i18n="@@admin.clear" type="button" (click)="clear()">Удалить токен</button>
+      </div>
     } @else {
       <p class="admin__hint" i18n="@@admin.hint">Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий sundayrun.</p>
 

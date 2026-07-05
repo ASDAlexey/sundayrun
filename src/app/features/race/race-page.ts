@@ -11,7 +11,7 @@ import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { ResultsService } from '../../github/results.service';
-import { ATHLETES_PAGE_LINK } from '../athletes/athletes-page.constant';
+import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { EMPTY_CELL_TEXT, FEMALE_GENDER_TEXT, HOME_PAGE_LINK, MALE_GENDER_TEXT, SLUG_ROUTE_PARAM } from './race-page.constant';
 import { RaceStatus, RaceStatusType } from './race-page.enum';
 import { RacePageState, RaceRowView, RaceView } from './race-page.interface';

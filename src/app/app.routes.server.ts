@@ -8,6 +8,5 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'races', renderMode: RenderMode.Prerender },
   { path: 'records', renderMode: RenderMode.Prerender },
   { path: 'admin', renderMode: RenderMode.Prerender },
-  { path: 'athletes', renderMode: RenderMode.Prerender },
   { path: '**', renderMode: RenderMode.Client },
 ];
