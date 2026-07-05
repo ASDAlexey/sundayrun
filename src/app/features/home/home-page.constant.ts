@@ -1,4 +1,5 @@
-export const LATEST_RACES_COUNT = 3;
+/** Four fills the two-column preview grid evenly (2×2). */
+export const LATEST_RACES_COUNT = 4;
 
 export const RACES_PAGE_LINK = '/races';
 

@@ -132,12 +132,18 @@
   }
 
   &__latest-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     margin: 0;
     padding: 0;
     gap: 16px;
     list-style: none;
+  }
+
+  @media (width <= 860px) {
+    &__latest-list {
+      grid-template-columns: 1fr;
+    }
   }
 
   &__all-cta {
