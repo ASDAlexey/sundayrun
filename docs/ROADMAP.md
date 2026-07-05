@@ -87,6 +87,8 @@
 - ✅ **SEO** (см. `docs/SEO.md`): meta title/description/keywords/theme-color, Open Graph + Twitter Cards, hreflang ru/en, JSON-LD (WebSite, SportsOrganization с sameAs на VK, EventSeries), preconnect к jsDelivr, `public/sitemap.xml`, локализованные `title` у всех маршрутов
 - ✅ **Инструкция по токену** `docs/ADMIN_TOKEN.md` + ссылка «Как создать токен» на `/admin`
 
+- ✅ **Производительность (PageSpeed)**: AVIF/WebP для карты трассы и логотипа (`<picture>`, размеры, lazy), самостоятельный хостинг шрифтов с preload (CLS 0.55 → 0), eager-загрузка публичных маршрутов (прыжок футера у lazy-чанков давал CLS 0.49), OG — лёгкий JPEG. Lighthouse mobile: Performance 97 / A11y 100 / CLS 0 на главной, `/admin`, `/athletes` (см. docs/SEO.md)
+
 ### Идеи на потом
 
 - Sitemap с URL всех опубликованных забегов (генерация при публикации)

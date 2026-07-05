@@ -12,8 +12,32 @@
 - **`public/sitemap.xml`** — главная и «Участники» в обеих локалях с `xhtml:link hreflang`.
   Страницы забегов (`/races/<slug>`) в sitemap не перечислены — поисковики находят их по внутренним
   ссылкам с главной; генерация полного sitemap при публикации забега — идея на будущее (ROADMAP).
-- **Графика** — favicon (`favicon.ico`, `logo-mark.png`), `apple-touch-icon.png`, `og-image.png`
+- **Графика** — favicon (`favicon.ico`, `logo-mark.png`), `apple-touch-icon.png`, `og-image.jpg`
   собраны из официального логотипа пробега (исходники в `assets/branding/`).
+
+## Производительность (PageSpeed)
+
+Замер Lighthouse (mobile, локальный сервер с brotli, прод-сборка): главная, `/admin`, `/athletes` —
+**Performance 97, Accessibility 100, CLS ≈ 0**. На реальном GitHub Pages (HTTP/2 + CDN) быстрее.
+
+Что сделано:
+
+- **Картинки**: карта трассы — AVIF 42 КБ (+ WebP-фолбэк 100 КБ) вместо JPEG 540 КБ через `<picture>`;
+  логотип в шапке/футере — WebP 4 КБ; у всех `<img>` заданы `width`/`height` (нет сдвигов),
+  `loading="lazy"` + `decoding="async"` ниже первого экрана. OG-картинка — JPEG 59 КБ
+  (соцсети не понимают AVIF/WebP). Исходники — в `assets/branding/` (в деплой не попадают).
+- **Шрифты**: самостоятельный хостинг в `public/fonts` (variable woff2, только latin+cyrillic),
+  `@font-face` инлайном в `index.html` + `<link rel="preload">` — сдвиг от подмены шрифта убран
+  полностью (CLS был 0.55). Пакеты `@fontsource-variable/*` удалены.
+- **Маршруты**: публичные страницы (главная, протокол, участники, атлет, admin) собраны eagerly —
+  ленивый чанк давал прыжок футера (CLS 0.49) и лишний roundtrip до LCP. Ленивыми остались
+  только шаги визарда организатора (upload/preview/result) — они тянут xlsx/pdf-машинерию.
+
+Известные локальные «минусы» Lighthouse, которых не будет на проде: `robots.txt is not valid`
+(локальный SPA-сервер отдаёт index.html вместо 404) и ошибка консоли от jsDelivr 404
+(репозиторий `protocols` ещё пуст — уйдёт после первой публикации).
+
+Полные 100 по Performance на медленной мобилке гарантирует только prerender/SSG (см. ROADMAP).
 
 ## Ограничения GitHub Pages (важно понимать)
 
