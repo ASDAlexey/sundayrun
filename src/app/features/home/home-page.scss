@@ -1,4 +1,3 @@
-@use 'styles/buttons' as b;
 @use 'styles/card' as c;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
@@ -95,18 +94,10 @@
     color: var(--text);
   }
 
+  // Material renders the button chrome; only the arrow glyph stays ours.
   &__latest-all {
-    @include t.text('label', 'medium');
-
-    color: var(--accent);
-    transition: color 0.2s var(--ease);
-
     &::after {
       content: ' →';
-    }
-
-    &:hover {
-      color: var(--accent-light);
     }
   }
 
@@ -126,8 +117,6 @@
   }
 
   &__all-cta {
-    @include b.button-outline;
-
     align-self: center;
   }
 
@@ -143,6 +132,10 @@
       background: var(--bg-subtle);
       text-align: center;
     }
+  }
+
+  &__status-spinner {
+    margin: 0 auto 12px;
   }
 
   &__error {
@@ -191,18 +184,10 @@
     color: var(--text-secondary);
   }
 
+  // Material renders the button chrome; only the arrow glyph stays ours.
   &__course-vk {
-    @include t.text('label', 'medium');
-
-    color: var(--accent);
-    transition: color 0.2s var(--ease);
-
     &::after {
       content: ' ↗';
-    }
-
-    &:hover {
-      color: var(--accent-light);
     }
   }
 

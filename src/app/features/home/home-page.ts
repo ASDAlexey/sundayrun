@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 
 import { VK_COMMUNITY_URL } from '../../app.constant';
@@ -28,7 +30,7 @@ import { HomeStatsView } from './home-page.interface';
 /** The landing page: hero, announcement, the latest races preview and the course card. */
 @Component({
   selector: 'app-home-page',
-  imports: [RaceCard, RouterLink],
+  imports: [MatButtonModule, MatProgressSpinnerModule, RaceCard, RouterLink],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

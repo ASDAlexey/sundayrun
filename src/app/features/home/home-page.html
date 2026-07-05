@@ -23,19 +23,21 @@
     <div class="home__latest-head">
       <h2 class="home__latest-title" i18n="@@home.latestTitle">Последние забеги</h2>
 
-      <a class="home__latest-all" i18n="@@home.allRaces" [routerLink]="racesLink">Все забеги</a>
+      <a class="home__latest-all" i18n="@@home.allRaces" matButton="outlined" [routerLink]="racesLink">Все забеги</a>
     </div>
 
-    <p aria-live="polite" class="home__status" role="status">
+    <div aria-live="polite" class="home__status" role="status">
       @switch (status()) {
         @case (statuses.loading) {
+          <mat-progress-spinner class="home__status-spinner" mode="indeterminate" [diameter]="24" />
+
           <span i18n="@@races.loading">Загружаем список забегов…</span>
         }
         @case (statuses.empty) {
           <span i18n="@@races.empty">Опубликованных забегов пока нет.</span>
         }
       }
-    </p>
+    </div>
 
     @switch (status()) {
       @case (statuses.ready) {
@@ -47,7 +49,7 @@
           }
         </ul>
 
-        <a class="home__all-cta" i18n="@@home.allRacesCta" [routerLink]="racesLink">Все забеги →</a>
+        <a class="home__all-cta" i18n="@@home.allRacesCta" matButton="filled" [routerLink]="racesLink">Все забеги →</a>
       }
       @case (statuses.error) {
         <p class="home__error" i18n="@@races.error" role="alert">Не удалось загрузить список забегов.</p>
@@ -65,7 +67,9 @@
         Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
       </p>
 
-      <a class="home__course-vk" i18n="@@races.courseVk" rel="noopener" target="_blank" [href]="vkUrl">Сообщество ВКонтакте</a>
+      <a class="home__course-vk" i18n="@@races.courseVk" matButton="tonal" rel="noopener" target="_blank" [href]="vkUrl"
+        >Сообщество ВКонтакте</a
+      >
     </div>
 
     <a
