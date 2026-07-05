@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { TokenCheck } from '../../core/github/token-check.enum';
 import { AdminTokenService } from '../../github/admin-token.service';
-import { EMPTY_TOKEN } from './admin-page.constant';
+import { EMPTY_TOKEN, TOKEN_HELP_URL } from './admin-page.constant';
 import { TokenSaveStatus, TokenSaveStatusType } from './admin-page.enum';
 import { HOME_ROUTE_COMMANDS } from './admin.guard.constant';
 
@@ -22,6 +22,7 @@ export class AdminPage {
   readonly isAdmin = this.#adminToken.isAdmin;
 
   protected readonly statuses = TokenSaveStatus;
+  protected readonly tokenHelpUrl = TOKEN_HELP_URL;
 
   async save(rawToken: string): Promise<void> {
     const token = rawToken.trim();

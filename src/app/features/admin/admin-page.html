@@ -9,6 +9,10 @@
     } @else {
       <p class="admin__hint" i18n="@@admin.hint">Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий protocols.</p>
 
+      <a class="admin__help" i18n="@@admin.tokenHelp" rel="noopener" target="_blank" [href]="tokenHelpUrl">
+        Как создать токен — пошаговая инструкция
+      </a>
+
       <label class="admin__label" for="admin-token" i18n="@@admin.tokenLabel">GitHub-токен</label>
 
       <input #tokenInput autocomplete="off" class="admin__input" id="admin-token" type="password" />

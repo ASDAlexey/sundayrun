@@ -11,7 +11,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
 
   &__card {
     @include c.card;
@@ -40,6 +39,22 @@
     @include t.text('body', 'medium');
 
     color: var(--text-secondary);
+  }
+
+  &__help {
+    @include t.text('label', 'medium');
+
+    align-self: flex-start;
+    color: var(--accent);
+    transition: color 0.2s var(--ease);
+
+    &::after {
+      content: ' ↗';
+    }
+
+    &:hover {
+      color: var(--accent-light);
+    }
   }
 
   &__label {
