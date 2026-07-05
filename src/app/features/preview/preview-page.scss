@@ -1,4 +1,3 @@
-@use 'styles/buttons' as b;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
@@ -31,15 +30,6 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 16px;
-  }
-
-  &__history-button {
-    @include b.button-outline;
-
-    &:disabled {
-      color: var(--text-muted);
-      cursor: default;
-    }
   }
 
   &__history-status {

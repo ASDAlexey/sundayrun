@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { HistoryService } from '../../github/history.service';
@@ -28,18 +28,30 @@ export class PreviewPage {
   readonly unknownGenderCount = this.#store.unknownGenderCount;
   readonly hasUnverified = computed(() => this.unknownGenderCount() > 0);
   readonly historyStatus = signal<HistoryNotesStatusType>(HistoryNotesStatus.idle);
-  readonly canApplyHistoryNotes = computed(() => this.#eventDateIso() !== null && this.historyStatus() !== HistoryNotesStatus.loading);
 
   protected readonly historyStatuses = HistoryNotesStatus;
 
+  /** Notes are auto-applied once; a later date edit must not overwrite manual note fixes. */
+  #notesApplied = false;
+
+  constructor() {
+    // The form publishes the prefilled event right after init, so the notes arrive with the page.
+    effect(() => {
+      const dateIso = this.#eventDateIso();
+
+      if (dateIso !== null && !this.#notesApplied) {
+        this.#notesApplied = true;
+        void this.#applyHistoryNotes(dateIso);
+      }
+    });
+  }
+
+  async generate(): Promise<void> {
+    await this.#router.navigate(RESULT_ROUTE_COMMANDS);
+  }
+
   /** Loads the published history and overwrites every note with the computed auto note. */
-  async applyHistoryNotes(): Promise<void> {
-    const dateIso = this.#eventDateIso();
-
-    if (dateIso === null) {
-      return;
-    }
-
+  async #applyHistoryNotes(dateIso: string): Promise<void> {
     this.historyStatus.set(HistoryNotesStatus.loading);
 
     try {
@@ -48,9 +60,5 @@ export class PreviewPage {
     } catch {
       this.historyStatus.set(HistoryNotesStatus.error);
     }
-  }
-
-  async generate(): Promise<void> {
-    await this.#router.navigate(RESULT_ROUTE_COMMANDS);
   }
 }

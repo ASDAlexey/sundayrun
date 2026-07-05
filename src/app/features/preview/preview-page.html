@@ -10,16 +10,6 @@
   <app-event-form />
 
   <div class="preview__history">
-    <button
-      class="preview__history-button"
-      i18n="@@preview.applyHistoryNotes"
-      type="button"
-      [disabled]="!canApplyHistoryNotes()"
-      (click)="applyHistoryNotes()"
-    >
-      Подставить примечания из истории
-    </button>
-
     <p aria-live="polite" class="preview__history-status">
       @if (historyStatus() === historyStatuses.loading) {
         <span i18n="@@preview.historyLoading">Загружаем историю…</span>
