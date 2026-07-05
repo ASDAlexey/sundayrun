@@ -1,7 +1,7 @@
 import { Gender, GenderConfidence, GenderSource } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
 import { FIVE_KM_TEXT, TWO_THREE_KM_TEXT } from '../../../shared/distance-label.constant';
-import { DNF_TEXT, NO_DISTANCE_TEXT } from './participants-table.constant';
+import { DNF_TEXT, NO_DISTANCE_TEXT, NO_LAP_TEXT } from './participants-table.constant';
 import { ParticipantRowView } from './participants-table.interface';
 
 export const FULL_DISTANCE_ID = 1;
@@ -51,6 +51,8 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
   {
     participant: FULL_DISTANCE_PARTICIPANT,
     timeText: '19:03',
+    lap1Text: '9:00',
+    lap2Text: '10:03',
     distanceText: FIVE_KM_TEXT,
     unverified: false,
     isMale: true,
@@ -60,6 +62,8 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
   {
     participant: SHORT_DISTANCE_PARTICIPANT,
     timeText: '10:00',
+    lap1Text: '10:00',
+    lap2Text: NO_LAP_TEXT,
     distanceText: TWO_THREE_KM_TEXT,
     unverified: true,
     isMale: false,
@@ -69,6 +73,8 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
   {
     participant: DNF_PARTICIPANT,
     timeText: DNF_TEXT,
+    lap1Text: NO_LAP_TEXT,
+    lap2Text: NO_LAP_TEXT,
     distanceText: NO_DISTANCE_TEXT,
     unverified: true,
     isMale: false,

@@ -5,7 +5,15 @@ import { Participant } from '../../../core/models/participant.interface';
 import { FIVE_KM_TEXT, TWO_THREE_KM_TEXT } from '../../../shared/distance-label.constant';
 import { FormatDurationPipe } from '../../../shared/pipes/format-duration.pipe';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
-import { DNF_TEXT, FULL_DISTANCE_LAPS, NO_DISTANCE_TEXT, SHORT_DISTANCE_LAPS } from './participants-table.constant';
+import {
+  DNF_TEXT,
+  FULL_DISTANCE_LAPS,
+  LAP_1_INDEX,
+  LAP_2_INDEX,
+  NO_DISTANCE_TEXT,
+  NO_LAP_TEXT,
+  SHORT_DISTANCE_LAPS,
+} from './participants-table.constant';
 import { ParticipantRowView } from './participants-table.interface';
 
 /** Editable list of imported participants: gender toggles and per-athlete notes. */
@@ -37,6 +45,8 @@ export class ParticipantsTable {
     return {
       participant,
       timeText: participant.totalMs === null ? DNF_TEXT : this.#formatDuration.transform(participant.totalMs),
+      lap1Text: this.#lapText(participant.lapsMs, LAP_1_INDEX),
+      lap2Text: this.#lapText(participant.lapsMs, LAP_2_INDEX),
       distanceText: distanceTextOf(participant.lapsMs.length),
       unverified: participant.genderConfidence !== GenderConfidence.high,
       isMale: participant.gender === Gender.male,
@@ -44,6 +54,12 @@ export class ParticipantsTable {
       // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
       noteAriaLabel: $localize`:@@preview.table.noteAriaLabel:Примечание: ${participant.fullName}:fullName:`,
     };
+  }
+
+  #lapText(lapsMs: (number | null)[], index: number): string {
+    const lapMs = lapsMs[index] ?? null;
+
+    return lapMs === null ? NO_LAP_TEXT : this.#formatDuration.transform(lapMs);
   }
 }
 

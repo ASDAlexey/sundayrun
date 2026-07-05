@@ -5,6 +5,8 @@
         <th class="participants-table__header" i18n="@@preview.table.index" scope="col">№</th>
         <th class="participants-table__header" i18n="@@preview.table.name" scope="col">ФИО</th>
         <th class="participants-table__header" i18n="@@preview.table.time" scope="col">Время</th>
+        <th class="participants-table__header" i18n="@@preview.table.lap1" scope="col">Круг 1</th>
+        <th class="participants-table__header" i18n="@@preview.table.lap2" scope="col">Круг 2</th>
         <th class="participants-table__header" i18n="@@preview.table.distance" scope="col">Дистанция</th>
         <th class="participants-table__header" i18n="@@preview.table.gender" scope="col">Пол</th>
         <th class="participants-table__header" i18n="@@preview.table.note" scope="col">Примечание</th>
@@ -23,6 +25,8 @@
             }
           </td>
           <td class="participants-table__cell participants-table__cell_mono">{{ row.timeText }}</td>
+          <td class="participants-table__cell participants-table__cell_mono">{{ row.lap1Text }}</td>
+          <td class="participants-table__cell participants-table__cell_mono">{{ row.lap2Text }}</td>
           <td class="participants-table__cell">{{ row.distanceText }}</td>
           <td class="participants-table__cell">
             <div class="participants-table__gender-group">

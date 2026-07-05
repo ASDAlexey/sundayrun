@@ -4,6 +4,8 @@ import { Participant } from '../../../core/models/participant.interface';
 export interface ParticipantRowView {
   participant: Participant;
   timeText: string;
+  lap1Text: string;
+  lap2Text: string;
   distanceText: string;
   unverified: boolean;
   isMale: boolean;
