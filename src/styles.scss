@@ -52,11 +52,21 @@ body::after {
   pointer-events: none;
 }
 
-// Keep real content above the atmosphere layers.
+// Keep real content above the atmosphere layers; the column layout
+// pins the footer to the bottom on short pages.
 app-root {
-  display: block;
+  display: flex;
   z-index: 2;
   position: relative;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+// The routed page host fills the space between the header and the footer.
+router-outlet + *:not(.shell-footer) {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
 }
 
 a {

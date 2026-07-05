@@ -1,3 +1,78 @@
 <a class="skip-link" href="#main" i18n="@@app.skipToContent" (click)="skipToMain($event)">К содержимому</a>
 
+<header class="shell-header">
+  <div class="shell-header__inner">
+    <a class="shell-header__brand" [routerLink]="homeLink">
+      <img alt="" class="shell-header__mark" src="logo-mark.png" />
+
+      <span class="shell-header__titles">
+        <span class="shell-header__name" i18n="@@app.brandName">Воскресный парковый пробег</span>
+
+        <span class="shell-header__place" i18n="@@app.brandPlace">Таганрог · ПКиО им. Горького</span>
+      </span>
+    </a>
+
+    <nav aria-label="Основные разделы" class="shell-header__nav" i18n-aria-label="@@app.navLabel">
+      <a
+        class="shell-header__nav-link"
+        i18n="@@app.navRaces"
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="homeLink"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Забеги
+      </a>
+
+      <a
+        class="shell-header__nav-link"
+        i18n="@@app.navAthletes"
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="athletesLink"
+      >
+        Участники
+      </a>
+    </nav>
+  </div>
+</header>
+
 <router-outlet />
+
+<footer class="shell-footer">
+  <div class="shell-footer__inner">
+    <div class="shell-footer__brand">
+      <img alt="" class="shell-footer__mark" src="logo-mark.png" />
+
+      <span class="shell-footer__brand-text">
+        <span class="shell-footer__brand-name" i18n="@@app.brandName">Воскресный парковый пробег</span>
+
+        <span class="shell-footer__brand-note" i18n="@@app.footerBrandNote">Протоколы, результаты и история каждого участника.</span>
+      </span>
+    </div>
+
+    <div class="shell-footer__block">
+      <span class="shell-footer__label" i18n="@@app.footerOrganizerLabel">Организатор</span>
+
+      <span class="shell-footer__value" i18n="@@app.footerOrganizer">КЛБ «Легенда»</span>
+
+      <span class="shell-footer__note" i18n="@@app.footerPlace">ПКиО им. Горького, г. Таганрог</span>
+
+      <a class="shell-footer__link" i18n="@@app.footerVk" rel="noopener" target="_blank" [href]="vkUrl">Сообщество ВКонтакте</a>
+    </div>
+
+    <div class="shell-footer__block">
+      <span class="shell-footer__label" i18n="@@app.footerDeveloperLabel">Разработал</span>
+
+      <a class="shell-footer__link" i18n="@@app.footerCreator" rel="noopener" target="_blank" [href]="creatorUrl">Алексей Попов</a>
+
+      <span class="shell-footer__meta" i18n="@@app.footerCreatorSite">asdalexey.github.io</span>
+    </div>
+  </div>
+
+  <div class="shell-footer__bottom">
+    <div class="shell-footer__bottom-inner">
+      <span class="shell-footer__copyright" i18n="@@app.footerCopyright">© Воскресный парковый пробег, Таганрог</span>
+
+      <a class="shell-footer__admin" i18n="@@app.forOrganizer" [routerLink]="adminLink">для организатора</a>
+    </div>
+  </div>
+</footer>
