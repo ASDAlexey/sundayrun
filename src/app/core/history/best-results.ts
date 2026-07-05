@@ -13,7 +13,7 @@ export function topBestResults(records: AthleteRecord[], gender: GenderType, lim
   return records
     .reduce<BestResult[]>((results, record) => {
       if (record.gender === gender && record.bestMs !== null) {
-        results.push(toBestResult(record));
+        results.push(toBestResult(record, record.bestMs));
       }
 
       return results;
@@ -22,15 +22,15 @@ export function topBestResults(records: AthleteRecord[], gender: GenderType, lim
     .slice(0, limit);
 }
 
-function toBestResult(record: AthleteRecord): BestResult {
+function toBestResult(record: AthleteRecord, bestMs: number): BestResult {
   const bestRun = record.runs
-    .filter((run) => run.distanceKm === FIVE_KM_DISTANCE_KM && run.timeMs === record.bestMs)
+    .filter((run) => run.distanceKm === FIVE_KM_DISTANCE_KM && run.timeMs === bestMs)
     .reduce((earliest, run) => (run.dateIso < earliest.dateIso ? run : earliest));
 
   return {
     key: record.key,
     displayName: record.displayName,
-    bestMs: record.bestMs ?? 0,
+    bestMs,
     dateIso: bestRun.dateIso,
     slug: bestRun.slug,
   };

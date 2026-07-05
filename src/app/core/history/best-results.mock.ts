@@ -15,11 +15,13 @@ export const LEADERBOARD_RECORDS: AthleteRecord[] = [
     key: 'быстров борис',
     displayName: 'Быстров Борис',
     gender: Gender.male,
-    participationSlugs: ['2025-03-02', '2025-03-09', '2025-03-16'],
+    participationSlugs: ['2025-03-02', '2025-03-09', '2025-03-16', '2025-03-23'],
     runs: [
       { dateIso: '2025-03-02', slug: '2025-03-02', timeMs: 1200000, distanceKm: FIVE_KM_DISTANCE_KM },
-      { dateIso: '2025-03-09', slug: '2025-03-09', timeMs: 1140000, distanceKm: FIVE_KM_DISTANCE_KM },
+      // The repeated best is listed out of date order, so the earliest-run reduce takes both branches.
       { dateIso: '2025-03-16', slug: '2025-03-16', timeMs: 1140000, distanceKm: FIVE_KM_DISTANCE_KM },
+      { dateIso: '2025-03-09', slug: '2025-03-09', timeMs: 1140000, distanceKm: FIVE_KM_DISTANCE_KM },
+      { dateIso: '2025-03-23', slug: '2025-03-23', timeMs: 1140000, distanceKm: FIVE_KM_DISTANCE_KM },
     ],
     bestMs: 1140000,
     bestMsByYear: { '2025': 1140000 },
