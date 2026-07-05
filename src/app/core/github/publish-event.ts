@@ -9,9 +9,9 @@ import { commitFilesAtomically } from './github-commit';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
 import { GithubFetchFn } from './github-fetch.type';
 import { parseAthletesHistory } from './history-file';
+import { jsonToBase64 } from './json-base64';
 import { jsDelivrFileUrl, purgeJsDelivrPaths } from './jsdelivr';
 import { ATHLETES_JSON_PATH, INDEX_JSON_PATH } from './protocols-repo.constant';
-import { JSON_INDENT } from './publish-event.constant';
 import { PublishEventInput, PublishEventResult } from './publish-event.interface';
 import { fetchRepoFileText } from './repo-contents';
 import { buildEventResultsFile, toEventResults } from './results-file';
@@ -71,8 +71,4 @@ async function buildCommitFiles(
 /** Every repository path touched by the publish commit, in upload order. */
 function publishedPaths(paths: EventFilePaths): string[] {
   return [paths.sourceXlsx, paths.protocolPdf, paths.resultsJson, INDEX_JSON_PATH, ATHLETES_JSON_PATH];
-}
-
-function jsonToBase64(value: unknown): string {
-  return bytesToBase64(new TextEncoder().encode(JSON.stringify(value, null, JSON_INDENT)));
 }

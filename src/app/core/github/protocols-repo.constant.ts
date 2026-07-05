@@ -8,6 +8,8 @@ export const INDEX_JSON_PATH = 'index.json';
 
 export const ATHLETES_JSON_PATH = 'athletes.json';
 
+export const SITE_META_JSON_PATH = 'site-meta.json';
+
 /** Per-event files live under `events/<dateIso>/`. */
 export const EVENTS_DIRECTORY = 'events/';
 
