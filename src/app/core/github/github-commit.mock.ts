@@ -19,8 +19,8 @@ export const GIT_DATA_SHAS: GitDataShas = {
 };
 
 export const COMMIT_FILES: CommitFile[] = [
-  { path: 'events/2026-06-28/source.xlsx', base64Content: btoa('xlsx') },
-  { path: 'index.json', base64Content: btoa('{}') },
+  { path: 'data/events/2026-06-28/source.xlsx', base64Content: btoa('xlsx') },
+  { path: 'data/index.json', base64Content: btoa('{}') },
 ];
 
 export const EXPECTED_BLOB_BODIES = COMMIT_FILES.map((file) => ({ content: file.base64Content, encoding: 'base64' }));

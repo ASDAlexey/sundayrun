@@ -11,7 +11,7 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     city: 'Курск',
     park: 'Боева дача',
     participantCount: 20,
-    pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/protocols@main/events/2026-07-05/protocol.pdf',
+    pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/events/2026-07-05/protocol.pdf',
     pdfAriaLabel: 'Протокол пробега № 13 (PDF)',
   },
   {
@@ -22,7 +22,7 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     city: 'Курск',
     park: 'Боева дача',
     participantCount: 15,
-    pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/protocols@main/events/2026-06-21/protocol.pdf',
+    pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/events/2026-06-21/protocol.pdf',
     pdfAriaLabel: 'Протокол пробега № 11 (PDF)',
   },
 ];

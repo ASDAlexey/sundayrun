@@ -7,7 +7,7 @@ import { createGitDataRoutes } from '../core/github/spec-utils/git-data-routes';
 import { routeFetch, statusResponse } from '../core/github/spec-utils/github-fetch-router';
 
 /** jsDelivrFileUrl(SITE_META_JSON_PATH): the branch-pinned CDN url of the site meta. */
-export const SITE_META_CDN_URL = 'https://cdn.jsdelivr.net/gh/ASDAlexey/protocols@main/site-meta.json';
+export const SITE_META_CDN_URL = 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/site-meta.json';
 
 export const SITE_META_CDN_ERROR_MESSAGE = 'site meta cdn unreachable';
 

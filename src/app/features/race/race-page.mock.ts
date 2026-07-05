@@ -20,7 +20,7 @@ export const EXPECTED_RACE_VIEW: RaceView = {
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 3,
-  pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/protocols@main/events/2026-06-28/protocol.pdf',
+  pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/events/2026-06-28/protocol.pdf',
   pdfAriaLabel: 'Протокол пробега № 12 (PDF)',
   rows: [
     {

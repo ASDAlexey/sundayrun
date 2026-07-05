@@ -25,9 +25,9 @@ export const NEWER_ENTRY: ArchiveIndexEntry = {
   park: 'Боева дача',
   participantCount: 20,
   files: {
-    sourceXlsx: 'events/2026-07-05/source.xlsx',
-    protocolPdf: 'events/2026-07-05/protocol.pdf',
-    resultsJson: 'events/2026-07-05/results.json',
+    sourceXlsx: 'data/events/2026-07-05/source.xlsx',
+    protocolPdf: 'data/events/2026-07-05/protocol.pdf',
+    resultsJson: 'data/events/2026-07-05/results.json',
   },
 };
 
@@ -39,9 +39,9 @@ export const OLDER_ENTRY: ArchiveIndexEntry = {
   park: 'Боева дача',
   participantCount: 15,
   files: {
-    sourceXlsx: 'events/2026-06-21/source.xlsx',
-    protocolPdf: 'events/2026-06-21/protocol.pdf',
-    resultsJson: 'events/2026-06-21/results.json',
+    sourceXlsx: 'data/events/2026-06-21/source.xlsx',
+    protocolPdf: 'data/events/2026-06-21/protocol.pdf',
+    resultsJson: 'data/events/2026-06-21/results.json',
   },
 };
 

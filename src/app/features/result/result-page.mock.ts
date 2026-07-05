@@ -9,7 +9,7 @@ export const EXPECTED_PDF_BYTES: Uint8Array = new TextEncoder().encode(PDF_BLOB_
 
 export const SOURCE_FILE_MOCK: SourceFile = { name: '20.09.2020.xlsx', bytes: new Uint8Array([4, 5, 6]) };
 
-export const PUBLISHED_PDF_URL_MOCK = 'https://cdn.jsdelivr.net/gh/ASDAlexey/protocols@sha0/events/2020-09-20/protocol.pdf';
+export const PUBLISHED_PDF_URL_MOCK = 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@sha0/data/events/2020-09-20/protocol.pdf';
 
 /** An http url instead of a real blob: one — jsdom cannot create iframe windows for opaque origins. */
 export const OBJECT_URL_MOCK = 'https://parkrun.example/protokol.pdf';

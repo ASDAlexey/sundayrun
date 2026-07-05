@@ -30,17 +30,17 @@ export const PUBLISH_SHAS: GitDataShas = {
 };
 
 /** Pinned to the commit sha, not to the branch. */
-export const EXPECTED_PDF_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/protocols@${PUBLISH_SHAS.newCommitSha}/events/2026-06-28/protocol.pdf`;
+export const EXPECTED_PDF_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${PUBLISH_SHAS.newCommitSha}/data/events/2026-06-28/protocol.pdf`;
 
 export const EXPECTED_COMMIT_PATHS = [
-  'events/2026-06-28/source.xlsx',
-  'events/2026-06-28/protocol.pdf',
-  'events/2026-06-28/results.json',
-  'index.json',
-  'athletes.json',
+  'data/events/2026-06-28/source.xlsx',
+  'data/events/2026-06-28/protocol.pdf',
+  'data/events/2026-06-28/results.json',
+  'data/index.json',
+  'data/athletes.json',
 ];
 
-export const EXPECTED_PURGE_URLS = EXPECTED_COMMIT_PATHS.map((path) => `https://purge.jsdelivr.net/gh/ASDAlexey/protocols@main/${path}`);
+export const EXPECTED_PURGE_URLS = EXPECTED_COMMIT_PATHS.map((path) => `https://purge.jsdelivr.net/gh/ASDAlexey/sundayrun@main/${path}`);
 
 export const EXPECTED_COMMIT_MESSAGE = 'Публикация протокола: 2026-06-28';
 
@@ -65,9 +65,9 @@ export const CONCURRENT_ENTRY: ArchiveIndexEntry = {
   park: 'Боева дача',
   participantCount: 25,
   files: {
-    sourceXlsx: 'events/2026-07-12/source.xlsx',
-    protocolPdf: 'events/2026-07-12/protocol.pdf',
-    resultsJson: 'events/2026-07-12/results.json',
+    sourceXlsx: 'data/events/2026-07-12/source.xlsx',
+    protocolPdf: 'data/events/2026-07-12/protocol.pdf',
+    resultsJson: 'data/events/2026-07-12/results.json',
   },
 };
 

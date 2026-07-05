@@ -10,4 +10,4 @@ export const SITE_META_SHAS: GitDataShas = {
   newCommitSha: 'meta-commit-sha',
 };
 
-export const EXPECTED_SITE_META_PURGE_URL = 'https://purge.jsdelivr.net/gh/ASDAlexey/protocols@main/site-meta.json';
+export const EXPECTED_SITE_META_PURGE_URL = 'https://purge.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/site-meta.json';

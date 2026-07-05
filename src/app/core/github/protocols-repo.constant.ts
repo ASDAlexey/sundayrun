@@ -1,17 +1,21 @@
 export const PROTOCOLS_REPO_OWNER = 'ASDAlexey';
 
-export const PROTOCOLS_REPO_NAME = 'protocols';
+/** App code and published data share one public repository; data lives under `data/`. */
+export const PROTOCOLS_REPO_NAME = 'sundayrun';
 
 export const PROTOCOLS_REPO_BRANCH = 'main';
 
-export const INDEX_JSON_PATH = 'index.json';
+/** Root of all published data inside the repository. */
+export const DATA_DIRECTORY = 'data/';
 
-export const ATHLETES_JSON_PATH = 'athletes.json';
+export const INDEX_JSON_PATH = `${DATA_DIRECTORY}index.json`;
 
-export const SITE_META_JSON_PATH = 'site-meta.json';
+export const ATHLETES_JSON_PATH = `${DATA_DIRECTORY}athletes.json`;
 
-/** Per-event files live under `events/<dateIso>/`. */
-export const EVENTS_DIRECTORY = 'events/';
+export const SITE_META_JSON_PATH = `${DATA_DIRECTORY}site-meta.json`;
+
+/** Per-event files live under `data/events/<dateIso>/`. */
+export const EVENTS_DIRECTORY = `${DATA_DIRECTORY}events/`;
 
 export const SOURCE_XLSX_FILE = 'source.xlsx';
 
