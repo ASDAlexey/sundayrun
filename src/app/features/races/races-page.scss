@@ -11,10 +11,44 @@
   flex-direction: column;
   gap: 24px;
 
+  &__hero {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0 8px;
+    gap: 14px;
+  }
+
+  &__eyebrow {
+    @include t.text('label', 'medium');
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--accent);
+
+    &::before {
+      width: 28px;
+      height: 1px;
+      background: var(--accent-line);
+      content: '';
+    }
+  }
+
   &__title {
-    @include t.text('display', 'medium');
+    @include t.text('display', 'large');
 
     color: var(--text);
+  }
+
+  &__title-accent {
+    @include t.gradient-text;
+  }
+
+  &__tagline {
+    @include t.text('body', 'large');
+
+    max-width: 52ch;
+    color: var(--text-secondary);
   }
 
   &__admin {
@@ -40,6 +74,16 @@
 
   &__status {
     @include st.status-text;
+
+    // Loading and empty states render a message inside the live region;
+    // give it a quiet panel so the page never looks abandoned.
+    &:has(span) {
+      padding: 32px;
+      border: 1px dashed var(--border-hover);
+      border-radius: var(--radius);
+      background: var(--bg-subtle);
+      text-align: center;
+    }
   }
 
   &__error {
@@ -111,21 +155,81 @@
     @include b.button-accent;
   }
 
+  &__course {
+    @include c.card;
+
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(260px, 420px);
+    overflow: hidden;
+  }
+
+  @media (width <= 720px) {
+    &__course {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__course-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px;
+    gap: 12px;
+  }
+
+  &__course-eyebrow {
+    @include t.text('label', 'medium');
+
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  &__course-title {
+    @include t.text('title', 'large');
+
+    color: var(--text);
+  }
+
+  &__course-text {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__course-vk {
+    @include t.text('label', 'medium');
+
+    color: var(--accent);
+    transition: color 0.2s var(--ease);
+
+    &::after {
+      content: ' ↗';
+    }
+
+    &:hover {
+      color: var(--accent-light);
+    }
+  }
+
+  &__course-map {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-left: 1px solid var(--border);
+  }
+
+  @media (width <= 720px) {
+    &__course-map {
+      border-top: 1px solid var(--border);
+      border-left: 0;
+    }
+  }
+
   &__cdn-note {
     @include t.text('label', 'small');
 
     color: var(--text-muted);
-  }
-
-  &__organizer {
-    @include t.text('label', 'small');
-
-    align-self: flex-start;
-    color: var(--text-muted);
-    text-decoration: none;
-
-    &:hover {
-      color: var(--text-secondary);
-    }
   }
 }

@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { VK_COMMUNITY_URL } from '../../app.constant';
 import { ArchiveIndexEntry } from '../../core/github/archive-index.interface';
 import { jsDelivrFileUrl } from '../../core/github/jsdelivr';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ArchiveService } from '../../github/archive.service';
-import { ADMIN_PAGE_LINK } from '../admin/admin-page.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { UPLOAD_PAGE_LINK } from './races-page.constant';
 import { RacesStatus, RacesStatusType } from './races-page.enum';
@@ -30,7 +30,7 @@ export class RacesPage {
 
   protected readonly statuses = RacesStatus;
   protected readonly uploadLink = UPLOAD_PAGE_LINK;
-  protected readonly adminLink = ADMIN_PAGE_LINK;
+  protected readonly vkUrl = VK_COMMUNITY_URL;
 
   constructor() {
     void this.#load();

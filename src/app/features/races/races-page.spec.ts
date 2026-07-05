@@ -5,7 +5,6 @@ import { provideRouter } from '@angular/router';
 import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ArchiveService } from '../../github/archive.service';
-import { ADMIN_PAGE_LINK } from '../admin/admin-page.constant';
 import { settle } from '../spec-utils/settle';
 import { RacesPage } from './races-page';
 import { UPLOAD_PAGE_LINK } from './races-page.constant';
@@ -76,7 +75,7 @@ describe('RacesPage', () => {
     expect(element.querySelector('.races__status').textContent.trim(), 'the live region is empty once the list is ready').toBe('');
     expect(element.querySelector('.races__admin')).toBeNull();
     expect(element.querySelector('.races__cdn-note')).not.toBeNull();
-    expect(element.querySelector('.races__organizer').getAttribute('href')).toBe(ADMIN_PAGE_LINK);
+    expect(element.querySelector('.races__organizer'), 'the organizer entry moved to the shell footer').toBeNull();
   });
 
   it('shows the admin upload entry when a token is stored', async () => {

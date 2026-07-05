@@ -1,5 +1,11 @@
 <main class="races" id="main" tabindex="-1">
-  <h1 class="races__title" i18n="@@races.title">Воскресный парковый пробег</h1>
+  <header class="races__hero">
+    <p class="races__eyebrow" i18n="@@races.eyebrow">Таганрог · ПКиО им. Горького</p>
+
+    <h1 class="races__title" i18n="@@races.title">Воскресный <span class="races__title-accent">парковый пробег</span></h1>
+
+    <p class="races__tagline" i18n="@@races.tagline">Протоколы, результаты и история каждого участника.</p>
+  </header>
 
   @if (isAdmin()) {
     <section class="races__admin">
@@ -58,7 +64,27 @@
     }
   }
 
-  <p class="races__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
+  <section class="races__course">
+    <div class="races__course-info">
+      <p class="races__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
 
-  <a class="races__organizer" i18n="@@races.forOrganizer" [routerLink]="adminLink">для организатора</a>
+      <h2 class="races__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
+
+      <p class="races__course-text" i18n="@@races.courseText">
+        Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
+      </p>
+
+      <a class="races__course-vk" i18n="@@races.courseVk" rel="noopener" target="_blank" [href]="vkUrl">Сообщество ВКонтакте</a>
+    </div>
+
+    <img
+      alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
+      class="races__course-map"
+      i18n-alt="@@races.courseAlt"
+      loading="lazy"
+      src="course-5k.jpg"
+    />
+  </section>
+
+  <p class="races__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
 </main>
