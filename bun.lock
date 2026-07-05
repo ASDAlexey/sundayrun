@@ -11,6 +11,7 @@
         "@angular/core": "^22.0.0",
         "@angular/forms": "^22.0.0",
         "@angular/localize": "^22.0.2",
+        "@angular/material": "^22.0.0",
         "@angular/platform-browser": "^22.0.0",
         "@angular/router": "^22.0.0",
         "fflate": "^0.8.2",
@@ -129,6 +130,8 @@
     "@angular/forms": ["@angular/forms@22.0.5", "", { "dependencies": { "@standard-schema/spec": "^1.0.0", "tslib": "^2.3.0", "zod": "^4.0.10" }, "peerDependencies": { "@angular/common": "22.0.5", "@angular/core": "22.0.5", "@angular/platform-browser": "22.0.5", "rxjs": "^6.5.3 || ^7.4.0" } }, "sha512-kdmLo956pUMG6ZS0v9crAu16pEzBrz6i7rdfCsgI6A3lcfOWNTZLysMGHHiGGqfdP6LJR88ziHIEKrgtkCkK1A=="],
 
     "@angular/localize": ["@angular/localize@22.0.5", "", { "dependencies": { "@babel/core": "7.29.7", "@types/babel__core": "7.20.5", "tinyglobby": "^0.2.12", "yargs": "^18.0.0" }, "peerDependencies": { "@angular/compiler": "22.0.5", "@angular/compiler-cli": "22.0.5" }, "bin": { "localize-extract": "tools/bundles/src/extract/cli.js", "localize-migrate": "tools/bundles/src/migrate/cli.js", "localize-translate": "tools/bundles/src/translate/cli.js" } }, "sha512-jpJqSCdAt1TPg8Zea+tkmqdfZF+qJhlGlQylYCrT56NLBUf0qqAl32KjxlBjZvFrUm7AqNkHN7L+E/YMcXmwzw=="],
+
+    "@angular/material": ["@angular/material@22.0.3", "", { "dependencies": { "tslib": "^2.3.0" }, "peerDependencies": { "@angular/cdk": "22.0.3", "@angular/common": "^22.0.0 || ^23.0.0", "@angular/core": "^22.0.0 || ^23.0.0", "@angular/forms": "^22.0.0 || ^23.0.0", "@angular/platform-browser": "^22.0.0 || ^23.0.0", "rxjs": "^6.5.3 || ^7.4.0" } }, "sha512-GHnGiG+YShHoY/uGpebo9vB/uH6gJ5/dJls6opA7w8xFQZg6jxGaW2boCBXi2FqpXsvMjiFYnk7SNc62J/uqYQ=="],
 
     "@angular/platform-browser": ["@angular/platform-browser@22.0.5", "", { "dependencies": { "tslib": "^2.3.0" }, "peerDependencies": { "@angular/animations": "22.0.5", "@angular/common": "22.0.5", "@angular/core": "22.0.5" }, "optionalPeers": ["@angular/animations"] }, "sha512-Jm0YQ0NsJl3vhzziO+BEmtW5AYIyI+jVGNJHs4nFKLqSPG7DWkBfx4EykHBN5pAR4NLwwaJyFgbgNE/epZJDZQ=="],
 

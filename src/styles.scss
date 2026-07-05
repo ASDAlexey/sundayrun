@@ -1,5 +1,56 @@
+@use '@angular/material' as mat;
 @use 'styles/tokens';
 @use 'styles/typography' as t;
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$yellow-palette,
+        tertiary: mat.$azure-palette,
+        theme-type: dark,
+      ),
+      typography: (
+        plain-family: 'Inter Variable',
+        brand-family: 'Inter Variable',
+      ),
+      density: 0,
+    )
+  );
+}
+
+// Map Material system tokens onto the Litely palette so every Material
+// component inherits the design language without per-component overrides.
+:root {
+  --mat-sys-primary: var(--accent);
+  --mat-sys-on-primary: var(--accent-contrast);
+  --mat-sys-primary-container: var(--accent-deep);
+  --mat-sys-on-primary-container: var(--accent-contrast);
+  --mat-sys-secondary: var(--text-secondary);
+  --mat-sys-on-secondary: var(--bg);
+  --mat-sys-secondary-container: var(--surface-hover);
+  --mat-sys-on-secondary-container: var(--text);
+  --mat-sys-surface: var(--bg);
+  --mat-sys-on-surface: var(--text);
+  --mat-sys-surface-variant: var(--surface);
+  --mat-sys-on-surface-variant: var(--text-secondary);
+  --mat-sys-surface-container-lowest: var(--bg-alt);
+  --mat-sys-surface-container-low: var(--bg-subtle);
+  --mat-sys-surface-container: var(--surface);
+  --mat-sys-surface-container-high: var(--surface-hover);
+  --mat-sys-surface-container-highest: var(--surface-hover);
+  --mat-sys-surface-tint: var(--accent);
+  --mat-sys-outline: var(--border-hover);
+  --mat-sys-outline-variant: var(--border);
+  --mat-sys-corner-extra-small: var(--radius-xs);
+  --mat-sys-corner-small: var(--radius-xs);
+  --mat-sys-corner-medium: var(--radius-sm);
+  --mat-sys-corner-large: var(--radius-sm);
+  --mat-sys-corner-extra-large: var(--radius);
+}
 
 *,
 *::before,
@@ -7,10 +58,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 body {
