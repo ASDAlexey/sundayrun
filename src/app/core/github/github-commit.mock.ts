@@ -26,10 +26,9 @@ export const COMMIT_FILES: CommitFile[] = [
 ];
 
 /** Only the uploads become blobs; the deletion never reaches the blobs endpoint. */
-export const EXPECTED_BLOB_BODIES = COMMIT_FILES.filter((file) => file.base64Content !== null).map((file) => ({
-  content: file.base64Content,
-  encoding: 'base64',
-}));
+export const EXPECTED_BLOB_BODIES = COMMIT_FILES.flatMap((file) =>
+  file.base64Content === null ? [] : [{ content: file.base64Content, encoding: 'base64' }],
+);
 
 export const EXPECTED_TREE_BODY = {
   base_tree: GIT_DATA_SHAS.baseTreeSha,

@@ -56,6 +56,9 @@ export const MAX_COMMIT_ATTEMPTS = 3;
 /** Commit message template; append the event `dateIso`. */
 export const COMMIT_MESSAGE_PREFIX = 'Публикация протокола: ';
 
+/** Deletion commit message template; append the event `dateIso`. */
+export const DELETE_COMMIT_MESSAGE_PREFIX = 'Удаление протокола: ';
+
 export const GIT_BLOB_ENCODING = 'base64';
 
 export const GIT_TREE_FILE_MODE = '100644';
