@@ -34,6 +34,10 @@
 
   &__history-status {
     @include st.status-text;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   &__history-error {
@@ -47,27 +51,5 @@
     justify-content: flex-end;
     padding: 16px 0;
     background: var(--bg);
-  }
-
-  &__generate {
-    @include t.button-label;
-
-    padding: 12px 24px;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: var(--accent);
-    color: var(--accent-contrast);
-    cursor: pointer;
-    transition: background 0.2s var(--ease);
-
-    &:hover:enabled {
-      background: var(--accent-light);
-    }
-
-    &:disabled {
-      background: var(--surface-hover);
-      color: var(--text-muted);
-      cursor: not-allowed;
-    }
   }
 }

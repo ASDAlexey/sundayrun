@@ -1,17 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
 import { HistoryService } from '../../github/history.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { EventForm } from './event-form/event-form';
 import { ParticipantsTable } from './participants-table/participants-table';
-import { RESULT_ROUTE_COMMANDS } from './preview-page.constant';
+import { HISTORY_SPINNER_DIAMETER, RESULT_ROUTE_COMMANDS } from './preview-page.constant';
 import { HistoryNotesStatus, HistoryNotesStatusType } from './preview-page.enum';
 
 /** The /preview page: participants editing plus the race event form before PDF generation. */
 @Component({
   selector: 'app-preview-page',
-  imports: [EventForm, ParticipantsTable],
+  imports: [EventForm, MatButtonModule, MatProgressSpinnerModule, ParticipantsTable],
   templateUrl: './preview-page.html',
   styleUrl: './preview-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +32,8 @@ export class PreviewPage {
   readonly historyStatus = signal<HistoryNotesStatusType>(HistoryNotesStatus.idle);
 
   protected readonly historyStatuses = HistoryNotesStatus;
+
+  protected readonly spinnerDiameter = HISTORY_SPINNER_DIAMETER;
 
   /** Notes are auto-applied once; a later date edit must not overwrite manual note fixes. */
   #notesApplied = false;

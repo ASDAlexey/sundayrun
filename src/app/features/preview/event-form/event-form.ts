@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import { RACE_EVENT_DEFAULTS } from '../race-event-defaults.constant';
@@ -9,7 +11,7 @@ import { EMPTY_DATE_ISO, INTEGER_ERROR, MIN_EVENT_NUMBER } from './event-form.co
 /** The race requisites form; every valid change is pushed to the store, invalid states leave it untouched. */
 @Component({
   selector: 'app-event-form',
-  imports: [ReactiveFormsModule],
+  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule],
   templateUrl: './event-form.html',
   styleUrl: './event-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

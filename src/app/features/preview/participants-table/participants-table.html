@@ -1,74 +1,106 @@
 <div class="participants-table">
-  <table class="participants-table__table">
-    <thead>
-      <tr>
-        <th class="participants-table__header" i18n="@@preview.table.index" scope="col">№</th>
-        <th class="participants-table__header" i18n="@@preview.table.name" scope="col">ФИО</th>
-        <th class="participants-table__header" i18n="@@preview.table.time" scope="col">Время</th>
-        <th class="participants-table__header" i18n="@@preview.table.lap1" scope="col">Круг 1</th>
-        <th class="participants-table__header" i18n="@@preview.table.lap2" scope="col">Круг 2</th>
-        <th class="participants-table__header" i18n="@@preview.table.distance" scope="col">Дистанция</th>
-        <th class="participants-table__header" i18n="@@preview.table.gender" scope="col">Пол</th>
-        <th class="participants-table__header" i18n="@@preview.table.note" scope="col">Примечание</th>
-      </tr>
-    </thead>
+  <table class="participants-table__table" mat-table [dataSource]="rows()" [trackBy]="trackById">
+    <ng-container matColumnDef="index">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.index" mat-header-cell scope="col">№</th>
 
-    <tbody>
-      @for (row of rows(); track row.participant.id) {
-        <tr class="participants-table__row" [class.participants-table__row_unverified]="row.unverified">
-          <td class="participants-table__cell">{{ $index + 1 }}</td>
-          <td class="participants-table__cell">
-            {{ row.participant.fullName }}
+      <td *matCellDef="let row; let index = index" class="participants-table__cell" mat-cell>{{ index + 1 }}</td>
+    </ng-container>
 
-            @if (row.unverified) {
-              <span class="visually-hidden" i18n="@@preview.table.unverifiedGender">пол не определён</span>
-            }
-          </td>
-          <td class="participants-table__cell participants-table__cell_mono">{{ row.timeText }}</td>
-          <td class="participants-table__cell participants-table__cell_mono">{{ row.lap1Text }}</td>
-          <td class="participants-table__cell participants-table__cell_mono">{{ row.lap2Text }}</td>
-          <td class="participants-table__cell">{{ row.distanceText }}</td>
-          <td class="participants-table__cell">
-            <div class="participants-table__gender-group">
-              <button
-                aria-label="Мужской"
-                class="participants-table__gender-toggle"
-                i18n="@@preview.table.male"
-                i18n-aria-label="@@preview.table.maleAriaLabel"
-                type="button"
-                [attr.aria-pressed]="row.isMale"
-                [class.participants-table__gender-toggle_active]="row.isMale"
-                (click)="setMale(row.participant.id)"
-              >
-                М
-              </button>
+    <ng-container matColumnDef="name">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.name" mat-header-cell scope="col">ФИО</th>
 
-              <button
-                aria-label="Женский"
-                class="participants-table__gender-toggle"
-                i18n="@@preview.table.female"
-                i18n-aria-label="@@preview.table.femaleAriaLabel"
-                type="button"
-                [attr.aria-pressed]="row.isFemale"
-                [class.participants-table__gender-toggle_active]="row.isFemale"
-                (click)="setFemale(row.participant.id)"
-              >
-                Ж
-              </button>
-            </div>
-          </td>
-          <td class="participants-table__cell participants-table__cell_note">
-            <input
-              #noteInput
-              class="participants-table__note-input"
-              type="text"
-              [attr.aria-label]="row.noteAriaLabel"
-              [value]="row.participant.note"
-              (change)="onNoteChange(row.participant.id, noteInput.value)"
-            />
-          </td>
-        </tr>
-      }
-    </tbody>
+      <td *matCellDef="let row" class="participants-table__cell" mat-cell>
+        {{ row.participant.fullName }}
+
+        @if (row.unverified) {
+          <span class="visually-hidden" i18n="@@preview.table.unverifiedGender">пол не определён</span>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="time">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.time" mat-header-cell scope="col">Время</th>
+
+      <td *matCellDef="let row" class="participants-table__cell participants-table__cell_mono" mat-cell>{{ row.timeText }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lap1">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.lap1" mat-header-cell scope="col">Круг 1</th>
+
+      <td *matCellDef="let row" class="participants-table__cell participants-table__cell_mono" mat-cell>{{ row.lap1Text }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lap2">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.lap2" mat-header-cell scope="col">Круг 2</th>
+
+      <td *matCellDef="let row" class="participants-table__cell participants-table__cell_mono" mat-cell>{{ row.lap2Text }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="distance">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.distance" mat-header-cell scope="col">Дистанция</th>
+
+      <td *matCellDef="let row" class="participants-table__cell" mat-cell>{{ row.distanceText }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="gender">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.gender" mat-header-cell scope="col">Пол</th>
+
+      <td *matCellDef="let row" class="participants-table__cell" mat-cell>
+        <mat-button-toggle-group class="participants-table__gender-group" hideSingleSelectionIndicator>
+          <mat-button-toggle
+            aria-label="Мужской"
+            class="participants-table__gender-toggle"
+            i18n="@@preview.table.male"
+            i18n-aria-label="@@preview.table.maleAriaLabel"
+            [attr.aria-pressed]="row.isMale"
+            [checked]="row.isMale"
+            [class.participants-table__gender-toggle_active]="row.isMale"
+            (click)="setMale(row.participant.id)"
+          >
+            М
+          </mat-button-toggle>
+
+          <mat-button-toggle
+            aria-label="Женский"
+            class="participants-table__gender-toggle"
+            i18n="@@preview.table.female"
+            i18n-aria-label="@@preview.table.femaleAriaLabel"
+            [attr.aria-pressed]="row.isFemale"
+            [checked]="row.isFemale"
+            [class.participants-table__gender-toggle_active]="row.isFemale"
+            (click)="setFemale(row.participant.id)"
+          >
+            Ж
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="note">
+      <th *matHeaderCellDef class="participants-table__header" i18n="@@preview.table.note" mat-header-cell scope="col">Примечание</th>
+
+      <td *matCellDef="let row" class="participants-table__cell participants-table__cell_note" mat-cell>
+        <mat-form-field appearance="outline" class="participants-table__note-field" subscriptSizing="dynamic">
+          <input
+            #noteInput
+            class="participants-table__note-input"
+            matInput
+            type="text"
+            [attr.aria-label]="row.noteAriaLabel"
+            [value]="row.participant.note"
+            (change)="onNoteChange(row.participant.id, noteInput.value)"
+          />
+        </mat-form-field>
+      </td>
+    </ng-container>
+
+    <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+
+    <tr
+      *matRowDef="let row; columns: displayedColumns"
+      class="participants-table__row"
+      mat-row
+      [class.participants-table__row_unverified]="row.unverified"
+    ></tr>
   </table>
 </div>

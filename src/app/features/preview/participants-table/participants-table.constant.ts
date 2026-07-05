@@ -1,5 +1,8 @@
 export const DNF_TEXT = 'DNF';
 
+/** Column order of the participants mat-table. */
+export const DISPLAYED_COLUMNS: string[] = ['index', 'name', 'time', 'lap1', 'lap2', 'distance', 'gender', 'note'];
+
 /** Shown when the timer recorded no laps at all. */
 export const NO_DISTANCE_TEXT = '—';
 

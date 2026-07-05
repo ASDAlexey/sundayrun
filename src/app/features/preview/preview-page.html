@@ -10,11 +10,13 @@
   <app-event-form />
 
   <div class="preview__history">
-    <p aria-live="polite" class="preview__history-status">
+    <div aria-live="polite" class="preview__history-status">
       @if (historyStatus() === historyStatuses.loading) {
+        <mat-progress-spinner mode="indeterminate" [diameter]="spinnerDiameter" />
+
         <span i18n="@@preview.historyLoading">Загружаем историю…</span>
       }
-    </p>
+    </div>
 
     @if (historyStatus() === historyStatuses.error) {
       <p class="preview__history-error" i18n="@@preview.historyError" role="alert">Не удалось загрузить историю</p>
@@ -24,7 +26,14 @@
   <app-participants-table />
 
   <div class="preview__actions">
-    <button class="preview__generate" i18n="@@preview.generate" type="button" [disabled]="!canGenerate()" (click)="generate()">
+    <button
+      class="preview__generate"
+      i18n="@@preview.generate"
+      matButton="filled"
+      type="button"
+      [disabled]="!canGenerate()"
+      (click)="generate()"
+    >
       Сгенерировать протокол
     </button>
   </div>

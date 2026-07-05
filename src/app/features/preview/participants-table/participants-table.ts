@@ -1,4 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
 
 import { Gender, GenderConfidence } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
@@ -6,6 +10,7 @@ import { FIVE_KM_TEXT, TWO_THREE_KM_TEXT } from '../../../shared/distance-label.
 import { FormatDurationPipe } from '../../../shared/pipes/format-duration.pipe';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import {
+  DISPLAYED_COLUMNS,
   DNF_TEXT,
   FULL_DISTANCE_LAPS,
   LAP_1_INDEX,
@@ -19,6 +24,7 @@ import { ParticipantRowView } from './participants-table.interface';
 /** Editable list of imported participants: gender toggles and per-athlete notes. */
 @Component({
   selector: 'app-participants-table',
+  imports: [MatButtonToggleModule, MatFormFieldModule, MatInputModule, MatTableModule],
   templateUrl: './participants-table.html',
   styleUrl: './participants-table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +34,8 @@ export class ParticipantsTable {
   readonly #formatDuration = new FormatDurationPipe();
 
   readonly rows = computed(() => this.#store.participants().map((participant) => this.#toRowView(participant)));
+
+  protected readonly displayedColumns = DISPLAYED_COLUMNS;
 
   setMale(id: number): void {
     this.#store.setGender(id, Gender.male);
@@ -39,6 +47,11 @@ export class ParticipantsTable {
 
   onNoteChange(id: number, note: string): void {
     this.#store.setNote(id, note);
+  }
+
+  /** Keeps mat-table rows stable across store updates, matching the previous @for track expression. */
+  protected trackById(this: void, _index: number, row: ParticipantRowView): number {
+    return row.participant.id;
   }
 
   #toRowView(participant: Participant): ParticipantRowView {

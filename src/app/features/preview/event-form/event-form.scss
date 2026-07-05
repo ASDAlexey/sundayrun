@@ -1,5 +1,4 @@
 @use 'styles/card' as c;
-@use 'styles/typography' as t;
 
 .event-form {
   @include c.card;
@@ -8,36 +7,4 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   padding: 24px;
   gap: 20px;
-
-  &__field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  &__label {
-    @include t.text('label', 'medium');
-
-    color: var(--text-secondary);
-  }
-
-  &__input {
-    @include t.text('body', 'medium');
-
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--text);
-    transition: border-color 0.2s var(--ease);
-
-    &:hover {
-      border-color: var(--border-hover);
-    }
-
-    &:focus {
-      border-color: var(--accent);
-      outline: none;
-    }
-  }
 }
