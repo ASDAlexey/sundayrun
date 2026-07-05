@@ -1,19 +1,27 @@
 import { Routes } from '@angular/router';
 
+import { AdminPage } from './features/admin/admin-page';
+import { AthletePage } from './features/athlete/athlete-page';
+import { AthletesPage } from './features/athletes/athletes-page';
+import { RacePage } from './features/race/race-page';
+import { RacesPage } from './features/races/races-page';
+
 import { adminGuard } from './features/admin/admin.guard';
 import { previewGuard } from './features/preview/preview.guard';
 import { resultGuard } from './features/result/result.guard';
 
+// Public pages are bundled eagerly: a lazy chunk would repaint the shell and shift the footer (CLS).
+// The organiser wizard (upload/preview/result) stays lazy — it pulls xlsx/pdf machinery.
 export const routes: Routes = [
   {
     path: '',
     title: $localize`:@@title.races:Воскресный парковый пробег в Таганроге — протоколы и результаты`,
-    loadComponent: () => import('./features/races/races-page').then((module) => module.RacesPage),
+    component: RacesPage,
   },
   {
     path: 'admin',
     title: $localize`:@@title.admin:Вход для организатора — Воскресный парковый пробег`,
-    loadComponent: () => import('./features/admin/admin-page').then((module) => module.AdminPage),
+    component: AdminPage,
   },
   {
     path: 'upload',
@@ -36,17 +44,17 @@ export const routes: Routes = [
   {
     path: 'races/:slug',
     title: $localize`:@@title.race:Протокол пробега — Воскресный парковый пробег`,
-    loadComponent: () => import('./features/race/race-page').then((module) => module.RacePage),
+    component: RacePage,
   },
   {
     path: 'athletes',
     title: $localize`:@@title.athletes:Участники — Воскресный парковый пробег`,
-    loadComponent: () => import('./features/athletes/athletes-page').then((module) => module.AthletesPage),
+    component: AthletesPage,
   },
   {
     path: 'athletes/:key',
     title: $localize`:@@title.athlete:Участник — Воскресный парковый пробег`,
-    loadComponent: () => import('./features/athlete/athlete-page').then((module) => module.AthletePage),
+    component: AthletePage,
   },
   { path: '**', redirectTo: '' },
 ];
