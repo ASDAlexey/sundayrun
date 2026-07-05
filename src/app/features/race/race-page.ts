@@ -1,5 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { eventFilePaths } from '../../core/github/event-paths';
@@ -14,14 +17,21 @@ import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { ResultsService } from '../../github/results.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
-import { EMPTY_CELL_TEXT, FEMALE_GENDER_TEXT, HOME_PAGE_LINK, MALE_GENDER_TEXT, SLUG_ROUTE_PARAM } from './race-page.constant';
+import {
+  EMPTY_CELL_TEXT,
+  FEMALE_GENDER_TEXT,
+  HOME_PAGE_LINK,
+  MALE_GENDER_TEXT,
+  RACE_TABLE_COLUMNS,
+  SLUG_ROUTE_PARAM,
+} from './race-page.constant';
 import { RaceStatus, RaceStatusType } from './race-page.enum';
 import { RacePageState, RaceRowView, RaceView } from './race-page.interface';
 
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
 @Component({
   selector: 'app-race-page',
-  imports: [RouterLink],
+  imports: [MatButtonModule, MatProgressSpinnerModule, MatTableModule, RouterLink],
   templateUrl: './race-page.html',
   styleUrl: './race-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +44,7 @@ export class RacePage {
 
   protected readonly statuses = RaceStatus;
   protected readonly homeLink = HOME_PAGE_LINK;
+  protected readonly tableColumns = RACE_TABLE_COLUMNS;
 
   #slug = '';
 

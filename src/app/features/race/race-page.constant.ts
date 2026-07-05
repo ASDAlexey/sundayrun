@@ -14,3 +14,6 @@ export const FEMALE_GENDER_TEXT = $localize`:@@race.genderFemale:Ж`;
 
 /** Absent time, place, gender, club or note cells stay blank, matching the published PDF. */
 export const EMPTY_CELL_TEXT = '';
+
+/** mat-table column order, mirroring the nine PDF columns plus the average pace. */
+export const RACE_TABLE_COLUMNS = ['index', 'athlete', 'time23', 'time5', 'pace', 'gender', 'placeM', 'placeF', 'club', 'note'];

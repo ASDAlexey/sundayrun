@@ -1,14 +1,16 @@
 <main class="race" id="main" tabindex="-1">
-  <p aria-live="polite" class="race__status" role="status">
+  <div aria-live="polite" class="race__status" role="status">
     @switch (status()) {
       @case (statuses.loading) {
+        <mat-progress-spinner class="race__status-spinner" mode="indeterminate" [diameter]="24" />
+
         <span i18n="@@race.loading">Загружаем протокол…</span>
       }
       @case (statuses.notFound) {
         <span i18n="@@race.notFound">Такой протокол не найден.</span>
       }
     }
-  </p>
+  </div>
 
   @switch (status()) {
     @case (statuses.ready) {
@@ -32,55 +34,95 @@
             }
           </div>
 
-          <a class="race__pdf" i18n="@@race.pdf" rel="noopener" target="_blank" [attr.aria-label]="view.pdfAriaLabel" [href]="view.pdfUrl">
+          <a
+            class="race__pdf"
+            i18n="@@race.pdf"
+            matButton="filled"
+            rel="noopener"
+            target="_blank"
+            [attr.aria-label]="view.pdfAriaLabel"
+            [href]="view.pdfUrl"
+          >
             PDF
           </a>
         </header>
 
         <div class="race__table-wrap">
-          <table class="race__table">
-            <thead>
-              <tr>
-                <th class="race__th" i18n="@@race.table.index" scope="col">№</th>
-                <th class="race__th" i18n="@@race.table.athlete" scope="col">Спортсмен</th>
-                <th class="race__th" i18n="@@race.table.time23" scope="col">Время 2,3 км</th>
-                <th class="race__th" i18n="@@race.table.time5" scope="col">Время 5 км</th>
-                <th class="race__th" i18n="@@race.table.pace" scope="col">Ср. темп</th>
-                <th class="race__th" i18n="@@race.table.gender" scope="col">Пол</th>
-                <th class="race__th" i18n="@@race.table.placeM" scope="col">Место М</th>
-                <th class="race__th" i18n="@@race.table.placeF" scope="col">Место Ж</th>
-                <th class="race__th" i18n="@@race.table.club" scope="col">Клуб</th>
-                <th class="race__th" i18n="@@race.table.note" scope="col">Примечание</th>
-              </tr>
-            </thead>
+          <table class="race__table" mat-table [dataSource]="view.rows">
+            <ng-container matColumnDef="index">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.index" mat-header-cell scope="col">№</th>
 
-            <tbody>
-              @for (row of view.rows; track row.index) {
-                <tr class="race__row">
-                  <td class="race__td">{{ row.index }}</td>
-                  <td class="race__td">
-                    <a class="race__athlete" [attr.aria-label]="row.athleteAriaLabel" [routerLink]="row.athleteLink">
-                      {{ row.fullName }}
-                    </a>
-                  </td>
-                  <td class="race__td race__td_mono">{{ row.time23 }}</td>
-                  <td class="race__td race__td_mono">{{ row.time5 }}</td>
-                  <td class="race__td race__td_mono">{{ row.paceText }}</td>
-                  <td class="race__td">{{ row.genderText }}</td>
-                  <td class="race__td">{{ row.placeMText }}</td>
-                  <td class="race__td">{{ row.placeFText }}</td>
-                  <td class="race__td">{{ row.club }}</td>
-                  <td class="race__td">{{ row.note }}</td>
-                </tr>
-              }
-            </tbody>
+              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.index }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="athlete">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.athlete" mat-header-cell scope="col">Спортсмен</th>
+
+              <td *matCellDef="let row" class="race__td" mat-cell>
+                <a class="race__athlete" [attr.aria-label]="row.athleteAriaLabel" [routerLink]="row.athleteLink">
+                  {{ row.fullName }}
+                </a>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="time23">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.time23" mat-header-cell scope="col">Время 2,3 км</th>
+
+              <td *matCellDef="let row" class="race__td race__td_mono" mat-cell>{{ row.time23 }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="time5">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.time5" mat-header-cell scope="col">Время 5 км</th>
+
+              <td *matCellDef="let row" class="race__td race__td_mono" mat-cell>{{ row.time5 }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="pace">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.pace" mat-header-cell scope="col">Ср. темп</th>
+
+              <td *matCellDef="let row" class="race__td race__td_mono" mat-cell>{{ row.paceText }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="gender">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.gender" mat-header-cell scope="col">Пол</th>
+
+              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.genderText }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="placeM">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.placeM" mat-header-cell scope="col">Место М</th>
+
+              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.placeMText }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="placeF">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.placeF" mat-header-cell scope="col">Место Ж</th>
+
+              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.placeFText }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="club">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.club" mat-header-cell scope="col">Клуб</th>
+
+              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.club }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="note">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.note" mat-header-cell scope="col">Примечание</th>
+
+              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.note }}</td>
+            </ng-container>
+
+            <tr *matHeaderRowDef="tableColumns" mat-header-row></tr>
+
+            <tr *matRowDef="let row; columns: tableColumns" class="race__row" mat-row></tr>
           </table>
         </div>
       }
     }
     @case (statuses.notFound) {
       <div class="race__not-found">
-        <a class="race__back" i18n="@@race.backHome" [routerLink]="homeLink">К списку забегов</a>
+        <a class="race__back" i18n="@@race.backHome" matButton [routerLink]="homeLink">К списку забегов</a>
       </div>
     }
     @case (statuses.error) {

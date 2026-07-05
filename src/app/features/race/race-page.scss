@@ -1,4 +1,3 @@
-@use 'styles/buttons' as b;
 @use 'styles/card' as c;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
@@ -59,12 +58,12 @@
     color: var(--text-muted);
   }
 
-  &__pdf {
-    @include b.button-outline;
-  }
-
   &__status {
     @include st.status-text;
+  }
+
+  &__status-spinner {
+    margin: 0 auto 12px;
   }
 
   &__error {
@@ -77,14 +76,22 @@
 
   &__table {
     @include tbl.table;
+
+    // mat-table paints its own surface; keep the card panel of the wrapper visible.
+    --mat-table-background-color: var(--surface);
   }
 
   &__th {
     @include tbl.header-cell;
+
+    border-bottom: 0;
   }
 
   &__td {
     @include tbl.cell;
+
+    // The BEM border-top already separates the rows; drop the mat-cell divider.
+    border-bottom: 0;
 
     &_mono {
       font-family: var(--mono);
@@ -100,9 +107,5 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
-  }
-
-  &__back {
-    @include b.button-outline;
   }
 }
