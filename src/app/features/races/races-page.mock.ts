@@ -1,3 +1,4 @@
+import { NEWER_ENTRY, OLDER_ENTRY } from '../../core/github/archive-index.mock';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { RaceListItem } from './races-page.interface';
 
@@ -33,3 +34,23 @@ export const INDEX_LOAD_ERROR_MESSAGE = 'index load failed';
 
 /** EXISTING_SITE_META.startTime rendered through the @@races.startTime template. */
 export const EXPECTED_ANNOUNCE_TIME_TEXT = 'Каждое воскресенье · старт в 08:00';
+
+/** OLDER_ENTRY moved a year back, so the list spans two distinct years for the filter. */
+export const PREVIOUS_YEAR_INDEX = {
+  schemaVersion: 1,
+  events: [
+    NEWER_ENTRY,
+    {
+      ...OLDER_ENTRY,
+      slug: '2025-06-21',
+      dateIso: '2025-06-21',
+      files: {
+        sourceXlsx: 'data/events/2025-06-21/source.xlsx',
+        protocolPdf: 'data/events/2025-06-21/protocol.pdf',
+        resultsJson: 'data/events/2025-06-21/results.json',
+      },
+    },
+  ],
+} as const;
+
+export const EXPECTED_YEARS = ['2026', '2025'];

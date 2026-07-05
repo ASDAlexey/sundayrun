@@ -7,6 +7,20 @@
     <p class="races__tagline" i18n="@@races.listTagline">Полный архив протоколов — от свежих к первым.</p>
   </header>
 
+  @if (status() === statuses.ready) {
+    <div class="races__filter">
+      <label class="races__filter-label" for="races-year" i18n="@@races.yearLabel">Год</label>
+
+      <select #yearSelect class="races__filter-select" id="races-year" (change)="onYearChange(yearSelect.value)">
+        <option i18n="@@races.allYears" [value]="allValue">Все годы</option>
+
+        @for (raceYear of years(); track raceYear) {
+          <option [value]="raceYear">{{ raceYear }}</option>
+        }
+      </select>
+    </div>
+  }
+
   <p aria-live="polite" class="races__status" role="status">
     @switch (status()) {
       @case (statuses.loading) {
@@ -21,7 +35,7 @@
   @switch (status()) {
     @case (statuses.ready) {
       <ul class="races__list">
-        @for (race of races(); track race.slug) {
+        @for (race of visibleRaces(); track race.slug) {
           <li class="races__race">
             <app-race-card [race]="race" />
           </li>

@@ -1,3 +1,4 @@
+@use 'styles/field' as f;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
@@ -63,13 +64,38 @@
     @include st.error-text;
   }
 
-  &__list {
+  &__filter {
     display: flex;
     flex-direction: column;
+    align-self: flex-start;
+    gap: 8px;
+  }
+
+  &__filter-label {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__filter-select {
+    @include f.field;
+
+    min-width: 160px;
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     margin: 0;
     padding: 0;
     gap: 16px;
     list-style: none;
+  }
+
+  @media (width <= 860px) {
+    &__list {
+      grid-template-columns: 1fr;
+    }
   }
 
   &__cdn-note {

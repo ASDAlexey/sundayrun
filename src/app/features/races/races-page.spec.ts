@@ -7,8 +7,15 @@ import { ArchiveService } from '../../github/archive.service';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { RacesPage } from './races-page';
+import { ALL_YEARS_VALUE } from './races-page.constant';
 import { RacesStatus } from './races-page.enum';
-import { EXPECTED_RACE_ITEMS, EXPECTED_RACE_TITLES, INDEX_LOAD_ERROR_MESSAGE } from './races-page.mock';
+import {
+  EXPECTED_RACE_ITEMS,
+  EXPECTED_RACE_TITLES,
+  EXPECTED_YEARS,
+  INDEX_LOAD_ERROR_MESSAGE,
+  PREVIOUS_YEAR_INDEX,
+} from './races-page.mock';
 
 describe('RacesPage', () => {
   const loadIndex = vi.fn();
@@ -73,6 +80,30 @@ describe('RacesPage', () => {
     );
     expect(element.querySelector('.races__status').textContent.trim(), 'the live region is empty once the list is ready').toBe('');
     expect(element.querySelector('.races__cdn-note')).not.toBeNull();
+  });
+
+  it('filters the list by the selected year and resets on the all-years option', async () => {
+    loadIndex.mockResolvedValue(PREVIOUS_YEAR_INDEX);
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.years()).toEqual(EXPECTED_YEARS);
+    expect(page.visibleRaces().length, 'no filter by default').toBe(2);
+
+    page.onYearChange(EXPECTED_YEARS[1]);
+
+    expect(page.visibleRaces().map((race) => race.slug)).toEqual([PREVIOUS_YEAR_INDEX.events[1].slug]);
+
+    page.onYearChange(ALL_YEARS_VALUE);
+
+    expect(page.visibleRaces().length).toBe(2);
+
+    fixture.detectChanges();
+
+    const options = [...fixture.nativeElement.querySelectorAll('.races__filter-select option')].map((option) => option.value);
+
+    expect(options).toEqual([ALL_YEARS_VALUE, ...EXPECTED_YEARS]);
   });
 
   it('shows the empty state for an index without events', async () => {
