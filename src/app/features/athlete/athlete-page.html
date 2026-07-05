@@ -1,14 +1,16 @@
 <main class="athlete" id="main" tabindex="-1">
-  <p aria-live="polite" class="athlete__status" role="status">
+  <div aria-live="polite" class="athlete__status" role="status">
     @switch (status()) {
       @case (statuses.loading) {
+        <mat-progress-spinner class="athlete__spinner" mode="indeterminate" [diameter]="24" />
+
         <span i18n="@@athlete.loading">Загружаем историю атлета…</span>
       }
       @case (statuses.notFound) {
         <span i18n="@@athlete.notFound">Атлет не найден. История могла ещё не обновиться после публикации протокола.</span>
       }
     }
-  </p>
+  </div>
 
   @switch (status()) {
     @case (statuses.ready) {
@@ -48,58 +50,33 @@
             <div class="athlete__filter">
               <span class="athlete__filter-label" i18n="@@athlete.yearLabel">Год</span>
 
-              <div class="athlete__chips">
-                <button
-                  class="athlete__chip"
-                  i18n="@@athlete.allYears"
-                  type="button"
-                  [attr.aria-pressed]="year() === null"
-                  [class.athlete__chip_active]="year() === null"
-                  (click)="setYear(null)"
-                >
-                  Все
-                </button>
+              <mat-button-toggle-group
+                class="athlete__chips"
+                hideSingleSelectionIndicator
+                [value]="year() ?? allYearsValue"
+                (change)="onYearChange($event.value)"
+              >
+                <mat-button-toggle class="athlete__chip" i18n="@@athlete.allYears" [value]="allYearsValue">Все</mat-button-toggle>
 
                 @for (runYear of years(); track runYear) {
-                  <button
-                    class="athlete__chip"
-                    type="button"
-                    [attr.aria-pressed]="year() === runYear"
-                    [class.athlete__chip_active]="year() === runYear"
-                    (click)="setYear(runYear)"
-                  >
-                    {{ runYear }}
-                  </button>
+                  <mat-button-toggle class="athlete__chip" [value]="runYear">{{ runYear }}</mat-button-toggle>
                 }
-              </div>
+              </mat-button-toggle-group>
             </div>
 
             <div class="athlete__filter">
               <span class="athlete__filter-label" i18n="@@athlete.sortLabel">Сортировка</span>
 
-              <div class="athlete__chips">
-                <button
-                  class="athlete__chip"
-                  i18n="@@athlete.sortByTime"
-                  type="button"
-                  [attr.aria-pressed]="sort() === sorts.byTime"
-                  [class.athlete__chip_active]="sort() === sorts.byTime"
-                  (click)="setSort(sorts.byTime)"
-                >
-                  По времени
-                </button>
+              <mat-button-toggle-group
+                class="athlete__chips"
+                hideSingleSelectionIndicator
+                [value]="sort()"
+                (change)="setSort($event.value)"
+              >
+                <mat-button-toggle class="athlete__chip" i18n="@@athlete.sortByTime" [value]="sorts.byTime">По времени</mat-button-toggle>
 
-                <button
-                  class="athlete__chip"
-                  i18n="@@athlete.sortByDate"
-                  type="button"
-                  [attr.aria-pressed]="sort() === sorts.byDate"
-                  [class.athlete__chip_active]="sort() === sorts.byDate"
-                  (click)="setSort(sorts.byDate)"
-                >
-                  По дате
-                </button>
-              </div>
+                <mat-button-toggle class="athlete__chip" i18n="@@athlete.sortByDate" [value]="sorts.byDate">По дате</mat-button-toggle>
+              </mat-button-toggle-group>
             </div>
           </div>
 
@@ -111,24 +88,23 @@
 
           @if (runs().length > 0) {
             <div class="athlete__table-wrap">
-              <table class="athlete__table">
-                <thead>
-                  <tr>
-                    <th class="athlete__th" i18n="@@athlete.table.date" scope="col">Дата</th>
-                    <th class="athlete__th" i18n="@@athlete.table.time" scope="col">Время</th>
-                  </tr>
-                </thead>
+              <table class="athlete__table" mat-table [dataSource]="runs()">
+                <ng-container matColumnDef="date">
+                  <th *matHeaderCellDef class="athlete__th" i18n="@@athlete.table.date" mat-header-cell scope="col">Дата</th>
 
-                <tbody>
-                  @for (run of runs(); track run.slug) {
-                    <tr class="athlete__row">
-                      <td class="athlete__td">
-                        <a class="athlete__race" [routerLink]="run.raceLink">{{ run.dateShort }}</a>
-                      </td>
-                      <td class="athlete__td athlete__td_mono">{{ run.timeText }}</td>
-                    </tr>
-                  }
-                </tbody>
+                  <td *matCellDef="let run" class="athlete__td" mat-cell>
+                    <a class="athlete__race" [routerLink]="run.raceLink">{{ run.dateShort }}</a>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="time">
+                  <th *matHeaderCellDef class="athlete__th" i18n="@@athlete.table.time" mat-header-cell scope="col">Время</th>
+
+                  <td *matCellDef="let run" class="athlete__td athlete__td_mono" mat-cell>{{ run.timeText }}</td>
+                </ng-container>
+
+                <tr *matHeaderRowDef="runsTableColumns" mat-header-row></tr>
+                <tr *matRowDef="let run; columns: runsTableColumns" class="athlete__row" mat-row></tr>
               </table>
             </div>
           }
@@ -137,7 +113,7 @@
     }
     @case (statuses.notFound) {
       <div class="athlete__not-found">
-        <a class="athlete__back" i18n="@@athlete.backToList" [routerLink]="athletesLink">К списку атлетов</a>
+        <a class="athlete__back" i18n="@@athlete.backToList" matButton="outlined" [routerLink]="athletesLink">К списку атлетов</a>
       </div>
     }
     @case (statuses.error) {

@@ -6,6 +6,7 @@ import { EXPECTED_ROLLUP_HISTORY, DNF_ONLY_KEY, REPEAT_RUNNER_KEY } from '../../
 import { AthletesHistory } from '../../core/models/athletes-history.type';
 import { AthletesService } from '../../github/athletes.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
+import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
 import { AthletePage } from './athlete-page';
@@ -97,9 +98,9 @@ describe('AthletePage', () => {
       'the year row is the "all" chip plus one per distinct year',
     ).toEqual(['Все', ...EXPECTED_RUN_YEAR_OPTIONS]);
     expect(
-      filterChips.map((chip) => chip.getAttribute('aria-pressed')),
+      filterChips.map((chip) => chip.classList.contains('mat-button-toggle-checked')),
       'all years by default',
-    ).toEqual(['true', 'false', 'false']);
+    ).toEqual([true, false, false]);
   });
 
   it('filters by year, re-sorts by date and reports when no runs match', async () => {
@@ -111,13 +112,14 @@ describe('AthletePage', () => {
 
     expect(page.runs()).toEqual(EXPECTED_BY_DATE_VIEWS);
 
-    page.setYear(ATHLETE_YEAR_FILTER);
+    page.onYearChange(ATHLETE_YEAR_FILTER);
 
     expect(page.runs()).toEqual(EXPECTED_YEAR_FILTERED_VIEWS);
 
-    page.setYear(null);
+    page.onYearChange(ALL_YEARS_VALUE);
 
     expect(page.runs(), 'the "all years" chip resets the filter').toEqual(EXPECTED_BY_DATE_VIEWS);
+    expect(page.year(), 'the "all" toggle maps the sentinel back to null').toBeNull();
 
     page.setYear(UNKNOWN_KEY_PARAM);
 
@@ -133,9 +135,9 @@ describe('AthletePage', () => {
     expect(statusRegions.at(-1).getAttribute('role')).toBe('status');
     expect(statusRegions.at(-1).textContent.trim(), 'the "no filtered runs" note lives in the persistent live region').not.toBe('');
     expect(
-      sortChips.map((chip) => chip.getAttribute('aria-pressed')),
+      sortChips.map((chip) => chip.classList.contains('mat-button-toggle-checked')),
       'time first, date second',
-    ).toEqual(['false', 'true']);
+    ).toEqual([false, true]);
   });
 
   it('hides 2.3 km runs everywhere: table, finish counter and year chips', async () => {

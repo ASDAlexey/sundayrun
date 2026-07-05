@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
@@ -13,14 +17,15 @@ import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT } from './athlete-page.constant';
+import { ALL_YEARS_VALUE } from '../races/races-page.constant';
+import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT, RUNS_TABLE_COLUMNS } from './athlete-page.constant';
 import { AthleteStatus, AthleteStatusType } from './athlete-page.enum';
 import { AthletePageState, AthleteRunView, YearBestView } from './athlete-page.interface';
 
 /** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
 @Component({
   selector: 'app-athlete-page',
-  imports: [RouterLink],
+  imports: [MatButtonModule, MatButtonToggleModule, MatProgressSpinnerModule, MatTableModule, RouterLink],
   templateUrl: './athlete-page.html',
   styleUrl: './athlete-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +51,8 @@ export class AthletePage {
   protected readonly statuses = AthleteStatus;
   protected readonly sorts = RunsSort;
   protected readonly athletesLink = ATHLETES_PAGE_LINK;
+  protected readonly allYearsValue = ALL_YEARS_VALUE;
+  protected readonly runsTableColumns = RUNS_TABLE_COLUMNS;
 
   #key = '';
 
@@ -61,6 +68,11 @@ export class AthletePage {
 
   setYear(year: string | null): void {
     this.year.set(year);
+  }
+
+  /** The toggle group carries the "all" sentinel because a toggle value cannot be `null`. */
+  onYearChange(value: string): void {
+    this.setYear(value === ALL_YEARS_VALUE ? null : value);
   }
 
   setSort(sort: RunsSortType): void {
