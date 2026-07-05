@@ -88,9 +88,11 @@ jobs:
           </html>
           EOF
 
-      # spa-github-pages: Pages serves 404.html for unknown deep links (e.g. /parkrun/ru/admin
-      # after a refresh). Remember the requested url, bounce to the locale root, and let the
-      # inline script in src/index.html restore the route before Angular bootstraps.
+      # spa-github-pages: Pages serves 404.html for unknown deep links (e.g. /parkrun/ru/races/…
+      # after a refresh; prerendered pages are served directly and never hit this). Remember the
+      # requested url and bounce to the CSR shell — not the prerendered home, whose hydration
+      # would mismatch the restored route — and let the inline script in src/index.html restore
+      # the route before Angular bootstraps.
       - name: Add SPA 404 fallback
         run: |
           cat > dist/parkrun/browser/404.html <<'EOF'
@@ -105,7 +107,7 @@ jobs:
                   sessionStorage.setItem('parkrun:spa-redirect', location.pathname + location.search + location.hash);
                 } catch (storageError) {}
                 var spaLocale = location.pathname.indexOf('/en/') !== -1 ? 'en/' : 'ru/';
-                location.replace('/${{ github.event.repository.name }}/' + spaLocale);
+                location.replace('/${{ github.event.repository.name }}/' + spaLocale + 'index.csr.html');
               </script>
             </head>
             <body></body>

@@ -46,7 +46,9 @@
             "stylePreprocessorOptions": {
               "includePaths": ["src"]
             },
-            "polyfills": ["@angular/localize/init"]
+            "polyfills": ["@angular/localize/init"],
+            "server": "src/main.server.ts",
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
