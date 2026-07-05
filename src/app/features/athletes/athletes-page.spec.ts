@@ -1,9 +1,11 @@
+import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { AthletesSort } from '../../core/history/athletes-list.enum';
 import { EXPECTED_ROLLUP_HISTORY } from '../../core/history/athletes-rollup.mock';
 import { AthletesService } from '../../github/athletes.service';
+import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { AthletesPage } from './athletes-page';
 import { AthletesStatus } from './athletes-page.enum';
@@ -19,13 +21,19 @@ import {
 describe('AthletesPage', () => {
   const loadHistory = vi.fn();
 
+  let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<AthletesPage>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    platformId = BROWSER_PLATFORM_ID;
     loadHistory.mockResolvedValue(EXPECTED_ROLLUP_HISTORY);
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), { provide: AthletesService, useValue: { loadHistory } }],
+      providers: [
+        provideRouter([]),
+        { provide: AthletesService, useValue: { loadHistory } },
+        { provide: PLATFORM_ID, useFactory: () => platformId },
+      ],
     });
   });
 
@@ -131,5 +139,13 @@ describe('AthletesPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.athletes__error').getAttribute('role')).toBe('alert');
+  });
+
+  it('does not fetch during prerender and keeps the loading state for hydration', async () => {
+    platformId = SERVER_PLATFORM_ID;
+    fixture = await createPage();
+
+    expect(loadHistory).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.status()).toBe(AthletesStatus.loading);
   });
 });

@@ -51,6 +51,30 @@
     color: var(--text-secondary);
   }
 
+  &__announce {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 8px;
+    border-left: 3px solid var(--accent);
+  }
+
+  &__announce-time {
+    @include t.text('title', 'medium');
+
+    color: var(--accent);
+  }
+
+  &__announce-text {
+    @include t.text('body', 'large');
+
+    max-width: 70ch;
+    color: var(--text);
+    white-space: pre-line;
+  }
+
   &__admin {
     @include c.card;
 

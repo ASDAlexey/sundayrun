@@ -7,6 +7,18 @@
     <p class="races__tagline" i18n="@@races.tagline">Протоколы, результаты и история каждого участника.</p>
   </header>
 
+  @if (hasAnnouncement()) {
+    <section class="races__announce">
+      @if (siteMeta().startTime !== '') {
+        <p class="races__announce-time" i18n="@@races.startTime">Каждое воскресенье · старт в {{ siteMeta().startTime }}</p>
+      }
+
+      @if (siteMeta().announcement !== '') {
+        <p class="races__announce-text">{{ siteMeta().announcement }}</p>
+      }
+    </section>
+  }
+
   @if (isAdmin()) {
     <section class="races__admin">
       <p class="races__admin-hint" i18n="@@races.adminHint">Режим организатора включён.</p>

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { searchAthletes, sortAthletes } from '../../core/history/athletes-list';
@@ -31,7 +32,10 @@ export class AthletesPage {
   protected readonly sorts = AthletesSort;
 
   constructor() {
-    void this.#load();
+    // Prerender bakes the calm loading state into static HTML; live data arrives after hydration.
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      void this.#load();
+    }
   }
 
   onQueryChange(query: string): void {

@@ -30,3 +30,6 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
 export const EXPECTED_RACE_TITLES = ['Пробег № 13', 'Пробег № 11'];
 
 export const INDEX_LOAD_ERROR_MESSAGE = 'index load failed';
+
+/** EXISTING_SITE_META.startTime rendered through the @@races.startTime template. */
+export const EXPECTED_ANNOUNCE_TIME_TEXT = 'Каждое воскресенье · старт в 08:00';

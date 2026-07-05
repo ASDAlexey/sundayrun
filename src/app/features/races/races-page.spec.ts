@@ -1,31 +1,42 @@
-import { signal } from '@angular/core';
+import { PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
+import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
+import { ANNOUNCEMENT_ONLY_SITE_META, EXISTING_SITE_META } from '../../core/github/site-meta.mock';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ArchiveService } from '../../github/archive.service';
+import { SiteMetaService } from '../../github/site-meta.service';
+import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock';
+import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { RacesPage } from './races-page';
 import { UPLOAD_PAGE_LINK } from './races-page.constant';
 import { RacesStatus } from './races-page.enum';
-import { EXPECTED_RACE_ITEMS, EXPECTED_RACE_TITLES, INDEX_LOAD_ERROR_MESSAGE } from './races-page.mock';
+import { EXPECTED_ANNOUNCE_TIME_TEXT, EXPECTED_RACE_ITEMS, EXPECTED_RACE_TITLES, INDEX_LOAD_ERROR_MESSAGE } from './races-page.mock';
 
 describe('RacesPage', () => {
   const isAdmin = signal(false);
   const loadIndex = vi.fn();
+  const loadMeta = vi.fn();
 
+  let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<RacesPage>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     isAdmin.set(false);
+    platformId = BROWSER_PLATFORM_ID;
     loadIndex.mockResolvedValue(EXISTING_INDEX);
+    loadMeta.mockResolvedValue(EMPTY_SITE_META);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         { provide: ArchiveService, useValue: { loadIndex } },
         { provide: AdminTokenService, useValue: { isAdmin } },
+        { provide: SiteMetaService, useValue: { load: loadMeta } },
+        { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
     });
   });
@@ -76,6 +87,39 @@ describe('RacesPage', () => {
     expect(element.querySelector('.races__admin')).toBeNull();
     expect(element.querySelector('.races__cdn-note')).not.toBeNull();
     expect(element.querySelector('.races__organizer'), 'the organizer entry moved to the shell footer').toBeNull();
+    expect(element.querySelector('.races__announce'), 'no announcement block until the organiser publishes one').toBeNull();
+  });
+
+  it('shows the published start time and announcement above the list, and stays silent on a meta failure', async () => {
+    loadMeta.mockResolvedValue(EXISTING_SITE_META);
+    fixture = await createPage();
+
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement;
+
+    expect(element.querySelector('.races__announce-time').textContent.trim()).toBe(EXPECTED_ANNOUNCE_TIME_TEXT);
+    expect(element.querySelector('.races__announce-text').textContent.trim()).toBe(EXISTING_SITE_META.announcement);
+
+    loadMeta.mockResolvedValue(ANNOUNCEMENT_ONLY_SITE_META);
+    fixture.destroy();
+    fixture = await createPage();
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.races__announce-time'), 'no time line without a start time').toBeNull();
+    expect(fixture.nativeElement.querySelector('.races__announce-text').textContent.trim()).toBe(ANNOUNCEMENT_ONLY_SITE_META.announcement);
+
+    loadMeta.mockRejectedValue(new Error(SITE_META_CDN_ERROR_MESSAGE));
+    fixture.destroy();
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.status(), 'the race list is unaffected by the meta failure').toBe(RacesStatus.ready);
+    expect(fixture.componentInstance.hasAnnouncement()).toBe(false);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.races__announce')).toBeNull();
   });
 
   it('shows the admin upload entry when a token is stored', async () => {
@@ -111,5 +155,14 @@ describe('RacesPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.races__error').getAttribute('role')).toBe('alert');
+  });
+
+  it('does not fetch during prerender and keeps the loading state for hydration', async () => {
+    platformId = SERVER_PLATFORM_ID;
+    fixture = await createPage();
+
+    expect(loadIndex).not.toHaveBeenCalled();
+    expect(loadMeta, 'the meta read also waits for hydration').not.toHaveBeenCalled();
+    expect(fixture.componentInstance.status()).toBe(RacesStatus.loading);
   });
 });
