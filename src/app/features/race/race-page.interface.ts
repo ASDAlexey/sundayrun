@@ -22,13 +22,18 @@ export interface RacePageState {
   race: RaceView | null;
 }
 
-/** The whole protocol prepared for the template: event header, CDN pdf url and the rows. */
+/**
+ * The whole protocol prepared for the template: event header, CDN pdf url and the rows.
+ * `avgTimeM`/`avgTimeF` average the 5 km times per gender, `null` when no such finishers.
+ */
 export interface RaceView {
   number: number;
   dateLong: string;
   city: string;
   park: string;
   participantCount: number;
+  avgTimeM: string | null;
+  avgTimeF: string | null;
   pdfUrl: string;
   pdfAriaLabel: string;
   rows: RaceRowView[];

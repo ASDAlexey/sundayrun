@@ -22,6 +22,14 @@
             <p class="race__place">{{ view.city }}, {{ view.park }}</p>
 
             <p class="race__count" i18n="@@race.participantCount">Участников: {{ view.participantCount }}</p>
+
+            @if (view.avgTimeM; as avgTime) {
+              <p class="race__avg" i18n="@@race.avgTimeM">Ср. время М: {{ avgTime }}</p>
+            }
+
+            @if (view.avgTimeF; as avgTime) {
+              <p class="race__avg" i18n="@@race.avgTimeF">Ср. время Ж: {{ avgTime }}</p>
+            }
           </div>
 
           <a class="race__pdf" i18n="@@race.pdf" rel="noopener" target="_blank" [attr.aria-label]="view.pdfAriaLabel" [href]="view.pdfUrl">

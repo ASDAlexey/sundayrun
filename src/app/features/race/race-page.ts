@@ -7,6 +7,7 @@ import { isValidEventSlug } from '../../core/github/event-slug';
 import { jsDelivrFileUrl } from '../../core/github/jsdelivr';
 import { EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
+import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatDuration } from '../../core/time/duration';
@@ -88,6 +89,8 @@ function toRaceView(slug: string, file: EventResultsFile): RaceView {
     city: file.event.city,
     park: file.event.park,
     participantCount: file.rows.length,
+    avgTimeM: avgTimeTextOf(file.rows, Gender.male),
+    avgTimeF: avgTimeTextOf(file.rows, Gender.female),
     pdfUrl: jsDelivrFileUrl(eventFilePaths(slug).protocolPdf),
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
@@ -111,6 +114,23 @@ function toRowView(row: ProtocolRow): RaceRowView {
     club: row.club,
     note: row.note,
   };
+}
+
+/** Average of the 5 km times for one gender; one-lap runners and DNF are excluded, null when nobody qualifies. */
+function avgTimeTextOf(rows: ProtocolRow[], gender: GenderType): string | null {
+  const times = rows.reduce<number[]>((acc, row) => {
+    if (row.gender === gender && row.distanceKm === FIVE_KM_DISTANCE_KM && row.totalMs !== null) {
+      acc.push(row.totalMs);
+    }
+
+    return acc;
+  }, []);
+
+  if (times.length === 0) {
+    return null;
+  }
+
+  return formatDuration(times.reduce((sum, ms) => sum + ms, 0) / times.length);
 }
 
 /** Average pace over the covered distance (5 or 2.3 km), min/km; DNF rows stay blank. */

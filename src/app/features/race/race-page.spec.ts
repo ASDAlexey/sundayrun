@@ -74,6 +74,11 @@ describe('RacePage', () => {
     expect(element.querySelector('.race__title').textContent).toContain(String(EXPECTED_RACE_VIEW.number));
     expect(element.querySelector('.race__date').textContent.trim()).toBe(EXPECTED_RACE_VIEW.dateLong);
     expect(element.querySelector('.race__count').textContent).toContain(String(EXPECTED_RACE_VIEW.participantCount));
+
+    const avgLines = [...element.querySelectorAll('.race__avg')];
+
+    expect(avgLines.length, 'only genders with 5 km finishers get an average line').toBe(1);
+    expect(avgLines[0].textContent).toContain(EXPECTED_RACE_VIEW.avgTimeF);
     expect(pdfLink.getAttribute('href')).toBe(EXPECTED_RACE_VIEW.pdfUrl);
     expect(pdfLink.getAttribute('target')).toBe('_blank');
     expect(pdfLink.getAttribute('rel')).toBe('noopener');

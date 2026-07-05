@@ -20,6 +20,9 @@ export const EXPECTED_RACE_VIEW: RaceView = {
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 3,
+  // The only male ran the 2.3 km lap, so the male average has no qualifying 5 km times.
+  avgTimeM: null,
+  avgTimeF: '25:00',
   pdfUrl: 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/events/2026-06-28/protocol.pdf',
   pdfAriaLabel: 'Протокол пробега № 12 (PDF)',
   rows: [

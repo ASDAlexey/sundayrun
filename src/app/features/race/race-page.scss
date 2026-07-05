@@ -53,6 +53,12 @@
     color: var(--text-muted);
   }
 
+  &__avg {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
   &__pdf {
     @include b.button-outline;
   }
