@@ -298,11 +298,16 @@
     color: var(--text);
   }
 
+  // Six totals keep balanced rows: 3×2 on desktop, 2×3 on narrow screens — auto-fit would orphan one.
   &__stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     margin: 0;
     gap: 24px 16px;
+
+    @media (width <= 720px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   // Column-reverse keeps the dt/dd source order valid while the number renders above its label.

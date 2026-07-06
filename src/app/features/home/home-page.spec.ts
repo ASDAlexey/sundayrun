@@ -22,10 +22,12 @@ import {
   ATHLETES_LOAD_ERROR_MESSAGE,
   BAKED_RACE_ITEMS,
   EXPECTED_ANNOUNCE_TIME_TEXT,
+  EXPECTED_MEN_ONLY_STATS_VALUES,
   EXPECTED_RACE_ITEMS,
   EXPECTED_RACE_TITLES,
   EXPECTED_STATS_VALUES,
   INDEX_LOAD_ERROR_MESSAGE,
+  MEN_ONLY_HISTORY,
 } from './home-page.mock';
 
 const RACES_KEY = makeStateKey<{ data: RaceListItem[] } | null>(HOME_RACES_TRANSFER_KEY);
@@ -137,6 +139,16 @@ describe('HomePage', () => {
 
     expect(statusRegion.getAttribute('aria-live')).toBe('polite');
     expect(statusRegion.textContent.trim(), 'the empty-state text is rendered inside the persistent live region').not.toBe('');
+
+    loadHistory.mockResolvedValue(MEN_ONLY_HISTORY);
+    fixture.destroy();
+    fixture = await createPage();
+
+    fixture.detectChanges();
+
+    const menOnlyValues = [...fixture.nativeElement.querySelectorAll('.home__stats-value')].map((node) => node.textContent.trim());
+
+    expect(menOnlyValues, 'a gender without 5 km finishes shows a dash instead of 0:00').toEqual(EXPECTED_MEN_ONLY_STATS_VALUES);
 
     loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
     loadHistory.mockRejectedValue(new Error(ATHLETES_LOAD_ERROR_MESSAGE));

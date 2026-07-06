@@ -21,6 +21,7 @@ import {
   HOME_RACES_TRANSFER_KEY,
   HOME_STATS_TRANSFER_KEY,
   LATEST_RACES_COUNT,
+  NO_MEDIAN_TIME_PLACEHOLDER,
   RACES_PAGE_LINK,
   STATS_AVERAGE_FORMAT,
   STATS_NUMBER_FORMAT,
@@ -104,6 +105,12 @@ function toStatsView(stats: OverallStats | null): HomeStatsView | null {
     finishes: STATS_NUMBER_FORMAT.format(stats.finishesCount),
     finishers: STATS_NUMBER_FORMAT.format(stats.finishersCount),
     averageFinishes: STATS_AVERAGE_FORMAT.format(stats.averageFinishes),
-    averageTime: formatDuration(stats.averageTimeMs),
+    medianTimeMen: formatMedianTime(stats.medianTimeMenMs),
+    medianTimeWomen: formatMedianTime(stats.medianTimeWomenMs),
   };
+}
+
+/** A gender with no 5 km finishes yet shows a dash instead of a zero time. */
+function formatMedianTime(medianMs: number): string {
+  return medianMs === 0 ? NO_MEDIAN_TIME_PLACEHOLDER : formatDuration(medianMs);
 }

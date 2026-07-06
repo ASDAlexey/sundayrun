@@ -4,5 +4,6 @@ export interface HomeStatsView {
   finishes: string;
   finishers: string;
   averageFinishes: string;
-  averageTime: string;
+  medianTimeMen: string;
+  medianTimeWomen: string;
 }

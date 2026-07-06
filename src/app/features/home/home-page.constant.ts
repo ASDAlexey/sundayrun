@@ -15,3 +15,6 @@ export const STATS_NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 
 /** The average finishes per participant always keeps one decimal: '8,8'. */
 export const STATS_AVERAGE_FORMAT = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+/** Shown instead of '0:00' while a gender has no 5 km finishes yet. */
+export const NO_MEDIAN_TIME_PLACEHOLDER = '—';

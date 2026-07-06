@@ -129,9 +129,15 @@
         </div>
 
         <div class="home__stats-item">
-          <dt class="home__stats-label" i18n="@@home.statsAvgTime">среднее время на 5 км</dt>
+          <dt class="home__stats-label" i18n="@@home.statsMedianTimeMen">медианное время мужчин на 5 км</dt>
 
-          <dd class="home__stats-value">{{ stats.averageTime }}</dd>
+          <dd class="home__stats-value">{{ stats.medianTimeMen }}</dd>
+        </div>
+
+        <div class="home__stats-item">
+          <dt class="home__stats-label" i18n="@@home.statsMedianTimeWomen">медианное время женщин на 5 км</dt>
+
+          <dd class="home__stats-value">{{ stats.medianTimeWomen }}</dd>
         </div>
       </dl>
     </section>
