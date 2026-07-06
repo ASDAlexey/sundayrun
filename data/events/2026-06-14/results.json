@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "event": {
+    "dateIso": "2026-06-14",
+    "city": "г. Таганрог",
+    "park": "ПКиО им. Горького",
+    "clubName": "КЛБ «Легенда»",
+    "chairman": "В.С. Хахуцкий",
+    "number": 2
+  },
+  "rows": [
+    {
+      "index": 1,
+      "fullName": "Троилин Антон",
+      "time23": "8:30",
+      "time5": "19:03",
+      "totalMs": 1143028,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 1,
+      "placeF": null,
+      "club": "",
+      "note": "Лучший результат 2026 г."
+    },
+    {
+      "index": 2,
+      "fullName": "Ширшов Денис",
+      "time23": "9:52",
+      "time5": "22:16",
+      "totalMs": 1335974,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 2,
+      "placeF": null,
+      "club": "",
+      "note": "Лучший результат 2026 г."
+    },
+    {
+      "index": 3,
+      "fullName": "Новиков Сергей",
+      "time23": "10:20",
+      "time5": "22:53",
+      "totalMs": 1372843,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 3,
+      "placeF": null,
+      "club": "",
+      "note": "Лучший результат 2026 г."
+    },
+    {
+      "index": 4,
+      "fullName": "Волочек Павел",
+      "time23": "10:21",
+      "time5": "22:53",
+      "totalMs": 1373080,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 4,
+      "placeF": null,
+      "club": "",
+      "note": "Лучший результат 2026 г."
+    },
+    {
+      "index": 5,
+      "fullName": "Дзюбак Сергей",
+      "time23": "12:51",
+      "time5": "29:00",
+      "totalMs": 1740333,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 5,
+      "placeF": null,
+      "club": "",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "fullName": "Лютов Никита",
+      "time23": "13:10",
+      "time5": "29:01",
+      "totalMs": 1741262,
+      "distanceKm": 5,
+      "gender": "M",
+      "placeM": 6,
+      "placeF": null,
+      "club": "",
+      "note": "Лучший результат 2026 г."
+    },
+    {
+      "index": 7,
+      "fullName": "Хандыга Наталья",
+      "time23": "14:03",
+      "time5": "31:16",
+      "totalMs": 1876296,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 1,
+      "club": "",
+      "note": "ЛР (было 31:49)"
+    },
+    {
+      "index": 8,
+      "fullName": "Волочек Анастасия",
+      "time23": "14:08",
+      "time5": "31:29",
+      "totalMs": 1889174,
+      "distanceKm": 5,
+      "gender": "F",
+      "placeM": null,
+      "placeF": 2,
+      "club": "",
+      "note": "Первое участие"
+    }
+  ]
+}
