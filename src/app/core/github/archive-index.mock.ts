@@ -105,6 +105,12 @@ export const EXISTING_INDEX: ArchiveIndexFile = { schemaVersion: ARCHIVE_INDEX_S
 
 export const VALID_INDEX_TEXT = JSON.stringify(EXISTING_INDEX);
 
+/** EXISTING_INDEX serialised oldest-first — parsing must restore the newest-first order. */
+export const UNSORTED_INDEX_TEXT = JSON.stringify({
+  schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,
+  events: [OLDER_ENTRY, NEWER_ENTRY],
+});
+
 /** Same events deliberately unsorted, with a stale entry for the re-published slug. */
 export const STALE_INDEX: ArchiveIndexFile = {
   schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,

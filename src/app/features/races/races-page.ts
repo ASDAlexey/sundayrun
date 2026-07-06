@@ -12,7 +12,7 @@ import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
 import { RacesStatus, RacesStatusType } from './races-page.enum';
 import { RaceListItem } from './races-page.interface';
 
-/** The full race list (newest first, as served) with a year filter; each card links to the protocol page. */
+/** The full race list (newest first — `parseArchiveIndex` guarantees the order) with a year filter; each card links to the protocol page. */
 @Component({
   selector: 'app-races-page',
   imports: [MatFormFieldModule, MatProgressSpinnerModule, MatSelectModule, RaceCard],

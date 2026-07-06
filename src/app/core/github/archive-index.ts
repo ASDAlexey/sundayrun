@@ -7,11 +7,19 @@ import { ArchiveIndexEntry, ArchiveIndexFile } from './archive-index.interface';
 import { eventFilePaths } from './event-paths';
 import { safeJsonParse } from './safe-json-parse';
 
-/** Parses `index.json`; null, malformed JSON or an unexpected shape yields an empty index. */
+/**
+ * Parses `index.json`; null, malformed JSON or an unexpected shape yields an empty index.
+ * Events are re-sorted newest first on read — a file written by hand or by an older version
+ * may arrive in any order, and every consumer renders the list as served.
+ */
 export function parseArchiveIndex(text: string | null): ArchiveIndexFile {
   const parsed = safeJsonParse(text);
 
-  return isArchiveIndexFile(parsed) ? parsed : { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: [] };
+  if (!isArchiveIndexFile(parsed)) {
+    return { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: [] };
+  }
+
+  return { ...parsed, events: sortedNewestFirst(parsed.events) };
 }
 
 export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveIndexEntry {
@@ -37,11 +45,13 @@ export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveI
  * descending (newest first). Returns a NEW file object, the input is never mutated.
  */
 export function upsertIndexEntry(index: ArchiveIndexFile, entry: ArchiveIndexEntry): ArchiveIndexFile {
-  const events = [...index.events.filter((existing) => existing.slug !== entry.slug), entry];
-
-  events.sort((left, right) => right.dateIso.localeCompare(left.dateIso));
+  const events = sortedNewestFirst([...index.events.filter((existing) => existing.slug !== entry.slug), entry]);
 
   return { ...index, events };
+}
+
+function sortedNewestFirst(events: ArchiveIndexEntry[]): ArchiveIndexEntry[] {
+  return [...events].sort((left, right) => right.dateIso.localeCompare(left.dateIso));
 }
 
 /** Drops the entry with the given slug, keeping the order of the rest. Returns a NEW file object, the input is never mutated. */

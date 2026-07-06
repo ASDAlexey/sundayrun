@@ -34,10 +34,10 @@ export const EXPECTED_DELETE_TREE_ENTRIES: GitTreeEntry[] = [
   { path: ATHLETES_JSON_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}1` },
 ];
 
-/** `STALE_INDEX` without the deleted slug; the remaining entries keep their stored order. */
+/** `STALE_INDEX` without the deleted slug; parsing re-sorts the remaining entries newest first. */
 export const EXPECTED_DELETED_INDEX: ArchiveIndexFile = {
   schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,
-  events: [OLDER_ENTRY, NEWER_ENTRY],
+  events: [NEWER_ENTRY, OLDER_ENTRY],
 };
 
 /** `EXISTING_HISTORY` without the deleted event: Мария keeps her older run, the bests are recomputed. */
