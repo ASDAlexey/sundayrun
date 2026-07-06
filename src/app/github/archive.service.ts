@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { parseArchiveIndex } from '../core/github/archive-index';
 import { ArchiveIndexFile } from '../core/github/archive-index.interface';
@@ -6,7 +6,8 @@ import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from '../core/github/github-api.consta
 import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { INDEX_JSON_PATH } from '../core/github/protocols-repo.constant';
 import { ARCHIVE_INDEX_LOAD_ERROR_PREFIX } from './archive.service.constant';
-import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { cdnFetchOptions } from './cdn-fetch';
+import { CdnRefService } from './cdn-ref.service';
 
 /**
  * Reads the public archive index from the jsDelivr CDN. Only a 404/403 (jsDelivr answers both
@@ -16,8 +17,11 @@ import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
  */
 @Injectable({ providedIn: 'root' })
 export class ArchiveService {
+  readonly #cdnRef = inject(CdnRefService);
+
   async loadIndex(): Promise<ArchiveIndexFile> {
-    const response = await fetch(jsDelivrFileUrl(INDEX_JSON_PATH), CDN_REVALIDATE_FETCH_OPTIONS);
+    const ref = await this.#cdnRef.resolve();
+    const response = await fetch(jsDelivrFileUrl(INDEX_JSON_PATH, ref), cdnFetchOptions(ref));
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return parseArchiveIndex(null);

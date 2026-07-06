@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from '../core/github/github-api.constant';
 import { parseAthletesHistory } from '../core/github/history-file';
@@ -6,7 +6,8 @@ import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { ATHLETES_JSON_PATH } from '../core/github/protocols-repo.constant';
 import { AthletesHistory } from '../core/models/athletes-history.type';
 import { ATHLETES_HISTORY_LOAD_ERROR_PREFIX } from './athletes.service.constant';
-import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { cdnFetchOptions } from './cdn-fetch';
+import { CdnRefService } from './cdn-ref.service';
 
 /**
  * Anonymous read of the public athletes history (`athletes.json`) from the jsDelivr CDN — the
@@ -17,6 +18,8 @@ import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
  */
 @Injectable({ providedIn: 'root' })
 export class AthletesService {
+  readonly #cdnRef = inject(CdnRefService);
+
   #history: Promise<AthletesHistory> | null = null;
 
   /** A rejected load is evicted from the cache, so a reload can retry the fetch. */
@@ -30,7 +33,8 @@ export class AthletesService {
   }
 
   async #fetchHistory(): Promise<AthletesHistory> {
-    const response = await fetch(jsDelivrFileUrl(ATHLETES_JSON_PATH), CDN_REVALIDATE_FETCH_OPTIONS);
+    const ref = await this.#cdnRef.resolve();
+    const response = await fetch(jsDelivrFileUrl(ATHLETES_JSON_PATH, ref), cdnFetchOptions(ref));
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return parseAthletesHistory(null);

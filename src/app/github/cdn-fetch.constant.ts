@@ -4,3 +4,6 @@
  * conditional revalidation against the CDN (a cheap 304 when nothing changed).
  */
 export const CDN_REVALIDATE_FETCH_OPTIONS: RequestInit = { cache: 'no-cache' };
+
+/** Sha-pinned urls are immutable, so the default browser caching is always correct. */
+export const CDN_IMMUTABLE_FETCH_OPTIONS: RequestInit = {};

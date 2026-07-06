@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { eventFilePaths } from '../core/github/event-paths';
 import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from '../core/github/github-api.constant';
 import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { parseEventResultsFile } from '../core/github/results-file';
 import { EventResultsFile } from '../core/github/results-file.interface';
-import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { cdnFetchOptions } from './cdn-fetch';
+import { CdnRefService } from './cdn-ref.service';
 import { RESULTS_LOAD_ERROR_PREFIX } from './results.service.constant';
 
 /**
@@ -17,6 +18,7 @@ import { RESULTS_LOAD_ERROR_PREFIX } from './results.service.constant';
  */
 @Injectable({ providedIn: 'root' })
 export class ResultsService {
+  readonly #cdnRef = inject(CdnRefService);
   readonly #results = new Map<string, Promise<EventResultsFile | null>>();
 
   /**
@@ -50,7 +52,8 @@ export class ResultsService {
   }
 
   async #fetchResults(slug: string): Promise<EventResultsFile | null> {
-    const response = await fetch(jsDelivrFileUrl(eventFilePaths(slug).resultsJson), CDN_REVALIDATE_FETCH_OPTIONS);
+    const ref = await this.#cdnRef.resolve();
+    const response = await fetch(jsDelivrFileUrl(eventFilePaths(slug).resultsJson, ref), cdnFetchOptions(ref));
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return null;

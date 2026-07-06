@@ -4,12 +4,14 @@ import { GithubAuthError } from '../core/github/github-errors';
 import { publishEvent } from '../core/github/publish-event';
 import { PublishEventInput } from '../core/github/publish-event.interface';
 import { AdminTokenService } from './admin-token.service';
+import { CdnRefService } from './cdn-ref.service';
 import { PublishState, PublishStateType } from './github-storage.enum';
 
 /** Publishes one event into the protocols repository, exposing the flow state and the sha-pinned pdf url. */
 @Injectable({ providedIn: 'root' })
 export class GithubStorageService {
   readonly #adminToken = inject(AdminTokenService);
+  readonly #cdnRef = inject(CdnRefService);
   readonly #state = signal<PublishStateType>(PublishState.idle);
   readonly #publishedPdfUrl = signal<string | null>(null);
 
@@ -40,6 +42,7 @@ export class GithubStorageService {
     try {
       const result = await publishEvent(token, input);
 
+      this.#cdnRef.pin(result.commitSha);
       this.#publishedPdfUrl.set(result.pdfUrl);
       this.#state.set(PublishState.success);
     } catch (error) {

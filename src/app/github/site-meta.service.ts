@@ -8,7 +8,8 @@ import { publishSiteMeta } from '../core/github/publish-site-meta';
 import { parseSiteMeta } from '../core/github/site-meta';
 import { SiteMetaFile } from '../core/github/site-meta.interface';
 import { AdminTokenService } from './admin-token.service';
-import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { cdnFetchOptions } from './cdn-fetch';
+import { CdnRefService } from './cdn-ref.service';
 import { PublishState, PublishStateType } from './github-storage.enum';
 import { SITE_META_LOAD_ERROR_PREFIX } from './site-meta.service.constant';
 
@@ -20,12 +21,14 @@ import { SITE_META_LOAD_ERROR_PREFIX } from './site-meta.service.constant';
 @Injectable({ providedIn: 'root' })
 export class SiteMetaService {
   readonly #adminToken = inject(AdminTokenService);
+  readonly #cdnRef = inject(CdnRefService);
   readonly #state = signal<PublishStateType>(PublishState.idle);
 
   readonly state = this.#state.asReadonly();
 
   async load(): Promise<SiteMetaFile> {
-    const response = await fetch(jsDelivrFileUrl(SITE_META_JSON_PATH), CDN_REVALIDATE_FETCH_OPTIONS);
+    const ref = await this.#cdnRef.resolve();
+    const response = await fetch(jsDelivrFileUrl(SITE_META_JSON_PATH, ref), cdnFetchOptions(ref));
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return parseSiteMeta(null);
@@ -54,7 +57,7 @@ export class SiteMetaService {
     this.#state.set(PublishState.publishing);
 
     try {
-      await publishSiteMeta(token, meta);
+      this.#cdnRef.pin(await publishSiteMeta(token, meta));
       this.#state.set(PublishState.success);
     } catch (error) {
       this.#state.set(error instanceof GithubAuthError ? PublishState.authError : PublishState.error);

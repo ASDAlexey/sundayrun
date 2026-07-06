@@ -19,11 +19,12 @@ import { fetchRepoFileText } from './repo-contents';
  * are rewritten without the event's index entry and rollup contribution. The commit files are
  * rebuilt from fresh repository reads on every retry, so a concurrent publication is merged
  * instead of overwritten. Finishes with a best-effort jsDelivr purge of every touched path.
+ * Returns the deletion commit sha, so the session can pin its reads to it.
  */
-export async function deleteEvent(token: string, slug: string, fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH): Promise<void> {
+export async function deleteEvent(token: string, slug: string, fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH): Promise<string> {
   const paths = eventFilePaths(slug);
 
-  await commitFilesAtomically(
+  const commitSha = await commitFilesAtomically(
     token,
     () => buildCommitFiles(fetchFn, token, slug, paths),
     `${DELETE_COMMIT_MESSAGE_PREFIX}${slug}`,
@@ -31,6 +32,8 @@ export async function deleteEvent(token: string, slug: string, fetchFn: GithubFe
   );
 
   await purgeJsDelivrPaths(touchedPaths(paths), fetchFn);
+
+  return commitSha;
 }
 
 /** Re-reads `index.json`/`athletes.json` and rebuilds all five commit entries; invoked once per commit attempt. */

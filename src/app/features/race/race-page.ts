@@ -15,6 +15,7 @@ import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
+import { CdnRefService } from '../../github/cdn-ref.service';
 import { ResultsService } from '../../github/results.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import {
@@ -37,6 +38,7 @@ import { RacePageState, RaceRowView, RaceView } from './race-page.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RacePage {
+  readonly #cdnRef = inject(CdnRefService);
   readonly #results = inject(ResultsService);
 
   readonly status = signal<RaceStatusType>(RaceStatus.loading);
@@ -86,14 +88,14 @@ export class RacePage {
         return { status: RaceStatus.notFound, race: null };
       }
 
-      return { status: RaceStatus.ready, race: toRaceView(slug, file) };
+      return { status: RaceStatus.ready, race: toRaceView(slug, file, await this.#cdnRef.resolve()) };
     } catch {
       return { status: RaceStatus.error, race: null };
     }
   }
 }
 
-function toRaceView(slug: string, file: EventResultsFile): RaceView {
+function toRaceView(slug: string, file: EventResultsFile, ref: string): RaceView {
   return {
     number: file.event.number,
     dateLong: formatRussianDateLong(file.event.dateIso),
@@ -102,7 +104,7 @@ function toRaceView(slug: string, file: EventResultsFile): RaceView {
     participantCount: file.rows.length,
     avgTimeM: avgTimeTextOf(file.rows, Gender.male),
     avgTimeF: avgTimeTextOf(file.rows, Gender.female),
-    pdfUrl: jsDelivrFileUrl(eventFilePaths(slug).protocolPdf),
+    pdfUrl: jsDelivrFileUrl(eventFilePaths(slug).protocolPdf, ref),
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
     rows: file.rows.map(toRowView),
