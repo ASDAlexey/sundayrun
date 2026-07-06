@@ -39,7 +39,8 @@
     white-space: normal;
   }
 
-  // Material anchor button hosting the logo + two-line title.
+  // Plain home link with the logo + two-line title — deliberately not a Material
+  // button, so no state layer / ripple flashes over the brand on hover.
   &__brand {
     display: flex;
     align-items: center;
