@@ -1,23 +1,6 @@
 {
   "events": [
     {
-      "slug": "2026-06-14",
-      "dateIso": "2026-06-14",
-      "number": 2,
-      "city": "г. Таганрог",
-      "park": "ПКиО им. Горького",
-      "participantCount": 8,
-      "finisherCount": 8,
-      "avgTimeMs": 1558999,
-      "bestMaleMs": 1143028,
-      "bestFemaleMs": 1876296,
-      "files": {
-        "sourceXlsx": "data/events/2026-06-14/source.xlsx",
-        "protocolPdf": "data/events/2026-06-14/protocol.pdf",
-        "resultsJson": "data/events/2026-06-14/results.json"
-      }
-    },
-    {
       "slug": "2026-02-22",
       "dateIso": "2026-02-22",
       "number": 2.72,
