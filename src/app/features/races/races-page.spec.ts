@@ -6,6 +6,8 @@ import { provideRouter } from '@angular/router';
 
 import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
 import { ArchiveService } from '../../github/archive.service';
+import { CdnRefService } from '../../github/cdn-ref.service';
+import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { RacesPage } from './races-page';
@@ -37,6 +39,7 @@ describe('RacesPage', () => {
       providers: [
         provideRouter([]),
         { provide: ArchiveService, useValue: { loadIndex } },
+        { provide: CdnRefService, useValue: cdnRefServiceMock() },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
     });

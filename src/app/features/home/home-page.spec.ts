@@ -10,6 +10,8 @@ import { OverallStats } from '../../core/history/overall-stats.interface';
 import { EXPECTED_STATS, STATS_HISTORY } from '../../core/history/overall-stats.mock';
 import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
+import { CdnRefService } from '../../github/cdn-ref.service';
+import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock';
 import { RacesStatus } from '../races/races-page.enum';
@@ -52,6 +54,7 @@ describe('HomePage', () => {
       providers: [
         provideRouter([]),
         { provide: ArchiveService, useValue: { loadIndex } },
+        { provide: CdnRefService, useValue: cdnRefServiceMock() },
         { provide: SiteMetaService, useValue: { load: loadMeta } },
         { provide: AthletesService, useValue: { loadHistory } },
         { provide: PLATFORM_ID, useFactory: () => platformId },

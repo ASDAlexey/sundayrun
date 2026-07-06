@@ -4,6 +4,8 @@ import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 import { buildEventResultsFile } from '../../core/github/results-file';
 import { EventResultsFile } from '../../core/github/results-file.interface';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../../core/github/spec-utils/race-fixtures';
+import { CdnRefService } from '../../github/cdn-ref.service';
+import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
 import { ResultsService } from '../../github/results.service';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
@@ -34,6 +36,7 @@ describe('RacePage', () => {
       providers: [
         provideRouter([]),
         { provide: ResultsService, useValue: { loadResults } },
+        { provide: CdnRefService, useValue: cdnRefServiceMock() },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });

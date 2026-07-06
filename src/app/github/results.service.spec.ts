@@ -7,7 +7,9 @@ import { VALID_RESULTS_TEXT } from '../core/github/results-file.mock';
 import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
 import { CDN_ERROR_MESSAGE, CDN_SERVER_ERROR_STATUS } from './archive.service.mock';
-import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { CDN_IMMUTABLE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { CdnRefService } from './cdn-ref.service';
+import { cdnRefServiceMock } from './cdn-ref.service.mock';
 import { ResultsService } from './results.service';
 import { RESULTS_LOAD_ERROR_PREFIX } from './results.service.constant';
 import { FOREIGN_SCHEMA_TEXT, RESULTS_CDN_URL } from './results.service.mock';
@@ -20,6 +22,9 @@ describe('ResultsService', () => {
   beforeEach(() => {
     fetchMock.mockReset();
     vi.stubGlobal('fetch', fetchMock);
+    TestBed.configureTestingModule({
+      providers: [{ provide: CdnRefService, useValue: cdnRefServiceMock() }],
+    });
     service = TestBed.inject(ResultsService);
   });
 
@@ -37,9 +42,9 @@ describe('ResultsService', () => {
     await expect(service.loadResults(EVENT_DATE_ISO), 'the second call reuses the cached promise').resolves.toEqual(
       buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS),
     );
-    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(RESULTS_CDN_URL, CDN_REVALIDATE_FETCH_OPTIONS);
+    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(RESULTS_CDN_URL, CDN_IMMUTABLE_FETCH_OPTIONS);
 
-    const notFoundService = new ResultsService();
+    const notFoundService = TestBed.runInInjectionContext(() => new ResultsService());
 
     fetchMock.mockResolvedValueOnce(statusResponse(HTTP_NOT_FOUND));
 
@@ -55,11 +60,17 @@ describe('ResultsService', () => {
 
     fetchMock.mockResolvedValueOnce(statusResponse(HTTP_FORBIDDEN));
 
-    await expect(new ResultsService().loadResults(EVENT_DATE_ISO), 'jsDelivr answers 403 for a never-published file').resolves.toBeNull();
+    await expect(
+      TestBed.runInInjectionContext(() => new ResultsService()).loadResults(EVENT_DATE_ISO),
+      'jsDelivr answers 403 for a never-published file',
+    ).resolves.toBeNull();
 
     fetchMock.mockResolvedValueOnce(new Response(FOREIGN_SCHEMA_TEXT));
 
-    await expect(new ResultsService().loadResults(EVENT_DATE_ISO), 'an unexpected schema is treated as not found').resolves.toBeNull();
+    await expect(
+      TestBed.runInInjectionContext(() => new ResultsService()).loadResults(EVENT_DATE_ISO),
+      'an unexpected schema is treated as not found',
+    ).resolves.toBeNull();
   });
 
   it('propagates an unexpected CDN status and a network failure, evicting the failed promise so a retry refetches', async () => {

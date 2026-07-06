@@ -5,9 +5,10 @@ import { GithubFetchFn } from '../core/github/github-fetch.type';
 import { EXPECTED_SITE_META_PURGE_URL, SITE_META_SHAS } from '../core/github/publish-site-meta.mock';
 import { createGitDataRoutes } from '../core/github/spec-utils/git-data-routes';
 import { routeFetch, statusResponse } from '../core/github/spec-utils/github-fetch-router';
+import { CDN_REF_SHA_MOCK } from './cdn-ref.service.mock';
 
-/** jsDelivrFileUrl(SITE_META_JSON_PATH): the branch-pinned CDN url of the site meta. */
-export const SITE_META_CDN_URL = 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@main/data/site-meta.json';
+/** jsDelivrFileUrl(SITE_META_JSON_PATH, CDN_REF_SHA_MOCK): the sha-pinned CDN url of the site meta. */
+export const SITE_META_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${CDN_REF_SHA_MOCK}/data/site-meta.json`;
 
 export const SITE_META_CDN_ERROR_MESSAGE = 'site meta cdn unreachable';
 

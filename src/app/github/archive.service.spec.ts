@@ -6,7 +6,9 @@ import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { ArchiveService } from './archive.service';
 import { ARCHIVE_INDEX_LOAD_ERROR_PREFIX } from './archive.service.constant';
 import { CDN_ERROR_MESSAGE, CDN_SERVER_ERROR_STATUS, INDEX_CDN_URL } from './archive.service.mock';
-import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { CDN_IMMUTABLE_FETCH_OPTIONS } from './cdn-fetch.constant';
+import { CdnRefService } from './cdn-ref.service';
+import { cdnRefServiceMock } from './cdn-ref.service.mock';
 
 describe('ArchiveService', () => {
   const fetchMock = vi.fn();
@@ -16,6 +18,9 @@ describe('ArchiveService', () => {
   beforeEach(() => {
     fetchMock.mockReset();
     vi.stubGlobal('fetch', fetchMock);
+    TestBed.configureTestingModule({
+      providers: [{ provide: CdnRefService, useValue: cdnRefServiceMock() }],
+    });
     service = TestBed.inject(ArchiveService);
   });
 
@@ -27,7 +32,7 @@ describe('ArchiveService', () => {
     fetchMock.mockResolvedValueOnce(new Response(VALID_INDEX_TEXT));
 
     await expect(service.loadIndex()).resolves.toEqual(EXISTING_INDEX);
-    expect(fetchMock).toHaveBeenCalledWith(INDEX_CDN_URL, CDN_REVALIDATE_FETCH_OPTIONS);
+    expect(fetchMock).toHaveBeenCalledWith(INDEX_CDN_URL, CDN_IMMUTABLE_FETCH_OPTIONS);
 
     fetchMock.mockResolvedValueOnce(statusResponse(HTTP_NOT_FOUND));
 

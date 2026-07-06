@@ -80,7 +80,7 @@ describe('deleteEvent', () => {
   it('still succeeds when the summaries have never been published, rewriting them as empty', async () => {
     const fetchFn = createDeleteFetch(null, null);
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn)).resolves.toBeUndefined();
+    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn)).resolves.toBe(DELETE_SHAS.newCommitSha);
 
     const contents = blobContents(fetchFn);
 
