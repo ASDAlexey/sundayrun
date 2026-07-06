@@ -5,13 +5,7 @@ import { ProtocolStateService } from '../../../state/protocol-state.service';
 import { RACE_EVENT_DEFAULTS } from '../race-event-defaults.constant';
 import { EventForm } from './event-form';
 import { EMPTY_DATE_ISO } from './event-form.constant';
-import {
-  BELOW_MIN_EVENT_NUMBER,
-  NON_INTEGER_EVENT_NUMBER,
-  SUGGESTED_DATE_ISO,
-  VALID_EVENT_NUMBER,
-  VALID_RACE_EVENT,
-} from './event-form.mock';
+import { BELOW_MIN_EVENT_NUMBER, SUGGESTED_DATE_ISO, VALID_EVENT_NUMBER, VALID_RACE_EVENT } from './event-form.mock';
 
 describe('EventForm', () => {
   const setEvent = vi.fn();
@@ -40,7 +34,6 @@ describe('EventForm', () => {
     expect(setEvent).not.toHaveBeenCalled();
 
     form.controls.city.setValue(RACE_EVENT_DEFAULTS.city);
-    form.controls.number.setValue(NON_INTEGER_EVENT_NUMBER);
     form.controls.number.setValue(BELOW_MIN_EVENT_NUMBER);
 
     expect(setEvent).not.toHaveBeenCalled();

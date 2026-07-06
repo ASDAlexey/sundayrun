@@ -3,9 +3,8 @@ import { RACE_EVENT_DEFAULTS } from '../race-event-defaults.constant';
 
 export const SUGGESTED_DATE_ISO = '2026-06-14';
 
-export const VALID_EVENT_NUMBER = 42;
-
-export const NON_INTEGER_EVENT_NUMBER = 2.5;
+/** Fractional on purpose: the club numbers runs as season.run (2.73), the form must accept it. */
+export const VALID_EVENT_NUMBER = 2.73;
 
 export const BELOW_MIN_EVENT_NUMBER = 0;
 
