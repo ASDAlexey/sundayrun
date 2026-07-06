@@ -6,6 +6,7 @@ import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { ATHLETES_JSON_PATH } from '../core/github/protocols-repo.constant';
 import { AthletesHistory } from '../core/models/athletes-history.type';
 import { ATHLETES_HISTORY_LOAD_ERROR_PREFIX } from './athletes.service.constant';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 
 /**
  * Anonymous read of the public athletes history (`athletes.json`) from the jsDelivr CDN — the
@@ -29,7 +30,7 @@ export class AthletesService {
   }
 
   async #fetchHistory(): Promise<AthletesHistory> {
-    const response = await fetch(jsDelivrFileUrl(ATHLETES_JSON_PATH));
+    const response = await fetch(jsDelivrFileUrl(ATHLETES_JSON_PATH), CDN_REVALIDATE_FETCH_OPTIONS);
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return parseAthletesHistory(null);

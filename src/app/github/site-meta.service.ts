@@ -8,6 +8,7 @@ import { publishSiteMeta } from '../core/github/publish-site-meta';
 import { parseSiteMeta } from '../core/github/site-meta';
 import { SiteMetaFile } from '../core/github/site-meta.interface';
 import { AdminTokenService } from './admin-token.service';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 import { PublishState, PublishStateType } from './github-storage.enum';
 import { SITE_META_LOAD_ERROR_PREFIX } from './site-meta.service.constant';
 
@@ -24,7 +25,7 @@ export class SiteMetaService {
   readonly state = this.#state.asReadonly();
 
   async load(): Promise<SiteMetaFile> {
-    const response = await fetch(jsDelivrFileUrl(SITE_META_JSON_PATH));
+    const response = await fetch(jsDelivrFileUrl(SITE_META_JSON_PATH), CDN_REVALIDATE_FETCH_OPTIONS);
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return parseSiteMeta(null);

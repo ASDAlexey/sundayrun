@@ -6,6 +6,7 @@ import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from '../core/github/github-api.consta
 import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { INDEX_JSON_PATH } from '../core/github/protocols-repo.constant';
 import { ARCHIVE_INDEX_LOAD_ERROR_PREFIX } from './archive.service.constant';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 
 /**
  * Reads the public archive index from the jsDelivr CDN. Only a 404/403 (jsDelivr answers both
@@ -16,7 +17,7 @@ import { ARCHIVE_INDEX_LOAD_ERROR_PREFIX } from './archive.service.constant';
 @Injectable({ providedIn: 'root' })
 export class ArchiveService {
   async loadIndex(): Promise<ArchiveIndexFile> {
-    const response = await fetch(jsDelivrFileUrl(INDEX_JSON_PATH));
+    const response = await fetch(jsDelivrFileUrl(INDEX_JSON_PATH), CDN_REVALIDATE_FETCH_OPTIONS);
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return parseArchiveIndex(null);

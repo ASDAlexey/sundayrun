@@ -7,6 +7,7 @@ import { VALID_RESULTS_TEXT } from '../core/github/results-file.mock';
 import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
 import { CDN_ERROR_MESSAGE, CDN_SERVER_ERROR_STATUS } from './archive.service.mock';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 import { ResultsService } from './results.service';
 import { RESULTS_LOAD_ERROR_PREFIX } from './results.service.constant';
 import { FOREIGN_SCHEMA_TEXT, RESULTS_CDN_URL } from './results.service.mock';
@@ -36,7 +37,7 @@ describe('ResultsService', () => {
     await expect(service.loadResults(EVENT_DATE_ISO), 'the second call reuses the cached promise').resolves.toEqual(
       buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS),
     );
-    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(RESULTS_CDN_URL);
+    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(RESULTS_CDN_URL, CDN_REVALIDATE_FETCH_OPTIONS);
 
     const notFoundService = new ResultsService();
 

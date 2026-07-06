@@ -5,6 +5,7 @@ import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from '../core/github/github-api.consta
 import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { parseEventResultsFile } from '../core/github/results-file';
 import { EventResultsFile } from '../core/github/results-file.interface';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 import { RESULTS_LOAD_ERROR_PREFIX } from './results.service.constant';
 
 /**
@@ -49,7 +50,7 @@ export class ResultsService {
   }
 
   async #fetchResults(slug: string): Promise<EventResultsFile | null> {
-    const response = await fetch(jsDelivrFileUrl(eventFilePaths(slug).resultsJson));
+    const response = await fetch(jsDelivrFileUrl(eventFilePaths(slug).resultsJson), CDN_REVALIDATE_FETCH_OPTIONS);
 
     if (response.status === HTTP_NOT_FOUND || response.status === HTTP_FORBIDDEN) {
       return null;

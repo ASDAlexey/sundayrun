@@ -6,6 +6,7 @@ import { EMPTY_SITE_META } from '../core/github/site-meta.constant';
 import { EXISTING_SITE_META, VALID_SITE_META_TEXT } from '../core/github/site-meta.mock';
 import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { AdminTokenService } from './admin-token.service';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 import { PublishState } from './github-storage.enum';
 import { SiteMetaService } from './site-meta.service';
 import { SITE_META_LOAD_ERROR_PREFIX } from './site-meta.service.constant';
@@ -42,7 +43,7 @@ describe('SiteMetaService', () => {
     fetchMock.mockResolvedValueOnce(new Response(VALID_SITE_META_TEXT));
 
     await expect(service.load()).resolves.toEqual(EXISTING_SITE_META);
-    expect(fetchMock).toHaveBeenCalledWith(SITE_META_CDN_URL);
+    expect(fetchMock).toHaveBeenCalledWith(SITE_META_CDN_URL, CDN_REVALIDATE_FETCH_OPTIONS);
 
     fetchMock.mockResolvedValueOnce(statusResponse(HTTP_NOT_FOUND));
 

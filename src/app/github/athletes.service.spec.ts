@@ -7,6 +7,7 @@ import { CDN_ERROR_MESSAGE, CDN_SERVER_ERROR_STATUS } from './archive.service.mo
 import { AthletesService } from './athletes.service';
 import { ATHLETES_HISTORY_LOAD_ERROR_PREFIX } from './athletes.service.constant';
 import { ATHLETES_CDN_URL } from './athletes.service.mock';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 
 describe('AthletesService', () => {
   const fetchMock = vi.fn();
@@ -31,7 +32,7 @@ describe('AthletesService', () => {
     expect(service.loadHistory(), 'a call racing the first fetch shares the in-flight promise').toBe(firstLoad);
     await expect(firstLoad).resolves.toEqual(VALID_HISTORY);
     await expect(service.loadHistory(), 'the second call reuses the cached promise').resolves.toEqual(VALID_HISTORY);
-    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(ATHLETES_CDN_URL);
+    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(ATHLETES_CDN_URL, CDN_REVALIDATE_FETCH_OPTIONS);
 
     fetchMock.mockResolvedValueOnce(statusResponse(HTTP_NOT_FOUND));
 
