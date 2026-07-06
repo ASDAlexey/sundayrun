@@ -151,10 +151,18 @@
     }
   }
 
+  // The neighbouring columns open with a label/small eyebrow plus the 4px block gap; the same
+  // offset here puts the brand name on one line with the organizer and developer names.
   &__brand {
     display: flex;
     align-items: flex-start;
+    padding-top: calc(#{t.label-small-line()} + 4px);
     gap: 12px;
+
+    // Stacked columns need no eyebrow compensation.
+    @media (width <= 720px) {
+      padding-top: 0;
+    }
   }
 
   &__mark {
