@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "description": "Воскресный парковый пробег — конвертер Excel-результатов в PDF-протокол с архивом (Angular 22, RU/EN).",
   "scripts": {
-    "start": "ng serve",
-    "build": "ng build --localize",
+    "start": "bun scripts/build-sqlite-worker.ts && ng serve",
+    "build": "bun scripts/build-sqlite-worker.ts && ng build --localize",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:coverage": "ng test --coverage",
@@ -32,9 +32,11 @@
     "@angular/material": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
     "fflate": "^0.8.2",
     "pdfmake": "^0.2.12",
     "rxjs": "~7.8.0",
+    "sqlite-wasm-http": "^1.2.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
