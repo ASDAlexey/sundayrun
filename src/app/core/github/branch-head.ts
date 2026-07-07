@@ -14,7 +14,7 @@ export async function fetchBranchHeadSha(fetchFn: GithubFetchFn = DEFAULT_GITHUB
 
   assertOk(response, GIT_REF_URL);
 
-  const payload = (await response.json()) as GitRefResponse;
+  const payload: GitRefResponse = await response.json();
 
   return payload.object.sha;
 }
