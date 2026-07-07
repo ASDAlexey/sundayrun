@@ -1,8 +1,16 @@
 import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from './github-api.constant';
 import { GithubAuthError, GithubRequestError } from './github-errors';
-import { INDEX_JSON_PATH } from './protocols-repo.constant';
-import { fetchRepoFileText } from './repo-contents';
-import { CONTENTS_TOKEN, EXPECTED_CONTENTS_URL, EXPECTED_RAW_INIT, FILE_TEXT, SERVER_ERROR_STATUS } from './repo-contents.mock';
+import { INDEX_JSON_PATH, PROTOCOL_DB_PATH } from './protocols-repo.constant';
+import { fetchRepoFileBytes, fetchRepoFileText } from './repo-contents';
+import {
+  CONTENTS_TOKEN,
+  EXPECTED_CONTENTS_URL,
+  EXPECTED_DB_CONTENTS_URL,
+  EXPECTED_RAW_INIT,
+  FILE_BYTES,
+  FILE_TEXT,
+  SERVER_ERROR_STATUS,
+} from './repo-contents.mock';
 import { statusResponse } from './spec-utils/github-fetch-router';
 
 describe('fetchRepoFileText', () => {
@@ -35,5 +43,29 @@ describe('fetchRepoFileText', () => {
     );
 
     await expect(fetchRepoFileText(CONTENTS_TOKEN, INDEX_JSON_PATH)).resolves.toBeNull();
+  });
+});
+
+describe('fetchRepoFileBytes', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('requests the raw file pinned to the branch, returns its bytes and maps 404 to null', async () => {
+    const fetchFn = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(new Response(FILE_BYTES)));
+    const missing = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(HTTP_NOT_FOUND)));
+
+    await expect(fetchRepoFileBytes(CONTENTS_TOKEN, PROTOCOL_DB_PATH, fetchFn)).resolves.toEqual(FILE_BYTES);
+    expect(fetchFn).toHaveBeenCalledWith(EXPECTED_DB_CONTENTS_URL, EXPECTED_RAW_INIT);
+    await expect(fetchRepoFileBytes(CONTENTS_TOKEN, PROTOCOL_DB_PATH, missing)).resolves.toBeNull();
+  });
+
+  it('falls back to the global fetch by default', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(statusResponse(HTTP_NOT_FOUND))),
+    );
+
+    await expect(fetchRepoFileBytes(CONTENTS_TOKEN, PROTOCOL_DB_PATH)).resolves.toBeNull();
   });
 });

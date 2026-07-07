@@ -4,6 +4,7 @@ import { Gender } from '../models/gender.enum';
 import { ARCHIVE_INDEX_SCHEMA_VERSION } from './archive-index.constant';
 import { ArchiveIndexEntry, ArchiveIndexFile } from './archive-index.interface';
 import { EXPECTED_NEW_ENTRY, EXPECTED_UPSERTED_EVENTS, NEWER_ENTRY, OLDER_ENTRY, STALE_INDEX } from './archive-index.mock';
+import { PROTOCOL_DB_PATH } from './protocols-repo.constant';
 import { PublishEventInput } from './publish-event.interface';
 import { GitDataShas } from './spec-utils/git-data-routes';
 import { PROTOCOL_ROWS, RACE_EVENT } from './spec-utils/race-fixtures';
@@ -32,7 +33,8 @@ export const PUBLISH_SHAS: GitDataShas = {
 /** Pinned to the commit sha, not to the branch. */
 export const EXPECTED_PDF_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${PUBLISH_SHAS.newCommitSha}/data/events/2026-06-28/protocol.pdf`;
 
-export const EXPECTED_COMMIT_PATHS = [
+/** What a db-failure publication commits: the json files stay the source of truth. */
+export const EXPECTED_COMMIT_PATHS_WITHOUT_DB = [
   'data/events/2026-06-28/source.xlsx',
   'data/events/2026-06-28/protocol.pdf',
   'data/events/2026-06-28/results.json',
@@ -40,7 +42,7 @@ export const EXPECTED_COMMIT_PATHS = [
   'data/athletes.json',
 ];
 
-export const EXPECTED_PURGE_URLS = EXPECTED_COMMIT_PATHS.map((path) => `https://purge.jsdelivr.net/gh/ASDAlexey/sundayrun@main/${path}`);
+export const EXPECTED_COMMIT_PATHS = [...EXPECTED_COMMIT_PATHS_WITHOUT_DB, PROTOCOL_DB_PATH];
 
 export const EXPECTED_COMMIT_MESSAGE = 'Публикация протокола: 2026-06-28';
 

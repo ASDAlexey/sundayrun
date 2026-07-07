@@ -7,7 +7,7 @@ import { NEWER_ENTRY, OLDER_ENTRY } from './archive-index.mock';
 import { EXPECTED_EVENT_PATHS } from './event-paths.mock';
 import { GIT_TREE_BLOB_TYPE, GIT_TREE_FILE_MODE } from './github-api.constant';
 import { GitTreeEntry } from './github-api.interface';
-import { ATHLETES_JSON_PATH, INDEX_JSON_PATH } from './protocols-repo.constant';
+import { ATHLETES_JSON_PATH, INDEX_JSON_PATH, PROTOCOL_DB_PATH } from './protocols-repo.constant';
 import { GitDataShas } from './spec-utils/git-data-routes';
 
 export const DELETE_TOKEN = 'delete-token';
@@ -25,13 +25,19 @@ export const DELETE_SHAS: GitDataShas = {
 
 export const EXPECTED_DELETE_COMMIT_MESSAGE = `Удаление протокола: ${DELETE_SLUG}`;
 
-/** Three deletions (`sha: null`) followed by the two rewritten summaries in blob-upload order. */
-export const EXPECTED_DELETE_TREE_ENTRIES: GitTreeEntry[] = [
+/** Three deletions (`sha: null`) followed by the two rewritten summaries; the db rebuild was skipped. */
+export const EXPECTED_DELETE_TREE_ENTRIES_WITHOUT_DB: GitTreeEntry[] = [
   { path: EXPECTED_EVENT_PATHS.sourceXlsx, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
   { path: EXPECTED_EVENT_PATHS.protocolPdf, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
   { path: EXPECTED_EVENT_PATHS.resultsJson, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
   { path: INDEX_JSON_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}0` },
   { path: ATHLETES_JSON_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}1` },
+];
+
+/** The full deletion tree: the rewritten (never deleted) derived db follows the summaries in blob-upload order. */
+export const EXPECTED_DELETE_TREE_ENTRIES: GitTreeEntry[] = [
+  ...EXPECTED_DELETE_TREE_ENTRIES_WITHOUT_DB,
+  { path: PROTOCOL_DB_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}2` },
 ];
 
 /** `STALE_INDEX` without the deleted slug; parsing re-sorts the remaining entries newest first. */

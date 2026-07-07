@@ -13,6 +13,23 @@ export async function fetchRepoFileText(
   path: string,
   fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
 ): Promise<string | null> {
+  const response = await fetchRepoFile(token, path, fetchFn);
+
+  return response === null ? null : response.text();
+}
+
+/** The binary sibling of `fetchRepoFileText` (for `data/protocol.db`); the same status mapping. */
+export async function fetchRepoFileBytes(
+  token: string,
+  path: string,
+  fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
+): Promise<Uint8Array | null> {
+  const response = await fetchRepoFile(token, path, fetchFn);
+
+  return response === null ? null : new Uint8Array(await response.arrayBuffer());
+}
+
+async function fetchRepoFile(token: string, path: string, fetchFn: GithubFetchFn): Promise<Response | null> {
   const url = `${REPO_CONTENTS_URL}${path}${CONTENTS_REF_QUERY}`;
   const response = await fetchFn(url, { headers: githubHeaders(token, GITHUB_RAW_ACCEPT) });
 
@@ -22,5 +39,5 @@ export async function fetchRepoFileText(
 
   assertOk(response, url);
 
-  return response.text();
+  return response;
 }
