@@ -13,7 +13,7 @@ export const PINNED_SHA_MOCK = 'freshly-published-sha';
 
 export const PINNED_PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${PINNED_SHA_MOCK}/data/protocol.db`;
 
-/** Replaces `createSQLiteHTTPPool` through the `vi.mock('sqlite-wasm-http', …)` factory. */
+/** The `createSQLiteHTTPPool` the mocked `loadSqliteHttp` hands back (see `sqlite-http-loader.mock`). */
 export const CREATE_POOL_MOCK = vi.fn();
 
 export const DB_SQL_MOCK = 'SELECT slug FROM events';

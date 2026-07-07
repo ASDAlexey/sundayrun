@@ -8,6 +8,7 @@ import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { CdnRefService } from './cdn-ref.service';
 import { PROTOCOL_DB_BROWSER_ONLY_ERROR, PROTOCOL_DB_HTTP_OPTIONS, PROTOCOL_DB_WORKER_COUNT } from './protocol-db.service.constant';
 import { ProtocolDbBindings, ProtocolDbRow, ProtocolDbValue } from './protocol-db.service.type';
+import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
 
 /**
  * A virtual SQLite connection to the sha-pinned `data/protocol.db` on the jsDelivr CDN: the
@@ -20,6 +21,7 @@ import { ProtocolDbBindings, ProtocolDbRow, ProtocolDbValue } from './protocol-d
 @Injectable({ providedIn: 'root' })
 export class ProtocolDbService {
   readonly #cdnRef = inject(CdnRefService);
+  readonly #loadSqliteHttp = inject(SQLITE_HTTP_LOADER);
   readonly #isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   #poolRef = '';
@@ -57,7 +59,7 @@ export class ProtocolDbService {
 
   /** The dynamic import keeps every wasm/worker byte out of the initial bundle and the prerender. */
   async #openPool(ref: string): Promise<SQLiteHTTPPool> {
-    const { createSQLiteHTTPPool } = await import('sqlite-wasm-http');
+    const { createSQLiteHTTPPool } = await this.#loadSqliteHttp();
     const pool = await createSQLiteHTTPPool({ workers: PROTOCOL_DB_WORKER_COUNT, httpOptions: PROTOCOL_DB_HTTP_OPTIONS });
 
     try {

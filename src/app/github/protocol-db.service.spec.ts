@@ -7,6 +7,8 @@ import { CdnRefService } from './cdn-ref.service';
 import { cdnRefServiceMock } from './cdn-ref.service.mock';
 import { ProtocolDbService } from './protocol-db.service';
 import { PROTOCOL_DB_BROWSER_ONLY_ERROR, PROTOCOL_DB_HTTP_OPTIONS, PROTOCOL_DB_WORKER_COUNT } from './protocol-db.service.constant';
+import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
+import { LOAD_SQLITE_HTTP_MOCK } from './sqlite-http-loader.mock';
 import {
   CREATE_POOL_MOCK,
   DB_BINDINGS_MOCK,
@@ -26,12 +28,6 @@ import {
   PROTOCOL_DB_CDN_URL,
 } from './protocol-db.service.mock';
 
-vi.mock('sqlite-wasm-http', async () => {
-  const mock = await import('./protocol-db.service.mock');
-
-  return { createSQLiteHTTPPool: mock.CREATE_POOL_MOCK };
-});
-
 describe('ProtocolDbService', () => {
   let service: ProtocolDbService;
 
@@ -42,7 +38,10 @@ describe('ProtocolDbService', () => {
     POOL_EXEC_MOCK.mockResolvedValue(DB_EXEC_RESULTS_MOCK);
     POOL_CLOSE_MOCK.mockResolvedValue(undefined);
     TestBed.configureTestingModule({
-      providers: [{ provide: CdnRefService, useValue: cdnRefServiceMock() }],
+      providers: [
+        { provide: CdnRefService, useValue: cdnRefServiceMock() },
+        { provide: SQLITE_HTTP_LOADER, useValue: LOAD_SQLITE_HTTP_MOCK },
+      ],
     });
     service = TestBed.inject(ProtocolDbService);
   });
@@ -105,6 +104,7 @@ describe('ProtocolDbService during prerender', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
+        { provide: SQLITE_HTTP_LOADER, useValue: LOAD_SQLITE_HTTP_MOCK },
         { provide: PLATFORM_ID, useValue: SERVER_PLATFORM_ID },
       ],
     });
