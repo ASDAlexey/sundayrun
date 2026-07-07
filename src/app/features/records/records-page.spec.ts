@@ -2,7 +2,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { EXPECTED_YEARS, LEADERBOARD_YEAR } from '../../core/history/best-results.mock';
+import { EXPECTED_YEARS, LEADERBOARD_RECORDS, LEADERBOARD_YEAR } from '../../core/history/best-results.mock';
 import { Gender } from '../../core/models/gender.enum';
 import { AthletesService } from '../../github/athletes.service';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
@@ -19,12 +19,11 @@ import {
   EXPECTED_YEAR_RACE_SLUG,
   HISTORY_LOAD_ERROR_MESSAGE,
   NO_MATCH_QUERY,
-  RECORDS_HISTORY_MOCK,
   SEARCH_QUERY,
 } from './records-page.mock';
 
 describe('RecordsPage', () => {
-  const loadHistory = vi.fn();
+  const loadRecords = vi.fn();
 
   let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<RecordsPage>;
@@ -32,11 +31,11 @@ describe('RecordsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     platformId = BROWSER_PLATFORM_ID;
-    loadHistory.mockResolvedValue(RECORDS_HISTORY_MOCK);
+    loadRecords.mockResolvedValue(LEADERBOARD_RECORDS);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AthletesService, useValue: { loadHistory } },
+        { provide: AthletesService, useValue: { loadRecords } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
     });
@@ -137,7 +136,7 @@ describe('RecordsPage', () => {
   });
 
   it('shows the empty state without history and the error state on a load failure', async () => {
-    loadHistory.mockResolvedValue({});
+    loadRecords.mockResolvedValue([]);
     fixture = await createPage();
 
     expect(fixture.componentInstance.status()).toBe(RecordsStatus.empty);
@@ -146,7 +145,7 @@ describe('RecordsPage', () => {
 
     expect(fixture.nativeElement.querySelector('.records__status').textContent.trim()).not.toBe('');
 
-    loadHistory.mockRejectedValue(new Error(HISTORY_LOAD_ERROR_MESSAGE));
+    loadRecords.mockRejectedValue(new Error(HISTORY_LOAD_ERROR_MESSAGE));
     fixture.destroy();
     fixture = await createPage();
 
@@ -161,7 +160,7 @@ describe('RecordsPage', () => {
     platformId = SERVER_PLATFORM_ID;
     fixture = await createPage();
 
-    expect(loadHistory).not.toHaveBeenCalled();
+    expect(loadRecords).not.toHaveBeenCalled();
     expect(fixture.componentInstance.status()).toBe(RecordsStatus.loading);
   });
 });

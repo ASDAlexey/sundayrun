@@ -5,7 +5,6 @@ import { RouterLink } from '@angular/router';
 
 import { VK_COMMUNITY_URL } from '../../app.constant';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
-import { computeOverallStats } from '../../core/history/overall-stats';
 import { OverallStats } from '../../core/history/overall-stats.interface';
 import { formatDuration } from '../../core/time/duration';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
@@ -73,7 +72,7 @@ export class HomePage {
     // Only the tiny computed totals travel through TransferState, never the athletes history itself.
     loadWithTransfer({
       key: HOME_STATS_TRANSFER_KEY,
-      load: () => this.#loadStats(),
+      load: () => this.#athletes.loadOverallStats(),
       apply: (stats) => this.#stats.set(stats),
       onError: () => this.#stats.set(null),
     });
@@ -81,19 +80,15 @@ export class HomePage {
 
   /** Only the preview slice travels through TransferState — the full index would bloat the HTML. */
   async #loadLatest(): Promise<RaceListItem[]> {
-    const index = await this.#archive.loadIndex();
+    const latest = await this.#archive.loadLatest(LATEST_RACES_COUNT);
     const ref = await this.#cdnRef.resolve();
 
-    return index.events.slice(0, LATEST_RACES_COUNT).map((entry) => toRaceListItem(entry, ref));
+    return latest.map((entry) => toRaceListItem(entry, ref));
   }
 
   #applyLatest(races: RaceListItem[]): void {
     this.latestRaces.set(races);
     this.status.set(races.length === 0 ? RacesStatus.empty : RacesStatus.ready);
-  }
-
-  async #loadStats(): Promise<OverallStats> {
-    return computeOverallStats(await this.#athletes.loadHistory());
   }
 }
 

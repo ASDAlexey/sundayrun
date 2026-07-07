@@ -98,7 +98,7 @@ export class AthletePage {
 
   async #resolveState(key: string): Promise<AthletePageState> {
     try {
-      const record = (await this.#athletes.loadHistory())[key] ?? null;
+      const record = await this.#athletes.loadRecord(key);
 
       if (record === null) {
         return { status: AthleteStatus.notFound, record: null };

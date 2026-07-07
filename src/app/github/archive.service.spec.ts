@@ -9,17 +9,26 @@ import { CDN_ERROR_MESSAGE, CDN_SERVER_ERROR_STATUS, INDEX_CDN_URL } from './arc
 import { CDN_IMMUTABLE_FETCH_OPTIONS } from './cdn-fetch.constant';
 import { CdnRefService } from './cdn-ref.service';
 import { cdnRefServiceMock } from './cdn-ref.service.mock';
+import { EVENT_SQL_ROWS, LATEST_EVENTS_LIMIT } from './protocol-db-queries.mock';
+import { ProtocolDbService } from './protocol-db.service';
+import { PROTOCOL_DB_ERROR_MESSAGE } from './protocol-db.service.mock';
 
 describe('ArchiveService', () => {
   const fetchMock = vi.fn();
+  const dbQuery = vi.fn();
 
   let service: ArchiveService;
 
   beforeEach(() => {
     fetchMock.mockReset();
+    dbQuery.mockReset();
+    dbQuery.mockRejectedValue(new Error(PROTOCOL_DB_ERROR_MESSAGE));
     vi.stubGlobal('fetch', fetchMock);
     TestBed.configureTestingModule({
-      providers: [{ provide: CdnRefService, useValue: cdnRefServiceMock() }],
+      providers: [
+        { provide: CdnRefService, useValue: cdnRefServiceMock() },
+        { provide: ProtocolDbService, useValue: { query: dbQuery } },
+      ],
     });
     service = TestBed.inject(ArchiveService);
   });
@@ -51,5 +60,23 @@ describe('ArchiveService', () => {
     fetchMock.mockRejectedValueOnce(new Error(CDN_ERROR_MESSAGE));
 
     await expect(service.loadIndex()).rejects.toThrow(CDN_ERROR_MESSAGE);
+  });
+
+  it('serves the index and the latest slice from sql when protocol.db answers', async () => {
+    dbQuery.mockResolvedValueOnce(EVENT_SQL_ROWS);
+
+    await expect(service.loadIndex()).resolves.toEqual(EXISTING_INDEX);
+
+    dbQuery.mockResolvedValueOnce(EVENT_SQL_ROWS.slice(0, LATEST_EVENTS_LIMIT));
+
+    await expect(service.loadLatest(LATEST_EVENTS_LIMIT)).resolves.toEqual(EXISTING_INDEX.events.slice(0, LATEST_EVENTS_LIMIT));
+    expect(fetchMock, 'the sql path never downloads index.json').not.toHaveBeenCalled();
+  });
+
+  it('loadLatest falls back to slicing the json index on a db failure', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(VALID_INDEX_TEXT));
+
+    await expect(service.loadLatest(LATEST_EVENTS_LIMIT)).resolves.toEqual(EXISTING_INDEX.events.slice(0, LATEST_EVENTS_LIMIT));
+    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(INDEX_CDN_URL, CDN_IMMUTABLE_FETCH_OPTIONS);
   });
 });

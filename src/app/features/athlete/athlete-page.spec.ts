@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
 import { RunsSort } from '../../core/history/athlete-runs.enum';
 import { EXPECTED_ROLLUP_HISTORY, DNF_ONLY_KEY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
-import { AthletesHistory } from '../../core/models/athletes-history.type';
+import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
@@ -28,7 +28,7 @@ import {
 } from './athlete-page.mock';
 
 describe('AthletePage', () => {
-  const loadHistory = vi.fn();
+  const loadRecord = vi.fn();
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -37,12 +37,12 @@ describe('AthletePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     routeParams[KEY_ROUTE_PARAM] = DENORMALIZED_KEY_PARAM;
-    loadHistory.mockResolvedValue(EXPECTED_ROLLUP_HISTORY);
+    loadRecord.mockImplementation((key: string) => Promise.resolve(EXPECTED_ROLLUP_HISTORY[key] ?? null));
     routeStub = activatedRouteStub(routeParams);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AthletesService, useValue: { loadHistory } },
+        { provide: AthletesService, useValue: { loadRecord } },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });
@@ -181,9 +181,9 @@ describe('AthletePage', () => {
     page.setYear(ATHLETE_YEAR_FILTER);
     page.setSort(RunsSort.byDate);
 
-    let resolveStale: (history: AthletesHistory) => void = vi.fn();
+    let resolveStale: (record: AthleteRecord | null) => void = vi.fn();
 
-    loadHistory.mockImplementationOnce(
+    loadRecord.mockImplementationOnce(
       () =>
         new Promise((resolve) => {
           resolveStale = resolve;
@@ -195,19 +195,18 @@ describe('AthletePage', () => {
     expect(page.year(), 'the year filter is reset for the new athlete').toBeNull();
     expect(page.sort(), 'the sort is reset for the new athlete').toBe(RunsSort.byTime);
 
-    loadHistory.mockResolvedValueOnce(EXPECTED_ROLLUP_HISTORY);
     routeStub.setParams({ [KEY_ROUTE_PARAM]: DNF_ONLY_KEY });
     await settle();
 
     expect(page.status()).toBe(AthleteStatus.ready);
     expect(page.displayName()).toBe(EXPECTED_ROLLUP_HISTORY[DNF_ONLY_KEY].displayName);
 
-    resolveStale(EXPECTED_ROLLUP_HISTORY);
+    resolveStale(null);
     await settle();
 
     expect(page.status(), 'the stale "not found" must not override the newer view').toBe(AthleteStatus.ready);
     expect(page.displayName()).toBe(EXPECTED_ROLLUP_HISTORY[DNF_ONLY_KEY].displayName);
-    expect(loadHistory).toHaveBeenCalledTimes(3);
+    expect(loadRecord).toHaveBeenCalledTimes(3);
   });
 
   it('shows notFound with a way back for an unknown key and keeps the view computeds empty', async () => {
@@ -237,7 +236,7 @@ describe('AthletePage', () => {
 
   it('shows the error state when the history cannot be loaded, even without a key param', async () => {
     delete routeParams[KEY_ROUTE_PARAM];
-    loadHistory.mockRejectedValue(new Error(ATHLETE_LOAD_ERROR_MESSAGE));
+    loadRecord.mockRejectedValue(new Error(ATHLETE_LOAD_ERROR_MESSAGE));
     fixture = await createPage();
 
     expect(fixture.componentInstance.status()).toBe(AthleteStatus.error);

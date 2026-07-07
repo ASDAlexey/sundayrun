@@ -1,8 +1,3 @@
-import { LEADERBOARD_RECORDS } from '../../core/history/best-results.mock';
-import { AthletesHistory } from '../../core/models/athletes-history.type';
-
-export const RECORDS_HISTORY_MOCK: AthletesHistory = Object.fromEntries(LEADERBOARD_RECORDS.map((record) => [record.key, record]));
-
 export const HISTORY_LOAD_ERROR_MESSAGE = 'history load failed';
 
 /** LEADERBOARD_RECORDS men sorted by best time with the name tie-break (see best-results.mock). */

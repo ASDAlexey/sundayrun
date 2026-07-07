@@ -2,12 +2,12 @@ import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
+import { EXISTING_INDEX } from '../../core/github/archive-index.mock';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
 import { SiteMetaFile } from '../../core/github/site-meta.interface';
 import { ANNOUNCEMENT_ONLY_SITE_META, EXISTING_SITE_META } from '../../core/github/site-meta.mock';
 import { OverallStats } from '../../core/history/overall-stats.interface';
-import { EXPECTED_STATS, STATS_HISTORY } from '../../core/history/overall-stats.mock';
+import { EXPECTED_STATS } from '../../core/history/overall-stats.mock';
 import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
 import { CdnRefService } from '../../github/cdn-ref.service';
@@ -29,7 +29,7 @@ import {
   EXPECTED_RACE_TITLES,
   EXPECTED_STATS_VALUES,
   INDEX_LOAD_ERROR_MESSAGE,
-  MEN_ONLY_HISTORY,
+  MEN_ONLY_STATS,
 } from './home-page.mock';
 
 const RACES_KEY = makeStateKey<{ data: RaceListItem[] } | null>(HOME_RACES_TRANSFER_KEY);
@@ -37,9 +37,9 @@ const META_KEY = makeStateKey<{ data: SiteMetaFile } | null>(HOME_META_TRANSFER_
 const STATS_KEY = makeStateKey<{ data: OverallStats } | null>(HOME_STATS_TRANSFER_KEY);
 
 describe('HomePage', () => {
-  const loadIndex = vi.fn();
+  const loadLatest = vi.fn();
   const loadMeta = vi.fn();
-  const loadHistory = vi.fn();
+  const loadOverallStats = vi.fn();
 
   let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<HomePage>;
@@ -47,16 +47,16 @@ describe('HomePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     platformId = BROWSER_PLATFORM_ID;
-    loadIndex.mockResolvedValue(EXISTING_INDEX);
+    loadLatest.mockResolvedValue(EXISTING_INDEX.events);
     loadMeta.mockResolvedValue(EMPTY_SITE_META);
-    loadHistory.mockResolvedValue(STATS_HISTORY);
+    loadOverallStats.mockResolvedValue(EXPECTED_STATS);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: ArchiveService, useValue: { loadIndex } },
+        { provide: ArchiveService, useValue: { loadLatest } },
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
         { provide: SiteMetaService, useValue: { load: loadMeta } },
-        { provide: AthletesService, useValue: { loadHistory } },
+        { provide: AthletesService, useValue: { loadOverallStats } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
     });
@@ -131,7 +131,7 @@ describe('HomePage', () => {
   });
 
   it('shows the empty and error states of the race preview', async () => {
-    loadIndex.mockResolvedValue(EMPTY_INDEX);
+    loadLatest.mockResolvedValue([]);
     fixture = await createPage();
 
     expect(fixture.componentInstance.status()).toBe(RacesStatus.empty);
@@ -143,7 +143,7 @@ describe('HomePage', () => {
     expect(statusRegion.getAttribute('aria-live')).toBe('polite');
     expect(statusRegion.textContent.trim(), 'the empty-state text is rendered inside the persistent live region').not.toBe('');
 
-    loadHistory.mockResolvedValue(MEN_ONLY_HISTORY);
+    loadOverallStats.mockResolvedValue(MEN_ONLY_STATS);
     fixture.destroy();
     fixture = await createPage();
 
@@ -153,8 +153,8 @@ describe('HomePage', () => {
 
     expect(menOnlyValues, 'a gender without 5 km finishes shows a dash instead of 0:00').toEqual(EXPECTED_MEN_ONLY_STATS_VALUES);
 
-    loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
-    loadHistory.mockRejectedValue(new Error(ATHLETES_LOAD_ERROR_MESSAGE));
+    loadLatest.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
+    loadOverallStats.mockRejectedValue(new Error(ATHLETES_LOAD_ERROR_MESSAGE));
     fixture.destroy();
     fixture = await createPage();
 
@@ -182,7 +182,7 @@ describe('HomePage', () => {
 
   it('keeps the calm loading state when the prerender fetches fail', async () => {
     platformId = SERVER_PLATFORM_ID;
-    loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
+    loadLatest.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
     loadMeta.mockRejectedValue(new Error(SITE_META_CDN_ERROR_MESSAGE));
     fixture = await createPage();
 
@@ -203,7 +203,7 @@ describe('HomePage', () => {
 
     expect(page.latestRaces(), 'the network answer replaces the baked payload').toEqual(EXPECTED_RACE_ITEMS);
 
-    loadIndex.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
+    loadLatest.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
     fixture.destroy();
     fixture = await createPage();
 

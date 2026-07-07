@@ -93,7 +93,7 @@ export class RecordsPage {
 
   async #load(): Promise<void> {
     try {
-      const records = Object.values(await this.#athletes.loadHistory());
+      const records = await this.#athletes.loadRecords();
 
       this.#records.set(records);
       this.status.set(records.length === 0 ? RecordsStatus.empty : RecordsStatus.ready);
