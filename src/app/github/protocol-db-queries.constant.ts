@@ -90,3 +90,31 @@ ORDER BY date_iso DESC`;
 
 export const SELECT_LATEST_EVENTS_SQL = `${SELECT_EVENTS_SQL}
 LIMIT $limit`;
+
+/** One event's metadata, aliased straight into `RaceEvent`; the results below share the slug. */
+export const SELECT_EVENT_SQL = `
+SELECT number,
+       date_iso AS dateIso,
+       city,
+       park,
+       club_name AS clubName,
+       chairman
+FROM events
+WHERE slug = $slug`;
+
+/** Every protocol row of one event, in display order; the reserved `idx` reads back as `index`. */
+export const SELECT_EVENT_RESULTS_SQL = `
+SELECT idx AS "index",
+       full_name AS fullName,
+       time23,
+       time5,
+       total_ms AS totalMs,
+       distance_km AS distanceKm,
+       gender,
+       place_m AS placeM,
+       place_f AS placeF,
+       club,
+       note
+FROM results
+WHERE slug = $slug
+ORDER BY idx`;

@@ -1,14 +1,20 @@
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
 import { eventFilePaths } from '../core/github/event-paths';
+import { buildEventResultsFile } from '../core/github/results-file';
+import { EventResultsFile } from '../core/github/results-file.interface';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { isoYear } from '../core/history/iso-year';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interface';
 import { Gender, GenderType } from '../core/models/gender.enum';
+import { ProtocolRow } from '../core/models/protocol-row.interface';
+import { RaceEvent } from '../core/models/race-event.interface';
 import {
   SELECT_ATHLETE_PARTICIPATIONS_SQL,
   SELECT_ATHLETE_RUNS_SQL,
   SELECT_ATHLETE_SQL,
+  SELECT_EVENT_RESULTS_SQL,
+  SELECT_EVENT_SQL,
   SELECT_EVENTS_SQL,
   SELECT_LATEST_EVENTS_SQL,
   SELECT_MEDIAN_TIME_SQL,
@@ -106,6 +112,46 @@ export async function selectArchiveEvents(db: ProtocolDb, limit?: number): Promi
   const events = limit === undefined ? await db.query(SELECT_EVENTS_SQL) : await db.query(SELECT_LATEST_EVENTS_SQL, { $limit: limit });
 
   return events.map(toArchiveEntry);
+}
+
+/** One published event — its metadata plus every protocol row — or null when the slug is unknown. */
+export async function selectEventResults(db: ProtocolDb, slug: string): Promise<EventResultsFile | null> {
+  const events = await db.query(SELECT_EVENT_SQL, { $slug: slug });
+
+  if (events.length === 0) {
+    return null;
+  }
+
+  const rows = await db.query(SELECT_EVENT_RESULTS_SQL, { $slug: slug });
+
+  return buildEventResultsFile(toRaceEvent(events[0]), rows.map(toProtocolRow));
+}
+
+function toRaceEvent(row: ProtocolDbRow): RaceEvent {
+  return {
+    number: asNumber(row['number']),
+    dateIso: asString(row['dateIso']),
+    city: asString(row['city']),
+    park: asString(row['park']),
+    clubName: asString(row['clubName']),
+    chairman: asString(row['chairman']),
+  };
+}
+
+function toProtocolRow(row: ProtocolDbRow): ProtocolRow {
+  return {
+    index: asNumber(row['index']),
+    fullName: asString(row['fullName']),
+    time23: asString(row['time23']),
+    time5: asString(row['time5']),
+    totalMs: asNumberOrNull(row['totalMs']),
+    distanceKm: asNumberOrNull(row['distanceKm']),
+    gender: asGender(row['gender']),
+    placeM: asNumberOrNull(row['placeM']),
+    placeF: asNumberOrNull(row['placeF']),
+    club: asString(row['club']),
+    note: asString(row['note']),
+  };
 }
 
 /** One run of an athlete history/leaderboard, read off its aliased row. */
