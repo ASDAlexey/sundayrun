@@ -11,6 +11,7 @@ import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
 import { SiteMetaService } from '../../github/site-meta.service';
+import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { toRaceListItem } from '../races/race-list-item';
 import { RaceCard } from '../races/race-card/race-card';
 import { RacesStatus, RacesStatusType } from '../races/races-page.enum';
@@ -30,7 +31,7 @@ import { HomeStatsView } from './home-page.interface';
 /** The landing page: hero, announcement, the latest races preview and the course card. */
 @Component({
   selector: 'app-home-page',
-  imports: [MatButtonModule, MatProgressSpinnerModule, RaceCard, RouterLink],
+  imports: [MatButtonModule, MatProgressSpinnerModule, RaceCard, ReloadButton, RouterLink],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

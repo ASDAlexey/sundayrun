@@ -15,6 +15,7 @@ import { AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
+import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
@@ -25,7 +26,7 @@ import { AthletePageState, AthleteRunView, YearBestView } from './athlete-page.i
 /** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
 @Component({
   selector: 'app-athlete-page',
-  imports: [MatButtonModule, MatButtonToggleModule, MatProgressSpinnerModule, MatTableModule, RouterLink],
+  imports: [MatButtonModule, MatButtonToggleModule, MatProgressSpinnerModule, MatTableModule, ReloadButton, RouterLink],
   templateUrl: './athlete-page.html',
   styleUrl: './athlete-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

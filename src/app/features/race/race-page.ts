@@ -15,6 +15,7 @@ import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
+import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import {
   EMPTY_CELL_TEXT,
@@ -30,7 +31,7 @@ import { RacePageState, RaceRowView, RaceView } from './race-page.interface';
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
 @Component({
   selector: 'app-race-page',
-  imports: [MatButtonModule, MatProgressSpinnerModule, MatTableModule, RouterLink],
+  imports: [MatButtonModule, MatProgressSpinnerModule, MatTableModule, ReloadButton, RouterLink],
   templateUrl: './race-page.html',
   styleUrl: './race-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

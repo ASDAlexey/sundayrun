@@ -6,6 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { isoYear } from '../../core/history/iso-year';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
+import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { toRaceListItem } from './race-list-item';
 import { RaceCard } from './race-card/race-card';
 import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
@@ -15,7 +16,7 @@ import { RaceListItem } from './races-page.interface';
 /** The full race list (newest first — `parseArchiveIndex` guarantees the order) with a year filter; each card links to the protocol page. */
 @Component({
   selector: 'app-races-page',
-  imports: [MatFormFieldModule, MatProgressSpinnerModule, MatSelectModule, RaceCard],
+  imports: [MatFormFieldModule, MatProgressSpinnerModule, MatSelectModule, RaceCard, ReloadButton],
   templateUrl: './races-page.html',
   styleUrl: './races-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
