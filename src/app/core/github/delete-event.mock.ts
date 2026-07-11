@@ -25,10 +25,9 @@ export const DELETE_SHAS: GitDataShas = {
 
 export const EXPECTED_DELETE_COMMIT_MESSAGE = `Удаление протокола: ${DELETE_SLUG}`;
 
-/** Three deletions (`sha: null`) followed by the two rewritten summaries; the db rebuild was skipped. */
+/** Two deletions (`sha: null`) followed by the two rewritten summaries; the db rebuild was skipped. */
 export const EXPECTED_DELETE_TREE_ENTRIES_WITHOUT_DB: GitTreeEntry[] = [
   { path: EXPECTED_EVENT_PATHS.sourceXlsx, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
-  { path: EXPECTED_EVENT_PATHS.protocolPdf, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
   { path: EXPECTED_EVENT_PATHS.resultsJson, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
   { path: INDEX_JSON_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}0` },
   { path: ATHLETES_JSON_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}1` },

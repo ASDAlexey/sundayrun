@@ -36,10 +36,8 @@ import {
   EXPECTED_FIRST_PUBLISH_HISTORY,
   EXPECTED_FIRST_PUBLISH_INDEX,
   EXPECTED_MERGED_INDEX,
-  EXPECTED_PDF_URL,
   EXPECTED_PUBLISHED_HISTORY,
   EXPECTED_PUBLISHED_INDEX,
-  PDF_BYTES,
   PUBLISH_INPUT,
   PUBLISH_SHAS,
   PUBLISH_TOKEN,
@@ -87,7 +85,7 @@ function createPublishFetch(
   );
 }
 
-/** Base64 blob contents in upload order: source.xlsx, protocol.pdf, results.json, index.json, athletes.json, protocol.db, version.json. */
+/** Base64 blob contents in upload order: source.xlsx, results.json, index.json, athletes.json, protocol.db, version.json. */
 function blobContents(fetchFn: Mock<GithubFetchFn>): string[] {
   const bodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, POST_METHOD, GIT_BLOBS_URL);
 
@@ -103,7 +101,7 @@ describe('publishEvent', () => {
     vi.unstubAllGlobals();
   });
 
-  it('commits all six files atomically, publishes the version pointer and returns the data commit sha and pdf url', async () => {
+  it('commits all five files atomically, publishes the version pointer and returns the data commit sha', async () => {
     let commitCalls = 0;
     const fetchFn = createPublishFetch(EXISTING_INDEX_TEXT, EXISTING_HISTORY_TEXT, {
       [`POST ${GIT_COMMITS_URL}`]: () =>
@@ -123,16 +121,14 @@ describe('publishEvent', () => {
 
     expect(result, 'the data commit sha, not the pointer commit sha, and no dbSkipped warning').toEqual({
       commitSha: PUBLISH_SHAS.newCommitSha,
-      pdfUrl: EXPECTED_PDF_URL,
     });
     expect(decodeBase64Bytes(contents[0])).toEqual(SOURCE_XLSX_BYTES);
-    expect(decodeBase64Bytes(contents[1])).toEqual(PDF_BYTES);
-    expect(decodeBase64Json(contents[2])).toEqual({ schemaVersion: RESULTS_FILE_SCHEMA_VERSION, event: RACE_EVENT, rows: PROTOCOL_ROWS });
-    expect(decodeBase64Json(contents[3]), 'stale index entry is replaced and re-sorted').toEqual(EXPECTED_PUBLISHED_INDEX);
-    expect(decodeBase64Json(contents[4]), 'stale rollup contribution is replaced').toEqual(EXPECTED_PUBLISHED_HISTORY);
-    expect(decodeBase64Bytes(contents[5]), 'the derived db rebuilt in wasm').toEqual(FAKE_EXPORTED_BYTES);
+    expect(decodeBase64Json(contents[1])).toEqual({ schemaVersion: RESULTS_FILE_SCHEMA_VERSION, event: RACE_EVENT, rows: PROTOCOL_ROWS });
+    expect(decodeBase64Json(contents[2]), 'stale index entry is replaced and re-sorted').toEqual(EXPECTED_PUBLISHED_INDEX);
+    expect(decodeBase64Json(contents[3]), 'stale rollup contribution is replaced').toEqual(EXPECTED_PUBLISHED_HISTORY);
+    expect(decodeBase64Bytes(contents[4]), 'the derived db rebuilt in wasm').toEqual(FAKE_EXPORTED_BYTES);
     expect(ALLOC_FROM_TYPED_ARRAY_MOCK, 'the downloaded db bytes reach the wasm rebuild').toHaveBeenCalledWith(CURRENT_DB_BYTES);
-    expect(decodeBase64Json(contents[6]), 'the pointer names the data commit').toEqual({
+    expect(decodeBase64Json(contents[5]), 'the pointer names the data commit').toEqual({
       schemaVersion: VERSION_FILE_SCHEMA_VERSION,
       sha: PUBLISH_SHAS.newCommitSha,
     });
@@ -149,15 +145,14 @@ describe('publishEvent', () => {
 
     await expect(publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT, fetchFn)).resolves.toEqual({
       commitSha: PUBLISH_SHAS.newCommitSha,
-      pdfUrl: EXPECTED_PDF_URL,
     });
 
     const contents = blobContents(fetchFn);
 
     expect(contents).toHaveLength(EXPECTED_COMMIT_PATHS.length + 1);
-    expect(decodeBase64Json(contents[3])).toEqual(EXPECTED_FIRST_PUBLISH_INDEX);
-    expect(decodeBase64Json(contents[4])).toEqual(EXPECTED_FIRST_PUBLISH_HISTORY);
-    expect(decodeBase64Bytes(contents[5])).toEqual(FAKE_EXPORTED_BYTES);
+    expect(decodeBase64Json(contents[2])).toEqual(EXPECTED_FIRST_PUBLISH_INDEX);
+    expect(decodeBase64Json(contents[3])).toEqual(EXPECTED_FIRST_PUBLISH_HISTORY);
+    expect(decodeBase64Bytes(contents[4])).toEqual(FAKE_EXPORTED_BYTES);
     expect(SQLITE3_DESERIALIZE_MOCK, 'a missing db is created from scratch instead of deserialized').not.toHaveBeenCalled();
   });
 
@@ -187,7 +182,7 @@ describe('publishEvent', () => {
     const result = await publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT, fetchFn);
     const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
 
-    expect(result).toEqual({ commitSha: PUBLISH_SHAS.newCommitSha, pdfUrl: EXPECTED_PDF_URL, dbSkipped: true });
+    expect(result).toEqual({ commitSha: PUBLISH_SHAS.newCommitSha, dbSkipped: true });
     expect(
       treeBodies[0].tree.map((entry) => entry.path),
       'json stays the source of truth',

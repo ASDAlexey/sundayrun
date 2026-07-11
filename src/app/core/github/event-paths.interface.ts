@@ -1,6 +1,5 @@
-/** Repository paths of the three per-event files. */
+/** Repository paths of the per-event files. The protocol PDF is generated on the fly, never stored. */
 export interface EventFilePaths {
   sourceXlsx: string;
-  protocolPdf: string;
   resultsJson: string;
 }

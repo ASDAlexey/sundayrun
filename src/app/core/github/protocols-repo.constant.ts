@@ -25,6 +25,4 @@ export const EVENTS_DIRECTORY = `${DATA_DIRECTORY}events/`;
 
 export const SOURCE_XLSX_FILE = 'source.xlsx';
 
-export const PROTOCOL_PDF_FILE = 'protocol.pdf';
-
 export const RESULTS_JSON_FILE = 'results.json';

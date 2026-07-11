@@ -30,7 +30,6 @@ export const NEWER_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: 1238000,
   files: {
     sourceXlsx: 'data/events/2026-07-05/source.xlsx',
-    protocolPdf: 'data/events/2026-07-05/protocol.pdf',
     resultsJson: 'data/events/2026-07-05/results.json',
   },
 };
@@ -48,7 +47,6 @@ export const OLDER_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: 1360000,
   files: {
     sourceXlsx: 'data/events/2026-06-21/source.xlsx',
-    protocolPdf: 'data/events/2026-06-21/protocol.pdf',
     resultsJson: 'data/events/2026-06-21/results.json',
   },
 };

@@ -13,13 +13,10 @@ export const PUBLISH_TOKEN = 'publish-token';
 
 export const SOURCE_XLSX_BYTES = new Uint8Array([1, 2, 3]);
 
-export const PDF_BYTES = new Uint8Array([9, 8, 7, 6]);
-
 export const PUBLISH_INPUT: PublishEventInput = {
   event: RACE_EVENT,
   rows: PROTOCOL_ROWS,
   sourceXlsxBytes: SOURCE_XLSX_BYTES,
-  pdfBytes: PDF_BYTES,
 };
 
 export const PUBLISH_SHAS: GitDataShas = {
@@ -30,13 +27,9 @@ export const PUBLISH_SHAS: GitDataShas = {
   newCommitSha: 'publish-commit-sha',
 };
 
-/** Pinned to the commit sha, not to the branch. */
-export const EXPECTED_PDF_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${PUBLISH_SHAS.newCommitSha}/data/events/2026-06-28/protocol.pdf`;
-
 /** What a db-failure publication commits: the json files stay the source of truth. */
 export const EXPECTED_COMMIT_PATHS_WITHOUT_DB = [
   'data/events/2026-06-28/source.xlsx',
-  'data/events/2026-06-28/protocol.pdf',
   'data/events/2026-06-28/results.json',
   'data/index.json',
   'data/athletes.json',
@@ -72,7 +65,6 @@ export const CONCURRENT_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: 1305000,
   files: {
     sourceXlsx: 'data/events/2026-07-12/source.xlsx',
-    protocolPdf: 'data/events/2026-07-12/protocol.pdf',
     resultsJson: 'data/events/2026-07-12/results.json',
   },
 };

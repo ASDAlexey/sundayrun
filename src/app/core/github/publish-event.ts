@@ -11,7 +11,6 @@ import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
 import { GithubFetchFn } from './github-fetch.type';
 import { parseAthletesHistory } from './history-file';
 import { jsonToBase64 } from './json-base64';
-import { jsDelivrFileUrl } from './jsdelivr';
 import { buildProtocolDbCommitFile } from './protocol-db-file';
 import { ATHLETES_JSON_PATH, INDEX_JSON_PATH } from './protocols-repo.constant';
 import { PublishCommitAttempt, PublishEventInput, PublishEventResult } from './publish-event.interface';
@@ -20,15 +19,15 @@ import { buildEventResultsFile, toEventResults } from './results-file';
 import { publishVersionPointer } from './version-pointer';
 
 /**
- * Publishes one event into the protocols repository as a single atomic commit: the three
+ * Publishes one event into the protocols repository as a single atomic commit: the two
  * per-event files plus the updated `index.json`, `athletes.json` and the derived
  * `protocol.db`. Re-publishing the same date first removes the previous rollup contribution,
  * so the operation is idempotent. The commit files are rebuilt from fresh repository reads on
  * every retry, so a concurrent publication is merged instead of overwritten. When the db
  * rebuild fails the publication still goes through without it (`dbSkipped` in the result).
  * Finishes by pointing `version.json` at the new commit — the sha-pinned data urls are
- * immutable, so nothing else needs a purge. The returned sha and `pdfUrl` reference the data
- * commit.
+ * immutable, so nothing else needs a purge. The returned sha references the data commit; the
+ * protocol PDF is generated on the fly from the results, never stored.
  */
 export async function publishEvent(
   token: string,
@@ -52,7 +51,7 @@ export async function publishEvent(
 
   await publishVersionPointer(token, input.event.dateIso, commitSha, fetchFn);
 
-  const result: PublishEventResult = { commitSha, pdfUrl: jsDelivrFileUrl(paths.protocolPdf, commitSha) };
+  const result: PublishEventResult = { commitSha };
 
   if (dbSkipped) {
     result.dbSkipped = true;
@@ -61,7 +60,7 @@ export async function publishEvent(
   return result;
 }
 
-/** Re-reads `index.json`/`athletes.json`/`protocol.db` and rebuilds all six files; invoked once per commit attempt. */
+/** Re-reads `index.json`/`athletes.json`/`protocol.db` and rebuilds all five files; invoked once per commit attempt. */
 async function buildCommitFiles(
   fetchFn: GithubFetchFn,
   token: string,
@@ -85,7 +84,6 @@ async function buildCommitFiles(
   );
   const files: CommitFile[] = [
     { path: paths.sourceXlsx, base64Content: bytesToBase64(input.sourceXlsxBytes) },
-    { path: paths.protocolPdf, base64Content: bytesToBase64(input.pdfBytes) },
     { path: paths.resultsJson, base64Content: jsonToBase64(resultsFile) },
     { path: INDEX_JSON_PATH, base64Content: jsonToBase64(index) },
     { path: ATHLETES_JSON_PATH, base64Content: jsonToBase64(history) },

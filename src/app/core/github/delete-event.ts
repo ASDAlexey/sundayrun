@@ -17,7 +17,7 @@ import { publishVersionPointer } from './version-pointer';
 
 /**
  * The mirror of `publishEvent`: removes one published event from the protocols repository as a
- * single atomic commit — the three per-event files are deleted while `index.json`,
+ * single atomic commit — the two per-event files are deleted while `index.json`,
  * `athletes.json` and the derived `protocol.db` are rewritten without the event's entry,
  * rollup contribution and results rows. When the db rebuild fails the deletion still goes
  * through without it — the json files remain the source of truth and the next successful
@@ -42,7 +42,7 @@ export async function deleteEvent(token: string, slug: string, fetchFn: GithubFe
   return commitSha;
 }
 
-/** Re-reads `index.json`/`athletes.json`/`protocol.db` and rebuilds all six commit entries; invoked once per commit attempt. */
+/** Re-reads `index.json`/`athletes.json`/`protocol.db` and rebuilds all five commit entries; invoked once per commit attempt. */
 async function buildCommitFiles(fetchFn: GithubFetchFn, token: string, slug: string, paths: EventFilePaths): Promise<CommitFile[]> {
   const [indexText, historyText] = await Promise.all([
     fetchRepoFileText(token, INDEX_JSON_PATH, fetchFn),
@@ -57,7 +57,6 @@ async function buildCommitFiles(fetchFn: GithubFetchFn, token: string, slug: str
   );
   const files: CommitFile[] = [
     { path: paths.sourceXlsx, base64Content: null },
-    { path: paths.protocolPdf, base64Content: null },
     { path: paths.resultsJson, base64Content: null },
     { path: INDEX_JSON_PATH, base64Content: jsonToBase64(index) },
     { path: ATHLETES_JSON_PATH, base64Content: jsonToBase64(history) },
