@@ -1,11 +1,21 @@
 import { EXISTING_INDEX } from '../core/github/archive-index.mock';
+import { buildEventResultsFile } from '../core/github/results-file';
+import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { Gender } from '../core/models/gender.enum';
-import { selectArchiveEvents, selectAthleteRecord, selectAthleteRecords, selectOverallStats } from './protocol-db-queries';
+import {
+  selectArchiveEvents,
+  selectAthleteRecord,
+  selectAthleteRecords,
+  selectEventResults,
+  selectOverallStats,
+} from './protocol-db-queries';
 import {
   SELECT_ATHLETE_PARTICIPATIONS_SQL,
   SELECT_ATHLETE_RUNS_SQL,
   SELECT_ATHLETE_SQL,
+  SELECT_EVENT_RESULTS_SQL,
+  SELECT_EVENT_SQL,
   SELECT_EVENTS_SQL,
   SELECT_LATEST_EVENTS_SQL,
   SELECT_MEDIAN_TIME_SQL,
@@ -29,6 +39,7 @@ import {
   OVERALL_COUNTS_ROW,
   RANKED_ATHLETE_ROWS,
   UNKNOWN_ATHLETE_KEY,
+  UNKNOWN_EVENT_SLUG,
   YEAR_BEST_ROWS,
 } from './protocol-db-queries.mock';
 import { ProtocolDb } from './protocol-db.interface';
@@ -97,5 +108,22 @@ describe('protocol-db-queries', () => {
 
     await expect(selectArchiveEvents(db, LATEST_EVENTS_LIMIT)).resolves.toEqual(EXISTING_INDEX.events.slice(0, LATEST_EVENTS_LIMIT));
     expect(query).toHaveBeenLastCalledWith(SELECT_LATEST_EVENTS_SQL, { $limit: LATEST_EVENTS_LIMIT });
+  });
+
+  it('selectEventResults assembles the file from the event metadata row and its result rows', async () => {
+    // The aliased event/result rows are exactly `RaceEvent` / `ProtocolRow` shaped.
+    query.mockResolvedValueOnce([RACE_EVENT]);
+    query.mockResolvedValueOnce(PROTOCOL_ROWS);
+
+    await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
+    expect(query).toHaveBeenCalledWith(SELECT_EVENT_SQL, { $slug: RACE_EVENT.dateIso });
+    expect(query).toHaveBeenCalledWith(SELECT_EVENT_RESULTS_SQL, { $slug: RACE_EVENT.dateIso });
+  });
+
+  it('selectEventResults resolves null for an unknown slug without fetching the rows', async () => {
+    query.mockResolvedValueOnce([]);
+
+    await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG)).resolves.toBeNull();
+    expect(query).toHaveBeenCalledExactlyOnceWith(SELECT_EVENT_SQL, { $slug: UNKNOWN_EVENT_SLUG });
   });
 });

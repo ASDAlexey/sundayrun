@@ -134,3 +134,6 @@ export const EVENT_SQL_ROWS: Omit<ArchiveIndexEntry, 'files'>[] = EXISTING_INDEX
 }));
 
 export const LATEST_EVENTS_LIMIT = 1;
+
+/** A slug the events table does not hold — `selectEventResults` must resolve null. */
+export const UNKNOWN_EVENT_SLUG = 'нет-такого-события';
