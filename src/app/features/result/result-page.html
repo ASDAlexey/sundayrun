@@ -49,10 +49,20 @@
             }
           </button>
 
+          <input #photoInput accept="image/*" class="visually-hidden" type="file" (change)="onRunPhotoSelected(photoInput)" />
+
+          <button class="result__vk-photo" i18n="@@result.attachPhoto" matButton="outlined" type="button" (click)="photoInput.click()">
+            Прикрепить фото с забега
+          </button>
+
           <button class="result__vk-open" i18n="@@result.vkOpen" matButton="outlined" type="button" (click)="openVk()">
             Поделиться в ВК
           </button>
         </div>
+
+        @if (runPhotoName(); as name) {
+          <p class="result__vk-photo-name" i18n="@@result.photoAttached">Фото прикреплено: {{ name }}</p>
+        }
       </section>
 
       @if (isAdmin()) {

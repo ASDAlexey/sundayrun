@@ -14,6 +14,9 @@ import { PublishState } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
 import { triggerBlobDownload } from '../../pdf/blob-download';
 import { PdfService } from '../../pdf/pdf.service';
+import { PDF_FILE_EXTENSION } from '../../pdf/pdf.service.constant';
+import { ProtocolImageService } from '../../pdf/protocol-image.service';
+import { PROTOCOL_IMAGE_FILE_EXTENSION, PROTOCOL_IMAGE_MIME_TYPE } from '../../pdf/protocol-image.service.constant';
 import { ShareService } from '../../share/share.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { ADMIN_PAGE_LINK } from '../admin/admin-page.constant';
@@ -37,11 +40,17 @@ export class ResultPage implements OnDestroy {
   readonly #sanitizer = inject(DomSanitizer);
   readonly #github = inject(GithubStorageService);
   readonly #adminToken = inject(AdminTokenService);
+  readonly #protocolImage = inject(ProtocolImageService);
   readonly #document = inject(DOCUMENT);
   readonly #blob = signal<Blob | null>(null);
+  readonly #imageBlob = signal<Blob | null>(null);
+  readonly #runPhoto = signal<File | null>(null);
 
   /** The first announcement line doubles as the share/repost title. */
   readonly #titleLine = computed(() => this.description().split(LINE_SEPARATOR)[0]);
+
+  /** The rasterized protocol shares the base name of the pdf, only with a `.png` extension (empty stays empty). */
+  readonly #imageFileName = computed(() => this.fileName().replace(PDF_FILE_EXTENSION, PROTOCOL_IMAGE_FILE_EXTENSION));
 
   readonly status = signal<ResultStatusType>(ResultStatus.generating);
   readonly description = signal(EMPTY_TEXT);
@@ -79,6 +88,8 @@ export class ResultPage implements OnDestroy {
 
     return file !== null && this.#share.canShareFile(file);
   });
+
+  readonly runPhotoName = computed(() => this.#runPhoto()?.name ?? EMPTY_TEXT);
 
   protected readonly statuses = ResultStatus;
   protected readonly publishStates = PublishState;
@@ -119,25 +130,35 @@ export class ResultPage implements OnDestroy {
     });
   }
 
+  /** Remembers the run photo the organizer picked from the phone, so it rides along to VK. */
+  onRunPhotoSelected(input: HTMLInputElement): void {
+    this.#runPhoto.set(input.files?.[0] ?? null);
+  }
+
   /**
-   * Shares the generated PDF to VK as a file: the Web Share sheet (where the file can travel) is
-   * preferred, otherwise the pdf is downloaded and the VK dialog is opened so it can be attached by hand.
+   * Shares the protocol to VK as an inline photo: the PNG (rasterized from the pdf) plus the
+   * optional run photo travel through the Web Share sheet straight into the VK app; where files
+   * cannot be shared, the protocol image is downloaded and the VK dialog is opened for a manual attach.
    */
   async openVk(): Promise<void> {
-    const file = this.pdfFile();
+    const image = await this.#protocolImageFile();
 
-    if (file !== null && this.#share.canShareFile(file)) {
-      await this.#share.shareFile(file, this.#titleLine(), this.description());
+    if (image === null) {
+      this.#share.openWindow(this.#share.buildVkShareUrl(location.origin, this.#titleLine()));
 
       return;
     }
 
-    const blob = this.#blob();
+    const runPhoto = this.#runPhoto();
+    const files = runPhoto === null ? [image] : [image, runPhoto];
 
-    if (blob !== null) {
-      triggerBlobDownload(this.#document, blob, this.fileName());
+    if (this.#share.canShareFiles(files)) {
+      await this.#share.shareFiles(files, this.#titleLine(), this.description());
+
+      return;
     }
 
+    triggerBlobDownload(this.#document, image, image.name);
     this.#share.openWindow(this.#share.buildVkShareUrl(location.origin, this.#titleLine()));
   }
 
@@ -155,6 +176,24 @@ export class ResultPage implements OnDestroy {
     if (url !== null) {
       URL.revokeObjectURL(url);
     }
+  }
+
+  /** The protocol PNG, rasterized from the generated pdf once and cached; null before generation. */
+  async #protocolImageFile(): Promise<File | null> {
+    const blob = this.#blob();
+
+    if (blob === null) {
+      return null;
+    }
+
+    let image = this.#imageBlob();
+
+    if (image === null) {
+      image = await this.#protocolImage.render(blob);
+      this.#imageBlob.set(image);
+    }
+
+    return new File([image], this.#imageFileName(), { type: PROTOCOL_IMAGE_MIME_TYPE });
   }
 
   async #generate(): Promise<void> {

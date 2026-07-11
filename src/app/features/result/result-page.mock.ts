@@ -2,6 +2,13 @@ import { SourceFile } from '../../state/source-file.interface';
 
 export const RESULT_BLOB_MOCK = new Blob(['%PDF-1.7']);
 
+export const PROTOCOL_IMAGE_BLOB_MOCK = new Blob(['png-bytes'], { type: 'image/png' });
+
+/** `FILE_NAME_MOCK` with the pdf extension swapped for png. */
+export const EXPECTED_IMAGE_FILE_NAME = 'protokol-2020-09-20.png';
+
+export const RUN_PHOTO_MOCK = new File(['photo-bytes'], 'zabeg.jpg', { type: 'image/jpeg' });
+
 export const SOURCE_FILE_MOCK: SourceFile = { name: '20.09.2020.xlsx', bytes: new Uint8Array([4, 5, 6]) };
 
 /** An http url instead of a real blob: one — jsdom cannot create iframe windows for opaque origins. */

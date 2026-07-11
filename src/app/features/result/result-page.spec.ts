@@ -9,6 +9,8 @@ import { AdminTokenService } from '../../github/admin-token.service';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
 import { PdfService } from '../../pdf/pdf.service';
+import { ProtocolImageService } from '../../pdf/protocol-image.service';
+import { PROTOCOL_IMAGE_MIME_TYPE } from '../../pdf/protocol-image.service.constant';
 import { ShareService } from '../../share/share.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { SourceFile } from '../../state/source-file.interface';
@@ -19,12 +21,15 @@ import { ResultStatus } from './result-page.enum';
 import {
   EDITED_DESCRIPTION,
   EXPECTED_DESCRIPTION,
+  EXPECTED_IMAGE_FILE_NAME,
   EXPECTED_SUMMARY,
   EXPECTED_TITLE_LINE,
   FILE_NAME_MOCK,
   GENERATE_ERROR_MESSAGE,
   OBJECT_URL_MOCK,
+  PROTOCOL_IMAGE_BLOB_MOCK,
   RESULT_BLOB_MOCK,
+  RUN_PHOTO_MOCK,
   SOURCE_FILE_MOCK,
   VK_URL_MOCK,
 } from './result-page.mock';
@@ -37,7 +42,10 @@ describe('ResultPage', () => {
   const generateProtocolBlob = vi.fn();
   const suggestedFileName = vi.fn(() => FILE_NAME_MOCK);
   const canShareFile = vi.fn(() => true);
+  const canShareFiles = vi.fn((_files: File[]) => true);
   const shareFile = vi.fn(() => Promise.resolve(true));
+  const shareFiles = vi.fn((_files: File[], _title: string, _text: string) => Promise.resolve(true));
+  const render = vi.fn((_pdf: Blob) => Promise.resolve<Blob>(PROTOCOL_IMAGE_BLOB_MOCK));
   const copyToClipboard = vi.fn(() => Promise.resolve(true));
   const buildVkShareUrl = vi.fn(() => VK_URL_MOCK);
   const openWindow = vi.fn();
@@ -57,7 +65,9 @@ describe('ResultPage', () => {
     isAdmin.set(true);
     publishState.set(PublishState.idle);
     generateProtocolBlob.mockResolvedValue(RESULT_BLOB_MOCK);
+    render.mockResolvedValue(PROTOCOL_IMAGE_BLOB_MOCK);
     canShareFile.mockReturnValue(true);
+    canShareFiles.mockReturnValue(true);
     copyToClipboard.mockResolvedValue(true);
     // The router's fake platform navigation does `new URL()`, so the stub must stay constructible.
     vi.stubGlobal('URL', Object.assign(class extends URL {}, { createObjectURL, revokeObjectURL }));
@@ -66,7 +76,11 @@ describe('ResultPage', () => {
         provideRouter([]),
         { provide: ProtocolStateService, useValue: { event, protocolRows, sourceFile } },
         { provide: PdfService, useValue: { generateProtocolBlob, suggestedFileName } },
-        { provide: ShareService, useValue: { canShareFile, shareFile, copyToClipboard, buildVkShareUrl, openWindow } },
+        { provide: ProtocolImageService, useValue: { render } },
+        {
+          provide: ShareService,
+          useValue: { canShareFile, canShareFiles, shareFile, shareFiles, copyToClipboard, buildVkShareUrl, openWindow },
+        },
         { provide: GithubStorageService, useValue: { state: publishState, publish, reset } },
         { provide: AdminTokenService, useValue: { isAdmin } },
       ],
@@ -125,8 +139,9 @@ describe('ResultPage', () => {
     expect(revokeObjectURL).toHaveBeenCalledWith(OBJECT_URL_MOCK);
   });
 
-  it('hides the share button and falls back to download + VK dialog when the platform cannot share files', async () => {
+  it('hides the share button and falls back to download + VK dialog when files cannot be shared', async () => {
     canShareFile.mockReturnValue(false);
+    canShareFiles.mockReturnValue(false);
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     fixture = await createPage();
 
@@ -141,8 +156,9 @@ describe('ResultPage', () => {
 
     await page.openVk();
 
-    expect(shareFile, 'no web-share sheet when the platform cannot share files').not.toHaveBeenCalled();
-    expect(createObjectURL, 'the pdf is downloaded so it can be attached to the post by hand').toHaveBeenCalledWith(RESULT_BLOB_MOCK);
+    expect(render, 'the protocol is rasterized to an image for VK').toHaveBeenCalledWith(RESULT_BLOB_MOCK);
+    expect(shareFiles, 'no web-share sheet when files cannot be shared').not.toHaveBeenCalled();
+    expect(createObjectURL, 'preview url on entry + the downloaded protocol image').toHaveBeenCalledTimes(2);
     expect(buildVkShareUrl).toHaveBeenCalledWith(location.origin, EXPECTED_TITLE_LINE);
     expect(openWindow).toHaveBeenCalledWith(VK_URL_MOCK);
   });
@@ -170,7 +186,7 @@ describe('ResultPage', () => {
 
     await page.openVk();
 
-    expect(createObjectURL, 'nothing to download when generation failed').not.toHaveBeenCalled();
+    expect(render, 'nothing to rasterize when generation failed').not.toHaveBeenCalled();
     expect(openWindow, 'VK still falls back to the url dialog').toHaveBeenCalledWith(VK_URL_MOCK);
 
     fixture.detectChanges();
@@ -201,7 +217,7 @@ describe('ResultPage', () => {
     expect(publish, 'publishing needs the event').not.toHaveBeenCalled();
   });
 
-  it('copies the description with a copied flag, accepts edits and shares the pdf to VK as a file', async () => {
+  it('copies the description with a copied flag, accepts edits and shares the protocol image to VK', async () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -229,17 +245,52 @@ describe('ResultPage', () => {
 
     expect(page.description()).toBe(EDITED_DESCRIPTION);
 
-    const file = page.pdfFile();
-
     element.querySelector('.result__vk-open').click();
     await settle();
 
-    expect(shareFile, 'the VK button shares the generated pdf as a file').toHaveBeenCalledWith(
-      file,
-      EDITED_DESCRIPTION,
-      EDITED_DESCRIPTION,
-    );
+    expect(render, 'the protocol is rasterized to a png for VK').toHaveBeenCalledWith(RESULT_BLOB_MOCK);
+
+    const [files, title, text] = shareFiles.mock.calls[0];
+
+    expect(files.length, 'only the protocol image, no run photo picked').toBe(1);
+    expect(files[0].name).toBe(EXPECTED_IMAGE_FILE_NAME);
+    expect(files[0].type).toBe(PROTOCOL_IMAGE_MIME_TYPE);
+    expect(title).toBe(EDITED_DESCRIPTION);
+    expect(text).toBe(EDITED_DESCRIPTION);
     expect(openWindow, 'the web-share sheet replaces the url dialog when files can travel').not.toHaveBeenCalled();
+  });
+
+  it('attaches the picked run photo alongside the protocol image when sharing to VK', async () => {
+    fixture = await createPage();
+    fixture.detectChanges();
+
+    const page = fixture.componentInstance;
+    const element = fixture.nativeElement;
+    const input = element.querySelector('input[type="file"]');
+
+    Object.defineProperty(input, 'files', { value: [RUN_PHOTO_MOCK], configurable: true });
+    page.onRunPhotoSelected(input);
+    fixture.detectChanges();
+
+    expect(page.runPhotoName()).toBe(RUN_PHOTO_MOCK.name);
+    expect(element.querySelector('.result__vk-photo-name').textContent).toContain(RUN_PHOTO_MOCK.name);
+
+    await page.openVk();
+
+    const [files] = shareFiles.mock.calls[0];
+
+    expect(files.length, 'the protocol image plus the run photo').toBe(2);
+    expect(files[0].name).toBe(EXPECTED_IMAGE_FILE_NAME);
+    expect(files[1], 'the run photo rides along untouched').toBe(RUN_PHOTO_MOCK);
+
+    await page.openVk();
+
+    expect(render, 'the rasterized image is cached, not rebuilt on every share').toHaveBeenCalledOnce();
+
+    Object.defineProperty(input, 'files', { value: null, configurable: true });
+    page.onRunPhotoSelected(input);
+
+    expect(page.runPhotoName(), 'clearing the picker drops the attached photo').toBe('');
   });
 
   it('publishes to the archive and renders every publish state', async () => {
