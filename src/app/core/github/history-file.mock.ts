@@ -13,8 +13,3 @@ export const VALID_HISTORY: AthletesHistory = {
     bestMsByYear: { '2026': 1560000 },
   },
 };
-
-export const VALID_HISTORY_TEXT = JSON.stringify(VALID_HISTORY);
-
-/** Null, malformed JSON and JSON non-objects (null literal, number, string, array). */
-export const INVALID_HISTORY_TEXTS: (string | null)[] = [null, 'not json', 'null', '5', '"x"', '[]'];

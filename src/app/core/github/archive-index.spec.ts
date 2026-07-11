@@ -1,30 +1,15 @@
-import { buildIndexEntry, parseArchiveIndex, removeIndexEntry, upsertIndexEntry } from './archive-index';
+import { buildIndexEntry, removeIndexEntry, upsertIndexEntry } from './archive-index';
 import {
-  EMPTY_INDEX,
   EXISTING_INDEX,
   EXPECTED_NEW_ENTRY,
   EXPECTED_NO_FINISHER_ENTRY,
   EXPECTED_UPSERTED_EVENTS,
-  INVALID_INDEX_TEXTS,
   NEWER_ENTRY,
   OLDER_ENTRY,
   STALE_INDEX,
   STALE_SAME_SLUG_ENTRY,
-  UNSORTED_INDEX_TEXT,
-  VALID_INDEX_TEXT,
 } from './archive-index.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from './spec-utils/race-fixtures';
-
-describe('parseArchiveIndex', () => {
-  it('parses a valid index, re-sorts events newest first and yields an empty one for null, malformed JSON or an unexpected shape', () => {
-    expect(parseArchiveIndex(VALID_INDEX_TEXT)).toEqual(EXISTING_INDEX);
-    expect(parseArchiveIndex(UNSORTED_INDEX_TEXT), 'an index published unsorted is re-sorted on read').toEqual(EXISTING_INDEX);
-
-    for (const text of INVALID_INDEX_TEXTS) {
-      expect(parseArchiveIndex(text), `invalid input: ${text}`).toEqual(EMPTY_INDEX);
-    }
-  });
-});
 
 describe('buildIndexEntry', () => {
   it('derives the slug from dateIso, counts every row and aggregates the 5 km finishers', () => {

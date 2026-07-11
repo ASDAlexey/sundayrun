@@ -1,6 +1,6 @@
 import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from './github-api.constant';
 import { GithubAuthError, GithubRequestError } from './github-errors';
-import { INDEX_JSON_PATH, PROTOCOL_DB_PATH } from './protocols-repo.constant';
+import { VERSION_JSON_PATH, PROTOCOL_DB_PATH } from './protocols-repo.constant';
 import { fetchRepoFileBytes, fetchRepoFileText } from './repo-contents';
 import {
   CONTENTS_TOKEN,
@@ -21,7 +21,7 @@ describe('fetchRepoFileText', () => {
   it('requests the raw file pinned to the branch and returns its text', async () => {
     const fetchFn = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(new Response(FILE_TEXT)));
 
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, INDEX_JSON_PATH, fetchFn)).resolves.toBe(FILE_TEXT);
+    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, fetchFn)).resolves.toBe(FILE_TEXT);
     expect(fetchFn).toHaveBeenCalledWith(EXPECTED_CONTENTS_URL, EXPECTED_RAW_INIT);
   });
 
@@ -30,10 +30,10 @@ describe('fetchRepoFileText', () => {
     const forbidden = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(HTTP_FORBIDDEN)));
     const failing = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(SERVER_ERROR_STATUS)));
 
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, INDEX_JSON_PATH, missing)).resolves.toBeNull();
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, INDEX_JSON_PATH, forbidden)).rejects.toBeInstanceOf(GithubAuthError);
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, INDEX_JSON_PATH, failing)).rejects.toBeInstanceOf(GithubRequestError);
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, INDEX_JSON_PATH, failing)).rejects.toMatchObject({ status: SERVER_ERROR_STATUS });
+    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, missing)).resolves.toBeNull();
+    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, forbidden)).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, failing)).rejects.toBeInstanceOf(GithubRequestError);
+    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, failing)).rejects.toMatchObject({ status: SERVER_ERROR_STATUS });
   });
 
   it('falls back to the global fetch by default', async () => {
@@ -42,7 +42,7 @@ describe('fetchRepoFileText', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_NOT_FOUND))),
     );
 
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, INDEX_JSON_PATH)).resolves.toBeNull();
+    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH)).resolves.toBeNull();
   });
 });
 

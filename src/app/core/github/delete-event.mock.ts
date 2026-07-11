@@ -1,13 +1,10 @@
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
-import { ARCHIVE_INDEX_SCHEMA_VERSION } from './archive-index.constant';
-import { ArchiveIndexFile } from './archive-index.interface';
-import { NEWER_ENTRY, OLDER_ENTRY } from './archive-index.mock';
 import { EXPECTED_EVENT_PATHS } from './event-paths.mock';
 import { GIT_TREE_BLOB_TYPE, GIT_TREE_FILE_MODE } from './github-api.constant';
 import { GitTreeEntry } from './github-api.interface';
-import { ATHLETES_JSON_PATH, INDEX_JSON_PATH, PROTOCOL_DB_PATH } from './protocols-repo.constant';
+import { PROTOCOL_DB_PATH } from './protocols-repo.constant';
 import { GitDataShas } from './spec-utils/git-data-routes';
 
 export const DELETE_TOKEN = 'delete-token';
@@ -25,25 +22,11 @@ export const DELETE_SHAS: GitDataShas = {
 
 export const EXPECTED_DELETE_COMMIT_MESSAGE = `Удаление протокола: ${DELETE_SLUG}`;
 
-/** Two deletions (`sha: null`) followed by the two rewritten summaries; the db rebuild was skipped. */
-export const EXPECTED_DELETE_TREE_ENTRIES_WITHOUT_DB: GitTreeEntry[] = [
-  { path: EXPECTED_EVENT_PATHS.sourceXlsx, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
-  { path: EXPECTED_EVENT_PATHS.resultsJson, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
-  { path: INDEX_JSON_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}0` },
-  { path: ATHLETES_JSON_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}1` },
-];
-
-/** The full deletion tree: the rewritten (never deleted) derived db follows the summaries in blob-upload order. */
+/** The deletion tree: the source workbook is removed (`sha: null`) and the rewritten db follows it. */
 export const EXPECTED_DELETE_TREE_ENTRIES: GitTreeEntry[] = [
-  ...EXPECTED_DELETE_TREE_ENTRIES_WITHOUT_DB,
-  { path: PROTOCOL_DB_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}2` },
+  { path: EXPECTED_EVENT_PATHS.sourceXlsx, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
+  { path: PROTOCOL_DB_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}0` },
 ];
-
-/** `STALE_INDEX` without the deleted slug; parsing re-sorts the remaining entries newest first. */
-export const EXPECTED_DELETED_INDEX: ArchiveIndexFile = {
-  schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,
-  events: [NEWER_ENTRY, OLDER_ENTRY],
-};
 
 /** `EXISTING_HISTORY` without the deleted event: Мария keeps her older run, the bests are recomputed. */
 export const EXPECTED_DELETED_HISTORY: AthletesHistory = {

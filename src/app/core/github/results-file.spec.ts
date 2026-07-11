@@ -1,6 +1,6 @@
-import { buildEventResultsFile, parseEventResultsFile, toEventResults } from './results-file';
+import { buildEventResultsFile, toEventResults } from './results-file';
 import { RESULTS_FILE_SCHEMA_VERSION } from './results-file.constant';
-import { EXPECTED_EVENT_RESULTS, INVALID_RESULTS_TEXTS, VALID_RESULTS_TEXT } from './results-file.mock';
+import { EXPECTED_EVENT_RESULTS } from './results-file.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from './spec-utils/race-fixtures';
 
 describe('buildEventResultsFile', () => {
@@ -10,16 +10,6 @@ describe('buildEventResultsFile', () => {
       event: RACE_EVENT,
       rows: PROTOCOL_ROWS,
     });
-  });
-});
-
-describe('parseEventResultsFile', () => {
-  it('parses a published results file and yields null for null, malformed JSON or an unexpected shape', () => {
-    expect(parseEventResultsFile(VALID_RESULTS_TEXT)).toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
-
-    for (const text of INVALID_RESULTS_TEXTS) {
-      expect(parseEventResultsFile(text), `invalid input: ${text}`).toBeNull();
-    }
   });
 });
 

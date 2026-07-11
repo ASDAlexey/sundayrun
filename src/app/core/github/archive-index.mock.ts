@@ -4,19 +4,6 @@ import { EXPECTED_EVENT_PATHS } from './event-paths.mock';
 
 export const EMPTY_INDEX: ArchiveIndexFile = { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: [] };
 
-/** Failing each guard branch: non-object, null, missing/wrong schemaVersion, missing/non-array events. */
-export const INVALID_INDEX_TEXTS: (string | null)[] = [
-  null,
-  'not json',
-  '"string"',
-  '5',
-  'null',
-  '{}',
-  '{"schemaVersion":2,"events":[]}',
-  '{"schemaVersion":1}',
-  '{"schemaVersion":1,"events":{}}',
-];
-
 export const NEWER_ENTRY: ArchiveIndexEntry = {
   slug: '2026-07-05',
   dateIso: '2026-07-05',
@@ -100,14 +87,6 @@ export const EXPECTED_NO_FINISHER_ENTRY: ArchiveIndexEntry = {
 };
 
 export const EXISTING_INDEX: ArchiveIndexFile = { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: [NEWER_ENTRY, OLDER_ENTRY] };
-
-export const VALID_INDEX_TEXT = JSON.stringify(EXISTING_INDEX);
-
-/** EXISTING_INDEX serialised oldest-first — parsing must restore the newest-first order. */
-export const UNSORTED_INDEX_TEXT = JSON.stringify({
-  schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,
-  events: [OLDER_ENTRY, NEWER_ENTRY],
-});
 
 /** Same events deliberately unsorted, with a stale entry for the re-published slug. */
 export const STALE_INDEX: ArchiveIndexFile = {

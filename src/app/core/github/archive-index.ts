@@ -2,25 +2,8 @@ import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { Gender, GenderType } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
-import { ARCHIVE_INDEX_SCHEMA_VERSION } from './archive-index.constant';
 import { ArchiveIndexEntry, ArchiveIndexFile } from './archive-index.interface';
 import { eventFilePaths } from './event-paths';
-import { safeJsonParse } from './safe-json-parse';
-
-/**
- * Parses `index.json`; null, malformed JSON or an unexpected shape yields an empty index.
- * Events are re-sorted newest first on read — a file written by hand or by an older version
- * may arrive in any order, and every consumer renders the list as served.
- */
-export function parseArchiveIndex(text: string | null): ArchiveIndexFile {
-  const parsed = safeJsonParse(text);
-
-  if (!isArchiveIndexFile(parsed)) {
-    return { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: [] };
-  }
-
-  return { ...parsed, events: sortedNewestFirst(parsed.events) };
-}
 
 export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveIndexEntry {
   const finisherTimesMs = fiveKmTimesMs(rows);
@@ -78,15 +61,4 @@ function bestOf(rows: ProtocolRow[], gender: GenderType): number | null {
   const timesMs = fiveKmTimesMs(rows, gender);
 
   return timesMs.length === 0 ? null : Math.min(...timesMs);
-}
-
-function isArchiveIndexFile(value: unknown): value is ArchiveIndexFile {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'schemaVersion' in value &&
-    value.schemaVersion === ARCHIVE_INDEX_SCHEMA_VERSION &&
-    'events' in value &&
-    Array.isArray(value.events)
-  );
 }
