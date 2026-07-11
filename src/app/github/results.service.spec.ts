@@ -10,20 +10,28 @@ import { CDN_ERROR_MESSAGE, CDN_SERVER_ERROR_STATUS } from './archive.service.mo
 import { CDN_IMMUTABLE_FETCH_OPTIONS } from './cdn-fetch.constant';
 import { CdnRefService } from './cdn-ref.service';
 import { cdnRefServiceMock } from './cdn-ref.service.mock';
+import { ProtocolDbService } from './protocol-db.service';
+import { PROTOCOL_DB_ERROR_MESSAGE } from './protocol-db.service.mock';
 import { ResultsService } from './results.service';
 import { RESULTS_LOAD_ERROR_PREFIX } from './results.service.constant';
 import { FOREIGN_SCHEMA_TEXT, RESULTS_CDN_URL } from './results.service.mock';
 
 describe('ResultsService', () => {
   const fetchMock = vi.fn();
+  const dbQuery = vi.fn();
 
   let service: ResultsService;
 
   beforeEach(() => {
     fetchMock.mockReset();
+    dbQuery.mockReset();
+    dbQuery.mockRejectedValue(new Error(PROTOCOL_DB_ERROR_MESSAGE));
     vi.stubGlobal('fetch', fetchMock);
     TestBed.configureTestingModule({
-      providers: [{ provide: CdnRefService, useValue: cdnRefServiceMock() }],
+      providers: [
+        { provide: CdnRefService, useValue: cdnRefServiceMock() },
+        { provide: ProtocolDbService, useValue: { query: dbQuery } },
+      ],
     });
     service = TestBed.inject(ResultsService);
   });
@@ -84,5 +92,14 @@ describe('ResultsService', () => {
       buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS),
     );
     expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('serves the protocol from sql when protocol.db answers, without downloading results.json', async () => {
+    dbQuery.mockReset();
+    dbQuery.mockResolvedValueOnce([RACE_EVENT]);
+    dbQuery.mockResolvedValueOnce(PROTOCOL_ROWS);
+
+    await expect(service.loadResults(EVENT_DATE_ISO)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
+    expect(fetchMock, 'the sql path never downloads results.json').not.toHaveBeenCalled();
   });
 });

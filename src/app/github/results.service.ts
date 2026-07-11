@@ -7,18 +7,22 @@ import { parseEventResultsFile } from '../core/github/results-file';
 import { EventResultsFile } from '../core/github/results-file.interface';
 import { cdnFetchOptions } from './cdn-fetch';
 import { CdnRefService } from './cdn-ref.service';
+import { selectEventResults } from './protocol-db-queries';
+import { ProtocolDbService } from './protocol-db.service';
 import { RESULTS_LOAD_ERROR_PREFIX } from './results.service.constant';
 
 /**
- * Anonymous read of one event's `results.json` from the jsDelivr CDN. A 404/403 (jsDelivr
- * answers both for a file that has never been published) and an unparsable payload resolve
- * to null ("no such protocol"); any other non-OK response or a network failure rejects, so
- * the page can distinguish "not found" from "could not be loaded". Loads are cached per
- * slug for the session.
+ * Anonymous read of one event's protocol: `protocol.db` over HTTP range requests first, the whole
+ * `results.json` on ANY db failure — range support on the CDN is not guaranteed, and prerender
+ * always takes the JSON path. On the JSON path a 404/403 (jsDelivr answers both for a file that
+ * has never been published) and an unparsable payload resolve to null ("no such protocol"); any
+ * other non-OK response or a network failure rejects, so the page can distinguish "not found"
+ * from "could not be loaded". Loads are cached per slug for the session.
  */
 @Injectable({ providedIn: 'root' })
 export class ResultsService {
   readonly #cdnRef = inject(CdnRefService);
+  readonly #db = inject(ProtocolDbService);
   readonly #results = new Map<string, Promise<EventResultsFile | null>>();
 
   /**
@@ -52,6 +56,14 @@ export class ResultsService {
   }
 
   async #fetchResults(slug: string): Promise<EventResultsFile | null> {
+    try {
+      return await selectEventResults(this.#db, slug);
+    } catch {
+      return this.#fetchResultsJson(slug);
+    }
+  }
+
+  async #fetchResultsJson(slug: string): Promise<EventResultsFile | null> {
     const ref = await this.#cdnRef.resolve();
     const response = await fetch(jsDelivrFileUrl(eventFilePaths(slug).resultsJson, ref), cdnFetchOptions(ref));
 
