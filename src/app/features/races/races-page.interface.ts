@@ -4,7 +4,7 @@ export interface RaceCardStat {
   value: string;
 }
 
-/** One race row prepared for the template: a preformatted date, the online protocol route and a resolved CDN pdf url. */
+/** One race row prepared for the template: a preformatted date, the online protocol route and the pdf button label. */
 export interface RaceListItem {
   slug: string;
   protocolLink: string[];
@@ -14,6 +14,5 @@ export interface RaceListItem {
   park: string;
   participantCount: number;
   stats: RaceCardStat[];
-  pdfUrl: string;
   pdfAriaLabel: string;
 }

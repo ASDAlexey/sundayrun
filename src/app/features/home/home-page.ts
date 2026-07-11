@@ -10,7 +10,6 @@ import { formatDuration } from '../../core/time/duration';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
-import { CdnRefService } from '../../github/cdn-ref.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { toRaceListItem } from '../races/race-list-item';
 import { RaceCard } from '../races/race-card/race-card';
@@ -38,7 +37,6 @@ import { HomeStatsView } from './home-page.interface';
 })
 export class HomePage {
   readonly #archive = inject(ArchiveService);
-  readonly #cdnRef = inject(CdnRefService);
   readonly #siteMeta = inject(SiteMetaService);
   readonly #athletes = inject(AthletesService);
   readonly #stats = signal<OverallStats | null>(null);
@@ -81,9 +79,8 @@ export class HomePage {
   /** Only the preview slice travels through TransferState — the full index would bloat the HTML. */
   async #loadLatest(): Promise<RaceListItem[]> {
     const latest = await this.#archive.loadLatest(LATEST_RACES_COUNT);
-    const ref = await this.#cdnRef.resolve();
 
-    return latest.map((entry) => toRaceListItem(entry, ref));
+    return latest.map((entry) => toRaceListItem(entry));
   }
 
   #applyLatest(races: RaceListItem[]): void {

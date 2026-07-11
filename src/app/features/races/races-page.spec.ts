@@ -57,7 +57,7 @@ describe('RacesPage', () => {
     return created;
   }
 
-  it('renders the served race order as cards with protocol and CDN pdf links', async () => {
+  it('renders the served race order as cards with protocol links and on-click pdf buttons', async () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -69,7 +69,7 @@ describe('RacesPage', () => {
 
     const element = fixture.nativeElement;
     const titles = [...element.querySelectorAll('.race-card__title')].map((node) => node.textContent.trim());
-    const pdfLinks = [...element.querySelectorAll('.race-card__pdf')];
+    const pdfButtons = [...element.querySelectorAll('.race-card__pdf')];
     const protocolLinks = [...element.querySelectorAll('.race-card__protocol')];
     const statValues = [...element.querySelectorAll('.race-card__stat-value')].map((node) => node.textContent.trim());
 
@@ -81,13 +81,14 @@ describe('RacesPage', () => {
       protocolLinks.map((link) => link.getAttribute('href')),
       'each card links to the online protocol',
     ).toEqual(EXPECTED_RACE_ITEMS.map((item) => item.protocolLink.join('/')));
-    expect(pdfLinks.map((link) => link.getAttribute('href'))).toEqual(EXPECTED_RACE_ITEMS.map((item) => item.pdfUrl));
-    expect(pdfLinks[0].getAttribute('target')).toBe('_blank');
-    expect(pdfLinks[0].getAttribute('rel')).toBe('noopener');
     expect(
-      pdfLinks.map((link, index) => link.getAttribute('aria-label').includes(String(EXPECTED_RACE_ITEMS[index].number))),
-      'each pdf link names its race',
-    ).toEqual(pdfLinks.map(() => true));
+      pdfButtons.map((button) => button.tagName),
+      'the pdf action generates on click instead of linking to a file',
+    ).toEqual(pdfButtons.map(() => 'BUTTON'));
+    expect(
+      pdfButtons.map((button, index) => button.getAttribute('aria-label').includes(String(EXPECTED_RACE_ITEMS[index].number))),
+      'each pdf button names its race',
+    ).toEqual(pdfButtons.map(() => true));
     expect(element.querySelector('.races__status').getAttribute('aria-live'), 'the live region stays in the DOM across states').toBe(
       'polite',
     );

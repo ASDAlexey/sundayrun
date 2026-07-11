@@ -1,9 +1,8 @@
 import { NEWER_ENTRY, OLDER_ENTRY } from '../../core/github/archive-index.mock';
-import { CDN_REF_SHA_MOCK } from '../../github/cdn-ref.service.mock';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { RaceListItem } from './races-page.interface';
 
-/** EXISTING_INDEX events (newest first) mapped by toListItem: long dates, protocol routes and sha-pinned CDN urls. */
+/** EXISTING_INDEX events (newest first) mapped by toListItem: long dates, protocol routes and pdf button labels. */
 export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
   {
     slug: '2026-07-05',
@@ -19,7 +18,6 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
       { label: 'Лучшее М', value: '17:36' },
       { label: 'Лучшее Ж', value: '20:38' },
     ],
-    pdfUrl: `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${CDN_REF_SHA_MOCK}/data/events/2026-07-05/protocol.pdf`,
     pdfAriaLabel: 'Протокол пробега № 13 (PDF)',
   },
   {
@@ -36,7 +34,6 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
       { label: 'Лучшее М', value: '19:43' },
       { label: 'Лучшее Ж', value: '22:40' },
     ],
-    pdfUrl: `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${CDN_REF_SHA_MOCK}/data/events/2026-06-21/protocol.pdf`,
     pdfAriaLabel: 'Протокол пробега № 11 (PDF)',
   },
 ];
@@ -69,7 +66,6 @@ export const PREVIOUS_YEAR_INDEX = {
       bestFemaleMs: null,
       files: {
         sourceXlsx: 'data/events/2025-06-21/source.xlsx',
-        protocolPdf: 'data/events/2025-06-21/protocol.pdf',
         resultsJson: 'data/events/2025-06-21/results.json',
       },
     },

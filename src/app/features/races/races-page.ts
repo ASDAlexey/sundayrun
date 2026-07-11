@@ -6,7 +6,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { isoYear } from '../../core/history/iso-year';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
-import { CdnRefService } from '../../github/cdn-ref.service';
 import { toRaceListItem } from './race-list-item';
 import { RaceCard } from './race-card/race-card';
 import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
@@ -23,7 +22,6 @@ import { RaceListItem } from './races-page.interface';
 })
 export class RacesPage {
   readonly #archive = inject(ArchiveService);
-  readonly #cdnRef = inject(CdnRefService);
 
   readonly status = signal<RacesStatusType>(RacesStatus.loading);
   readonly races = signal<RaceListItem[]>([]);
@@ -51,9 +49,8 @@ export class RacesPage {
 
   async #loadRaces(): Promise<RaceListItem[]> {
     const index = await this.#archive.loadIndex();
-    const ref = await this.#cdnRef.resolve();
 
-    return index.events.map((entry) => toRaceListItem(entry, ref));
+    return index.events.map((entry) => toRaceListItem(entry));
   }
 
   #applyRaces(races: RaceListItem[]): void {
