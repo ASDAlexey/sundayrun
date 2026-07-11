@@ -26,16 +26,23 @@
   <mat-card-actions class="race-card__actions">
     <a class="race-card__protocol" i18n="@@races.protocolOnline" matButton="outlined" [routerLink]="race().protocolLink">Протокол онлайн</a>
 
-    <a
+    <button
       class="race-card__pdf"
-      i18n="@@races.pdf"
       matButton
-      rel="noopener"
-      target="_blank"
+      type="button"
       [attr.aria-label]="race().pdfAriaLabel"
-      [href]="race().pdfUrl"
+      [disabled]="pdfLoading()"
+      (click)="downloadPdf()"
     >
-      PDF
-    </a>
+      @if (pdfLoading()) {
+        <mat-progress-spinner class="race-card__pdf-spinner" mode="indeterminate" [diameter]="18" />
+      }
+
+      <span i18n="@@races.pdf">PDF</span>
+    </button>
+
+    @if (pdfFailed()) {
+      <span class="race-card__pdf-error" i18n="@@races.pdfError" role="alert">Не удалось сформировать PDF</span>
+    }
   </mat-card-actions>
 </mat-card>
