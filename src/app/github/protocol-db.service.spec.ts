@@ -71,30 +71,39 @@ describe('ProtocolDbService', () => {
     expect(POOL_CLOSE_MOCK, 'the superseded pool is released in the background').toHaveBeenCalledTimes(1);
   });
 
-  it('a failed open closes the half-made pool, rejects and is retried by the next query', async () => {
+  it('rides out a transient open failure by reconnecting over a fresh pool within the same query', async () => {
     POOL_OPEN_MOCK.mockRejectedValueOnce(new Error(POOL_OPEN_ERROR_MESSAGE));
     POOL_CLOSE_MOCK.mockRejectedValueOnce(new Error(POOL_CLOSE_ERROR_MESSAGE));
 
-    await expect(service.query(DB_SQL_MOCK), 'e.g. jsDelivr refusing range requests').rejects.toThrow(POOL_OPEN_ERROR_MESSAGE);
-    expect(POOL_CLOSE_MOCK, 'a rejecting close is swallowed').toHaveBeenCalledTimes(1);
+    await expect(service.query(DB_SQL_MOCK), 'e.g. jsDelivr momentarily refusing a range request').resolves.toEqual(DB_ROWS_MOCK);
+    expect(POOL_CLOSE_MOCK, 'the half-made pool is closed, and a rejecting close is swallowed').toHaveBeenCalledTimes(1);
+    expect(CREATE_POOL_MOCK, 'the evicted pool is rebuilt for the retry').toHaveBeenCalledTimes(2);
+  });
 
-    await expect(service.query(DB_SQL_MOCK), 'the failed pool was evicted from the cache').resolves.toEqual(DB_ROWS_MOCK);
+  it('rides out a transient worker bootstrap failure within the same query', async () => {
+    CREATE_POOL_MOCK.mockRejectedValueOnce(new Error(POOL_CREATE_ERROR_MESSAGE));
+
+    await expect(service.query(DB_SQL_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
     expect(CREATE_POOL_MOCK).toHaveBeenCalledTimes(2);
   });
 
-  it('a worker bootstrap failure rejects and is also retried', async () => {
-    CREATE_POOL_MOCK.mockRejectedValueOnce(new Error(POOL_CREATE_ERROR_MESSAGE));
-
-    await expect(service.query(DB_SQL_MOCK)).rejects.toThrow(POOL_CREATE_ERROR_MESSAGE);
-    await expect(service.query(DB_SQL_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
-  });
-
-  it('a failed statement rejects but keeps the healthy pool for the next query', async () => {
+  it('rides out a transient statement failure by re-executing on the same healthy pool', async () => {
     POOL_EXEC_MOCK.mockRejectedValueOnce(new Error(POOL_EXEC_ERROR_MESSAGE));
 
-    await expect(service.query(DB_SQL_MOCK)).rejects.toThrow(POOL_EXEC_ERROR_MESSAGE);
     await expect(service.query(DB_SQL_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
+    expect(POOL_EXEC_MOCK, 'the retry reuses the open pool').toHaveBeenCalledTimes(2);
     expect(CREATE_POOL_MOCK).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects when every attempt fails, evicting the pool so a later query can recover', async () => {
+    POOL_OPEN_MOCK.mockRejectedValue(new Error(POOL_OPEN_ERROR_MESSAGE));
+
+    await expect(service.query(DB_SQL_MOCK), 'both attempts hit the same failure').rejects.toThrow(POOL_OPEN_ERROR_MESSAGE);
+    expect(POOL_OPEN_MOCK, 'the query was attempted twice').toHaveBeenCalledTimes(2);
+
+    POOL_OPEN_MOCK.mockResolvedValue(undefined);
+
+    await expect(service.query(DB_SQL_MOCK), 'the evicted pool is rebuilt once the range works again').resolves.toEqual(DB_ROWS_MOCK);
   });
 });
 

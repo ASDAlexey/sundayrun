@@ -4,10 +4,17 @@ import { TestBed } from '@angular/core/testing';
 import { DELETE_SLUG } from '../core/github/delete-event.mock';
 import { HTTP_UNAUTHORIZED } from '../core/github/github-api.constant';
 import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
+import { resetFakeSqlite3 } from '../core/sqlite/spec-utils/fake-sqlite3';
 import { AdminTokenService } from './admin-token.service';
 import { EventDeleteService } from './event-delete.service';
 import { EVENT_DELETE_NETWORK_ERROR_MESSAGE, EVENT_DELETE_STORED_TOKEN, createEventDeleteFetch } from './event-delete.service.mock';
 import { PublishState } from './github-storage.enum';
+
+vi.mock('@sqlite.org/sqlite-wasm', async () => {
+  const fake = await import('../core/sqlite/spec-utils/fake-sqlite3');
+
+  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+});
 
 describe('EventDeleteService', () => {
   const token = signal<string | null>(EVENT_DELETE_STORED_TOKEN);
@@ -15,6 +22,7 @@ describe('EventDeleteService', () => {
   let service: EventDeleteService;
 
   beforeEach(() => {
+    resetFakeSqlite3();
     token.set(EVENT_DELETE_STORED_TOKEN);
     TestBed.configureTestingModule({
       providers: [{ provide: AdminTokenService, useValue: { token } }],

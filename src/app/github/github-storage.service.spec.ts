@@ -13,6 +13,13 @@ import {
   STORED_TOKEN_MOCK,
   createPublishSuccessFetch,
 } from './github-storage.service.mock';
+import { resetFakeSqlite3 } from '../core/sqlite/spec-utils/fake-sqlite3';
+
+vi.mock('@sqlite.org/sqlite-wasm', async () => {
+  const fake = await import('../core/sqlite/spec-utils/fake-sqlite3');
+
+  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+});
 
 describe('GithubStorageService', () => {
   const token = signal<string | null>(STORED_TOKEN_MOCK);
@@ -20,6 +27,7 @@ describe('GithubStorageService', () => {
   let service: GithubStorageService;
 
   beforeEach(() => {
+    resetFakeSqlite3();
     token.set(STORED_TOKEN_MOCK);
     TestBed.configureTestingModule({
       providers: [{ provide: AdminTokenService, useValue: { token } }],

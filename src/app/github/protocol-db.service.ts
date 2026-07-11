@@ -6,8 +6,14 @@ import type { SQLiteHTTPPool } from 'sqlite-wasm-http';
 import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { CdnRefService } from './cdn-ref.service';
-import { PROTOCOL_DB_BROWSER_ONLY_ERROR, PROTOCOL_DB_HTTP_OPTIONS, PROTOCOL_DB_WORKER_COUNT } from './protocol-db.service.constant';
-import { ProtocolDbBindings, ProtocolDbRow, ProtocolDbValue } from './protocol-db.service.type';
+import { narrowRow } from './protocol-db-narrow';
+import {
+  PROTOCOL_DB_BROWSER_ONLY_ERROR,
+  PROTOCOL_DB_HTTP_OPTIONS,
+  PROTOCOL_DB_QUERY_ATTEMPTS,
+  PROTOCOL_DB_WORKER_COUNT,
+} from './protocol-db.service.constant';
+import { ProtocolDbBindings, ProtocolDbRow } from './protocol-db.service.type';
 import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
 
 /**
@@ -33,10 +39,26 @@ export class ProtocolDbService {
       throw new Error(PROTOCOL_DB_BROWSER_ONLY_ERROR);
     }
 
-    const pool = await this.#poolFor(await this.#cdnRef.resolve());
-    const results = await pool.exec(sql, bindings, { rowMode: 'object' });
+    return this.#queryWithRetry(sql, bindings, PROTOCOL_DB_QUERY_ATTEMPTS);
+  }
 
-    return results.map((result) => narrowRow(result.row));
+  /**
+   * A failed attempt evicts the half-made pool (see `#poolFor`), so retrying reconnects over a fresh
+   * pool — enough to ride out a single transient range failure now that no JSON fallback follows.
+   */
+  async #queryWithRetry(sql: string, bindings: ProtocolDbBindings | undefined, attemptsLeft: number): Promise<ProtocolDbRow[]> {
+    try {
+      const pool = await this.#poolFor(await this.#cdnRef.resolve());
+      const results = await pool.exec(sql, bindings, { rowMode: 'object' });
+
+      return results.map((result) => narrowRow(result.row));
+    } catch (error) {
+      if (attemptsLeft <= 1) {
+        throw error;
+      }
+
+      return this.#queryWithRetry(sql, bindings, attemptsLeft - 1);
+    }
   }
 
   /**
@@ -71,28 +93,4 @@ export class ProtocolDbService {
 
     return pool;
   }
-}
-
-/**
- * The wasm boundary hands back `Record<string, SQLValue>` — a wider union than the number/string/null
- * `protocol.db` actually stores. Rebuilding the row with `narrowValue` turns that external shape into a
- * `ProtocolDbRow` by construction, so the read layer never resorts to a type assertion.
- */
-function narrowRow(row: Record<string, unknown>): ProtocolDbRow {
-  const narrowed: ProtocolDbRow = {};
-
-  for (const [columnName, value] of Object.entries(row)) {
-    narrowed[columnName] = narrowValue(value);
-  }
-
-  return narrowed;
-}
-
-/** Keeps the number/string/null the db holds; anything else (a stray blob) folds to null. */
-function narrowValue(value: unknown): ProtocolDbValue {
-  if (typeof value === 'number' || typeof value === 'string' || value === null) {
-    return value;
-  }
-
-  return null;
 }
