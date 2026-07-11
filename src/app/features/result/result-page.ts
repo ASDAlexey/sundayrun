@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, OnDestroy, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,7 @@ import { formatRussianDateLong } from '../../core/time/russian-date';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
+import { triggerBlobDownload } from '../../pdf/blob-download';
 import { PdfService } from '../../pdf/pdf.service';
 import { ShareService } from '../../share/share.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
@@ -36,6 +37,7 @@ export class ResultPage implements OnDestroy {
   readonly #sanitizer = inject(DomSanitizer);
   readonly #github = inject(GithubStorageService);
   readonly #adminToken = inject(AdminTokenService);
+  readonly #document = inject(DOCUMENT);
   readonly #blob = signal<Blob | null>(null);
 
   /** The first announcement line doubles as the share/repost title. */
@@ -47,7 +49,6 @@ export class ResultPage implements OnDestroy {
   readonly objectUrl = signal<string | null>(null);
   readonly isAdmin = this.#adminToken.isAdmin;
   readonly publishState = this.#github.state;
-  readonly publishedPdfUrl = this.#github.publishedPdfUrl;
 
   readonly summary = computed(() => {
     const event = this.#store.event();
@@ -101,7 +102,7 @@ export class ResultPage implements OnDestroy {
     this.copied.set(await this.#share.copyToClipboard(this.description()));
   }
 
-  /** Publishes the event as one atomic commit; the pdf bytes are re-read from the generated blob. */
+  /** Publishes the event as one atomic commit; the protocol PDF is generated on the fly, never stored. */
   async publish(): Promise<void> {
     const event = this.#store.event();
     const sourceFile = this.#store.sourceFile();
@@ -115,13 +116,29 @@ export class ResultPage implements OnDestroy {
       event,
       rows: this.#store.protocolRows(),
       sourceXlsxBytes: sourceFile.bytes,
-      pdfBytes: new Uint8Array(await blob.arrayBuffer()),
     });
   }
 
-  /** After a successful publish the repost points at the archived pdf; before that the app origin stands in. */
-  openVk(): void {
-    this.#share.openWindow(this.#share.buildVkShareUrl(this.publishedPdfUrl() ?? location.origin, this.#titleLine()));
+  /**
+   * Shares the generated PDF to VK as a file: the Web Share sheet (where the file can travel) is
+   * preferred, otherwise the pdf is downloaded and the VK dialog is opened so it can be attached by hand.
+   */
+  async openVk(): Promise<void> {
+    const file = this.pdfFile();
+
+    if (file !== null && this.#share.canShareFile(file)) {
+      await this.#share.shareFile(file, this.#titleLine(), this.description());
+
+      return;
+    }
+
+    const blob = this.#blob();
+
+    if (blob !== null) {
+      triggerBlobDownload(this.#document, blob, this.fileName());
+    }
+
+    this.#share.openWindow(this.#share.buildVkShareUrl(location.origin, this.#titleLine()));
   }
 
   onDescriptionInput(value: string): void {

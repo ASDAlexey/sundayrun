@@ -19,13 +19,11 @@ import { ResultStatus } from './result-page.enum';
 import {
   EDITED_DESCRIPTION,
   EXPECTED_DESCRIPTION,
-  EXPECTED_PDF_BYTES,
   EXPECTED_SUMMARY,
   EXPECTED_TITLE_LINE,
   FILE_NAME_MOCK,
   GENERATE_ERROR_MESSAGE,
   OBJECT_URL_MOCK,
-  PUBLISHED_PDF_URL_MOCK,
   RESULT_BLOB_MOCK,
   SOURCE_FILE_MOCK,
   VK_URL_MOCK,
@@ -45,7 +43,6 @@ describe('ResultPage', () => {
   const openWindow = vi.fn();
   const isAdmin = signal(true);
   const publishState = signal<PublishStateType>(PublishState.idle);
-  const publishedPdfUrl = signal<string | null>(null);
   const publish = vi.fn((_input: PublishEventInput) => Promise.resolve());
   const reset = vi.fn();
   const createObjectURL = vi.fn(() => OBJECT_URL_MOCK);
@@ -59,7 +56,6 @@ describe('ResultPage', () => {
     sourceFile.set(SOURCE_FILE_MOCK);
     isAdmin.set(true);
     publishState.set(PublishState.idle);
-    publishedPdfUrl.set(null);
     generateProtocolBlob.mockResolvedValue(RESULT_BLOB_MOCK);
     canShareFile.mockReturnValue(true);
     copyToClipboard.mockResolvedValue(true);
@@ -71,7 +67,7 @@ describe('ResultPage', () => {
         { provide: ProtocolStateService, useValue: { event, protocolRows, sourceFile } },
         { provide: PdfService, useValue: { generateProtocolBlob, suggestedFileName } },
         { provide: ShareService, useValue: { canShareFile, shareFile, copyToClipboard, buildVkShareUrl, openWindow } },
-        { provide: GithubStorageService, useValue: { state: publishState, publishedPdfUrl, publish, reset } },
+        { provide: GithubStorageService, useValue: { state: publishState, publish, reset } },
         { provide: AdminTokenService, useValue: { isAdmin } },
       ],
     });
@@ -129,16 +125,26 @@ describe('ResultPage', () => {
     expect(revokeObjectURL).toHaveBeenCalledWith(OBJECT_URL_MOCK);
   });
 
-  it('hides the share button when the platform cannot share the file', async () => {
+  it('hides the share button and falls back to download + VK dialog when the platform cannot share files', async () => {
     canShareFile.mockReturnValue(false);
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     fixture = await createPage();
 
-    expect(fixture.componentInstance.canShare()).toBe(false);
-    expect(canShareFile).toHaveBeenCalledWith(fixture.componentInstance.pdfFile());
+    const page = fixture.componentInstance;
+
+    expect(page.canShare()).toBe(false);
+    expect(canShareFile).toHaveBeenCalledWith(page.pdfFile());
 
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.result__share')).toBeNull();
+
+    await page.openVk();
+
+    expect(shareFile, 'no web-share sheet when the platform cannot share files').not.toHaveBeenCalled();
+    expect(createObjectURL, 'the pdf is downloaded so it can be attached to the post by hand').toHaveBeenCalledWith(RESULT_BLOB_MOCK);
+    expect(buildVkShareUrl).toHaveBeenCalledWith(location.origin, EXPECTED_TITLE_LINE);
+    expect(openWindow).toHaveBeenCalledWith(VK_URL_MOCK);
   });
 
   it('shows the error state when generation fails, guards sharing/publishing and navigates back to the preview', async () => {
@@ -161,6 +167,11 @@ describe('ResultPage', () => {
     await page.publish();
 
     expect(publish, 'publishing needs the generated blob').not.toHaveBeenCalled();
+
+    await page.openVk();
+
+    expect(createObjectURL, 'nothing to download when generation failed').not.toHaveBeenCalled();
+    expect(openWindow, 'VK still falls back to the url dialog').toHaveBeenCalledWith(VK_URL_MOCK);
 
     fixture.detectChanges();
 
@@ -190,7 +201,7 @@ describe('ResultPage', () => {
     expect(publish, 'publishing needs the event').not.toHaveBeenCalled();
   });
 
-  it('copies the description with a copied flag, accepts edits and opens the VK repost window', async () => {
+  it('copies the description with a copied flag, accepts edits and shares the pdf to VK as a file', async () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -218,13 +229,20 @@ describe('ResultPage', () => {
 
     expect(page.description()).toBe(EDITED_DESCRIPTION);
 
-    element.querySelector('.result__vk-open').click();
+    const file = page.pdfFile();
 
-    expect(buildVkShareUrl, 'the app origin stands in before publication').toHaveBeenCalledWith(location.origin, EDITED_DESCRIPTION);
-    expect(openWindow).toHaveBeenCalledWith(VK_URL_MOCK);
+    element.querySelector('.result__vk-open').click();
+    await settle();
+
+    expect(shareFile, 'the VK button shares the generated pdf as a file').toHaveBeenCalledWith(
+      file,
+      EDITED_DESCRIPTION,
+      EDITED_DESCRIPTION,
+    );
+    expect(openWindow, 'the web-share sheet replaces the url dialog when files can travel').not.toHaveBeenCalled();
   });
 
-  it('publishes to the archive, renders every publish state and reposts to VK with the published url', async () => {
+  it('publishes to the archive and renders every publish state', async () => {
     fixture = await createPage();
     fixture.detectChanges();
 
@@ -240,7 +258,7 @@ describe('ResultPage', () => {
     expect(publishInput.event).toBe(PDF_EVENT_MOCK);
     expect(publishInput.rows).toBe(PDF_ROWS_MOCK);
     expect(publishInput.sourceXlsxBytes).toBe(SOURCE_FILE_MOCK.bytes);
-    expect(Array.from(publishInput.pdfBytes)).toEqual(Array.from(EXPECTED_PDF_BYTES));
+    expect('pdfBytes' in publishInput, 'the protocol pdf is generated on the fly, never published').toBe(false);
 
     publishState.set(PublishState.publishing);
     fixture.detectChanges();
@@ -250,14 +268,10 @@ describe('ResultPage', () => {
     expect(element.querySelector('.result__publish-feedback').getAttribute('aria-live')).toBe('polite');
 
     publishState.set(PublishState.success);
-    publishedPdfUrl.set(PUBLISHED_PDF_URL_MOCK);
     fixture.detectChanges();
 
-    expect(element.querySelector('.result__publish-link').getAttribute('href')).toBe(PUBLISHED_PDF_URL_MOCK);
-
-    element.querySelector('.result__vk-open').click();
-
-    expect(buildVkShareUrl).toHaveBeenCalledWith(PUBLISHED_PDF_URL_MOCK, EXPECTED_TITLE_LINE);
+    expect(element.querySelector('.result__publish-status'), 'the success state renders without an archived-pdf link').not.toBeNull();
+    expect(element.querySelector('.result__publish-link'), 'there is no archived pdf to link to').toBeNull();
 
     publishState.set(PublishState.authError);
     fixture.detectChanges();

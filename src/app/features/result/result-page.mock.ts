@@ -1,15 +1,8 @@
 import { SourceFile } from '../../state/source-file.interface';
 
-const PDF_BLOB_TEXT = '%PDF-1.7';
-
-export const RESULT_BLOB_MOCK = new Blob([PDF_BLOB_TEXT]);
-
-/** publish() re-reads the generated blob into bytes. */
-export const EXPECTED_PDF_BYTES: Uint8Array = new TextEncoder().encode(PDF_BLOB_TEXT);
+export const RESULT_BLOB_MOCK = new Blob(['%PDF-1.7']);
 
 export const SOURCE_FILE_MOCK: SourceFile = { name: '20.09.2020.xlsx', bytes: new Uint8Array([4, 5, 6]) };
-
-export const PUBLISHED_PDF_URL_MOCK = 'https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@sha0/data/events/2020-09-20/protocol.pdf';
 
 /** An http url instead of a real blob: one — jsdom cannot create iframe windows for opaque origins. */
 export const OBJECT_URL_MOCK = 'https://parkrun.example/protokol.pdf';
