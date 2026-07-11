@@ -58,6 +58,21 @@
     color: var(--text-muted);
   }
 
+  &__pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__pdf-spinner {
+    // Match the ring to the button's own text colour instead of the theme accent.
+    --mdc-circular-progress-active-indicator-color: currentcolor;
+  }
+
+  &__pdf-error {
+    @include st.error-text;
+  }
+
   &__status {
     @include st.status-text;
   }

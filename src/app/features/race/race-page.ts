@@ -5,9 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { eventFilePaths } from '../../core/github/event-paths';
 import { isValidEventSlug } from '../../core/github/event-slug';
-import { jsDelivrFileUrl } from '../../core/github/jsdelivr';
 import { EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
@@ -15,8 +13,8 @@ import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
-import { CdnRefService } from '../../github/cdn-ref.service';
 import { ResultsService } from '../../github/results.service';
+import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import {
   EMPTY_CELL_TEXT,
@@ -38,11 +36,13 @@ import { RacePageState, RaceRowView, RaceView } from './race-page.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RacePage {
-  readonly #cdnRef = inject(CdnRefService);
   readonly #results = inject(ResultsService);
+  readonly #protocolPdf = inject(ProtocolPdfService);
 
   readonly status = signal<RaceStatusType>(RaceStatus.loading);
   readonly race = signal<RaceView | null>(null);
+  readonly pdfLoading = signal(false);
+  readonly pdfFailed = signal(false);
 
   protected readonly statuses = RaceStatus;
   protected readonly homeLink = HOME_PAGE_LINK;
@@ -58,6 +58,24 @@ export class RacePage {
         this.#slug = params.get(SLUG_ROUTE_PARAM) ?? '';
         void this.#load(this.#slug);
       });
+  }
+
+  /** Generates the protocol PDF from the loaded data and downloads it, spinning the button meanwhile. */
+  async downloadPdf(): Promise<void> {
+    if (this.pdfLoading()) {
+      return;
+    }
+
+    this.pdfLoading.set(true);
+    this.pdfFailed.set(false);
+
+    try {
+      await this.#protocolPdf.download(this.#slug);
+    } catch {
+      this.pdfFailed.set(true);
+    } finally {
+      this.pdfLoading.set(false);
+    }
   }
 
   async #load(slug: string): Promise<void> {
@@ -88,14 +106,14 @@ export class RacePage {
         return { status: RaceStatus.notFound, race: null };
       }
 
-      return { status: RaceStatus.ready, race: toRaceView(slug, file, await this.#cdnRef.resolve()) };
+      return { status: RaceStatus.ready, race: toRaceView(file) };
     } catch {
       return { status: RaceStatus.error, race: null };
     }
   }
 }
 
-function toRaceView(slug: string, file: EventResultsFile, ref: string): RaceView {
+function toRaceView(file: EventResultsFile): RaceView {
   return {
     number: file.event.number,
     dateLong: formatRussianDateLong(file.event.dateIso),
@@ -104,7 +122,6 @@ function toRaceView(slug: string, file: EventResultsFile, ref: string): RaceView
     participantCount: file.rows.length,
     avgTimeM: avgTimeTextOf(file.rows, Gender.male),
     avgTimeF: avgTimeTextOf(file.rows, Gender.female),
-    pdfUrl: jsDelivrFileUrl(eventFilePaths(slug).protocolPdf, ref),
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
     rows: file.rows.map(toRowView),

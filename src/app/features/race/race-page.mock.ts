@@ -1,6 +1,5 @@
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_EVENT } from '../../core/github/spec-utils/race-fixtures';
-import { CDN_REF_SHA_MOCK } from '../../github/cdn-ref.service.mock';
 import { RaceView } from './race-page.interface';
 
 /** The published slug equals the event `dateIso`. */
@@ -14,7 +13,7 @@ export const UNPUBLISHED_RACE_SLUG = '2026-01-04';
 
 export const RESULTS_LOAD_ERROR_MESSAGE = 'results load failed';
 
-/** `toRaceView(RACE_PAGE_SLUG, buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS))`. */
+/** `toRaceView(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS))`. */
 export const EXPECTED_RACE_VIEW: RaceView = {
   number: 12,
   dateLong: '28 июня 2026 г.',
@@ -24,7 +23,6 @@ export const EXPECTED_RACE_VIEW: RaceView = {
   // The only male ran the 2.3 km lap, so the male average has no qualifying 5 km times.
   avgTimeM: null,
   avgTimeF: '25:00',
-  pdfUrl: `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${CDN_REF_SHA_MOCK}/data/events/2026-06-28/protocol.pdf`,
   pdfAriaLabel: 'Протокол пробега № 12 (PDF)',
   rows: [
     {

@@ -7,6 +7,7 @@ import { PROTOCOL_ROWS, RACE_EVENT } from '../../core/github/spec-utils/race-fix
 import { CdnRefService } from '../../github/cdn-ref.service';
 import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
 import { ResultsService } from '../../github/results.service';
+import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
 import { RacePage } from './race-page';
@@ -22,6 +23,7 @@ import {
 
 describe('RacePage', () => {
   const loadResults = vi.fn();
+  const download = vi.fn();
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -36,6 +38,7 @@ describe('RacePage', () => {
       providers: [
         provideRouter([]),
         { provide: ResultsService, useValue: { loadResults } },
+        { provide: ProtocolPdfService, useValue: { download } },
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
@@ -66,7 +69,7 @@ describe('RacePage', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
-    const pdfLink = element.querySelector('.race__pdf');
+    const pdfButton = element.querySelector('.race__pdf');
     const headers = [...element.querySelectorAll('.race__th')];
     const athleteLinks = [...element.querySelectorAll('.race__athlete')];
     const statusRegion = element.querySelector('.race__status');
@@ -82,10 +85,8 @@ describe('RacePage', () => {
 
     expect(avgLines.length, 'only genders with 5 km finishers get an average line').toBe(1);
     expect(avgLines[0].textContent).toContain(EXPECTED_RACE_VIEW.avgTimeF);
-    expect(pdfLink.getAttribute('href')).toBe(EXPECTED_RACE_VIEW.pdfUrl);
-    expect(pdfLink.getAttribute('target')).toBe('_blank');
-    expect(pdfLink.getAttribute('rel')).toBe('noopener');
-    expect(pdfLink.getAttribute('aria-label')).toBe(EXPECTED_RACE_VIEW.pdfAriaLabel);
+    expect(pdfButton.tagName, 'the pdf action generates on click instead of linking to a file').toBe('BUTTON');
+    expect(pdfButton.getAttribute('aria-label')).toBe(EXPECTED_RACE_VIEW.pdfAriaLabel);
     expect(headers.length, 'the nine PDF columns plus the average pace').toBe(10);
     expect(
       headers.map((header) => header.getAttribute('scope')),
@@ -177,5 +178,49 @@ describe('RacePage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.race__error').getAttribute('role')).toBe('alert');
+  });
+
+  it('generates and downloads the protocol for the current slug, spinning meanwhile', async () => {
+    download.mockResolvedValue(undefined);
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+    const pending = page.downloadPdf();
+
+    expect(page.pdfLoading()).toBe(true);
+
+    await pending;
+
+    expect(download).toHaveBeenCalledExactlyOnceWith(RACE_PAGE_SLUG);
+    expect(page.pdfLoading()).toBe(false);
+    expect(page.pdfFailed()).toBe(false);
+  });
+
+  it('ignores a second pdf click while one is in flight', async () => {
+    let release: () => void = () => undefined;
+
+    download.mockReturnValue(new Promise<void>((resolve) => (release = resolve)));
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+    const first = page.downloadPdf();
+
+    await page.downloadPdf();
+    release();
+    await first;
+
+    expect(download).toHaveBeenCalledOnce();
+  });
+
+  it('flags the failure and drops the spinner when pdf generation throws', async () => {
+    download.mockRejectedValue(new Error('boom'));
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    await page.downloadPdf();
+
+    expect(page.pdfFailed()).toBe(true);
+    expect(page.pdfLoading()).toBe(false);
   });
 });

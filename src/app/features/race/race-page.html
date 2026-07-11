@@ -34,17 +34,24 @@
             }
           </div>
 
-          <a
+          <button
             class="race__pdf"
-            i18n="@@race.pdf"
             matButton="filled"
-            rel="noopener"
-            target="_blank"
+            type="button"
             [attr.aria-label]="view.pdfAriaLabel"
-            [href]="view.pdfUrl"
+            [disabled]="pdfLoading()"
+            (click)="downloadPdf()"
           >
-            PDF
-          </a>
+            @if (pdfLoading()) {
+              <mat-progress-spinner class="race__pdf-spinner" mode="indeterminate" [diameter]="18" />
+            }
+
+            <span i18n="@@race.pdf">PDF</span>
+          </button>
+
+          @if (pdfFailed()) {
+            <span class="race__pdf-error" i18n="@@race.pdfError" role="alert">Не удалось сформировать PDF</span>
+          }
         </header>
 
         <div class="race__table-wrap">
