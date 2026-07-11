@@ -1,0 +1,7 @@
+@use 'styles/buttons' as b;
+
+.reload-button {
+  @include b.button-outline;
+
+  margin-top: 16px;
+}
