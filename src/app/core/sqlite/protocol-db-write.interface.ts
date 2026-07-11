@@ -1,20 +1,18 @@
-import { ArchiveIndexFile } from '../github/archive-index.interface';
-import { EventResultsFile } from '../github/results-file.interface';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { ProtocolRow } from '../models/protocol-row.interface';
+import { RaceEvent } from '../models/race-event.interface';
 
-/** The updated in-memory truth after a publication: the full index and the full athletes rollup. */
-export interface ProtocolDbState {
-  indexFile: ArchiveIndexFile;
-  history: AthletesHistory;
+/**
+ * Publication payload: the event's metadata and its protocol rows. The write reads the previous
+ * archive and athletes rollup back out of the db it is updating, so the caller no longer supplies
+ * the derived index/history — `protocol.db` is the single source of truth.
+ */
+export interface ProtocolDbEventUpdate {
+  event: RaceEvent;
+  rows: ProtocolRow[];
 }
 
-/** Publication payload: the updated state plus the published event's results file. */
-export interface ProtocolDbEventUpdate extends ProtocolDbState {
-  resultsFile: EventResultsFile;
-}
-
-/** Deletion payload: the updated state plus the removed event's slug. */
-export interface ProtocolDbEventRemoval extends ProtocolDbState {
+/** Deletion payload: just the slug to drop; the rest of the state is read from the db. */
+export interface ProtocolDbEventRemoval {
   slug: string;
 }
 

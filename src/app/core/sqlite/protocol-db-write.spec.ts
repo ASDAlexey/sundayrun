@@ -6,8 +6,13 @@ import {
   EXISTING_DB_BYTES_MOCK,
   EXPECTED_APPLY_EXECUTED_EXISTING,
   EXPECTED_APPLY_EXECUTED_FRESH,
+  EXPECTED_PASSTHROUGH_ATHLETE_INSERTS,
   EXPECTED_REMOVE_EXECUTED,
-  PRESERVED_EVENT_META_ROW,
+  MIXED_GENDER_DB_ROWS,
+  MIXED_GENDER_META_ROWS,
+  PRESERVED_EVENT_META_ROWS,
+  PREVIOUS_DB_ROWS,
+  UNKNOWN_REMOVAL_MOCK,
 } from './protocol-db-write.mock';
 import {
   ALLOC_FROM_TYPED_ARRAY_MOCK,
@@ -32,8 +37,9 @@ describe('protocol-db-write', () => {
     resetFakeSqlite3();
   });
 
-  it('applies an event to existing db bytes: deserializes them, preserves club meta and replaces only the published results', async () => {
-    FAKE_SQLITE3_STATE.eventMetaRows = [PRESERVED_EVENT_META_ROW];
+  it('applies an event to existing db bytes: reads the previous state back, preserves club meta and replaces only the published results', async () => {
+    FAKE_SQLITE3_STATE.rowsBySql = PREVIOUS_DB_ROWS;
+    FAKE_SQLITE3_STATE.eventMetaRows = PRESERVED_EVENT_META_ROWS;
 
     await expect(applyEventToDb(EXISTING_DB_BYTES_MOCK, DB_UPDATE_MOCK)).resolves.toBe(FAKE_EXPORTED_BYTES);
 
@@ -61,11 +67,25 @@ describe('protocol-db-write', () => {
   });
 
   it('removes an event: drops its results rows and rebuilds the summaries without it', async () => {
-    FAKE_SQLITE3_STATE.eventMetaRows = [PRESERVED_EVENT_META_ROW];
+    FAKE_SQLITE3_STATE.rowsBySql = PREVIOUS_DB_ROWS;
+    FAKE_SQLITE3_STATE.eventMetaRows = PRESERVED_EVENT_META_ROWS;
 
     await expect(removeEventFromDb(EXISTING_DB_BYTES_MOCK, DB_REMOVAL_MOCK)).resolves.toBe(FAKE_EXPORTED_BYTES);
 
     expect(FAKE_SQLITE3_STATE.dbs[0].executed).toEqual(EXPECTED_REMOVE_EXECUTED);
+  });
+
+  it('writes read athletes straight back, keeping a male code and a DNF null gender', async () => {
+    FAKE_SQLITE3_STATE.rowsBySql = MIXED_GENDER_DB_ROWS;
+    FAKE_SQLITE3_STATE.eventMetaRows = MIXED_GENDER_META_ROWS;
+
+    await expect(removeEventFromDb(EXISTING_DB_BYTES_MOCK, UNKNOWN_REMOVAL_MOCK)).resolves.toBe(FAKE_EXPORTED_BYTES);
+
+    const { executed } = FAKE_SQLITE3_STATE.dbs[0];
+
+    for (const athleteInsert of EXPECTED_PASSTHROUGH_ATHLETE_INSERTS) {
+      expect(executed).toContainEqual(athleteInsert);
+    }
   });
 
   it('closes the connection even when the downloaded bytes fail to deserialize', async () => {

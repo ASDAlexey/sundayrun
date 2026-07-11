@@ -1,5 +1,3 @@
-import { ProtocolDbEventMeta } from './protocol-db-write.interface';
-
 /** 1 KiB pages keep the read side's HTTP range requests fine-grained; must run before any DDL (docs/SQLITE_DB.md). */
 export const PROTOCOL_DB_PAGE_SIZE_PRAGMA = 'PRAGMA page_size = 1024';
 
@@ -13,6 +11,17 @@ export const COMMIT_TRANSACTION_SQL = 'COMMIT';
 export const VACUUM_SQL = 'VACUUM';
 
 export const SELECT_EVENT_META_SQL = 'SELECT slug, club_name, chairman FROM events';
+
+/** The previous archive, read back so a publication can roll up on top of it without any JSON. */
+export const SELECT_ALL_EVENTS_SQL = `SELECT slug, date_iso, number, city, park,
+  participant_count, finisher_count, avg_time_ms, best_male_ms, best_female_ms FROM events`;
+
+/** The previous athletes rollup, reassembled from the three tables it was written across. */
+export const SELECT_ALL_ATHLETES_SQL = 'SELECT key, display_name, gender, best_ms FROM athletes';
+
+export const SELECT_ALL_RUNS_SQL = 'SELECT athlete_key, date_iso, slug, time_ms, distance_km FROM runs';
+
+export const SELECT_ALL_PARTICIPATIONS_SQL = 'SELECT athlete_key, slug FROM participations';
 
 export const DELETE_ALL_EVENTS_SQL = 'DELETE FROM events';
 
@@ -35,6 +44,3 @@ export const INSERT_RUN_SQL = 'INSERT INTO runs VALUES (?, ?, ?, ?, ?)';
 export const INSERT_PARTICIPATION_SQL = 'INSERT INTO participations VALUES (?, ?)';
 
 export const UPSERT_META_SQL = 'INSERT OR REPLACE INTO meta VALUES (?, ?)';
-
-/** Matches `protocol-db-schema.constant.ts`: club fields are '' when no results file ever provided them. */
-export const EMPTY_EVENT_META: ProtocolDbEventMeta = { clubName: '', chairman: '' };

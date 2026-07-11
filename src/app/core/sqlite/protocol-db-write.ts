@@ -1,8 +1,13 @@
-import type { Database, Sqlite3Static } from '@sqlite.org/sqlite-wasm';
+import type { Database } from '@sqlite.org/sqlite-wasm';
 
+import { buildIndexEntry, removeIndexEntry, upsertIndexEntry } from '../github/archive-index';
 import { ArchiveIndexFile } from '../github/archive-index.interface';
+import { buildEventResultsFile, toEventResults } from '../github/results-file';
 import { EventResultsFile } from '../github/results-file.interface';
+import { applyEventToHistory, removeEventFromHistory } from '../history/athletes-rollup';
 import { AthletesHistory } from '../models/athletes-history.type';
+import { deserializeDbInto } from './deserialize-db';
+import { readHistory, readIndexFile } from './protocol-db-read';
 import {
   PROTOCOL_DB_META_SCHEMA_VERSION_KEY,
   PROTOCOL_DB_SCHEMA_STATEMENTS,
@@ -16,13 +21,11 @@ import {
   DELETE_ALL_PARTICIPATIONS_SQL,
   DELETE_ALL_RUNS_SQL,
   DELETE_RESULTS_BY_SLUG_SQL,
-  EMPTY_EVENT_META,
   INSERT_ATHLETE_SQL,
   INSERT_EVENT_SQL,
   INSERT_PARTICIPATION_SQL,
   INSERT_RESULT_SQL,
   INSERT_RUN_SQL,
-  PROTOCOL_DB_MAIN_SCHEMA,
   PROTOCOL_DB_PAGE_SIZE_PRAGMA,
   SELECT_EVENT_META_SQL,
   UPSERT_META_SQL,
@@ -31,30 +34,64 @@ import {
 import { ProtocolDbEventMeta, ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
 import { loadSqlite3 } from './sqlite-loader';
 
+/** The previous archive and athletes rollup, read back out of the db the write is updating. */
+interface PreviousState {
+  index: ArchiveIndexFile;
+  history: AthletesHistory;
+}
+
+/** The state the db is converged onto: the full index/history plus the slug's results to add or drop. */
+interface SyncTarget {
+  index: ArchiveIndexFile;
+  history: AthletesHistory;
+  resultsFile: EventResultsFile | null;
+  removedSlug: string | null;
+}
+
 /**
- * Applies one publication to the downloaded `protocol.db` bytes (null → a fresh db with the
- * shared schema) and returns the updated bytes. The db is a derived artifact, so instead of
- * incremental SQL it is converged onto the already-updated in-memory state: `events` and the
- * athlete tables are fully rebuilt from `indexFile`/`history`, only the published slug's
- * `results` rows are replaced — other events' rows are kept as they are.
+ * Applies one publication to the downloaded `protocol.db` bytes (null → a fresh db with the shared
+ * schema) and returns the updated bytes. `protocol.db` is the single source of truth, so the write
+ * reads the previous archive and rollup back out of the db, rolls the event on top, and rebuilds the
+ * `events` and athlete tables; only the published slug's `results` rows are replaced.
  */
 export function applyEventToDb(dbBytes: Uint8Array | null, update: ProtocolDbEventUpdate): Promise<Uint8Array> {
-  return syncDbToState(dbBytes, update.indexFile, update.history, update.resultsFile, null);
+  return syncDbToState(dbBytes, (previous) => rollupPublication(previous, update));
 }
 
-/** The deletion mirror of `applyEventToDb`: the same full rebuild, plus the removed slug's `results` rows are dropped. */
+/** The deletion mirror of `applyEventToDb`: the same read-then-rebuild, minus the removed slug everywhere. */
 export function removeEventFromDb(dbBytes: Uint8Array | null, removal: ProtocolDbEventRemoval): Promise<Uint8Array> {
-  return syncDbToState(dbBytes, removal.indexFile, removal.history, null, removal.slug);
+  return syncDbToState(dbBytes, (previous) => rollupDeletion(previous, removal));
 }
 
-/** One transaction that makes the db match the in-memory state, then compacts and exports it. */
-async function syncDbToState(
-  dbBytes: Uint8Array | null,
-  indexFile: ArchiveIndexFile,
-  history: AthletesHistory,
-  resultsFile: EventResultsFile | null,
-  removedSlug: string | null,
-): Promise<Uint8Array> {
+/** Rolls the published event onto the previous state: its rollup contribution, index entry and results. */
+function rollupPublication(previous: PreviousState, update: ProtocolDbEventUpdate): SyncTarget {
+  const slug = update.event.dateIso;
+  const history = applyEventToHistory(
+    removeEventFromHistory(previous.history, slug),
+    { slug, dateIso: update.event.dateIso },
+    toEventResults(update.rows),
+  );
+
+  return {
+    index: upsertIndexEntry(previous.index, buildIndexEntry(update.event, update.rows)),
+    history,
+    resultsFile: buildEventResultsFile(update.event, update.rows),
+    removedSlug: null,
+  };
+}
+
+/** Strips the removed slug from the previous state: its index entry, rollup contribution and results rows. */
+function rollupDeletion(previous: PreviousState, removal: ProtocolDbEventRemoval): SyncTarget {
+  return {
+    index: removeIndexEntry(previous.index, removal.slug),
+    history: removeEventFromHistory(previous.history, removal.slug),
+    resultsFile: null,
+    removedSlug: removal.slug,
+  };
+}
+
+/** Opens the db, reads its state, rolls up the change and rewrites the derived tables in one transaction. */
+async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: PreviousState) => SyncTarget): Promise<Uint8Array> {
   const sqlite3 = await loadSqlite3();
   const db = new sqlite3.oo1.DB();
 
@@ -62,15 +99,16 @@ async function syncDbToState(
     if (dbBytes === null) {
       createSchema(db);
     } else {
-      deserializeInto(sqlite3, db, dbBytes);
+      deserializeDbInto(sqlite3, db, dbBytes);
     }
 
-    const eventMeta = readEventMeta(db, resultsFile);
+    const target = rollup({ index: readIndexFile(db), history: readHistory(db) });
+    const eventMeta = readEventMeta(db, target.resultsFile);
 
     db.exec(BEGIN_TRANSACTION_SQL);
-    rewriteEvents(db, indexFile, eventMeta);
-    rewriteResults(db, resultsFile, removedSlug);
-    rewriteAthletes(db, history);
+    rewriteEvents(db, target.index, eventMeta);
+    rewriteResults(db, target.resultsFile, target.removedSlug);
+    rewriteAthletes(db, target.history);
     db.exec(UPSERT_META_SQL, { bind: [PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION] });
     db.exec(COMMIT_TRANSACTION_SQL);
     db.exec(VACUUM_SQL);
@@ -90,38 +128,32 @@ function createSchema(db: Database): void {
   }
 }
 
-/** Loads the downloaded db bytes into the fresh connection's `main` schema. */
-function deserializeInto(sqlite3: Sqlite3Static, db: Database, dbBytes: Uint8Array): void {
-  const pointer = sqlite3.wasm.allocFromTypedArray(dbBytes);
-  const flags = sqlite3.capi.SQLITE_DESERIALIZE_FREEONCLOSE | sqlite3.capi.SQLITE_DESERIALIZE_RESIZEABLE;
-
-  db.checkRc(sqlite3.capi.sqlite3_deserialize(db, PROTOCOL_DB_MAIN_SCHEMA, pointer, dbBytes.byteLength, dbBytes.byteLength, flags));
-}
-
 /**
- * `club_name`/`chairman` live in per-event results files, not in `index.json`, so the full
+ * `club_name`/`chairman` live in per-event results files, not in the archive, so the full
  * `events` rewrite would lose them; they are re-read from the current rows first, with the
- * published event taking its values from the fresh results file.
+ * published event taking its values from the fresh results file. The archive is read back out of
+ * the same `events` table, so every entry the rewrite writes has an entry here.
  */
-function readEventMeta(db: Database, resultsFile: EventResultsFile | null): Map<string, ProtocolDbEventMeta> {
-  const rows = db.exec(SELECT_EVENT_META_SQL, { returnValue: 'resultRows', rowMode: 'array' });
-  const meta = new Map(
-    rows.map((row): [string, ProtocolDbEventMeta] => [String(row[0]), { clubName: String(row[1]), chairman: String(row[2]) }]),
-  );
+function readEventMeta(db: Database, resultsFile: EventResultsFile | null): Record<string, ProtocolDbEventMeta> {
+  const meta: Record<string, ProtocolDbEventMeta> = {};
+
+  for (const row of db.exec(SELECT_EVENT_META_SQL, { returnValue: 'resultRows', rowMode: 'array' })) {
+    meta[String(row[0])] = { clubName: String(row[1]), chairman: String(row[2]) };
+  }
 
   if (resultsFile !== null) {
-    meta.set(resultsFile.event.dateIso, { clubName: resultsFile.event.clubName, chairman: resultsFile.event.chairman });
+    meta[resultsFile.event.dateIso] = { clubName: resultsFile.event.clubName, chairman: resultsFile.event.chairman };
   }
 
   return meta;
 }
 
-/** `indexFile` is the full updated truth (a few hundred rows), so a rewrite is simpler and safer than an upsert. */
-function rewriteEvents(db: Database, indexFile: ArchiveIndexFile, eventMeta: Map<string, ProtocolDbEventMeta>): void {
+/** `index` is the full updated truth (a few hundred rows), so a rewrite is simpler and safer than an upsert. */
+function rewriteEvents(db: Database, index: ArchiveIndexFile, eventMeta: Record<string, ProtocolDbEventMeta>): void {
   db.exec(DELETE_ALL_EVENTS_SQL);
 
-  for (const entry of indexFile.events) {
-    const { clubName, chairman } = eventMeta.get(entry.slug) ?? EMPTY_EVENT_META;
+  for (const entry of index.events) {
+    const { clubName, chairman } = eventMeta[entry.slug];
 
     db.exec(INSERT_EVENT_SQL, {
       bind: [
@@ -176,7 +208,7 @@ function rewriteResults(db: Database, resultsFile: EventResultsFile | null, remo
   }
 }
 
-/** `athletes`/`runs`/`participations` mirror `athletes.json` exactly, so a full rebuild guarantees db ≡ json. */
+/** `athletes`/`runs`/`participations` mirror the rollup exactly, so a full rebuild guarantees db ≡ history. */
 function rewriteAthletes(db: Database, history: AthletesHistory): void {
   db.exec(DELETE_ALL_PARTICIPATIONS_SQL);
   db.exec(DELETE_ALL_RUNS_SQL);

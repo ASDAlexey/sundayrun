@@ -1,7 +1,7 @@
 /**
- * DDL for `data/protocol.db` — a derived SQLite artifact built from the JSON sources
- * (`index.json`, `athletes.json`, per-event `results.json`) by `scripts/build-db.ts`
- * and later updated in-place by the browser publish flow.
+ * DDL for `data/protocol.db` — the single source of truth for the public archive. The browser
+ * publish flow updates it in place, reading the previous state back out of it before each write;
+ * a from-scratch rebuild recovers it from git history.
  *
  * Deliberately omitted as derivable: `bestMsByYear` (GROUP BY `substr(date_iso, 1, 4)`
  * over `runs`) and file paths (reconstructed from `slug`, see `github/event-paths.ts`).

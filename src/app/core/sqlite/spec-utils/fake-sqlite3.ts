@@ -14,19 +14,32 @@ export const EXPECTED_DESERIALIZE_FLAGS = 3;
 /** One recorded `db.exec()` call; `bind` is present only when the statement was parameterized. */
 export interface FakeExecCall {
   sql: string;
-  bind?: unknown[];
+  bind?: unknown;
 }
 
 interface FakeSqlite3State {
   dbs: FakeDb[];
   eventMetaRows: unknown[][];
+  objectRows: Record<string, unknown>[];
+  rowsBySql: Record<string, unknown[]>;
   deserializeRc: number;
 }
 
 /** Shared mutable state inspected by specs; reset via `resetFakeSqlite3()` in `beforeEach`. */
-export const FAKE_SQLITE3_STATE: FakeSqlite3State = { dbs: [], eventMetaRows: [], deserializeRc: SQLITE_OK_RC };
+export const FAKE_SQLITE3_STATE: FakeSqlite3State = {
+  dbs: [],
+  eventMetaRows: [],
+  objectRows: [],
+  rowsBySql: {},
+  deserializeRc: SQLITE_OK_RC,
+};
 
-/** Records every executed statement instead of running SQL; result-returning reads yield `eventMetaRows`. */
+/**
+ * Records every executed statement instead of running SQL. A `resultRows` read returns the rows
+ * mapped to that exact SQL in `rowsBySql` when set (the write path reads several tables back), else
+ * `objectRows` for `rowMode: 'object'` (the Node read adapter) and `eventMetaRows` otherwise (the
+ * array-row meta read of the write path).
+ */
 export class FakeDb {
   executed: FakeExecCall[] = [];
   closed = false;
@@ -35,10 +48,18 @@ export class FakeDb {
     FAKE_SQLITE3_STATE.dbs.push(this);
   }
 
-  exec(sql: string, opts?: { bind?: unknown[]; returnValue?: string; rowMode?: string }): unknown {
+  exec(sql: string, opts?: { bind?: unknown; returnValue?: string; rowMode?: string }): unknown {
     this.executed.push(opts?.bind === undefined ? { sql } : { sql, bind: opts.bind });
 
-    return opts?.returnValue === 'resultRows' ? FAKE_SQLITE3_STATE.eventMetaRows : this;
+    if (opts?.returnValue !== 'resultRows') {
+      return this;
+    }
+
+    if (sql in FAKE_SQLITE3_STATE.rowsBySql) {
+      return FAKE_SQLITE3_STATE.rowsBySql[sql];
+    }
+
+    return opts.rowMode === 'object' ? FAKE_SQLITE3_STATE.objectRows : FAKE_SQLITE3_STATE.eventMetaRows;
   }
 
   checkRc(rc: number): this {
@@ -75,6 +96,8 @@ export const FAKE_SQLITE3 = {
 export function resetFakeSqlite3(): void {
   FAKE_SQLITE3_STATE.dbs = [];
   FAKE_SQLITE3_STATE.eventMetaRows = [];
+  FAKE_SQLITE3_STATE.objectRows = [];
+  FAKE_SQLITE3_STATE.rowsBySql = {};
   FAKE_SQLITE3_STATE.deserializeRc = SQLITE_OK_RC;
   ALLOC_FROM_TYPED_ARRAY_MOCK.mockClear();
   SQLITE3_DESERIALIZE_MOCK.mockClear();
