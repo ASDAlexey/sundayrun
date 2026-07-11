@@ -7,21 +7,18 @@ import { AdminTokenService } from './admin-token.service';
 import { CdnRefService } from './cdn-ref.service';
 import { PublishState, PublishStateType } from './github-storage.enum';
 
-/** Publishes one event into the protocols repository, exposing the flow state and the sha-pinned pdf url. */
+/** Publishes one event into the protocols repository, exposing the flow state. */
 @Injectable({ providedIn: 'root' })
 export class GithubStorageService {
   readonly #adminToken = inject(AdminTokenService);
   readonly #cdnRef = inject(CdnRefService);
   readonly #state = signal<PublishStateType>(PublishState.idle);
-  readonly #publishedPdfUrl = signal<string | null>(null);
 
   readonly state = this.#state.asReadonly();
-  readonly publishedPdfUrl = this.#publishedPdfUrl.asReadonly();
 
   /** Root singleton keeps state across routes; each new event must start from a clean slate. */
   reset(): void {
     this.#state.set(PublishState.idle);
-    this.#publishedPdfUrl.set(null);
   }
 
   async publish(input: PublishEventInput): Promise<void> {
@@ -43,7 +40,6 @@ export class GithubStorageService {
       const result = await publishEvent(token, input);
 
       this.#cdnRef.pin(result.commitSha);
-      this.#publishedPdfUrl.set(result.pdfUrl);
       this.#state.set(PublishState.success);
     } catch (error) {
       this.#state.set(error instanceof GithubAuthError ? PublishState.authError : PublishState.error);
