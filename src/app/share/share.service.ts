@@ -14,13 +14,22 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ShareService {
   canShareFile(file: File): boolean {
-    return this.#nav.canShare?.({ files: [file] }) ?? false;
+    return this.canShareFiles([file]);
+  }
+
+  canShareFiles(files: File[]): boolean {
+    return this.#nav.canShare?.({ files }) ?? false;
   }
 
   /** False when the API is unavailable or the user dismissed the share sheet. */
   async shareFile(file: File, title: string, text: string): Promise<boolean> {
+    return this.shareFiles([file], title, text);
+  }
+
+  /** Shares several files at once (e.g. the protocol image plus a run photo) through one sheet. */
+  async shareFiles(files: File[], title: string, text: string): Promise<boolean> {
     try {
-      await this.#nav.share({ files: [file], title, text });
+      await this.#nav.share({ files, title, text });
 
       return true;
     } catch {
