@@ -38,6 +38,28 @@
         }
       </section>
 
+      @if (yearBadges().length > 0) {
+        <section class="athlete__badges">
+          <h2 class="athlete__badges-title" i18n="@@athlete.badgesTitle">Бейджи</h2>
+
+          <ul class="athlete__badges-years">
+            @for (yearEntry of yearBadges(); track yearEntry.year) {
+              <li class="athlete__badges-year">
+                <span class="athlete__badges-year-label">{{ yearEntry.year }}</span>
+
+                <span class="athlete__badges-list">
+                  @for (badge of yearEntry.badges; track badge) {
+                    <app-year-badge [badge]="badge" />
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      <app-progress-chart [runs]="progressRuns()" />
+
       <p aria-live="polite" class="athlete__status" role="status">
         @if (finishCount() === 0) {
           <span i18n="@@athlete.noRuns">Финишей пока нет.</span>

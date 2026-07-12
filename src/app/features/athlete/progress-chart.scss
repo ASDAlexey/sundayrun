@@ -1,0 +1,51 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+.progress {
+  @include c.card;
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__reset {
+    @include b.button-toggle;
+    @include b.button-toggle-active;
+  }
+
+  &__canvas-wrap {
+    position: relative;
+    height: 280px;
+
+    @media (width <= 600px) {
+      height: 220px;
+    }
+  }
+
+  &__canvas {
+    // The zoom plugin owns horizontal gestures; vertical swipes keep scrolling the page.
+    touch-action: pan-y;
+  }
+
+  &__hint {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+}

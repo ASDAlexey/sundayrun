@@ -1,0 +1,25 @@
+@if (hasChart()) {
+  <section class="progress">
+    <div class="progress__head">
+      <h2 class="progress__title" i18n="@@athlete.progressTitle">Прогресс на 5 км</h2>
+
+      @if (zoomed()) {
+        <button class="progress__reset" i18n="@@athlete.progressResetZoom" type="button" (click)="resetZoom()">Весь период</button>
+      }
+    </div>
+
+    <div class="progress__canvas-wrap">
+      <canvas
+        #canvas
+        aria-label="График лучшего времени по датам"
+        class="progress__canvas"
+        i18n-aria-label="@@athlete.progressChartLabel"
+        role="img"
+      ></canvas>
+    </div>
+
+    <p class="progress__hint" i18n="@@athlete.progressHint">
+      Коснитесь точки, чтобы увидеть забег; щипком или колесом мыши можно приблизить период.
+    </p>
+  </section>
+}

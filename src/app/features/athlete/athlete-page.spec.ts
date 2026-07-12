@@ -29,6 +29,7 @@ import {
 
 describe('AthletePage', () => {
   const loadRecord = vi.fn();
+  const loadFirstEventDateByYear = vi.fn(() => Promise.resolve<Record<string, string>>({}));
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -42,7 +43,7 @@ describe('AthletePage', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AthletesService, useValue: { loadRecord } },
+        { provide: AthletesService, useValue: { loadRecord, loadFirstEventDateByYear } },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });
@@ -70,6 +71,7 @@ describe('AthletePage', () => {
     expect(page.displayName()).toBe(expectedRecord.displayName);
     expect(page.participationCount()).toBe(expectedRecord.participationSlugs.length);
     expect(page.finishCount()).toBe(expectedRecord.runs.length);
+    expect(page.progressRuns(), 'the sparkline receives the unfiltered 5 km history').toEqual(expectedRecord.runs);
     expect(page.bestTimeText()).toBe(EXPECTED_BEST_TIME_TEXT);
     expect(page.yearBests()).toEqual(EXPECTED_YEAR_BEST_VIEWS);
     expect(page.years()).toEqual(EXPECTED_RUN_YEAR_OPTIONS);

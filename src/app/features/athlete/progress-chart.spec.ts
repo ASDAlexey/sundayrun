@@ -1,0 +1,118 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Chart } from 'chart.js';
+
+import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { settle } from '../spec-utils/settle';
+import { ProgressChart } from './progress-chart';
+import { PROGRESS_RUNS, PROGRESS_RUNS_ALT, SAME_DAY_ONLY_RUNS } from './progress-chart.mock';
+
+// jsdom has no canvas context, so the real chart.js can never run in specs.
+vi.mock('chart.js', () => {
+  const instance = { destroy: vi.fn(), resetZoom: vi.fn() };
+
+  return {
+    // A `function` (not an arrow) so the component's `new Chart(...)` can construct it.
+    Chart: Object.assign(
+      vi.fn(function chartMock() {
+        return instance;
+      }),
+      { register: vi.fn() },
+    ),
+    Filler: {},
+    LinearScale: {},
+    LineController: {},
+    LineElement: {},
+    PointElement: {},
+    Tooltip: {},
+  };
+});
+
+vi.mock('chartjs-plugin-zoom', () => ({ default: {} }));
+
+describe('ProgressChart', () => {
+  const chartConstructorMock = vi.mocked(Chart);
+
+  let fixture: ComponentFixture<ProgressChart>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+  });
+
+  async function createChart(runs: AthleteRun[]): Promise<ProgressChart> {
+    fixture = TestBed.createComponent(ProgressChart);
+    fixture.componentRef.setInput('runs', runs);
+    fixture.detectChanges();
+    await settle();
+
+    return fixture.componentInstance;
+  }
+
+  it('draws the chart on the canvas once loaded and tears it down when the trend disappears', async () => {
+    const chart = await createChart(PROGRESS_RUNS);
+
+    expect(chart.hasChart()).toBe(true);
+    expect(chartConstructorMock).toHaveBeenCalledTimes(1);
+
+    const [canvas, config] = chartConstructorMock.mock.calls[0];
+    const chartInstance = chartConstructorMock.mock.results[0].value;
+
+    expect(canvas).toBeInstanceOf(HTMLCanvasElement);
+    expect(config).toEqual(expect.objectContaining({ type: 'line' }));
+
+    fixture.componentRef.setInput('runs', SAME_DAY_ONLY_RUNS);
+    fixture.detectChanges();
+    await settle();
+
+    expect(chart.hasChart()).toBe(false);
+    expect(chartInstance.destroy).toHaveBeenCalledTimes(1);
+    expect(chartConstructorMock, 'no second chart without a trend').toHaveBeenCalledTimes(1);
+  });
+
+  it('mirrors zoom gestures into the reset button state and resets the viewport on demand', async () => {
+    const chart = await createChart(PROGRESS_RUNS);
+    const chartInstance = chartConstructorMock.mock.results[0].value;
+    const onViewportChange: unknown = Reflect.get(chart, 'onViewportChange');
+
+    expect(chart.zoomed()).toBe(false);
+
+    if (typeof onViewportChange === 'function') {
+      onViewportChange(true);
+    }
+
+    expect(chart.zoomed()).toBe(true);
+
+    chart.resetZoom();
+
+    expect(chartInstance.resetZoom).toHaveBeenCalledTimes(1);
+    expect(chart.zoomed()).toBe(false);
+  });
+
+  it('lets the newest render win when runs change while chart.js is still loading', async () => {
+    fixture = TestBed.createComponent(ProgressChart);
+    fixture.componentRef.setInput('runs', PROGRESS_RUNS);
+    fixture.detectChanges();
+
+    // No settle in between: the first render is still awaiting the chart.js import.
+    fixture.componentRef.setInput('runs', PROGRESS_RUNS_ALT);
+    fixture.detectChanges();
+    await settle();
+
+    expect(chartConstructorMock, 'the stale render never constructs a chart').toHaveBeenCalledTimes(1);
+
+    const [, config] = chartConstructorMock.mock.calls[0];
+
+    expect(config.data.datasets[0].data).toHaveLength(PROGRESS_RUNS_ALT.length);
+  });
+
+  it('renders no card at all for a single race date', async () => {
+    const chart = await createChart(SAME_DAY_ONLY_RUNS);
+
+    expect(chart.hasChart()).toBe(false);
+    expect(chartConstructorMock).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('canvas')).toBeNull();
+  });
+});

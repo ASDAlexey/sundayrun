@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
+import { athleteYearBadges } from '../../core/history/year-badges';
 import { distinctRunYears, filterRuns, sortRuns, yearBestEntries } from '../../core/history/athlete-runs';
 import { RunsSort, RunsSortType } from '../../core/history/athlete-runs.enum';
 import { YearBestEntry } from '../../core/history/athlete-runs.interface';
@@ -16,17 +17,28 @@ import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT, RUNS_TABLE_COLUMNS } from './athlete-page.constant';
 import { AthleteStatus, AthleteStatusType } from './athlete-page.enum';
 import { AthletePageState, AthleteRunView, YearBestView } from './athlete-page.interface';
+import { ProgressChart } from './progress-chart';
 
 /** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
 @Component({
   selector: 'app-athlete-page',
-  imports: [MatButtonModule, MatButtonToggleModule, MatProgressSpinnerModule, MatTableModule, ReloadButton, RouterLink],
+  imports: [
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    ProgressChart,
+    ReloadButton,
+    RouterLink,
+    YearBadgeChip,
+  ],
   templateUrl: './athlete-page.html',
   styleUrl: './athlete-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +46,7 @@ import { AthletePageState, AthleteRunView, YearBestView } from './athlete-page.i
 export class AthletePage {
   readonly #athletes = inject(AthletesService);
   readonly #record = signal<AthletePageState['record']>(null);
+  readonly #firstEventDateByYear = signal<AthletePageState['firstEventDateByYear']>({});
   // The whole page is about the full distance: one-lap runs never reach the table or the filters.
   readonly #fiveKmRuns = computed(() => filterRuns(this.#record()?.runs ?? [], null, FIVE_KM_DISTANCE_KM));
 
@@ -44,7 +57,11 @@ export class AthletePage {
   readonly displayName = computed(() => this.#record()?.displayName ?? '');
   readonly participationCount = computed(() => this.#record()?.participationSlugs.length ?? 0);
   readonly finishCount = computed(() => this.#fiveKmRuns().length);
+  /** The progress chart plots the unfiltered 5 km history; it hides itself until two distinct race dates exist. */
+  readonly progressRuns = this.#fiveKmRuns;
   readonly bestTimeText = computed(() => toTimeText(this.#record()?.bestMs ?? null));
+  /** Badges count every finished run (the short course included); badge-less years are omitted. */
+  readonly yearBadges = computed(() => athleteYearBadges(this.#record()?.runs ?? [], this.#firstEventDateByYear()));
   readonly yearBests = computed(() => yearBestEntries(this.#record()?.bestMsByYear ?? {}).map(toYearBestView));
   readonly years = computed(() => distinctRunYears(this.#fiveKmRuns()));
   readonly runs = computed(() => sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), this.sort()).map(toRunView));
@@ -94,20 +111,21 @@ export class AthletePage {
     }
 
     this.#record.set(next.record);
+    this.#firstEventDateByYear.set(next.firstEventDateByYear);
     this.status.set(next.status);
   }
 
   async #resolveState(key: string): Promise<AthletePageState> {
     try {
-      const record = await this.#athletes.loadRecord(key);
+      const [record, firstEventDateByYear] = await Promise.all([this.#athletes.loadRecord(key), this.#athletes.loadFirstEventDateByYear()]);
 
       if (record === null) {
-        return { status: AthleteStatus.notFound, record: null };
+        return { status: AthleteStatus.notFound, record: null, firstEventDateByYear: {} };
       }
 
-      return { status: AthleteStatus.ready, record };
+      return { status: AthleteStatus.ready, record, firstEventDateByYear };
     } catch {
-      return { status: AthleteStatus.error, record: null };
+      return { status: AthleteStatus.error, record: null, firstEventDateByYear: {} };
     }
   }
 }
