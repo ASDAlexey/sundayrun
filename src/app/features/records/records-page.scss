@@ -71,8 +71,8 @@
     z-index: 10;
     position: sticky;
     top: 72px;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     padding: 14px 16px;
     gap: 12px;
   }
@@ -85,9 +85,8 @@
 
   &__search {
     display: flex;
-    flex: 1;
     align-items: center;
-    min-width: 200px;
+    align-self: stretch;
     padding: 9px 13px;
     gap: 9px;
     border: 1px solid var(--border);
@@ -258,9 +257,17 @@
     align-items: center;
     min-width: 0;
     gap: 8px;
+
+    &_crowned {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 2px;
+    }
   }
 
   &__athlete-cell &__athlete {
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

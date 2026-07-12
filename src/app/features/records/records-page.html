@@ -137,7 +137,7 @@
                     <li *cdkVirtualFor="let row of men()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
                       <span class="records__place">{{ row.place }}</span>
 
-                      <span class="records__athlete-cell">
+                      <span class="records__athlete-cell" [class.records__athlete-cell_crowned]="row.crowned">
                         <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
 
                         @if (row.crowned) {
@@ -184,7 +184,7 @@
                     <li *cdkVirtualFor="let row of women()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
                       <span class="records__place">{{ row.place }}</span>
 
-                      <span class="records__athlete-cell">
+                      <span class="records__athlete-cell" [class.records__athlete-cell_crowned]="row.crowned">
                         <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
 
                         @if (row.crowned) {
