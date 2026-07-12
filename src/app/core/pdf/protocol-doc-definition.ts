@@ -1,5 +1,6 @@
 import type { ContentColumns, ContentTable, ContentText, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { formatRaceNumber } from '../github/race-number';
+import { normalizeAthleteKey } from '../history/athlete-key';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
 import { EMPTY_TIME } from '../protocol/protocol-builder.constant';
@@ -17,6 +18,7 @@ import {
   GROUP_COLUMN_SPAN,
   HEADER_ATHLETE,
   HEADER_CLUB,
+  HEADER_FINISHES,
   HEADER_GENDER,
   HEADER_INDEX,
   HEADER_NOTE,
@@ -55,8 +57,14 @@ import {
  * pdfmake document definition of the one-page A4 race protocol
  * (mirrors the reference TCPDF sample): page header, 'ПРОТОКОЛ' title,
  * justified intro, participants table, abbreviations and signature.
+ * `finishCounts` (athleteKey → 5 km finishes as of the event, this one included)
+ * feeds the «Финишей» column; athletes outside the map get a blank cell.
  */
-export function buildProtocolDocDefinition(event: RaceEvent, rows: ProtocolRow[]): TDocumentDefinitions {
+export function buildProtocolDocDefinition(
+  event: RaceEvent,
+  rows: ProtocolRow[],
+  finishCounts: Record<string, number>,
+): TDocumentDefinitions {
   return {
     pageSize: PDF_PAGE_SIZE,
     pageOrientation: PDF_PAGE_ORIENTATION,
@@ -67,7 +75,7 @@ export function buildProtocolDocDefinition(event: RaceEvent, rows: ProtocolRow[]
       buildTitle(),
       buildIntro(event),
       buildParticipantsTitle(),
-      buildParticipantsTable(rows),
+      buildParticipantsTable(rows, finishCounts),
       ...buildAbbreviations(),
       buildSignature(event),
     ],
@@ -106,12 +114,12 @@ function buildParticipantsTitle(): ContentText {
   return { text: PARTICIPANTS_TITLE, bold: true, alignment: PDF_ALIGN_CENTER, margin: PARTICIPANTS_TITLE_MARGIN };
 }
 
-function buildParticipantsTable(rows: ProtocolRow[]): ContentTable {
+function buildParticipantsTable(rows: ProtocolRow[], finishCounts: Record<string, number>): ContentTable {
   return {
     table: {
       headerRows: TABLE_HEADER_ROWS,
       widths: [...TABLE_WIDTHS],
-      body: [...buildTableHeaderRows(), ...rows.map(buildTableBodyRow)],
+      body: [...buildTableHeaderRows(), ...rows.map((row) => buildTableBodyRow(row, finishCounts))],
     },
   };
 }
@@ -127,10 +135,11 @@ function buildTableHeaderRows(): TableCell[][] {
       headerCell(HEADER_GENDER, { rowSpan: HEADER_ROW_SPAN }),
       headerCell(HEADER_PLACE, { colSpan: GROUP_COLUMN_SPAN }),
       {},
+      headerCell(HEADER_FINISHES, { rowSpan: HEADER_ROW_SPAN }),
       headerCell(HEADER_CLUB, { rowSpan: HEADER_ROW_SPAN }),
       headerCell(HEADER_NOTE, { rowSpan: HEADER_ROW_SPAN }),
     ],
-    [{}, {}, headerCell(HEADER_TIME_23), headerCell(HEADER_TIME_5), {}, headerCell(HEADER_PLACE_M), headerCell(HEADER_PLACE_F), {}, {}],
+    [{}, {}, headerCell(HEADER_TIME_23), headerCell(HEADER_TIME_5), {}, headerCell(HEADER_PLACE_M), headerCell(HEADER_PLACE_F), {}, {}, {}],
   ];
 }
 
@@ -139,7 +148,9 @@ function headerCell(text: string, spans: { rowSpan?: number; colSpan?: number } 
 }
 
 /** Name, club and note are left-aligned; every numeric cell is centered. */
-function buildTableBodyRow(row: ProtocolRow): TableCell[] {
+function buildTableBodyRow(row: ProtocolRow, finishCounts: Record<string, number>): TableCell[] {
+  const finishCount = finishCounts[normalizeAthleteKey(row.fullName)];
+
   return [
     { text: String(row.index), alignment: PDF_ALIGN_CENTER },
     { text: row.fullName },
@@ -148,6 +159,7 @@ function buildTableBodyRow(row: ProtocolRow): TableCell[] {
     { text: row.gender === null ? EMPTY_CELL : GENDER_LABELS[row.gender], alignment: PDF_ALIGN_CENTER },
     { text: row.placeM === null ? EMPTY_CELL : String(row.placeM), alignment: PDF_ALIGN_CENTER },
     { text: row.placeF === null ? EMPTY_CELL : String(row.placeF), alignment: PDF_ALIGN_CENTER },
+    { text: finishCount === undefined ? EMPTY_CELL : String(finishCount), alignment: PDF_ALIGN_CENTER },
     { text: row.club },
     { text: row.note },
   ];

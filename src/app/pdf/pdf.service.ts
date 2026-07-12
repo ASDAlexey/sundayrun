@@ -13,9 +13,10 @@ import { PDF_FILE_EXTENSION, PROTOCOL_FILE_PREFIX } from './pdf.service.constant
 export class PdfService {
   readonly #fonts = inject(PdfFontsService);
 
-  async generateProtocolBlob(event: RaceEvent, rows: ProtocolRow[]): Promise<Blob> {
+  /** `finishCounts` feeds the «Финишей» column; an empty map leaves it blank. */
+  async generateProtocolBlob(event: RaceEvent, rows: ProtocolRow[], finishCounts: Record<string, number>): Promise<Blob> {
     const [{ fonts, vfs }, pdfMake] = await Promise.all([this.#fonts.load(), loadPdfMake()]);
-    const createdPdf = pdfMake.createPdf(buildProtocolDocDefinition(event, rows), undefined, fonts, vfs);
+    const createdPdf = pdfMake.createPdf(buildProtocolDocDefinition(event, rows, finishCounts), undefined, fonts, vfs);
 
     return new Promise((resolve) => createdPdf.getBlob(resolve));
   }

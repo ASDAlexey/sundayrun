@@ -15,6 +15,7 @@ import {
   GROUP_COLUMN_SPAN,
   HEADER_ATHLETE,
   HEADER_CLUB,
+  HEADER_FINISHES,
   HEADER_GENDER,
   HEADER_INDEX,
   HEADER_NOTE,
@@ -109,6 +110,12 @@ export const DNF_ROW_MOCK: ProtocolRow = {
 
 export const PDF_ROWS_MOCK: ProtocolRow[] = [MALE_WINNER_ROW_MOCK, FEMALE_WINNER_ROW_MOCK, PLACELESS_ROW_MOCK, DNF_ROW_MOCK];
 
+/** Keyed by the normalized names; the one-lap and DNF rows stay out, so their cells render blank. */
+export const PDF_FINISH_COUNTS_MOCK: Record<string, number> = {
+  'хахуцкий виктор': 42,
+  'фарафонова екатерина': 1,
+};
+
 export const EXPECTED_LONG_DATE = '20 сентября 2020 г.';
 
 export const EXPECTED_CENTER_HEADER = 'Воскресный парковый пробег № 160 (2.16)\nг. Таганрог';
@@ -131,6 +138,7 @@ export const EXPECTED_HEADER_ROWS: TableCell[][] = [
     { text: HEADER_GENDER, rowSpan: HEADER_ROW_SPAN, ...HEADER_CELL_BASE },
     { text: HEADER_PLACE, colSpan: GROUP_COLUMN_SPAN, ...HEADER_CELL_BASE },
     {},
+    { text: HEADER_FINISHES, rowSpan: HEADER_ROW_SPAN, ...HEADER_CELL_BASE },
     { text: HEADER_CLUB, rowSpan: HEADER_ROW_SPAN, ...HEADER_CELL_BASE },
     { text: HEADER_NOTE, rowSpan: HEADER_ROW_SPAN, ...HEADER_CELL_BASE },
   ],
@@ -144,6 +152,7 @@ export const EXPECTED_HEADER_ROWS: TableCell[][] = [
     { text: HEADER_PLACE_F, ...HEADER_CELL_BASE },
     {},
     {},
+    {},
   ],
 ];
 
@@ -155,6 +164,7 @@ export const EXPECTED_MALE_ROW_CELLS: TableCell[] = [
   { text: GENDER_LABELS[Gender.male], alignment: PDF_ALIGN_CENTER },
   { text: '1', alignment: PDF_ALIGN_CENTER },
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
+  { text: '42', alignment: PDF_ALIGN_CENTER },
   { text: MALE_WINNER_ROW_MOCK.club },
   { text: MALE_WINNER_ROW_MOCK.note },
 ];
@@ -167,6 +177,7 @@ export const EXPECTED_FEMALE_ROW_CELLS: TableCell[] = [
   { text: GENDER_LABELS[Gender.female], alignment: PDF_ALIGN_CENTER },
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: '1', alignment: PDF_ALIGN_CENTER },
+  { text: '1', alignment: PDF_ALIGN_CENTER },
   { text: FEMALE_WINNER_ROW_MOCK.club },
   { text: FEMALE_WINNER_ROW_MOCK.note },
 ];
@@ -175,6 +186,7 @@ export const EXPECTED_PLACELESS_ROW_CELLS: TableCell[] = [
   { text: '3', alignment: PDF_ALIGN_CENTER },
   { text: PLACELESS_ROW_MOCK.fullName },
   { text: PLACELESS_ROW_MOCK.time23, alignment: PDF_ALIGN_CENTER },
+  { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
@@ -189,6 +201,7 @@ export const EXPECTED_DNF_ROW_CELLS: TableCell[] = [
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: DNF_LABEL, alignment: PDF_ALIGN_CENTER },
   { text: GENDER_LABELS[Gender.male], alignment: PDF_ALIGN_CENTER },
+  { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: DNF_ROW_MOCK.club },

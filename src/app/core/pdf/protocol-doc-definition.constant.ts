@@ -63,6 +63,8 @@ export const HEADER_PLACE_M = 'М';
 
 export const HEADER_PLACE_F = 'Ж';
 
+export const HEADER_FINISHES = 'Финишей';
+
 export const HEADER_CLUB = 'Клуб';
 
 export const HEADER_NOTE = 'Примечание';
@@ -76,8 +78,8 @@ export const HEADER_ROW_SPAN = 2;
 /** Two-row table header repeated on every page. */
 export const TABLE_HEADER_ROWS = 2;
 
-/** №, athlete (flexible), 2.3 км, 5 км, пол, место М, место Ж, клуб, примечание. */
-export const TABLE_WIDTHS: readonly Size[] = ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 70, 110];
+/** №, athlete (flexible), 2.3 км, 5 км, пол, место М, место Ж, финишей, клуб, примечание. */
+export const TABLE_WIDTHS: readonly Size[] = ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 70, 110];
 
 /** Display labels for the 'Пол' column. */
 export const GENDER_LABELS: Record<GenderType, string> = {
