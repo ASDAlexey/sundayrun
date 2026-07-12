@@ -12,6 +12,7 @@ import { AutoNoteInput } from './notes-builder.interface';
 export function toAutoNoteInput(participant: Participant, dateIso: string): AutoNoteInput {
   return {
     key: normalizeAthleteKey(participant.fullName),
+    gender: participant.gender,
     timeMs: participant.totalMs,
     distanceKm: participant.lapsMs.length >= FIVE_KM_LAP_COUNT ? FIVE_KM_DISTANCE_KM : TWO_THREE_KM_DISTANCE_KM,
     dateIso,

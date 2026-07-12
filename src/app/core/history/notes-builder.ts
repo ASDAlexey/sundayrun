@@ -6,6 +6,7 @@ import { isoYear } from './iso-year';
 import {
   EMPTY_NOTE,
   FIRST_PARTICIPATION_NOTE,
+  NOTE_SEPARATOR,
   PERSONAL_RECORD_NOTE_TEMPLATE,
   TIME_PLACEHOLDER,
   YEAR_BEST_NOTE_TEMPLATE,
@@ -14,15 +15,17 @@ import {
 import { AutoNoteInput } from './notes-builder.interface';
 
 /**
- * Builds the automatic note for one result against the history accumulated BEFORE the event:
+ * Builds the automatic note for one result against the history accumulated BEFORE the result:
  * - DNF → '';
  * - unknown athlete (or a record with zero runs) with a time → 'Первое участие';
- * - 2.3 km with an existing record → '';
- * - 5 km strictly better than the all-time best → 'ЛР (было X)';
- * - otherwise better than the year best (or first 5 km run of the year) → 'Лучший результат YYYY г.';
- * - otherwise ''.
+ * - a non-5 km distance with an existing record → '';
+ * - 5 km strictly better than the athlete's all-time best → 'ЛР (было X)';
+ * - 5 km strictly better than `courseYearBestMs` — the year's best 5 km time among ALL athletes
+ *   of the same gender, including earlier finishers of the same event (see
+ *   `buildEventAutoNotes`) — → 'Лучший результат YYYY г.'; nothing to beat yet → no note;
+ * - both notes combine with '; ', matching the historical protocols.
  */
-export function buildAutoNote(input: AutoNoteInput, history: AthletesHistory): string {
+export function buildAutoNote(input: AutoNoteInput, history: AthletesHistory, courseYearBestMs: number | null): string {
   if (input.timeMs === null) {
     return EMPTY_NOTE;
   }
@@ -37,16 +40,15 @@ export function buildAutoNote(input: AutoNoteInput, history: AthletesHistory): s
     return EMPTY_NOTE;
   }
 
+  const tokens: string[] = [];
+
   if (record.bestMs !== null && input.timeMs < record.bestMs) {
-    return PERSONAL_RECORD_NOTE_TEMPLATE.replace(TIME_PLACEHOLDER, formatDuration(record.bestMs));
+    tokens.push(PERSONAL_RECORD_NOTE_TEMPLATE.replace(TIME_PLACEHOLDER, formatDuration(record.bestMs)));
   }
 
-  const year = isoYear(input.dateIso);
-  const yearBestMs: number | undefined = record.bestMsByYear[year];
-
-  if (yearBestMs === undefined || input.timeMs < yearBestMs) {
-    return YEAR_BEST_NOTE_TEMPLATE.replace(YEAR_PLACEHOLDER, year);
+  if (courseYearBestMs !== null && input.timeMs < courseYearBestMs) {
+    tokens.push(YEAR_BEST_NOTE_TEMPLATE.replace(YEAR_PLACEHOLDER, isoYear(input.dateIso)));
   }
 
-  return EMPTY_NOTE;
+  return tokens.join(NOTE_SEPARATOR);
 }
