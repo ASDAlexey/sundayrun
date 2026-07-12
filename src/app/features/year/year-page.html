@@ -1,0 +1,112 @@
+<main class="year" id="main" tabindex="-1">
+  <div aria-live="polite" class="year__status" role="status">
+    @switch (status()) {
+      @case (statuses.loading) {
+        <mat-progress-spinner class="year__spinner" mode="indeterminate" [diameter]="24" />
+
+        <span i18n="@@year.loading">Собираем итоги года…</span>
+      }
+      @case (statuses.notFound) {
+        <span i18n="@@year.notFound">За этот год забегов в архиве нет.</span>
+      }
+    }
+  </div>
+
+  @if (view(); as review) {
+    <header class="year__hero">
+      <p class="year__eyebrow" i18n="@@year.eyebrow">Итоги года</p>
+
+      <h1 class="year__title" i18n="@@year.title">Итоги {{ review.year }}</h1>
+    </header>
+  }
+
+  @if (years().length > 1) {
+    <nav aria-label="Год итогов" class="year__switcher" i18n-aria-label="@@year.switcherLabel">
+      @for (switchYear of years(); track switchYear) {
+        <a
+          class="year__switcher-link"
+          [class.year__switcher-link_active]="switchYear === view()?.year"
+          [routerLink]="[yearBaseLink, switchYear]"
+        >
+          {{ switchYear }}
+        </a>
+      }
+    </nav>
+  }
+
+  @if (view(); as review) {
+    <section class="year__stats">
+      <dl class="year__stats-grid">
+        @for (stat of review.stats; track stat.label) {
+          <div class="year__stat">
+            <dt class="year__stat-label">{{ stat.label }}</dt>
+
+            <dd class="year__stat-value">{{ stat.value }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+
+    @if (review.bests.length > 0) {
+      <section class="year__bests">
+        <h2 class="year__section-title" i18n="@@year.bestsTitle">Лучшие результаты года</h2>
+
+        <ul class="year__bests-list">
+          @for (best of review.bests; track best.label) {
+            <li class="year__best">
+              <span class="year__best-label">{{ best.label }}</span>
+
+              <a class="year__best-name" [routerLink]="best.athleteLink">{{ best.displayName }}</a>
+
+              <a class="year__best-time" [routerLink]="best.raceLink">{{ best.timeText }}</a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (review.mostActive.length > 0) {
+      <section class="year__active">
+        <h2 class="year__section-title" i18n="@@year.mostActiveTitle">Самые активные</h2>
+
+        <ol class="year__active-list">
+          @for (active of review.mostActive; track active.displayName) {
+            <li class="year__active-item">
+              <a class="year__active-name" [routerLink]="active.athleteLink">{{ active.displayName }}</a>
+
+              <span class="year__active-count">{{ active.countText }}</span>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+
+    @if (review.badgeGroups.length > 0) {
+      <section class="year__badges">
+        <h2 class="year__section-title" i18n="@@year.badgesTitle">Бейджи года</h2>
+
+        <div class="year__badge-groups">
+          @for (group of review.badgeGroups; track group.badge) {
+            <div class="year__badge-group">
+              <app-year-badge [badge]="group.badge" />
+
+              <ul class="year__badge-holders">
+                @for (holder of group.holders; track holder.displayName) {
+                  <li class="year__badge-holder">
+                    <a class="year__badge-holder-link" [routerLink]="holder.athleteLink">{{ holder.displayName }}</a>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  }
+
+  @if (status() === statuses.error) {
+    <p class="year__error" i18n="@@year.error" role="alert">Не удалось загрузить итоги года.</p>
+
+    <app-reload-button />
+  }
+</main>

@@ -1,0 +1,231 @@
+@use 'styles/card' as c;
+@use 'styles/section' as s;
+@use 'styles/status' as st;
+@use 'styles/typography' as t;
+
+.year {
+  @include s.section;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__status {
+    @include st.status-text;
+  }
+
+  &__hero {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0 8px;
+    gap: 14px;
+  }
+
+  &__eyebrow {
+    @include t.text('label', 'medium');
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--accent);
+
+    &::before {
+      width: 28px;
+      height: 1px;
+      background: var(--accent-line);
+      content: '';
+    }
+  }
+
+  &__title {
+    @include t.text('display', 'large');
+
+    color: var(--text);
+  }
+
+  &__switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__switcher-link {
+    @include t.text('label', 'medium');
+
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-secondary);
+    text-decoration: none;
+
+    &:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    &_active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--accent-contrast);
+    }
+  }
+
+  &__stats {
+    @include c.card;
+
+    padding: 24px;
+  }
+
+  &__stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    margin: 0;
+    gap: 20px;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+  }
+
+  &__stat-label {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__stat-value {
+    @include t.text('display', 'medium');
+
+    margin: 0;
+    color: var(--text);
+  }
+
+  &__section-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__bests {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 12px;
+  }
+
+  &__bests-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+    list-style: none;
+  }
+
+  &__best {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  &__best-label {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__best-name {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  &__best-time {
+    @include t.text('body', 'medium');
+
+    color: var(--accent);
+  }
+
+  &__active {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 12px;
+  }
+
+  &__active-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding-left: 20px;
+    gap: 6px;
+  }
+
+  &__active-item {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__active-name {
+    color: var(--text);
+  }
+
+  &__active-count {
+    margin-left: 8px;
+  }
+
+  &__badges {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 16px;
+  }
+
+  &__badge-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__badge-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__badge-holders {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    gap: 6px 16px;
+    list-style: none;
+  }
+
+  &__badge-holder {
+    @include t.text('body', 'medium');
+  }
+
+  &__badge-holder-link {
+    color: var(--text-secondary);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+
+  &__error {
+    @include st.status-text;
+  }
+}

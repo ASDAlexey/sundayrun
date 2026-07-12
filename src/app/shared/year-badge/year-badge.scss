@@ -1,0 +1,39 @@
+@use 'styles/typography' as t;
+
+.year-badge {
+  @include t.text('label', 'medium');
+
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  white-space: nowrap;
+
+  &_gold {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+
+  &_silver {
+    border-color: var(--accent);
+    background: var(--accent-atmosphere);
+    color: var(--accent);
+  }
+
+  &_bronze {
+    border-color: var(--accent);
+    color: var(--accent-deep);
+  }
+
+  &_months {
+    color: var(--text);
+  }
+
+  &_new-year {
+    color: var(--text);
+  }
+}
