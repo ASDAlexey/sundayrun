@@ -6,9 +6,12 @@
 // ===========================================================
 
 .shell-header {
-  position: relative;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-alt);
+  z-index: 50;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--border-soft);
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
 
   // Start-line accent — a warm bar fading out to the right.
   &::before {
@@ -68,13 +71,13 @@
   }
 
   &__name {
-    @include t.text('title', 'medium');
+    @include t.logo-name;
 
     color: var(--text);
   }
 
   &__place {
-    @include t.text('label', 'small');
+    @include t.mono-caption;
 
     color: var(--text-muted);
   }
@@ -91,21 +94,23 @@
     @include t.text('label', 'medium');
 
     height: auto;
-    padding: 10px 14px;
-    border-radius: var(--radius-xs);
+    padding: 9px 16px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
     color: var(--text-secondary);
     transition:
       color 0.2s var(--ease),
-      background 0.2s var(--ease);
+      background 0.2s var(--ease),
+      border-color 0.2s var(--ease);
 
     &:hover {
-      background: var(--surface-hover);
       color: var(--text);
     }
 
     &_active {
+      border-color: var(--accent-line);
       background: var(--accent-glow);
-      color: var(--accent);
+      color: var(--accent-light);
     }
   }
 
