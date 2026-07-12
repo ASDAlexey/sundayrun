@@ -1,3 +1,4 @@
+@use 'styles/card' as c;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
@@ -68,9 +69,21 @@
   }
 
   &__filters {
+    @include c.card;
+
     display: flex;
+    z-index: 10;
+    position: sticky;
+    top: 72px;
     flex-wrap: wrap;
+    padding: 14px 16px;
     gap: 8px;
+  }
+
+  @media (width <= 720px) {
+    &__filters {
+      position: static;
+    }
   }
 
   &__filter-chip {
