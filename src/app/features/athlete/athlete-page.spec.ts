@@ -5,7 +5,7 @@ import { RunsSort } from '../../core/history/athlete-runs.enum';
 import { EXPECTED_ROLLUP_HISTORY, DNF_ONLY_KEY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
-import { ATHLETES_PAGE_LINK } from '../../app.constant';
+import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
@@ -292,6 +292,8 @@ describe('AthletePage', () => {
     expect(page.runs()).toEqual([]);
     expect(page.streaks()).toEqual(EMPTY_STREAKS_VIEW);
     expect(page.legend(), 'a notFound load discards the board').toEqual(EMPTY_LEGEND_VIEW);
+    expect(page.yearBadges(), 'no record — no badges').toEqual([]);
+    expect(page.versusLink(), 'the duel link degrades to an empty preselection').toEqual([VERSUS_PAGE_LINK, '']);
 
     fixture.detectChanges();
 
