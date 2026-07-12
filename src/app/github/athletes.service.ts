@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
+import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectAthleteRecord, selectAthleteRecords, selectOverallStats } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
@@ -14,7 +15,7 @@ import { PROTOCOL_DB } from './protocol-db.token';
  */
 @Injectable({ providedIn: 'root' })
 export class AthletesService {
-  readonly #db = inject(PROTOCOL_DB);
+  readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
 
   /** One athlete for the athlete page: a few keyed selects. */
   loadRecord(key: string): Promise<AthleteRecord | null> {

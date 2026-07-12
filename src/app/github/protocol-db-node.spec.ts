@@ -1,63 +1,35 @@
-import { SQLITE_WASM_NODE_PATH } from '../core/sqlite/sqlite-loader-node.constant';
-import {
-  ALLOC_FROM_TYPED_ARRAY_MOCK,
-  FAKE_SQLITE3_STATE,
-  SQLITE3_DESERIALIZE_MOCK,
-  resetFakeSqlite3,
-} from '../core/sqlite/spec-utils/fake-sqlite3';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+import { exportMemoryProtocolDbBytes } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { createNodeProtocolDb } from './protocol-db-node';
-import {
-  MISSING_DB_ERROR,
-  NODE_DB_BYTES,
-  NODE_DB_PATH,
-  NODE_NARROWED_ROWS,
-  NODE_QUERY_BINDINGS,
-  NODE_QUERY_SQL,
-  NODE_RAW_ROWS,
-  READ_FILE_MOCK,
-} from './protocol-db-node.mock';
-
-vi.mock('node:fs/promises', async () => {
-  const mock = await import('./protocol-db-node.mock');
-
-  return { readFile: mock.READ_FILE_MOCK };
-});
-
-vi.mock('@sqlite.org/sqlite-wasm', async () => {
-  const fake = await import('../core/sqlite/spec-utils/fake-sqlite3');
-
-  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
-});
+import { MISSING_DB_PATH, NODE_EXPECTED_ROWS, NODE_QUERY_PARAMS, NODE_QUERY_SQL, NODE_SEED_SQL } from './protocol-db-node.mock';
 
 describe('createNodeProtocolDb', () => {
-  beforeEach(() => {
-    resetFakeSqlite3();
-    READ_FILE_MOCK.mockReset();
+  let dir: string | null = null;
+
+  afterEach(async () => {
+    if (dir !== null) {
+      await rm(dir, { recursive: true, force: true });
+      dir = null;
+    }
   });
 
-  it('loads the wasm engine and the local db once, then answers object queries with narrowed rows', async () => {
-    READ_FILE_MOCK.mockResolvedValue(NODE_DB_BYTES);
-    FAKE_SQLITE3_STATE.objectRows = NODE_RAW_ROWS;
+  it('opens the local db once and answers value-array queries with narrowed rows', async () => {
+    dir = await mkdtemp(join(tmpdir(), 'protocol-db-node-'));
+    const dbPath = join(dir, 'protocol.db');
 
-    const db = createNodeProtocolDb(NODE_DB_PATH);
+    await writeFile(dbPath, await exportMemoryProtocolDbBytes(NODE_SEED_SQL));
 
-    await expect(db.query(NODE_QUERY_SQL, NODE_QUERY_BINDINGS)).resolves.toEqual(NODE_NARROWED_ROWS);
-    await expect(db.query(NODE_QUERY_SQL), 'the connection is cached, so the db is opened only once').resolves.toEqual(NODE_NARROWED_ROWS);
+    const db = createNodeProtocolDb(dbPath);
 
-    expect(READ_FILE_MOCK).toHaveBeenNthCalledWith(1, SQLITE_WASM_NODE_PATH);
-    expect(READ_FILE_MOCK).toHaveBeenNthCalledWith(2, NODE_DB_PATH);
-    expect(READ_FILE_MOCK, 'the wasm and the db are each read once, then the connection is reused').toHaveBeenCalledTimes(2);
-    expect(ALLOC_FROM_TYPED_ARRAY_MOCK).toHaveBeenCalledExactlyOnceWith(new Uint8Array(NODE_DB_BYTES));
-    expect(SQLITE3_DESERIALIZE_MOCK).toHaveBeenCalledOnce();
-    expect(FAKE_SQLITE3_STATE.dbs).toHaveLength(1);
-    expect(FAKE_SQLITE3_STATE.dbs[0].executed).toEqual([{ sql: NODE_QUERY_SQL, bind: NODE_QUERY_BINDINGS }, { sql: NODE_QUERY_SQL }]);
+    await expect(db.queryValues(NODE_QUERY_SQL, NODE_QUERY_PARAMS)).resolves.toEqual(NODE_EXPECTED_ROWS);
+    await expect(db.queryValues(NODE_QUERY_SQL, NODE_QUERY_PARAMS), 'the cached connection is reused').resolves.toEqual(NODE_EXPECTED_ROWS);
+    await expect(db.queryValues('SELECT slug FROM events WHERE slug = ?', ['нет']), 'an unmatched key yields no rows').resolves.toEqual([]);
   });
 
   it('rejects the query when the local db file is missing', async () => {
-    READ_FILE_MOCK.mockImplementation((path: string) =>
-      path === NODE_DB_PATH ? Promise.reject(new Error(MISSING_DB_ERROR)) : Promise.resolve(NODE_DB_BYTES),
-    );
-
-    await expect(createNodeProtocolDb(NODE_DB_PATH).query(NODE_QUERY_SQL)).rejects.toThrow(MISSING_DB_ERROR);
+    await expect(createNodeProtocolDb(MISSING_DB_PATH).queryValues(NODE_QUERY_SQL, NODE_QUERY_PARAMS)).rejects.toThrow();
   });
 });

@@ -11,8 +11,8 @@ import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
 import { LOAD_SQLITE_HTTP_MOCK } from './sqlite-http-loader.mock';
 import {
   CREATE_POOL_MOCK,
-  DB_BINDINGS_MOCK,
   DB_EXEC_RESULTS_MOCK,
+  DB_PARAMS_MOCK,
   DB_ROWS_MOCK,
   DB_SQL_MOCK,
   PINNED_PROTOCOL_DB_CDN_URL,
@@ -46,24 +46,24 @@ describe('ProtocolDbService', () => {
     service = TestBed.inject(ProtocolDbService);
   });
 
-  it('opens one sha-pinned pool per session and unwraps rows into plain objects', async () => {
-    await expect(service.query(DB_SQL_MOCK, DB_BINDINGS_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
+  it('opens one sha-pinned pool per session and unwraps rows into positional value arrays', async () => {
+    await expect(service.queryValues(DB_SQL_MOCK, DB_PARAMS_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
     expect(CREATE_POOL_MOCK).toHaveBeenCalledExactlyOnceWith({ workers: PROTOCOL_DB_WORKER_COUNT, httpOptions: PROTOCOL_DB_HTTP_OPTIONS });
     expect(POOL_OPEN_MOCK).toHaveBeenCalledExactlyOnceWith(PROTOCOL_DB_CDN_URL);
-    expect(POOL_EXEC_MOCK).toHaveBeenCalledExactlyOnceWith(DB_SQL_MOCK, DB_BINDINGS_MOCK, { rowMode: 'object' });
+    expect(POOL_EXEC_MOCK).toHaveBeenCalledExactlyOnceWith(DB_SQL_MOCK, DB_PARAMS_MOCK, { rowMode: 'array' });
 
-    await expect(service.query(DB_SQL_MOCK), 'bindings are optional').resolves.toEqual(DB_ROWS_MOCK);
+    await expect(service.queryValues(DB_SQL_MOCK, []), 'the params are spread into a fresh array').resolves.toEqual(DB_ROWS_MOCK);
     expect(CREATE_POOL_MOCK, 'the pool is cached for the session').toHaveBeenCalledTimes(1);
-    expect(POOL_EXEC_MOCK).toHaveBeenLastCalledWith(DB_SQL_MOCK, undefined, { rowMode: 'object' });
+    expect(POOL_EXEC_MOCK).toHaveBeenLastCalledWith(DB_SQL_MOCK, [], { rowMode: 'array' });
   });
 
   it('a pinned commit swaps in a pool over the new sha, closing the old one even when the close fails', async () => {
-    await service.query(DB_SQL_MOCK);
+    await service.queryValues(DB_SQL_MOCK, []);
 
     POOL_CLOSE_MOCK.mockRejectedValueOnce(new Error(POOL_CLOSE_ERROR_MESSAGE));
     TestBed.inject(CdnRefService).pin(PINNED_SHA_MOCK);
 
-    await expect(service.query(DB_SQL_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
+    await expect(service.queryValues(DB_SQL_MOCK, [])).resolves.toEqual(DB_ROWS_MOCK);
     await settle();
 
     expect(CREATE_POOL_MOCK).toHaveBeenCalledTimes(2);
@@ -75,7 +75,7 @@ describe('ProtocolDbService', () => {
     POOL_OPEN_MOCK.mockRejectedValueOnce(new Error(POOL_OPEN_ERROR_MESSAGE));
     POOL_CLOSE_MOCK.mockRejectedValueOnce(new Error(POOL_CLOSE_ERROR_MESSAGE));
 
-    await expect(service.query(DB_SQL_MOCK), 'e.g. jsDelivr momentarily refusing a range request').resolves.toEqual(DB_ROWS_MOCK);
+    await expect(service.queryValues(DB_SQL_MOCK, []), 'e.g. jsDelivr momentarily refusing a range request').resolves.toEqual(DB_ROWS_MOCK);
     expect(POOL_CLOSE_MOCK, 'the half-made pool is closed, and a rejecting close is swallowed').toHaveBeenCalledTimes(1);
     expect(CREATE_POOL_MOCK, 'the evicted pool is rebuilt for the retry').toHaveBeenCalledTimes(2);
   });
@@ -83,14 +83,14 @@ describe('ProtocolDbService', () => {
   it('rides out a transient worker bootstrap failure within the same query', async () => {
     CREATE_POOL_MOCK.mockRejectedValueOnce(new Error(POOL_CREATE_ERROR_MESSAGE));
 
-    await expect(service.query(DB_SQL_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
+    await expect(service.queryValues(DB_SQL_MOCK, [])).resolves.toEqual(DB_ROWS_MOCK);
     expect(CREATE_POOL_MOCK).toHaveBeenCalledTimes(2);
   });
 
   it('rides out a transient statement failure by re-executing on the same healthy pool', async () => {
     POOL_EXEC_MOCK.mockRejectedValueOnce(new Error(POOL_EXEC_ERROR_MESSAGE));
 
-    await expect(service.query(DB_SQL_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
+    await expect(service.queryValues(DB_SQL_MOCK, [])).resolves.toEqual(DB_ROWS_MOCK);
     expect(POOL_EXEC_MOCK, 'the retry reuses the open pool').toHaveBeenCalledTimes(2);
     expect(CREATE_POOL_MOCK).toHaveBeenCalledTimes(1);
   });
@@ -98,12 +98,14 @@ describe('ProtocolDbService', () => {
   it('rejects when every attempt fails, evicting the pool so a later query can recover', async () => {
     POOL_OPEN_MOCK.mockRejectedValue(new Error(POOL_OPEN_ERROR_MESSAGE));
 
-    await expect(service.query(DB_SQL_MOCK), 'both attempts hit the same failure').rejects.toThrow(POOL_OPEN_ERROR_MESSAGE);
+    await expect(service.queryValues(DB_SQL_MOCK, []), 'both attempts hit the same failure').rejects.toThrow(POOL_OPEN_ERROR_MESSAGE);
     expect(POOL_OPEN_MOCK, 'the query was attempted twice').toHaveBeenCalledTimes(2);
 
     POOL_OPEN_MOCK.mockResolvedValue(undefined);
 
-    await expect(service.query(DB_SQL_MOCK), 'the evicted pool is rebuilt once the range works again').resolves.toEqual(DB_ROWS_MOCK);
+    await expect(service.queryValues(DB_SQL_MOCK, []), 'the evicted pool is rebuilt once the range works again').resolves.toEqual(
+      DB_ROWS_MOCK,
+    );
   });
 });
 
@@ -120,7 +122,7 @@ describe('ProtocolDbService during prerender', () => {
   });
 
   it('rejects before any wasm or worker code is imported', async () => {
-    await expect(TestBed.inject(ProtocolDbService).query(DB_SQL_MOCK)).rejects.toThrow(PROTOCOL_DB_BROWSER_ONLY_ERROR);
+    await expect(TestBed.inject(ProtocolDbService).queryValues(DB_SQL_MOCK, [])).rejects.toThrow(PROTOCOL_DB_BROWSER_ONLY_ERROR);
     expect(CREATE_POOL_MOCK).not.toHaveBeenCalled();
   });
 });

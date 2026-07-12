@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 
 import { ARCHIVE_INDEX_SCHEMA_VERSION } from '../core/github/archive-index.constant';
 import { ArchiveIndexEntry, ArchiveIndexFile } from '../core/github/archive-index.interface';
+import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectArchiveEvents } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
@@ -13,7 +14,7 @@ import { PROTOCOL_DB } from './protocol-db.token';
  */
 @Injectable({ providedIn: 'root' })
 export class ArchiveService {
-  readonly #db = inject(PROTOCOL_DB);
+  readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
 
   async loadIndex(): Promise<ArchiveIndexFile> {
     return { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: await selectArchiveEvents(this.#db) };

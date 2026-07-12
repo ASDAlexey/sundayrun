@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 
 import { EventResultsFile } from '../core/github/results-file.interface';
+import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectEventResults } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
@@ -12,7 +13,7 @@ import { PROTOCOL_DB } from './protocol-db.token';
  */
 @Injectable({ providedIn: 'root' })
 export class ResultsService {
-  readonly #db = inject(PROTOCOL_DB);
+  readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
   readonly #results = new Map<string, Promise<EventResultsFile | null>>();
 
   /**

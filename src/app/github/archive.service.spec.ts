@@ -1,38 +1,42 @@
 import { TestBed } from '@angular/core/testing';
 
-import { EXISTING_INDEX } from '../core/github/archive-index.mock';
+import { ARCHIVE_INDEX_SCHEMA_VERSION } from '../core/github/archive-index.constant';
+import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
+import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { ArchiveService } from './archive.service';
-import { EVENT_SQL_ROWS, LATEST_EVENTS_LIMIT } from './protocol-db-queries.mock';
+import { EXPECTED_ARCHIVE_EVENTS, LATEST_EVENTS_LIMIT, SEED_EVENTS } from './protocol-db-queries.mock';
 import { PROTOCOL_DB_ERROR_MESSAGE } from './protocol-db.service.mock';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 describe('ArchiveService', () => {
-  const dbQuery = vi.fn();
+  let close: (() => void) | null = null;
 
-  let service: ArchiveService;
-
-  beforeEach(() => {
-    dbQuery.mockReset();
-    TestBed.configureTestingModule({
-      providers: [{ provide: PROTOCOL_DB, useValue: { query: dbQuery } }],
-    });
-    service = TestBed.inject(ArchiveService);
+  afterEach(() => {
+    close?.();
+    close = null;
   });
 
+  async function serviceOver(db: ProtocolDb): Promise<ArchiveService> {
+    TestBed.configureTestingModule({ providers: [{ provide: PROTOCOL_DB, useValue: db }] });
+
+    return TestBed.inject(ArchiveService);
+  }
+
   it('serves the full index and the latest slice from protocol.db', async () => {
-    dbQuery.mockResolvedValueOnce(EVENT_SQL_ROWS);
+    const memory = await createMemoryProtocolDb(SEED_EVENTS);
 
-    await expect(service.loadIndex()).resolves.toEqual(EXISTING_INDEX);
+    close = memory.close;
 
-    dbQuery.mockResolvedValueOnce(EVENT_SQL_ROWS.slice(0, LATEST_EVENTS_LIMIT));
+    const service = await serviceOver(memory.db);
 
-    await expect(service.loadLatest(LATEST_EVENTS_LIMIT)).resolves.toEqual(EXISTING_INDEX.events.slice(0, LATEST_EVENTS_LIMIT));
+    await expect(service.loadIndex()).resolves.toEqual({ schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: EXPECTED_ARCHIVE_EVENTS });
+    await expect(service.loadLatest(LATEST_EVENTS_LIMIT)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS.slice(0, LATEST_EVENTS_LIMIT));
   });
 
   it('propagates a db failure so the page can show a distinct error state', async () => {
-    dbQuery.mockRejectedValue(new Error(PROTOCOL_DB_ERROR_MESSAGE));
+    const service = await serviceOver({ queryValues: () => Promise.reject(new Error(PROTOCOL_DB_ERROR_MESSAGE)) });
 
-    await expect(service.loadIndex()).rejects.toThrow(PROTOCOL_DB_ERROR_MESSAGE);
-    await expect(service.loadLatest(LATEST_EVENTS_LIMIT)).rejects.toThrow(PROTOCOL_DB_ERROR_MESSAGE);
+    await expect(service.loadIndex()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadLatest(LATEST_EVENTS_LIMIT)).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
   });
 });

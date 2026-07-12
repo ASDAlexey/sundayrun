@@ -1,114 +1,153 @@
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
-import { EXISTING_INDEX } from '../core/github/archive-index.mock';
+import { EXISTING_INDEX, NEWER_ENTRY, OLDER_ENTRY } from '../core/github/archive-index.mock';
+import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { OverallStats } from '../core/history/overall-stats.interface';
-import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interface';
+import { AthleteRecord } from '../core/models/athlete-history.interface';
 import { Gender } from '../core/models/gender.enum';
-import { AthleteSqlRow, MedianTimeSqlRow, OverallCountsSqlRow, ParticipationSqlRow, YearBestSqlRow } from './protocol-db-queries.interface';
+import { ProtocolRow } from '../core/models/protocol-row.interface';
 
-export const ATHLETE_SQL_ROW: AthleteSqlRow = { key: 'иванов иван', displayName: 'Иванов Иван', gender: Gender.male, bestMs: 1500000 };
+/**
+ * The seed SQL and expected fixtures for the drizzle-backed `protocol-db-queries` tests. A real
+ * in-memory sqlite db is loaded with these rows (via `createMemoryProtocolDb`), so every branch —
+ * ranked athletes with and without season bests, a genderless athlete, even/odd/empty medians, the
+ * archive limit, unknown keys/slugs — is exercised against the true engine, not a fake.
+ */
+
+const q = (value: string): string => `'${value}'`;
+
+const num = (value: number | null): string => (value === null ? 'NULL' : String(value));
+
+export const ATHLETE_KEY = 'иванов иван';
 
 export const UNKNOWN_ATHLETE_KEY = 'нет такого';
 
-/**
- * Every year-best branch: 2024 improves on a second run, 2025 opens with its best and keeps
- * it against a slower run, and the 2.3 km run never counts.
- */
-export const ATHLETE_RUN_ROWS: AthleteRun[] = [
-  { dateIso: '2024-05-05', slug: '2024-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
-  { dateIso: '2024-06-06', slug: '2024-06-06', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM },
-  { dateIso: '2025-03-03', slug: '2025-03-03', timeMs: 1560000, distanceKm: FIVE_KM_DISTANCE_KM },
-  { dateIso: '2025-04-04', slug: '2025-04-04', timeMs: 999000, distanceKm: 2.3 },
-  { dateIso: '2025-05-05', slug: '2025-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
+export const RUNLESS_ATHLETE_KEY = 'новикова нина';
+
+export const GENDERLESS_ATHLETE_KEY = 'соколов саша';
+
+export const UNKNOWN_EVENT_SLUG = 'нет-такого-события';
+
+export const LATEST_EVENTS_LIMIT = 1;
+
+/** Athletes: a ranked man with season bests, a ranked woman without runs, a ranked genderless athlete. */
+export const SEED_ATHLETES: readonly string[] = [
+  `INSERT INTO athletes VALUES (${q(ATHLETE_KEY)}, ${q('Иванов Иван')}, ${q(Gender.male)}, 1500000)`,
+  `INSERT INTO athletes VALUES (${q(RUNLESS_ATHLETE_KEY)}, ${q('Новикова Нина')}, ${q(Gender.female)}, 1700000)`,
+  `INSERT INTO athletes VALUES (${q(GENDERLESS_ATHLETE_KEY)}, ${q('Соколов Саша')}, NULL, 1800000)`,
 ];
 
-export const ATHLETE_PARTICIPATION_ROWS: ParticipationSqlRow[] = ATHLETE_RUN_ROWS.map((run) => ({ slug: run.slug }));
+/**
+ * Runs of `ATHLETE_KEY`: 2024 improves on a second run, 2025 opens with its best against a slower
+ * run, and a 2.3 km run never counts. Plus one run for the median (a woman's, seeded via athletes).
+ */
+export const SEED_RUNS: readonly string[] = [
+  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2024-05-05')}, ${q('2024-05-05')}, 1600000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2024-06-06')}, ${q('2024-06-06')}, 1500000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2025-03-03')}, ${q('2025-03-03')}, 1560000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2025-04-04')}, ${q('2025-04-04')}, 999000, 2.3)`,
+  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2025-05-05')}, ${q('2025-05-05')}, 1600000, ${FIVE_KM_DISTANCE_KM})`,
+];
+
+/** Participations of `ATHLETE_KEY`, one per run slug (including the 2.3 km event). */
+export const SEED_PARTICIPATIONS: readonly string[] = ['2024-05-05', '2024-06-06', '2025-03-03', '2025-04-04', '2025-05-05'].map(
+  (slug) => `INSERT INTO participations VALUES (${q(ATHLETE_KEY)}, ${q(slug)})`,
+);
+
+const eventInsert = (entry: ArchiveIndexEntry, clubName: string, chairman: string): string =>
+  `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${q(entry.city)}, ${q(entry.park)}, ` +
+  `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.avgTimeMs)}, ` +
+  `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)})`;
+
+/** The two archive events (`EXISTING_INDEX`), each with its club metadata for the event read. */
+export const SEED_EVENTS: readonly string[] = [eventInsert(NEWER_ENTRY, 'Курск бегущий', 'Иванов Иван'), eventInsert(OLDER_ENTRY, '', '')];
+
+/** The genderless DNF result plus a female 5 km finisher on the newer event — covers `asGender`. */
+export const SEED_RESULTS: readonly string[] = [
+  `INSERT INTO results VALUES (${q(NEWER_ENTRY.slug)}, 1, ${q('Мария Иванова')}, ${q('11:30')}, ${q('25:00')}, 1500000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.female)}, NULL, 1, ${q('Курск бегущий')}, ${q('')})`,
+  `INSERT INTO results VALUES (${q(NEWER_ENTRY.slug)}, 2, ${q('Пётр Сидоров')}, ${q('')}, ${q('')}, NULL, NULL, NULL, ` +
+    `NULL, NULL, ${q('')}, ${q('сход')})`,
+];
+
+/** A woman with a single 5 km run, so the women's median is an odd (single-value) sample. */
+export const SEED_WOMAN_RUN: readonly string[] = [
+  `INSERT INTO runs VALUES (${q(RUNLESS_ATHLETE_KEY)}, ${q('2025-02-02')}, ${q('2025-02-02')}, 1700000, ${FIVE_KM_DISTANCE_KM})`,
+];
+
+/** The full populated db used by most assertions. */
+export const POPULATED_SEED: readonly string[] = [
+  ...SEED_ATHLETES,
+  ...SEED_RUNS,
+  ...SEED_WOMAN_RUN,
+  ...SEED_PARTICIPATIONS,
+  ...SEED_EVENTS,
+  ...SEED_RESULTS,
+];
 
 export const EXPECTED_ATHLETE_RECORD: AthleteRecord = {
-  key: ATHLETE_SQL_ROW.key,
-  displayName: ATHLETE_SQL_ROW.displayName,
+  key: ATHLETE_KEY,
+  displayName: 'Иванов Иван',
   gender: Gender.male,
-  participationSlugs: ATHLETE_RUN_ROWS.map((run) => run.slug),
-  runs: ATHLETE_RUN_ROWS,
-  bestMs: ATHLETE_SQL_ROW.bestMs,
+  participationSlugs: ['2024-05-05', '2024-06-06', '2025-03-03', '2025-04-04', '2025-05-05'],
+  runs: [
+    { dateIso: '2024-05-05', slug: '2024-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
+    { dateIso: '2024-06-06', slug: '2024-06-06', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM },
+    { dateIso: '2025-03-03', slug: '2025-03-03', timeMs: 1560000, distanceKm: FIVE_KM_DISTANCE_KM },
+    { dateIso: '2025-04-04', slug: '2025-04-04', timeMs: 999000, distanceKm: 2.3 },
+    { dateIso: '2025-05-05', slug: '2025-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
+  ],
+  bestMs: 1500000,
   bestMsByYear: { '2024': 1500000, '2025': 1560000 },
 };
 
-/** Ranked (a non-null best), yet without year-best rows — assembly must tolerate the gap. */
-export const RUNLESS_ATHLETE_SQL_ROW: AthleteSqlRow = {
-  key: 'новикова нина',
-  displayName: 'Новикова Нина',
-  gender: Gender.female,
-  bestMs: 1700000,
-};
-
-/** A ranked athlete whose gender was never resolved — the null code must survive the read. */
-export const GENDERLESS_ATHLETE_SQL_ROW: AthleteSqlRow = {
-  key: 'соколов саша',
-  displayName: 'Соколов Саша',
-  gender: null,
-  bestMs: 1800000,
-};
-
-export const RANKED_ATHLETE_ROWS: AthleteSqlRow[] = [ATHLETE_SQL_ROW, RUNLESS_ATHLETE_SQL_ROW, GENDERLESS_ATHLETE_SQL_ROW];
-
-/** One row per season: the year's best time carried by its earliest run. */
-export const YEAR_BEST_ROWS: YearBestSqlRow[] = [
-  { athleteKey: ATHLETE_SQL_ROW.key, dateIso: '2024-06-06', slug: '2024-06-06', timeMs: 1500000 },
-  { athleteKey: ATHLETE_SQL_ROW.key, dateIso: '2025-03-03', slug: '2025-03-03', timeMs: 1560000 },
-];
-
 export const EXPECTED_LEADERBOARD_RECORDS: AthleteRecord[] = [
   {
-    key: ATHLETE_SQL_ROW.key,
-    displayName: ATHLETE_SQL_ROW.displayName,
+    key: ATHLETE_KEY,
+    displayName: 'Иванов Иван',
     gender: Gender.male,
     participationSlugs: [],
     runs: [
       { dateIso: '2024-06-06', slug: '2024-06-06', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM },
       { dateIso: '2025-03-03', slug: '2025-03-03', timeMs: 1560000, distanceKm: FIVE_KM_DISTANCE_KM },
     ],
-    bestMs: ATHLETE_SQL_ROW.bestMs,
+    bestMs: 1500000,
     bestMsByYear: { '2024': 1500000, '2025': 1560000 },
   },
   {
-    key: RUNLESS_ATHLETE_SQL_ROW.key,
-    displayName: RUNLESS_ATHLETE_SQL_ROW.displayName,
+    key: RUNLESS_ATHLETE_KEY,
+    displayName: 'Новикова Нина',
     gender: Gender.female,
     participationSlugs: [],
-    runs: [],
-    bestMs: RUNLESS_ATHLETE_SQL_ROW.bestMs,
-    bestMsByYear: {},
+    runs: [{ dateIso: '2025-02-02', slug: '2025-02-02', timeMs: 1700000, distanceKm: FIVE_KM_DISTANCE_KM }],
+    bestMs: 1700000,
+    bestMsByYear: { '2025': 1700000 },
   },
   {
-    key: GENDERLESS_ATHLETE_SQL_ROW.key,
-    displayName: GENDERLESS_ATHLETE_SQL_ROW.displayName,
+    key: GENDERLESS_ATHLETE_KEY,
+    displayName: 'Соколов Саша',
     gender: null,
     participationSlugs: [],
     runs: [],
-    bestMs: GENDERLESS_ATHLETE_SQL_ROW.bestMs,
+    bestMs: 1800000,
     bestMsByYear: {},
   },
 ];
 
-export const OVERALL_COUNTS_ROW: OverallCountsSqlRow = { eventsCount: 3, finishesCount: 8, finishersCount: 3 };
-
-/** `AVG` of an even sample can carry a half — the TS side must round like the JSON path. */
-export const MEN_MEDIAN_ROW: MedianTimeSqlRow = { medianMs: 1922500.5 };
-
-/** No finished 5 km runs for the gender: `AVG` over the empty sample is null. */
-export const EMPTY_MEDIAN_ROW: MedianTimeSqlRow = { medianMs: null };
-
+/**
+ * `count()` over runs counts all six seeded runs (the man's four 5 km runs, his 2.3 km run and the
+ * woman's single 5 km run); `finishersCount` is the two distinct athletes. Median is per 5 km sample:
+ * the man's four times (1600000, 1500000, 1560000, 1600000) average their middle pair (1560000,
+ * 1600000) to 1580000; the woman's single 1700000 is her own median.
+ */
 export const EXPECTED_SQL_STATS: OverallStats = {
-  eventsCount: 3,
-  finishesCount: 8,
-  finishersCount: 3,
-  averageFinishes: 8 / 3,
-  medianTimeMenMs: 1922501,
-  medianTimeWomenMs: 0,
+  eventsCount: 2,
+  finishesCount: 6,
+  finishersCount: 2,
+  averageFinishes: 3,
+  medianTimeMenMs: 1580000,
+  medianTimeWomenMs: 1700000,
 };
-
-export const EMPTY_COUNTS_ROW: OverallCountsSqlRow = { eventsCount: 0, finishesCount: 0, finishersCount: 0 };
 
 export const EXPECTED_EMPTY_SQL_STATS: OverallStats = {
   eventsCount: 0,
@@ -119,21 +158,19 @@ export const EXPECTED_EMPTY_SQL_STATS: OverallStats = {
   medianTimeWomenMs: 0,
 };
 
-/** `EXISTING_INDEX.events` as the db serves them — `files` is reconstructed on read. */
-export const EVENT_SQL_ROWS: Omit<ArchiveIndexEntry, 'files'>[] = EXISTING_INDEX.events.map((entry) => ({
-  slug: entry.slug,
-  dateIso: entry.dateIso,
-  number: entry.number,
-  city: entry.city,
-  park: entry.park,
-  participantCount: entry.participantCount,
-  finisherCount: entry.finisherCount,
-  avgTimeMs: entry.avgTimeMs,
-  bestMaleMs: entry.bestMaleMs,
-  bestFemaleMs: entry.bestFemaleMs,
-}));
+/** The archive as the queries serve it, newest first (`EXISTING_INDEX.events` already sorted). */
+export const EXPECTED_ARCHIVE_EVENTS: ArchiveIndexEntry[] = EXISTING_INDEX.events;
 
-export const LATEST_EVENTS_LIMIT = 1;
+/** The `RACE_EVENT` (slug = its dateIso) with its club metadata, for the results-service read. */
+export const SEED_RACE_EVENT: readonly string[] = [
+  `INSERT INTO events VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_EVENT.dateIso)}, ${RACE_EVENT.number}, ${q(RACE_EVENT.city)}, ` +
+    `${q(RACE_EVENT.park)}, ${q(RACE_EVENT.clubName)}, ${q(RACE_EVENT.chairman)}, ${PROTOCOL_ROWS.length}, NULL, NULL, NULL, NULL)`,
+];
 
-/** A slug the events table does not hold — `selectEventResults` must resolve null. */
-export const UNKNOWN_EVENT_SLUG = 'нет-такого-события';
+const resultInsert = (row: ProtocolRow): string =>
+  `INSERT INTO results VALUES (${q(RACE_EVENT.dateIso)}, ${row.index}, ${q(row.fullName)}, ${q(row.time23)}, ${q(row.time5)}, ` +
+  `${num(row.totalMs)}, ${num(row.distanceKm)}, ${row.gender === null ? 'NULL' : q(row.gender)}, ${num(row.placeM)}, ` +
+  `${num(row.placeF)}, ${q(row.club)}, ${q(row.note)})`;
+
+/** Every `PROTOCOL_ROWS` row of the `RACE_EVENT`, so `selectEventResults` rebuilds the same file. */
+export const SEED_RACE_RESULTS: readonly string[] = PROTOCOL_ROWS.map(resultInsert);

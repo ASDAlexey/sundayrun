@@ -1,8 +1,11 @@
-import { EXISTING_INDEX } from '../core/github/archive-index.mock';
 import { buildEventResultsFile } from '../core/github/results-file';
-import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
+import { NEWER_ENTRY } from '../core/github/archive-index.mock';
+import { RaceEvent } from '../core/models/race-event.interface';
+import { ProtocolRow } from '../core/models/protocol-row.interface';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { Gender } from '../core/models/gender.enum';
+import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
+import { createProtocolDrizzle, ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import {
   selectArchiveEvents,
   selectAthleteRecord,
@@ -11,119 +14,89 @@ import {
   selectOverallStats,
 } from './protocol-db-queries';
 import {
-  SELECT_ATHLETE_PARTICIPATIONS_SQL,
-  SELECT_ATHLETE_RUNS_SQL,
-  SELECT_ATHLETE_SQL,
-  SELECT_EVENT_RESULTS_SQL,
-  SELECT_EVENT_SQL,
-  SELECT_EVENTS_SQL,
-  SELECT_LATEST_EVENTS_SQL,
-  SELECT_MEDIAN_TIME_SQL,
-  SELECT_OVERALL_COUNTS_SQL,
-  SELECT_RANKED_ATHLETES_SQL,
-  SELECT_YEAR_BEST_RUNS_SQL,
-} from './protocol-db-queries.constant';
-import {
-  ATHLETE_PARTICIPATION_ROWS,
-  ATHLETE_RUN_ROWS,
-  ATHLETE_SQL_ROW,
-  EMPTY_COUNTS_ROW,
-  EMPTY_MEDIAN_ROW,
-  EVENT_SQL_ROWS,
+  ATHLETE_KEY,
+  EXPECTED_ARCHIVE_EVENTS,
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_EMPTY_SQL_STATS,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_SQL_STATS,
   LATEST_EVENTS_LIMIT,
-  MEN_MEDIAN_ROW,
-  OVERALL_COUNTS_ROW,
-  RANKED_ATHLETE_ROWS,
+  POPULATED_SEED,
   UNKNOWN_ATHLETE_KEY,
   UNKNOWN_EVENT_SLUG,
-  YEAR_BEST_ROWS,
 } from './protocol-db-queries.mock';
-import { ProtocolDb } from './protocol-db.interface';
+
+/** The event NEWER_ENTRY was seeded with its club metadata, and its two result rows. */
+const EXPECTED_EVENT: RaceEvent = {
+  number: NEWER_ENTRY.number,
+  dateIso: NEWER_ENTRY.dateIso,
+  city: NEWER_ENTRY.city,
+  park: NEWER_ENTRY.park,
+  clubName: 'Курск бегущий',
+  chairman: 'Иванов Иван',
+};
+
+const EXPECTED_EVENT_ROWS: ProtocolRow[] = [
+  {
+    index: 1,
+    fullName: 'Мария Иванова',
+    time23: '11:30',
+    time5: '25:00',
+    totalMs: 1500000,
+    distanceKm: FIVE_KM_DISTANCE_KM,
+    gender: Gender.female,
+    placeM: null,
+    placeF: 1,
+    club: 'Курск бегущий',
+    note: '',
+  },
+  {
+    index: 2,
+    fullName: 'Пётр Сидоров',
+    time23: '',
+    time5: '',
+    totalMs: null,
+    distanceKm: null,
+    gender: null,
+    placeM: null,
+    placeF: null,
+    club: '',
+    note: 'сход',
+  },
+];
 
 describe('protocol-db-queries', () => {
-  const query = vi.fn();
-  const db: ProtocolDb = { query };
+  let close: (() => void) | null = null;
 
-  beforeEach(() => {
-    query.mockReset();
+  afterEach(() => {
+    close?.();
+    close = null;
   });
 
-  it('selectAthleteRecord assembles the record from three keyed selects, recomputing the year bests', async () => {
-    query.mockResolvedValueOnce([ATHLETE_SQL_ROW]);
-    query.mockResolvedValueOnce(ATHLETE_RUN_ROWS);
-    query.mockResolvedValueOnce(ATHLETE_PARTICIPATION_ROWS);
+  async function drizzleFor(seed: readonly string[]): Promise<ProtocolDrizzle> {
+    const memory = await createMemoryProtocolDb(seed);
 
-    await expect(selectAthleteRecord(db, ATHLETE_SQL_ROW.key)).resolves.toEqual(EXPECTED_ATHLETE_RECORD);
-    expect(query).toHaveBeenCalledWith(SELECT_ATHLETE_SQL, { $key: ATHLETE_SQL_ROW.key });
-    expect(query).toHaveBeenCalledWith(SELECT_ATHLETE_RUNS_SQL, { $key: ATHLETE_SQL_ROW.key });
-    expect(query).toHaveBeenCalledWith(SELECT_ATHLETE_PARTICIPATIONS_SQL, { $key: ATHLETE_SQL_ROW.key });
-  });
+    close = memory.close;
 
-  it('selectAthleteRecord resolves null for an unknown key without fetching runs', async () => {
-    query.mockResolvedValueOnce([]);
+    return createProtocolDrizzle(memory.db);
+  }
 
-    await expect(selectAthleteRecord(db, UNKNOWN_ATHLETE_KEY)).resolves.toBeNull();
-    expect(query).toHaveBeenCalledExactlyOnceWith(SELECT_ATHLETE_SQL, { $key: UNKNOWN_ATHLETE_KEY });
-  });
+  it('reads athletes, leaderboards, stats, archive and event results off a populated db', async () => {
+    const db = await drizzleFor(POPULATED_SEED);
 
-  it('selectAthleteRecords shapes leaderboard records from the ranked athletes and their season bests', async () => {
-    query.mockResolvedValueOnce(RANKED_ATHLETE_ROWS);
-    query.mockResolvedValueOnce(YEAR_BEST_ROWS);
-
+    await expect(selectAthleteRecord(db, ATHLETE_KEY)).resolves.toEqual(EXPECTED_ATHLETE_RECORD);
+    await expect(selectAthleteRecord(db, UNKNOWN_ATHLETE_KEY), 'an unknown key resolves null').resolves.toBeNull();
     await expect(selectAthleteRecords(db)).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
-    expect(query).toHaveBeenCalledWith(SELECT_RANKED_ATHLETES_SQL);
-    expect(query).toHaveBeenCalledWith(SELECT_YEAR_BEST_RUNS_SQL, { $distanceKm: FIVE_KM_DISTANCE_KM });
-  });
-
-  it('selectOverallStats combines the aggregate counts with the per-gender medians', async () => {
-    query.mockResolvedValueOnce([OVERALL_COUNTS_ROW]);
-    query.mockResolvedValueOnce([MEN_MEDIAN_ROW]);
-    query.mockResolvedValueOnce([EMPTY_MEDIAN_ROW]);
-
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_SQL_STATS);
-    expect(query).toHaveBeenCalledWith(SELECT_OVERALL_COUNTS_SQL);
-    expect(query).toHaveBeenCalledWith(SELECT_MEDIAN_TIME_SQL, { $gender: Gender.male, $distanceKm: FIVE_KM_DISTANCE_KM });
-    expect(query).toHaveBeenCalledWith(SELECT_MEDIAN_TIME_SQL, { $gender: Gender.female, $distanceKm: FIVE_KM_DISTANCE_KM });
+    await expect(selectArchiveEvents(db)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS);
+    await expect(selectArchiveEvents(db, LATEST_EVENTS_LIMIT)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS.slice(0, LATEST_EVENTS_LIMIT));
+    await expect(selectEventResults(db, NEWER_ENTRY.slug)).resolves.toEqual(buildEventResultsFile(EXPECTED_EVENT, EXPECTED_EVENT_ROWS));
+    await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG), 'an unknown slug resolves null').resolves.toBeNull();
   });
 
-  it('selectOverallStats keeps the zero-division guard of the JSON path on an empty db', async () => {
-    query.mockResolvedValueOnce([EMPTY_COUNTS_ROW]);
-    query.mockResolvedValueOnce([EMPTY_MEDIAN_ROW]);
-    query.mockResolvedValueOnce([EMPTY_MEDIAN_ROW]);
+  it('keeps the zero-division and empty-median guards on an empty db', async () => {
+    const db = await drizzleFor([]);
 
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_EMPTY_SQL_STATS);
-  });
-
-  it('selectArchiveEvents reconstructs the file paths and applies the optional limit', async () => {
-    query.mockResolvedValueOnce(EVENT_SQL_ROWS);
-
-    await expect(selectArchiveEvents(db)).resolves.toEqual(EXISTING_INDEX.events);
-    expect(query).toHaveBeenCalledExactlyOnceWith(SELECT_EVENTS_SQL);
-
-    query.mockResolvedValueOnce(EVENT_SQL_ROWS.slice(0, LATEST_EVENTS_LIMIT));
-
-    await expect(selectArchiveEvents(db, LATEST_EVENTS_LIMIT)).resolves.toEqual(EXISTING_INDEX.events.slice(0, LATEST_EVENTS_LIMIT));
-    expect(query).toHaveBeenLastCalledWith(SELECT_LATEST_EVENTS_SQL, { $limit: LATEST_EVENTS_LIMIT });
-  });
-
-  it('selectEventResults assembles the file from the event metadata row and its result rows', async () => {
-    // The aliased event/result rows are exactly `RaceEvent` / `ProtocolRow` shaped.
-    query.mockResolvedValueOnce([RACE_EVENT]);
-    query.mockResolvedValueOnce(PROTOCOL_ROWS);
-
-    await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
-    expect(query).toHaveBeenCalledWith(SELECT_EVENT_SQL, { $slug: RACE_EVENT.dateIso });
-    expect(query).toHaveBeenCalledWith(SELECT_EVENT_RESULTS_SQL, { $slug: RACE_EVENT.dateIso });
-  });
-
-  it('selectEventResults resolves null for an unknown slug without fetching the rows', async () => {
-    query.mockResolvedValueOnce([]);
-
-    await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG)).resolves.toBeNull();
-    expect(query).toHaveBeenCalledExactlyOnceWith(SELECT_EVENT_SQL, { $slug: UNKNOWN_EVENT_SLUG });
   });
 });
