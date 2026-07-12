@@ -7,6 +7,7 @@ import {
   ATHLETE_KEY,
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
+  EXPECTED_EVENT_SLUGS,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_SQL_STATS,
   POPULATED_SEED,
@@ -41,6 +42,7 @@ describe('AthletesService', () => {
     await expect(service.loadRecords()).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
     await expect(service.loadCourseRecords()).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(service.loadOverallStats()).resolves.toEqual(EXPECTED_SQL_STATS);
+    await expect(service.loadEventSlugs()).resolves.toEqual(EXPECTED_EVENT_SLUGS);
   });
 
   it('propagates a db failure from every read so the page can show a distinct error state', async () => {
@@ -50,5 +52,6 @@ describe('AthletesService', () => {
     await expect(service.loadRecords()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadCourseRecords()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadOverallStats()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadEventSlugs()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
   });
 });

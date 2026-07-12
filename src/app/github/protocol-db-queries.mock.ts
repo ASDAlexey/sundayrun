@@ -202,6 +202,9 @@ export const EXPECTED_EMPTY_SQL_STATS: OverallStats = {
 /** The archive as the queries serve it, newest first (`EXISTING_INDEX.events` already sorted). */
 export const EXPECTED_ARCHIVE_EVENTS: ArchiveIndexEntry[] = EXISTING_INDEX.events;
 
+/** The seeded events oldest first — the chronology `selectEventSlugs` serves. */
+export const EXPECTED_EVENT_SLUGS: string[] = [OLDER_ENTRY.slug, NEWER_ENTRY.slug];
+
 /** The `RACE_EVENT` (slug = its dateIso) with its club metadata, for the results-service read. */
 export const SEED_RACE_EVENT: readonly string[] = [
   `INSERT INTO events VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_EVENT.dateIso)}, ${RACE_EVENT.number}, ${legacy(RACE_EVENT.legacyNumber)}, ${q(RACE_EVENT.city)}, ` +

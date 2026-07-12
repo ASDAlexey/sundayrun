@@ -139,6 +139,13 @@ export async function selectCourseRecords(db: ProtocolDrizzle): Promise<CourseRe
   );
 }
 
+/** Every event slug oldest first — the race chronology the streak scan walks (slug = ISO date). */
+export async function selectEventSlugs(db: ProtocolDrizzle): Promise<string[]> {
+  const rows = await db.select({ slug: events.slug }).from(events).orderBy(asc(events.slug));
+
+  return rows.map((row) => row.slug);
+}
+
 /** Year → the date of that year's first race (the new-year one); also the source of the year list. */
 export async function selectFirstEventDateByYear(db: ProtocolDrizzle): Promise<Record<string, string>> {
   const rows = await db

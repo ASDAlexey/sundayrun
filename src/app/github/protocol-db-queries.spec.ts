@@ -13,6 +13,7 @@ import {
   selectAthleteRecords,
   selectCourseRecords,
   selectEventResults,
+  selectEventSlugs,
   selectOverallStats,
 } from './protocol-db-queries';
 import {
@@ -21,6 +22,7 @@ import {
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
   EXPECTED_EMPTY_SQL_STATS,
+  EXPECTED_EVENT_SLUGS,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_SQL_STATS,
   LATEST_EVENTS_LIMIT,
@@ -94,6 +96,7 @@ describe('protocol-db-queries', () => {
     await expect(selectCourseRecords(db)).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_SQL_STATS);
     await expect(selectArchiveEvents(db)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS);
+    await expect(selectEventSlugs(db)).resolves.toEqual(EXPECTED_EVENT_SLUGS);
     await expect(selectArchiveEvents(db, LATEST_EVENTS_LIMIT)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS.slice(0, LATEST_EVENTS_LIMIT));
     await expect(selectEventResults(db, NEWER_ENTRY.slug)).resolves.toEqual(buildEventResultsFile(EXPECTED_EVENT, EXPECTED_EVENT_ROWS));
     await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG), 'an unknown slug resolves null').resolves.toBeNull();
@@ -104,5 +107,6 @@ describe('protocol-db-queries', () => {
 
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_EMPTY_SQL_STATS);
     await expect(selectCourseRecords(db), 'no runs mean no record history for either gender').resolves.toEqual(EMPTY_COURSE_RECORD_HISTORY);
+    await expect(selectEventSlugs(db), 'an empty archive has no chronology').resolves.toEqual([]);
   });
 });

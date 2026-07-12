@@ -8,6 +8,7 @@ import {
   selectAthleteRecord,
   selectAthleteRecords,
   selectCourseRecords,
+  selectEventSlugs,
   selectFirstEventDateByYear,
   selectOverallStats,
 } from './protocol-db-queries';
@@ -47,5 +48,10 @@ export class AthletesService {
   /** Year → the date of that year's first race; feeds the new-year badge on the athlete page. */
   loadFirstEventDateByYear(): Promise<Record<string, string>> {
     return selectFirstEventDateByYear(this.#db);
+  }
+
+  /** Every event slug oldest first; feeds the streak counters on the athlete page. */
+  loadEventSlugs(): Promise<string[]> {
+    return selectEventSlugs(this.#db);
   }
 }
