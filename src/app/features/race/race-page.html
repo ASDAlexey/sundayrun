@@ -114,6 +114,12 @@
               <td *matCellDef="let row" class="race__td" mat-cell>{{ row.placeFText }}</td>
             </ng-container>
 
+            <ng-container matColumnDef="finishes">
+              <th *matHeaderCellDef class="race__th" i18n="@@race.table.finishes" mat-header-cell scope="col">Финишей</th>
+
+              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.finishCountText }}</td>
+            </ng-container>
+
             <ng-container matColumnDef="club">
               <th *matHeaderCellDef class="race__th" i18n="@@race.table.club" mat-header-cell scope="col">Клуб</th>
 

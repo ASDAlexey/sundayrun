@@ -51,6 +51,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       genderText: 'Ж',
       placeMText: '',
       placeFText: '1',
+      // The default spec stub returns no participant runs, so the counter stays blank like the notable.
+      finishCountText: '',
       club: 'Курск бегущий',
       note: '',
       notableText: '',
@@ -66,6 +68,7 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       genderText: 'М',
       placeMText: '1',
       placeFText: '',
+      finishCountText: '',
       club: '',
       note: '',
       notableText: '',
@@ -81,6 +84,7 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       genderText: '',
       placeMText: '',
       placeFText: '',
+      finishCountText: '',
       club: '',
       note: 'сход',
       notableText: '',
@@ -108,6 +112,9 @@ export const RANK_PARTICIPANT_RUNS: ParticipantRun[] = [
 ];
 
 export const EXPECTED_RANK_NOTABLE_TEXT = '2-й результат за всё время';
+
+/** All six of Мария's rank runs sit on or before the event date; the others never ran the 5 km here. */
+export const EXPECTED_RANK_FINISH_COUNT_TEXTS: string[] = ['6', '', ''];
 
 /** Three faster runs sit before the 6-month window; the three inside it are all slower. */
 export const WINDOW_PARTICIPANT_RUNS: ParticipantRun[] = [

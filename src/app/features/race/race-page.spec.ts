@@ -16,6 +16,7 @@ import { SLUG_ROUTE_PARAM } from './race-page.constant';
 import { RaceStatus } from './race-page.enum';
 import {
   EXPECTED_RACE_VIEW,
+  EXPECTED_RANK_FINISH_COUNT_TEXTS,
   EXPECTED_RANK_NOTABLE_TEXT,
   EXPECTED_WINDOW_NOTABLE_TEXT,
   FINAL_MONTH_CHRONOLOGY,
@@ -106,7 +107,7 @@ describe('RacePage', () => {
     expect(medianLines[0].textContent).toContain(EXPECTED_RACE_VIEW.medianTimeF);
     expect(pdfButton.tagName, 'the pdf action generates on click instead of linking to a file').toBe('BUTTON');
     expect(pdfButton.getAttribute('aria-label')).toBe(EXPECTED_RACE_VIEW.pdfAriaLabel);
-    expect(headers.length, 'the nine PDF columns plus the average pace').toBe(10);
+    expect(headers.length, 'the ten PDF columns plus the average pace').toBe(11);
     expect(
       headers.map((header) => header.getAttribute('scope')),
       'every header is a column header',
@@ -129,6 +130,10 @@ describe('RacePage', () => {
       page.race()?.rows.map((row) => row.notableText),
       'only Мария ranks — the others have no 5 km run here',
     ).toEqual([EXPECTED_RANK_NOTABLE_TEXT, '', '']);
+    expect(
+      page.race()?.rows.map((row) => row.finishCountText),
+      'the «Финишей» counter tallies the same runs the notables rank',
+    ).toEqual(EXPECTED_RANK_FINISH_COUNT_TEXTS);
 
     fixture.detectChanges();
 

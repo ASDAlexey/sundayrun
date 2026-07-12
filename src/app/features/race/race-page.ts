@@ -10,6 +10,7 @@ import { formatRaceNumber } from '../../core/github/race-number';
 import { EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
+import { finishCountsAt } from '../../core/history/finish-counts';
 import { medianMsOrNull } from '../../core/history/median';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { buildEventNotables } from '../../core/history/notables';
@@ -129,6 +130,7 @@ export class RacePage {
         race: toRaceView(
           file,
           buildEventNotables(participantRuns, slug, file.event.dateIso),
+          finishCountsAt(participantRuns, file.event.dateIso),
           monthFinalSlugs(eventSlugs, isoToday()).has(slug),
         ),
       };
@@ -138,7 +140,12 @@ export class RacePage {
   }
 }
 
-function toRaceView(file: EventResultsFile, notables: Record<string, Notable>, isMonthFinal: boolean): RaceView {
+function toRaceView(
+  file: EventResultsFile,
+  notables: Record<string, Notable>,
+  finishCounts: Record<string, number>,
+  isMonthFinal: boolean,
+): RaceView {
   return {
     number: formatRaceNumber(file.event.number, file.event.legacyNumber),
     dateLong: formatRussianDateLong(file.event.dateIso),
@@ -151,15 +158,18 @@ function toRaceView(file: EventResultsFile, notables: Record<string, Notable>, i
     isMonthFinal,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
-    rows: file.rows.map((row) => toRowView(row, notables)),
+    rows: file.rows.map((row) => toRowView(row, notables, finishCounts)),
   };
 }
 
-function toRowView(row: ProtocolRow, notables: Record<string, Notable>): RaceRowView {
+function toRowView(row: ProtocolRow, notables: Record<string, Notable>, finishCounts: Record<string, number>): RaceRowView {
+  const athleteKey = normalizeAthleteKey(row.fullName);
+  const finishCount = finishCounts[athleteKey];
+
   return {
     index: row.index,
     fullName: row.fullName,
-    athleteLink: [ATHLETES_PAGE_LINK, normalizeAthleteKey(row.fullName)],
+    athleteLink: [ATHLETES_PAGE_LINK, athleteKey],
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     athleteAriaLabel: $localize`:@@race.athleteAriaLabel:История атлета ${row.fullName}:fullName:`,
     time23: row.time23,
@@ -168,9 +178,10 @@ function toRowView(row: ProtocolRow, notables: Record<string, Notable>): RaceRow
     genderText: genderTextOf(row.gender),
     placeMText: placeTextOf(row.placeM),
     placeFText: placeTextOf(row.placeF),
+    finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
     club: row.club,
     note: row.note,
-    notableText: toNotableText(notables[normalizeAthleteKey(row.fullName)]),
+    notableText: toNotableText(notables[athleteKey]),
   };
 }
 

@@ -12,6 +12,8 @@ export interface RaceRowView {
   genderText: string;
   placeMText: string;
   placeFText: string;
+  /** «Каким по счёту» — the athlete's 5 km finish count as of this race; blank for DNF and one-lap rows. */
+  finishCountText: string;
   club: string;
   note: string;
   /** Preformatted on-the-fly notable («2-й результат за всё время»); empty when nothing stands out. */
