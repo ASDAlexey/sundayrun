@@ -8,6 +8,7 @@ import { PDF_EVENT_MOCK, PDF_ROWS_MOCK } from '../../core/pdf/protocol-doc-defin
 import { AdminTokenService } from '../../github/admin-token.service';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
+import { ResultsService } from '../../github/results.service';
 import { PdfService } from '../../pdf/pdf.service';
 import { ProtocolImageService } from '../../pdf/protocol-image.service';
 import { PROTOCOL_IMAGE_MIME_TYPE } from '../../pdf/protocol-image.service.constant';
@@ -22,9 +23,11 @@ import {
   EDITED_DESCRIPTION,
   EXPECTED_DESCRIPTION,
   EXPECTED_IMAGE_FILE_NAME,
+  EXPECTED_RESULT_FINISH_COUNTS,
   EXPECTED_SUMMARY,
   EXPECTED_TITLE_LINE,
   FILE_NAME_MOCK,
+  FINISH_COUNTS_ERROR_MESSAGE,
   GENERATE_ERROR_MESSAGE,
   OBJECT_URL_MOCK,
   PROTOCOL_IMAGE_BLOB_MOCK,
@@ -40,6 +43,7 @@ describe('ResultPage', () => {
   const protocolRows = signal(PDF_ROWS_MOCK);
   const sourceFile = signal<SourceFile | null>(SOURCE_FILE_MOCK);
   const generateProtocolBlob = vi.fn();
+  const loadFinishCountsBefore = vi.fn();
   const suggestedFileName = vi.fn(() => FILE_NAME_MOCK);
   const canShareFile = vi.fn(() => true);
   const canShareFiles = vi.fn((_files: File[]) => true);
@@ -65,6 +69,7 @@ describe('ResultPage', () => {
     isAdmin.set(true);
     publishState.set(PublishState.idle);
     generateProtocolBlob.mockResolvedValue(RESULT_BLOB_MOCK);
+    loadFinishCountsBefore.mockResolvedValue({});
     render.mockResolvedValue(PROTOCOL_IMAGE_BLOB_MOCK);
     canShareFile.mockReturnValue(true);
     canShareFiles.mockReturnValue(true);
@@ -76,6 +81,7 @@ describe('ResultPage', () => {
         provideRouter([]),
         { provide: ProtocolStateService, useValue: { event, protocolRows, sourceFile } },
         { provide: PdfService, useValue: { generateProtocolBlob, suggestedFileName } },
+        { provide: ResultsService, useValue: { loadFinishCountsBefore } },
         { provide: ProtocolImageService, useValue: { render } },
         {
           provide: ShareService,
@@ -105,7 +111,8 @@ describe('ResultPage', () => {
 
     const page = fixture.componentInstance;
 
-    expect(generateProtocolBlob).toHaveBeenCalledWith(PDF_EVENT_MOCK, PDF_ROWS_MOCK);
+    expect(loadFinishCountsBefore).toHaveBeenCalledWith(PDF_EVENT_MOCK.dateIso);
+    expect(generateProtocolBlob).toHaveBeenCalledWith(PDF_EVENT_MOCK, PDF_ROWS_MOCK, EXPECTED_RESULT_FINISH_COUNTS);
     expect(reset, 'a stale publish state of the previous event is cleared on entry').toHaveBeenCalled();
     expect(page.status()).toBe(ResultStatus.ready);
     expect(createObjectURL).toHaveBeenCalledWith(RESULT_BLOB_MOCK);
@@ -161,6 +168,14 @@ describe('ResultPage', () => {
     expect(createObjectURL, 'preview url on entry + the downloaded protocol image').toHaveBeenCalledTimes(2);
     expect(buildVkShareUrl).toHaveBeenCalledWith(location.origin, EXPECTED_TITLE_LINE);
     expect(openWindow).toHaveBeenCalledWith(VK_URL_MOCK);
+  });
+
+  it('still renders the pdf with a blank «Финишей» column when the stored counts cannot be read', async () => {
+    loadFinishCountsBefore.mockRejectedValueOnce(new Error(FINISH_COUNTS_ERROR_MESSAGE));
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.status(), 'the counts are garnish — the protocol still renders').toBe(ResultStatus.ready);
+    expect(generateProtocolBlob).toHaveBeenCalledWith(PDF_EVENT_MOCK, PDF_ROWS_MOCK, {});
   });
 
   it('shows the error state when generation fails, guards sharing/publishing and navigates back to the preview', async () => {

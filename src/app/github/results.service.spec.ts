@@ -43,6 +43,7 @@ describe('ResultsService', () => {
     );
     expect(queryValues, 'one event select plus one results select, then the cache answers').toHaveBeenCalledTimes(2);
     await expect(service.loadParticipantRuns(EVENT_DATE_ISO), 'no seeded runs — the notables source is empty').resolves.toEqual([]);
+    await expect(service.loadFinishCountsBefore(EVENT_DATE_ISO), 'no seeded runs — no stored finish counts').resolves.toEqual({});
   });
 
   it('evicts a null and a rejected load, so a reload sees a protocol published later', async () => {

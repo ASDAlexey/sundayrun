@@ -16,6 +16,7 @@ import {
   selectEventParticipantRuns,
   selectEventResults,
   selectEventSlugs,
+  selectFiveKmFinishCountsBefore,
   selectLegendFinishes,
   selectOverallStats,
   selectYearBadgeRarity,
@@ -29,12 +30,14 @@ import {
   EXPECTED_DB_YEAR_REVIEW,
   EXPECTED_EMPTY_SQL_STATS,
   EXPECTED_EVENT_SLUGS,
+  EXPECTED_FINISH_COUNTS_BEFORE,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_LEGEND_FINISHES,
   EXPECTED_PARTICIPANT_RUNS,
   EXPECTED_RUN_PLACES,
   EXPECTED_SQL_STATS,
   EXPECTED_WOMAN_RUN_PLACES,
+  FINISH_COUNTS_BEFORE_DATE,
   LATEST_EVENTS_LIMIT,
   PARTICIPANT_RUNS_SLUG,
   POPULATED_SEED,
@@ -121,6 +124,10 @@ describe('protocol-db-queries', () => {
     await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG), 'an unknown slug resolves null').resolves.toBeNull();
     await expect(selectEventParticipantRuns(db, PARTICIPANT_RUNS_SLUG)).resolves.toEqual(EXPECTED_PARTICIPANT_RUNS);
     await expect(selectEventParticipantRuns(db, UNKNOWN_EVENT_SLUG), 'an unknown slug has no participants').resolves.toEqual([]);
+    await expect(
+      selectFiveKmFinishCountsBefore(db, FINISH_COUNTS_BEFORE_DATE),
+      'the strict cut drops the same-date run; the 2.3 km run never counts',
+    ).resolves.toEqual(EXPECTED_FINISH_COUNTS_BEFORE);
     await expect(selectYearBadgeRarity(db), 'no seeded year reaches a badge — an empty rarity map').resolves.toEqual({});
     await expect(selectLegendFinishes(db)).resolves.toEqual(EXPECTED_LEGEND_FINISHES);
   });
@@ -140,5 +147,6 @@ describe('protocol-db-queries', () => {
     await expect(selectEventSlugs(db), 'an empty archive has no chronology').resolves.toEqual([]);
     await expect(selectYearBadgeRarity(db), 'no participants — no rarity').resolves.toEqual({});
     await expect(selectLegendFinishes(db), 'an empty archive has no legend finishes').resolves.toEqual([]);
+    await expect(selectFiveKmFinishCountsBefore(db, FINISH_COUNTS_BEFORE_DATE), 'no runs mean no counts').resolves.toEqual({});
   });
 });

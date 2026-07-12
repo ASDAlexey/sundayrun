@@ -20,6 +20,14 @@ export const VK_URL_MOCK = 'https://vk.com/share.php?url=mock';
 
 export const GENERATE_ERROR_MESSAGE = 'pdf generation failed';
 
+export const FINISH_COUNTS_ERROR_MESSAGE = 'finish counts read failed';
+
+/** `eventFinishCounts(PDF_ROWS_MOCK, {})`: both 5 km finishers debut, the one-lap and DNF rows stay out. */
+export const EXPECTED_RESULT_FINISH_COUNTS: Record<string, number> = {
+  'хахуцкий виктор': 1,
+  'фарафонова екатерина': 1,
+};
+
 /** composeRaceAnnouncement(PDF_EVENT_MOCK, PDF_ROWS_MOCK): the first line doubles as the share title. */
 export const EXPECTED_TITLE_LINE = 'Воскресный парковый пробег № 160 — 20.09.2020 г.';
 

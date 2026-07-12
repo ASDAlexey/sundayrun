@@ -263,6 +263,15 @@ export const EXPECTED_PARTICIPANT_RUNS: ParticipantRun[] = [
   { athleteKey: ATHLETE_KEY, dateIso: '2025-05-05', slug: '2025-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
 ];
 
+/** Cut at the last seeded run date: the same-date run stays out (republish safety), the 2.3 km run never counts. */
+export const FINISH_COUNTS_BEFORE_DATE = '2025-05-05';
+
+/** Иван's three earlier 5 km runs and Нина's single one, as `selectFiveKmFinishCountsBefore` serves them. */
+export const EXPECTED_FINISH_COUNTS_BEFORE: Record<string, number> = {
+  [ATHLETE_KEY]: 3,
+  [RUNLESS_ATHLETE_KEY]: 1,
+};
+
 /** The year the review test reads — the one holding both seeded 2024 events and runs. */
 export const REVIEW_YEAR = '2024';
 

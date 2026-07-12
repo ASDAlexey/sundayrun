@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { buildProtocolDocDefinition } from '../core/pdf/protocol-doc-definition';
-import { PDF_EVENT_MOCK, PDF_ROWS_MOCK } from '../core/pdf/protocol-doc-definition.mock';
+import { PDF_EVENT_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_ROWS_MOCK } from '../core/pdf/protocol-doc-definition.mock';
 import { PdfFontsService } from './pdf-fonts.service';
 import { PdfService } from './pdf.service';
 import {
@@ -38,18 +38,18 @@ describe('PdfService', () => {
   });
 
   it('renders blobs through pdfmake in both module shapes and suggests the file name', async () => {
-    const first = await service.generateProtocolBlob(PDF_EVENT_MOCK, PDF_ROWS_MOCK);
+    const first = await service.generateProtocolBlob(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK);
 
     PDF_MAKE_SHAPE.useDefault = false;
 
-    const second = await service.generateProtocolBlob(PDF_EVENT_MOCK, PDF_ROWS_MOCK);
+    const second = await service.generateProtocolBlob(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK);
 
     expect(first).toBe(PDF_BLOB_MOCK);
     expect(second).toBe(PDF_BLOB_MOCK);
     expect(LOAD_FONTS_MOCK).toHaveBeenCalledTimes(2);
     expect(CREATE_PDF_MOCK).toHaveBeenCalledTimes(2);
     expect(CREATE_PDF_MOCK).toHaveBeenCalledWith(
-      buildProtocolDocDefinition(PDF_EVENT_MOCK, PDF_ROWS_MOCK),
+      buildProtocolDocDefinition(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK),
       undefined,
       FONTS_MOCK.fonts,
       FONTS_MOCK.vfs,
