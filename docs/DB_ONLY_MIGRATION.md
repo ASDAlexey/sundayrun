@@ -1,7 +1,7 @@
-# План: `protocol.db` — единственный источник истины, JSON удалить
+# План: `sundayrun.db` — единственный источник истины, JSON удалить
 
 Цель: убрать `data/index.json`, `data/athletes.json`, все `data/events/*/results.json` и
-сделать `protocol.db` единственным источником данных. `version.json` остаётся (это указатель
+сделать `sundayrun.db` единственным источником данных. `version.json` остаётся (это указатель
 на SHA, а не данные). `site-meta.json` — отдельное решение (см. Фазу 6).
 
 Статус на момент написания (2026-07-11): чтение уже **db-first с JSON-фолбэком** во всех трёх
@@ -63,14 +63,14 @@ JSON-фолбэк и переносит две оставшиеся роли JSO
 - Пререндер/сервер-конфиг Angular: `src/app/app.config.server.ts` (или аналог), `angular.json`
   (`outputMode: static`), `main.server.ts`.
 - Данные: `data/index.json`, `data/athletes.json`, `data/events/*/results.json` (удаляем);
-  `data/protocol.db`, `data/version.json` (оставляем); `data/site-meta.json` (Фаза 6).
+  `data/sundayrun.db`, `data/version.json` (оставляем); `data/site-meta.json` (Фаза 6).
 
 ---
 
 ## Фаза 1 — Node-адаптер `ProtocolDb` (чтение локального `.db`)
 
 Цель: реализация `ProtocolDb { query(sql, params) }`, читающая **локальный файл**
-`data/protocol.db` в Node, чтобы `protocol-db-queries.ts` работал и на билде.
+`data/sundayrun.db` в Node, чтобы `protocol-db-queries.ts` работал и на билде.
 
 Выбор библиотеки (важно — пререндер в Node, не в bun):
 
@@ -82,7 +82,7 @@ JSON-фолбэк и переносит две оставшиеся роли JSO
 Шаги:
 
 1. `src/app/github/protocol-db-node.ts` — фабрика `ProtocolDb`, открывающая файл по пути из
-   env/конфига (по умолчанию `data/protocol.db` от корня). `query` мапит `$param` → нативные
+   env/конфига (по умолчанию `data/sundayrun.db` от корня). `query` мапит `$param` → нативные
    плейсхолдеры, возвращает `ProtocolDbRow[]` (тот же контракт, что браузерный сервис).
    - Не тянуть в клиентский бандл: файл только для сервер/скрипт-контекста (проверить, что
      `better-sqlite3` не попадает в браузерную сборку — держать за server-only импортом).
@@ -140,13 +140,13 @@ Acceptance: ни один рантайм-путь не обращается к `
 
 ## Фаза 4 — Запись без JSON
 
-Цель: `publishEvent`/`deleteEvent` пишут только `source.xlsx` + `protocol.db` (+ `version.json`);
+Цель: `publishEvent`/`deleteEvent` пишут только `source.xlsx` + `sundayrun.db` (+ `version.json`);
 перестают писать/удалять `index.json`, `athletes.json`, `results.json`.
 
 Шаги:
 
 1. `publish-event.ts`: убрать сборку и коммит `index.json`/`athletes.json`/`results.json` из
-   `CommitFile[]`. Оставить `source.xlsx`, `protocol.db`, обновление `version.json`.
+   `CommitFile[]`. Оставить `source.xlsx`, `sundayrun.db`, обновление `version.json`.
 2. `delete-event.ts`: убрать удаление трёх JSON; удалять `source.xlsx` события, переписывать
    `.db` (in-place, как уже делает `protocol-db-write.ts` `rewriteResults`/rollup), бампать
    `version.json`.
@@ -155,7 +155,7 @@ Acceptance: ни один рантайм-путь не обращается к `
    раньше часть жила в `buildIndexEntry` для `index.json`. Перенести недостающее в SQL/запись.
 4. Обновить фикстуры/спеки публикации и удаления (сейчас ждут N JSON-файлов в коммите).
 
-Acceptance: коммит публикации содержит только `source.xlsx` + `protocol.db` + `version.json`;
+Acceptance: коммит публикации содержит только `source.xlsx` + `sundayrun.db` + `version.json`;
 удаление — зеркально; все агрегаты, что раньше писались в `index.json`, теперь в таблице
 `events`.
 
@@ -170,7 +170,7 @@ Acceptance: коммит публикации содержит только `sou
 
 Шаги:
 
-1. Читать `data/protocol.db` через авторизованный Contents API (binary → base64 → байты), открыть
+1. Читать `data/sundayrun.db` через авторизованный Contents API (binary → base64 → байты), открыть
    in-memory (браузерный sqlite-wasm, тот что уже используется на запись в `protocol-db-write`),
    выполнить нужные select'ы (история атлета для авто-примечаний).
 2. Заменить `parseAthletesHistory(...)` на select'ы из открытой БД. Переиспользовать
@@ -219,7 +219,7 @@ Acceptance: зафиксированы решения по site-meta и rebuild;
 4. Прогнать полный флоу локально: чистый чекаут → `bun run build` → пререндер непустой → dev-сервер
    отдаёт страницы из `.db`.
 
-Acceptance: в `data/` только `protocol.db`, `version.json` (+ опц. `site-meta.json`); сайт и
+Acceptance: в `data/` только `sundayrun.db`, `version.json` (+ опц. `site-meta.json`); сайт и
 пререндер работают.
 
 ---
