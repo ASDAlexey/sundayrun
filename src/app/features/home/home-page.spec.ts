@@ -31,6 +31,7 @@ import {
   INDEX_LOAD_ERROR_MESSAGE,
   MEN_ONLY_STATS,
 } from './home-page.mock';
+import { RACES_TODAY_ISO } from '../races/races-page.mock';
 
 const RACES_KEY = makeStateKey<{ data: RaceListItem[] } | null>(HOME_RACES_TRANSFER_KEY);
 const META_KEY = makeStateKey<{ data: SiteMetaFile } | null>(HOME_META_TRANSFER_KEY);
@@ -46,6 +47,9 @@ describe('HomePage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // The month-final mark depends on the calendar, so only Date is faked (real timers keep `settle` working).
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(RACES_TODAY_ISO));
     platformId = BROWSER_PLATFORM_ID;
     loadLatest.mockResolvedValue(EXISTING_INDEX.events);
     loadMeta.mockResolvedValue(EMPTY_SITE_META);
@@ -64,6 +68,7 @@ describe('HomePage', () => {
 
   afterEach(() => {
     fixture.destroy();
+    vi.useRealTimers();
   });
 
   async function createPage(): Promise<ComponentFixture<HomePage>> {

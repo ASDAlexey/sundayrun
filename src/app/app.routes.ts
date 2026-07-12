@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AdminPage } from './features/admin/admin-page';
 import { AthletePage } from './features/athlete/athlete-page';
+import { GuidePage } from './features/guide/guide-page';
 import { HomePage } from './features/home/home-page';
 import { RacePage } from './features/race/race-page';
 import { RecordsPage } from './features/records/records-page';
@@ -57,6 +58,11 @@ export const routes: Routes = [
     path: 'vs/:left/:right',
     title: $localize`:@@title.versus:Очные встречи — Воскресный парковый пробег`,
     component: VersusPage,
+  },
+  {
+    path: 'guide',
+    title: $localize`:@@title.guide:Фишки пробега — Воскресный парковый пробег`,
+    component: GuidePage,
   },
   {
     path: 'admin',

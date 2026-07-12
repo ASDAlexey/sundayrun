@@ -12,7 +12,7 @@ import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
-import { toRaceListItem } from '../races/race-list-item';
+import { toRaceListItems } from '../races/race-list-item';
 import { RaceCard } from '../races/race-card/race-card';
 import { RacesStatus, RacesStatusType } from '../races/races-page.enum';
 import { RaceListItem } from '../races/races-page.interface';
@@ -102,7 +102,7 @@ export class HomePage {
   async #loadLatest(): Promise<RaceListItem[]> {
     const latest = await this.#archive.loadLatest(LATEST_RACES_COUNT);
 
-    return latest.map((entry) => toRaceListItem(entry));
+    return toRaceListItems(latest);
   }
 
   #applyLatest(races: RaceListItem[]): void {

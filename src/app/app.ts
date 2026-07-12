@@ -5,6 +5,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { CREATOR_SITE_URL, HOME_PAGE_LINK, MAIN_CONTENT_ID, RACES_LIST_PAGE_LINK, VK_COMMUNITY_URL } from './app.constant';
 import { ADMIN_PAGE_LINK } from './features/admin/admin-page.constant';
+import { GUIDE_PAGE_LINK } from './features/guide/guide-page.constant';
 import { RECORDS_PAGE_LINK } from './features/records/records-page.constant';
 import { YEAR_PAGE_BASE_LINK } from './features/year/year-page.constant';
 import { DbFreshnessBanner } from './shared/db-freshness-banner/db-freshness-banner';
@@ -23,6 +24,7 @@ export class App {
   protected readonly racesLink = RACES_LIST_PAGE_LINK;
   protected readonly recordsLink = RECORDS_PAGE_LINK;
   protected readonly yearLink = YEAR_PAGE_BASE_LINK;
+  protected readonly guideLink = GUIDE_PAGE_LINK;
   protected readonly adminLink = ADMIN_PAGE_LINK;
   protected readonly creatorUrl = CREATOR_SITE_URL;
   protected readonly vkUrl = VK_COMMUNITY_URL;
