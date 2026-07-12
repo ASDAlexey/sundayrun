@@ -1,10 +1,49 @@
 <main class="home" id="main" tabindex="-1">
   <header class="home__hero">
-    <p class="home__eyebrow" i18n="@@races.eyebrow">Таганрог · ПКиО им. Горького</p>
+    <div class="home__hero-intro">
+      <p class="home__eyebrow" i18n="@@races.eyebrow">Таганрог · ПКиО им. Горького</p>
 
-    <h1 class="home__title" i18n="@@races.title">Воскресный <span class="home__title-accent">парковый пробег</span></h1>
+      <h1 class="home__title" i18n="@@races.title">Воскресный <span class="home__title-accent">парковый пробег</span></h1>
 
-    <p class="home__tagline" i18n="@@races.tagline">Протоколы, результаты и история каждого участника.</p>
+      <p class="home__tagline" i18n="@@races.tagline">
+        Протоколы, результаты и история каждого участника. Бесплатно, каждую неделю, для всех.
+      </p>
+    </div>
+
+    <aside class="home__next">
+      <p class="home__next-label" i18n="@@home.nextStartLabel">Следующий старт</p>
+
+      @if (nextStart(); as ns) {
+        <p class="home__next-when" i18n="@@home.nextStartWhen">
+          <b>{{ ns.dateLabel }}</b> · {{ ns.startTime }}
+        </p>
+
+        <p class="home__next-timer">
+          <span class="home__next-unit">{{ ns.countdown.days }}<small class="home__next-unit-label" i18n="@@home.unitDays">д</small></span>
+
+          <span class="home__next-unit"
+            >{{ ns.countdown.hours }}<small class="home__next-unit-label" i18n="@@home.unitHours">ч</small></span
+          >
+
+          <span class="home__next-unit"
+            >{{ ns.countdown.minutes }}<small class="home__next-unit-label" i18n="@@home.unitMinutes">м</small></span
+          >
+
+          <span class="home__next-unit"
+            >{{ ns.countdown.seconds }}<small class="home__next-unit-label" i18n="@@home.unitSeconds">с</small></span
+          >
+        </p>
+      } @else {
+        <p class="home__next-when" i18n="@@home.nextStartWhenPending"><b>Каждое воскресенье</b> · {{ startTime() }}</p>
+
+        <p aria-hidden="true" class="home__next-timer home__next-timer_pending">—</p>
+      }
+
+      <p class="home__next-note" i18n="@@home.nextStartNote">
+        Место сбора — у старта, схема ниже ·
+        <a class="home__next-link" rel="noopener" target="_blank" [href]="vkUrl">анонс ВКонтакте</a>
+      </p>
+    </aside>
   </header>
 
   @if (hasAnnouncement()) {

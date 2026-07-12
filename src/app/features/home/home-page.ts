@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
@@ -27,8 +27,11 @@ import {
   STATS_NUMBER_FORMAT,
 } from './home-page.constant';
 import { HomeStatsView } from './home-page.interface';
+import { COUNTDOWN_TICK_MS, DEFAULT_START_TIME } from './next-start.constant';
+import { NextStartView } from './next-start.interface';
+import { formatCountdown, formatStartDate, nextStartAt } from './next-start';
 
-/** The landing page: hero, announcement, the latest races preview and the course card. */
+/** The landing page: hero with a live "next start" countdown, the latest races preview and the course card. */
 @Component({
   selector: 'app-home-page',
   imports: [MatButtonModule, MatProgressSpinnerModule, RaceCard, ReloadButton, RouterLink],
@@ -40,13 +43,20 @@ export class HomePage {
   readonly #archive = inject(ArchiveService);
   readonly #siteMeta = inject(SiteMetaService);
   readonly #athletes = inject(AthletesService);
+  readonly #destroyRef = inject(DestroyRef);
   readonly #stats = signal<OverallStats | null>(null);
+
+  // Null until the first browser render sets it, so the prerendered/hydrated markup carries the
+  // static placeholder — no server clock, no hydration mismatch — before the countdown goes live.
+  readonly #nowMs = signal<number | null>(null);
 
   readonly status = signal<RacesStatusType>(RacesStatus.loading);
   readonly latestRaces = signal<RaceListItem[]>([]);
   readonly siteMeta = signal(EMPTY_SITE_META);
   readonly hasAnnouncement = computed(() => this.siteMeta().startTime !== '' || this.siteMeta().announcement !== '');
   readonly statsView = computed(() => toStatsView(this.#stats()));
+  readonly startTime = computed(() => this.siteMeta().startTime || DEFAULT_START_TIME);
+  readonly nextStart = computed<NextStartView | null>(() => toNextStartView(this.#nowMs(), this.startTime()));
 
   protected readonly statuses = RacesStatus;
   protected readonly racesLink = RACES_PAGE_LINK;
@@ -74,6 +84,17 @@ export class HomePage {
       load: () => this.#athletes.loadOverallStats(),
       apply: (stats) => this.#stats.set(stats),
       onError: () => this.#stats.set(null),
+    });
+    // Browser-only: start the clock after the first render (never on the server), so the countdown
+    // lights up post-hydration and ticks every second until the page is torn down.
+    afterNextRender(() => {
+      const tick = (): void => this.#nowMs.set(Date.now());
+
+      tick();
+
+      const timer = setInterval(tick, COUNTDOWN_TICK_MS);
+
+      this.#destroyRef.onDestroy(() => clearInterval(timer));
     });
   }
 
@@ -109,4 +130,15 @@ function toStatsView(stats: OverallStats | null): HomeStatsView | null {
 /** A gender with no 5 km finishes yet shows a dash instead of a zero time. */
 function formatMedianTime(medianMs: number): string {
   return medianMs === 0 ? NO_MEDIAN_TIME_PLACEHOLDER : formatDuration(medianMs);
+}
+
+/** Builds the live card view; null before the browser clock starts, keeping the placeholder on screen. */
+function toNextStartView(nowMs: number | null, startTime: string): NextStartView | null {
+  if (nowMs === null) {
+    return null;
+  }
+
+  const target = nextStartAt(new Date(nowMs), startTime);
+
+  return { dateLabel: formatStartDate(target), startTime, countdown: formatCountdown(target.getTime() - nowMs) };
 }
