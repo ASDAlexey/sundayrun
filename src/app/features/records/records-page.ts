@@ -1,11 +1,7 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
@@ -27,16 +23,7 @@ import { BestResultView } from './records-page.interface';
 /** Full 5 km leaderboards with a name search, season and gender filters, and virtual scroll. */
 @Component({
   selector: 'app-records-page',
-  imports: [
-    MatButtonToggleModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    MatSelectModule,
-    ReloadButton,
-    RouterLink,
-    ScrollingModule,
-  ],
+  imports: [MatProgressSpinnerModule, ReloadButton, RouterLink, ScrollingModule],
   templateUrl: './records-page.html',
   styleUrl: './records-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

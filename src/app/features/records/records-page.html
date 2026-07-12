@@ -25,49 +25,94 @@
   @switch (status()) {
     @case (statuses.ready) {
       <div class="records__controls">
-        <mat-form-field appearance="outline" class="records__search">
-          <mat-label class="records__search-label" i18n="@@records.searchLabel">Поиск по имени</mat-label>
+        <label class="records__search">
+          <svg
+            aria-hidden="true"
+            class="records__search-icon"
+            fill="none"
+            height="13"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 14 14"
+            width="13"
+          >
+            <circle cx="6" cy="6" r="4.5" />
+            <path d="M9.5 9.5L13 13" />
+          </svg>
 
           <input
             #searchInput
+            aria-label="Поиск по имени"
             class="records__search-input"
+            i18n-aria-label="@@records.searchLabel"
+            i18n-placeholder="@@records.searchPlaceholder"
             id="records-search"
-            matInput
+            placeholder="Поиск по имени…"
             type="search"
             [value]="query()"
             (input)="onQueryChange(searchInput.value)"
           />
-        </mat-form-field>
+        </label>
 
-        <mat-form-field appearance="outline" class="records__filter">
-          <mat-label class="records__filter-label" i18n="@@records.yearLabel">Год</mat-label>
-
-          <mat-select
-            class="records__filter-select"
-            id="records-year"
-            [value]="year() ?? allYearsValue"
-            (selectionChange)="onYearChange($event.value)"
+        <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
+          <button
+            class="records__seg-option"
+            i18n="@@records.allYears"
+            type="button"
+            [attr.aria-pressed]="year() === null"
+            [class.records__seg-option_active]="year() === null"
+            (click)="onYearChange(allYearsValue)"
           >
-            <mat-option i18n="@@records.allYears" [value]="allYearsValue">Все годы</mat-option>
+            Все годы
+          </button>
 
-            @for (boardYear of years(); track boardYear) {
-              <mat-option [value]="boardYear">{{ boardYear }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+          @for (boardYear of years(); track boardYear) {
+            <button
+              class="records__seg-option"
+              type="button"
+              [attr.aria-pressed]="year() === boardYear"
+              [class.records__seg-option_active]="year() === boardYear"
+              (click)="onYearChange(boardYear)"
+            >
+              {{ boardYear }}
+            </button>
+          }
+        </div>
 
-        <mat-button-toggle-group
-          class="records__genders"
-          hideSingleSelectionIndicator
-          [value]="gender() ?? allGendersValue"
-          (change)="onGenderChange($event.value)"
-        >
-          <mat-button-toggle class="records__gender" i18n="@@records.genderAll" [value]="allGendersValue">Все</mat-button-toggle>
+        <div aria-label="Пол" class="records__seg" i18n-aria-label="@@records.genderFilterLabel" role="group">
+          <button
+            class="records__seg-option"
+            i18n="@@records.genderAll"
+            type="button"
+            [attr.aria-pressed]="gender() === null"
+            [class.records__seg-option_active]="gender() === null"
+            (click)="onGenderChange(allGendersValue)"
+          >
+            Все
+          </button>
 
-          <mat-button-toggle class="records__gender" i18n="@@records.genderMen" [value]="genders.male">Мужчины</mat-button-toggle>
+          <button
+            class="records__seg-option"
+            i18n="@@records.genderMen"
+            type="button"
+            [attr.aria-pressed]="gender() === genders.male"
+            [class.records__seg-option_active]="gender() === genders.male"
+            (click)="onGenderChange(genders.male)"
+          >
+            Мужчины
+          </button>
 
-          <mat-button-toggle class="records__gender" i18n="@@records.genderWomen" [value]="genders.female">Женщины</mat-button-toggle>
-        </mat-button-toggle-group>
+          <button
+            class="records__seg-option"
+            i18n="@@records.genderWomen"
+            type="button"
+            [attr.aria-pressed]="gender() === genders.female"
+            [class.records__seg-option_active]="gender() === genders.female"
+            (click)="onGenderChange(genders.female)"
+          >
+            Женщины
+          </button>
+        </div>
       </div>
 
       <p aria-live="polite" class="records__status" role="status">
