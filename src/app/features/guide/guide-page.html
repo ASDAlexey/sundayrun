@@ -1,0 +1,89 @@
+<main class="guide" id="main" tabindex="-1">
+  <header class="guide__header">
+    <h1 class="guide__title" i18n="@@guide.title">Фишки пробега</h1>
+
+    <p class="guide__subtitle" i18n="@@guide.subtitle">
+      Кроме протоколов здесь живёт целый игровой слой: титулы, серии и бейджи. Вот что они значат и где их искать.
+    </p>
+  </header>
+
+  <ul class="guide__cards">
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.recordsTitle">👑 Король и королева трассы</h2>
+
+      <p class="guide__card-text" i18n="@@guide.recordsText">
+        Самые быстрые 5 км за всю историю пробега — у мужчин и у женщин. Рекорд остаётся за тем, кто установил его первым, а вся цепочка
+        рекордов видна в таблице.
+      </p>
+
+      <a class="guide__card-link" i18n="@@guide.recordsLink" [routerLink]="recordsLink">Смотреть на странице «Рекорды»</a>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.legendTitle">🏅 Легенда трассы</h2>
+
+      <p class="guide__card-text" i18n="@@guide.legendText">
+        Переходящая корона за максимум финишей за последние {{ legendWindowDays }} дней. Темп не важен — за титул борются и самые
+        неторопливые. На странице атлета видно, у кого сейчас корона, и прогресс-бар «до короны».
+      </p>
+
+      <a class="guide__card-link" i18n="@@guide.legendLink" [routerLink]="recordsLink">Найти себя через страницу «Рекорды»</a>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.streaksTitle">🔥 Серии</h2>
+
+      <p class="guide__card-text" i18n="@@guide.streaksText">
+        Сколько недель подряд атлет выходит на старт. Сход с дистанции серию не рвёт — важно прийти. Текущая и рекордная серии показаны на
+        странице атлета.
+      </p>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.rageTitle">⚡ Раж</h2>
+
+      <p class="guide__card-text" i18n="@@guide.rageText">
+        Три личных рекорда на 5 км подряд — и атлет «в раже» (правило S95). Счётчик ражей копится на странице атлета.
+      </p>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.badgesTitle">🎖 Бейджи года</h2>
+
+      <p class="guide__card-text" i18n="@@guide.badgesText">
+        30/40/50 финишей за год, все 12 месяцев в строю и новогодний забег — первый старт года. Бейджи видны на странице атлета и в итогах
+        года.
+      </p>
+
+      <a class="guide__card-link" i18n="@@guide.badgesLink" [routerLink]="yearLink">Смотреть в «Итогах года»</a>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.yearTitle">📅 Итоги года</h2>
+
+      <p class="guide__card-text" i18n="@@guide.yearText">
+        Сводка сезона: сколько бежали, кто ставил рекорды, сколько пришло новичков — и все обладатели бейджей.
+      </p>
+
+      <a class="guide__card-link" i18n="@@guide.yearLink" [routerLink]="yearLink">Открыть «Итоги года»</a>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.versusTitle">⚔️ Очные встречи</h2>
+
+      <p class="guide__card-text" i18n="@@guide.versusText">
+        Дуэль двух атлетов: сколько раз финишировали на одном забеге и кто чаще был впереди. Ссылкой на дуэль можно делиться.
+      </p>
+
+      <a class="guide__card-link" i18n="@@guide.versusLink" [routerLink]="versusLink">Собрать дуэль</a>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.chartTitle">📈 График прогресса</h2>
+
+      <p class="guide__card-text" i18n="@@guide.chartText">
+        Все результаты атлета на 5 км на одной кривой: видно сезоны, спады и путь к личному рекорду. Живёт на странице атлета.
+      </p>
+    </li>
+  </ul>
+</main>
