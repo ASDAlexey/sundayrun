@@ -73,4 +73,6 @@ export interface AthleteRunView {
 export interface YearBestView {
   year: string;
   timeText: string;
+  /** True when this year's best IS the all-time record — the cell gets the accent treatment. */
+  isAllTime: boolean;
 }

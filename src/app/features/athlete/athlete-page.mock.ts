@@ -54,9 +54,10 @@ export const EXPECTED_YEAR_FILTERED_VIEWS: AthleteRunView[] = [FIRST_RUN_VIEW];
 
 export const EXPECTED_RUN_YEAR_OPTIONS = ['2026', '2025'];
 
+/** The 2026 best equals the all-time record, so its cell carries the accent mark. */
 export const EXPECTED_YEAR_BEST_VIEWS: YearBestView[] = [
-  { year: '2026', timeText: '24:00' },
-  { year: '2025', timeText: '25:00' },
+  { year: '2026', timeText: '24:00', isAllTime: true },
+  { year: '2025', timeText: '25:00', isAllTime: false },
 ];
 
 export const EXPECTED_BEST_TIME_TEXT = '24:00';

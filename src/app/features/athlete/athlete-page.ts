@@ -94,7 +94,11 @@ export class AthletePage {
   /** The «Итоговые забеги» card: the best place at finals vs regular races and the finals podium tally. */
   readonly placements = computed(() => toPlacementsView(athletePlacements(this.#runPlaces(), this.#monthFinals())));
 
-  readonly yearBests = computed(() => yearBestEntries(this.#record()?.bestMsByYear ?? {}).map(toYearBestView));
+  readonly yearBests = computed(() => {
+    const bestMs = this.#record()?.bestMs ?? null;
+
+    return yearBestEntries(this.#record()?.bestMsByYear ?? {}).map((entry) => toYearBestView(entry, bestMs));
+  });
   readonly years = computed(() => distinctRunYears(this.#fiveKmRuns()));
   readonly runs = computed(() =>
     sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), this.sort()).map((run) =>
@@ -211,8 +215,8 @@ function toRunView(run: AthleteRun, places: Record<string, number>, monthFinals:
   };
 }
 
-function toYearBestView(entry: YearBestEntry): YearBestView {
-  return { year: entry.year, timeText: formatDuration(entry.timeMs) };
+function toYearBestView(entry: YearBestEntry, bestMs: number | null): YearBestView {
+  return { year: entry.year, timeText: formatDuration(entry.timeMs), isAllTime: entry.timeMs === bestMs };
 }
 
 function toTimeText(bestMs: number | null): string {

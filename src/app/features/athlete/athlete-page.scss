@@ -23,18 +23,6 @@
     color: var(--text);
   }
 
-  &__counters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  &__counter {
-    @include t.text('label', 'medium');
-
-    color: var(--text-muted);
-  }
-
   &__versus {
     align-self: flex-start;
     margin-top: 4px;
@@ -48,40 +36,132 @@
     @include st.error-text;
   }
 
-  &__records {
+  // The profile card: the all-time record dominates, a faint warm vignette sits behind it.
+  &__profile {
     @include c.card;
 
     display: flex;
     flex-direction: column;
-    padding: 24px;
+    padding: 28px 24px 24px;
+    gap: 20px;
+    background: radial-gradient(120% 150% at 0% 0%, var(--accent-atmosphere) 0%, transparent 55%), var(--surface);
+  }
+
+  &__profile-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 40px;
+  }
+
+  &__pb {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
-  &__records-title {
-    @include t.text('title', 'medium');
+  &__pb-caption {
+    @include t.mono-caption;
 
+    color: var(--text-muted);
+  }
+
+  &__pb-value {
+    @include t.mono-value-large;
+    @include t.gradient-text;
+
+    align-self: flex-start;
+  }
+
+  &__stats {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    gap: 12px 36px;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+  }
+
+  &__stat-label {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__stat-value {
+    @include t.stat-value;
+
+    margin: 0;
     color: var(--text);
   }
 
-  &__best {
-    @include t.text('body', 'medium');
-
-    color: var(--text);
-  }
-
-  &__year-bests {
+  &__profile-block {
     display: flex;
     flex-direction: column;
+    padding-top: 18px;
+    gap: 12px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  &__profile-block-title {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  // The year records strip: one ticket-like cell per season, the record year glows.
+  &__year-strip {
+    display: flex;
+    flex-wrap: wrap;
     margin: 0;
     padding: 0;
-    gap: 4px;
+    gap: 8px;
     list-style: none;
   }
 
-  &__year-best {
-    @include t.text('body', 'medium');
+  &__year-cell {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 14px;
+    gap: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
 
-    color: var(--text-secondary);
+    &_record {
+      border-color: var(--accent-line);
+      background: var(--accent-glow);
+    }
+  }
+
+  &__year-label {
+    @include t.mono-caption;
+
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    color: var(--text-muted);
+  }
+
+  &__year-mark {
+    @include t.semibold;
+
+    color: var(--accent);
+  }
+
+  &__year-time {
+    @include t.mono-value;
+
+    color: var(--text);
+
+    &_record {
+      color: var(--accent);
+    }
   }
 
   &__streaks {
@@ -185,21 +265,6 @@
 
   &__legend-bar {
     margin-top: 4px;
-  }
-
-  &__badges {
-    @include c.card;
-
-    display: flex;
-    flex-direction: column;
-    padding: 24px;
-    gap: 12px;
-  }
-
-  &__badges-title {
-    @include t.text('title', 'medium');
-
-    color: var(--text);
   }
 
   &__badges-years {

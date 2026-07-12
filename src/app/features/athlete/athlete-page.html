@@ -17,26 +17,72 @@
       <header class="athlete__header">
         <h1 class="athlete__title">{{ displayName() }}</h1>
 
-        <p class="athlete__counters">
-          <span class="athlete__counter" i18n="@@athlete.participations">Участий: {{ participationCount() }}</span>
-
-          <span class="athlete__counter" i18n="@@athlete.finishes">Финишей на 5 км: {{ finishCount() }}</span>
-        </p>
-
         <a class="athlete__versus" i18n="@@athlete.versusLink" matButton="outlined" [routerLink]="versusLink()">Очные встречи</a>
       </header>
 
-      <section class="athlete__records">
-        <h2 class="athlete__records-title" i18n="@@athlete.recordsTitle">Личные рекорды (только 5 км)</h2>
+      <section class="athlete__profile">
+        <div class="athlete__profile-top">
+          <p class="athlete__pb">
+            <span class="athlete__pb-caption" i18n="@@athlete.pbCaption">Личный рекорд · 5 км</span>
 
-        <p class="athlete__best" i18n="@@athlete.bestAllTime">За всё время: {{ bestTimeText() }}</p>
+            <span class="athlete__pb-value">{{ bestTimeText() }}</span>
+          </p>
+
+          <dl class="athlete__stats">
+            <div class="athlete__stat">
+              <dt class="athlete__stat-label" i18n="@@athlete.statParticipations">участий</dt>
+
+              <dd class="athlete__stat-value">{{ participationCount() }}</dd>
+            </div>
+
+            <div class="athlete__stat">
+              <dt class="athlete__stat-label" i18n="@@athlete.statFinishes">финишей на 5 км</dt>
+
+              <dd class="athlete__stat-value">{{ finishCount() }}</dd>
+            </div>
+          </dl>
+        </div>
 
         @if (yearBests().length > 0) {
-          <ul class="athlete__year-bests">
-            @for (best of yearBests(); track best.year) {
-              <li class="athlete__year-best" i18n="@@athlete.yearBest">{{ best.year }} г. — {{ best.timeText }}</li>
-            }
-          </ul>
+          <div class="athlete__profile-block">
+            <h2 class="athlete__profile-block-title" i18n="@@athlete.yearBestsTitle">Рекорды по годам</h2>
+
+            <ul class="athlete__year-strip">
+              @for (best of yearBests(); track best.year) {
+                <li class="athlete__year-cell" [class.athlete__year-cell_record]="best.isAllTime">
+                  <span class="athlete__year-label">
+                    {{ best.year }}
+
+                    @if (best.isAllTime) {
+                      <span class="athlete__year-mark" i18n="@@athlete.yearRecordMark">ЛР</span>
+                    }
+                  </span>
+
+                  <span class="athlete__year-time" [class.athlete__year-time_record]="best.isAllTime">{{ best.timeText }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (yearBadges().length > 0) {
+          <div class="athlete__profile-block">
+            <h2 class="athlete__profile-block-title" i18n="@@athlete.badgesTitle">Награды</h2>
+
+            <ul class="athlete__badges-years">
+              @for (yearEntry of yearBadges(); track yearEntry.year) {
+                <li class="athlete__badges-year">
+                  <span class="athlete__badges-year-label">{{ yearEntry.year }}</span>
+
+                  <span class="athlete__badges-list">
+                    @for (badge of yearEntry.badges; track badge) {
+                      <app-year-badge [badge]="badge" [rarityPercent]="badgeRarity()[badge] ?? null" />
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </div>
         }
       </section>
 
@@ -111,26 +157,6 @@
           />
         }
       </section>
-
-      @if (yearBadges().length > 0) {
-        <section class="athlete__badges">
-          <h2 class="athlete__badges-title" i18n="@@athlete.badgesTitle">Бейджи</h2>
-
-          <ul class="athlete__badges-years">
-            @for (yearEntry of yearBadges(); track yearEntry.year) {
-              <li class="athlete__badges-year">
-                <span class="athlete__badges-year-label">{{ yearEntry.year }}</span>
-
-                <span class="athlete__badges-list">
-                  @for (badge of yearEntry.badges; track badge) {
-                    <app-year-badge [badge]="badge" [rarityPercent]="badgeRarity()[badge] ?? null" />
-                  }
-                </span>
-              </li>
-            }
-          </ul>
-        </section>
-      }
 
       <app-progress-chart [runs]="progressRuns()" [year]="year()" />
 
