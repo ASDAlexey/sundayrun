@@ -142,7 +142,7 @@
 
   @if (statsView(); as stats) {
     <section class="home__stats">
-      <h2 class="home__stats-title" i18n="@@home.statsTitle">Общая статистика</h2>
+      <h2 class="home__stats-title" i18n="@@home.statsTitle">За всю историю</h2>
 
       <dl class="home__stats-grid">
         <div class="home__stats-item">
@@ -170,19 +170,19 @@
         </div>
 
         <div class="home__stats-item">
-          <dt class="home__stats-label" i18n="@@home.statsMedianTimeMen">медианное время мужчин на 5 км</dt>
+          <dt class="home__stats-label" i18n="@@home.statsMedianTimeMen">медиана мужчин · 5 км</dt>
 
           <dd class="home__stats-value">{{ stats.medianTimeMen }}</dd>
         </div>
 
         <div class="home__stats-item">
-          <dt class="home__stats-label" i18n="@@home.statsMedianTimeWomen">медианное время женщин на 5 км</dt>
+          <dt class="home__stats-label" i18n="@@home.statsMedianTimeWomen">медиана женщин · 5 км</dt>
 
           <dd class="home__stats-value">{{ stats.medianTimeWomen }}</dd>
         </div>
       </dl>
+
+      <p class="home__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
     </section>
   }
-
-  <p class="home__cdn-note" i18n="@@races.cdnNote">Список может обновляться с небольшой задержкой после публикации.</p>
 </main>

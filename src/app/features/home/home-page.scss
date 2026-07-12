@@ -392,10 +392,21 @@
     gap: 24px;
   }
 
+  // The mockup heads this card with an eyebrow, not a title — the numbers carry the weight.
   &__stats-title {
-    @include t.text('title', 'large');
+    @include t.eyebrow;
 
-    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--accent);
+
+    &::before {
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+      content: '';
+    }
   }
 
   // Six totals keep balanced rows: 3×2 on desktop, 2×3 on narrow screens — auto-fit would orphan one.
