@@ -1,4 +1,4 @@
-/** Race numbers are 1-based; fractional numbers (2.73 = season 2, run 73) are the club's convention. */
+/** Race numbers are positional (see `eventNumberForDate`) and always at least 1. */
 export const MIN_EVENT_NUMBER = 1;
 
 /** Date fallback when the imported file name carries no date. */

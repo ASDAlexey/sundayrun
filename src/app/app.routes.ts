@@ -6,6 +6,7 @@ import { HomePage } from './features/home/home-page';
 import { RacePage } from './features/race/race-page';
 import { RecordsPage } from './features/records/records-page';
 import { RacesPage } from './features/races/races-page';
+import { YearPage } from './features/year/year-page';
 
 import { adminGuard } from './features/admin/admin.guard';
 import { previewGuard } from './features/preview/preview.guard';
@@ -28,6 +29,17 @@ export const routes: Routes = [
     path: 'records',
     title: $localize`:@@title.records:Лучшие результаты — Воскресный парковый пробег`,
     component: RecordsPage,
+  },
+  // Both flavours land on the same page: without a year it opens the newest season.
+  {
+    path: 'year',
+    title: $localize`:@@title.year:Итоги года — Воскресный парковый пробег`,
+    component: YearPage,
+  },
+  {
+    path: 'year/:year',
+    title: $localize`:@@title.year:Итоги года — Воскресный парковый пробег`,
+    component: YearPage,
   },
   {
     path: 'admin',

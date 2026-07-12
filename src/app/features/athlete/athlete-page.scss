@@ -79,6 +79,50 @@
     color: var(--text-secondary);
   }
 
+  &__badges {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 12px;
+  }
+
+  &__badges-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__badges-years {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 10px;
+    list-style: none;
+  }
+
+  &__badges-year {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  &__badges-year-label {
+    @include t.text('label', 'medium');
+
+    min-width: 44px;
+    color: var(--text-muted);
+  }
+
+  &__badges-list {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   &__runs {
     display: flex;
     flex-direction: column;

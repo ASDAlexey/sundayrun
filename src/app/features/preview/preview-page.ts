@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
+import { eventDatesFromHistory } from '../../core/history/event-dates';
 import { HistoryService } from '../../github/history.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { EventForm } from './event-form/event-form';
@@ -54,12 +55,15 @@ export class PreviewPage {
     await this.#router.navigate(RESULT_ROUTE_COMMANDS);
   }
 
-  /** Loads the published history and overwrites every note with the computed auto note. */
+  /** Loads the published history, applies the auto notes and feeds the event dates to the auto race number. */
   async #applyHistoryNotes(dateIso: string): Promise<void> {
     this.historyStatus.set(HistoryNotesStatus.loading);
 
     try {
-      this.#store.applyAutoNotes(await this.#history.loadHistory(), dateIso);
+      const history = await this.#history.loadHistory();
+
+      this.#store.setPublishedEventDates(eventDatesFromHistory(history));
+      this.#store.applyAutoNotes(history, dateIso);
       this.historyStatus.set(HistoryNotesStatus.idle);
     } catch {
       this.historyStatus.set(HistoryNotesStatus.error);

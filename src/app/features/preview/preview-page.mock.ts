@@ -5,3 +5,6 @@ export const HISTORY_LOAD_ERROR_MESSAGE = 'history unavailable';
 
 /** A later event date: editing it must not re-trigger the one-shot auto notes. */
 export const CHANGED_EVENT_DATE_ISO = '2026-06-21';
+
+/** `eventDatesFromHistory(VALID_HISTORY)` — the sole participation slug. */
+export const EXPECTED_PUBLISHED_DATES = ['2026-06-21'];

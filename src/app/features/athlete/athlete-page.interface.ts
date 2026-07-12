@@ -5,6 +5,8 @@ import { AthleteStatusType } from './athlete-page.enum';
 export interface AthletePageState {
   status: AthleteStatusType;
   record: AthleteRecord | null;
+  /** A year mapped to the archive's first race date of that year, feeding `athleteYearBadges`. */
+  firstEventDateByYear: Record<string, string>;
 }
 
 /** One run prepared for the template: a preformatted date/time and a resolved protocol link. */

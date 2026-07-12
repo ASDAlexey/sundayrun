@@ -13,7 +13,7 @@ import { settle } from '../spec-utils/settle';
 import { PreviewPage } from './preview-page';
 import { RESULT_ROUTE_COMMANDS } from './preview-page.constant';
 import { HistoryNotesStatus } from './preview-page.enum';
-import { CHANGED_EVENT_DATE_ISO, HISTORY_LOAD_ERROR_MESSAGE, UNVERIFIED_COUNT } from './preview-page.mock';
+import { CHANGED_EVENT_DATE_ISO, EXPECTED_PUBLISHED_DATES, HISTORY_LOAD_ERROR_MESSAGE, UNVERIFIED_COUNT } from './preview-page.mock';
 
 describe('PreviewPage', () => {
   const participants = signal<Participant[]>([]);
@@ -21,10 +21,12 @@ describe('PreviewPage', () => {
   const unknownGenderCount = signal(0);
   const canGenerate = signal(false);
   const event = signal<RaceEvent | null>(null);
+  const publishedEventDates = signal<string[] | null>(null);
   const setEvent = vi.fn();
   const setGender = vi.fn();
   const setNote = vi.fn();
   const applyAutoNotes = vi.fn();
+  const setPublishedEventDates = vi.fn();
   const navigate = vi.fn(() => Promise.resolve(true));
   const loadHistory = vi.fn(() => Promise.resolve<AthletesHistory>(VALID_HISTORY));
 
@@ -45,10 +47,12 @@ describe('PreviewPage', () => {
             unknownGenderCount,
             canGenerate,
             event,
+            publishedEventDates,
             setEvent,
             setGender,
             setNote,
             applyAutoNotes,
+            setPublishedEventDates,
           },
         },
         { provide: Router, useValue: { navigate } },
@@ -107,6 +111,7 @@ describe('PreviewPage', () => {
     await settle();
 
     expect(applyAutoNotes).toHaveBeenCalledWith(VALID_HISTORY, RACE_EVENT.dateIso);
+    expect(setPublishedEventDates, 'the loaded archive dates feed the auto race number').toHaveBeenCalledWith(EXPECTED_PUBLISHED_DATES);
     expect(fixture.componentInstance.historyStatus()).toBe(HistoryNotesStatus.idle);
 
     event.set({ ...RACE_EVENT, dateIso: CHANGED_EVENT_DATE_ISO });
