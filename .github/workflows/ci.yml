@@ -64,12 +64,22 @@ jobs:
       - name: Build (RU)
         run: bun run build -- --base-href "/${{ github.event.repository.name }}/"
 
+      # The app opens data/sundayrun-<sha>.db for the sha version.json names: a publication
+      # changes the name, so no cache — browser or Fastly — can answer for it stale. The plain
+      # name stays as the fallback read while the deploy carrying a publication is in flight,
+      # and the missing sha-named file is what drives the "results are updating" banner.
+      - name: Bundle sha-named db copy
+        run: |
+          sha=$(jq -r '.sha' data/version.json)
+          cp dist/parkrun/browser/ru/data/sundayrun.db "dist/parkrun/browser/ru/data/sundayrun-${sha}.db"
+
       - name: Smoke-check build output
         run: |
           test -f dist/parkrun/browser/ru/index.html
           grep -q 'base href="/${{ github.event.repository.name }}/ru/"' dist/parkrun/browser/ru/index.html
           # the db must ship inside the deploy — the app reads it same-origin, base-href relative
           test -f dist/parkrun/browser/ru/data/sundayrun.db
+          test -f "dist/parkrun/browser/ru/data/sundayrun-$(jq -r '.sha' data/version.json).db"
 
       - name: Add root redirect to RU locale
         run: |
