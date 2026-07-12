@@ -151,6 +151,15 @@
     list-style: none;
   }
 
+  // Native virtualization: offscreen cards skip layout/paint while scrolling.
+  // CDK virtual scroll needs a fixed item height, which the variable-height
+  // cards in a two-column grid don't have — and it would drop the prerendered
+  // list from the static HTML.
+  &__race {
+    contain-intrinsic-size: auto 280px;
+    content-visibility: auto;
+  }
+
   @media (width <= 860px) {
     &__list {
       grid-template-columns: 1fr;
