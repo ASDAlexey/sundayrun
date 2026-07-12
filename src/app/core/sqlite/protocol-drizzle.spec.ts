@@ -14,7 +14,7 @@ describe('createProtocolDrizzle', () => {
 
   it('maps positional value arrays to typed rows and takes the first row for a `get`', async () => {
     const memory = await createMemoryProtocolDb([
-      "INSERT INTO events VALUES ('2026-06-21', '2026-06-21', 12, 'Москва', 'Парк', 'Клуб', 'Иванов', 3, 3, 100, 90, 95)",
+      "INSERT INTO events VALUES ('2026-06-21', '2026-06-21', 12, NULL, 'Москва', 'Парк', 'Клуб', 'Иванов', 3, 3, 100, 90, 95, NULL, NULL)",
     ]);
 
     close = memory.close;

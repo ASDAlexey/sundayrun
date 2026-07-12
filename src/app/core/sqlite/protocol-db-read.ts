@@ -51,6 +51,7 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
       slug: events.slug,
       dateIso: events.dateIso,
       number: events.number,
+      legacyNumber: events.legacyNumber,
       city: events.city,
       park: events.park,
       participantCount: events.participantCount,
@@ -58,6 +59,8 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
       medianTimeMs: events.medianTimeMs,
       bestMaleMs: events.bestMaleMs,
       bestFemaleMs: events.bestFemaleMs,
+      newcomerCount: events.newcomerCount,
+      personalRecordCount: events.personalRecordCount,
     })
     .from(events);
 
@@ -68,6 +71,7 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
         slug: row.slug,
         dateIso: row.dateIso,
         number: row.number,
+        legacyNumber: row.legacyNumber,
         city: row.city,
         park: row.park,
         participantCount: row.participantCount,
@@ -75,6 +79,8 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
         medianTimeMs: row.medianTimeMs,
         bestMaleMs: row.bestMaleMs,
         bestFemaleMs: row.bestFemaleMs,
+        newcomerCount: row.newcomerCount,
+        personalRecordCount: row.personalRecordCount,
         files: eventFilePaths(row.dateIso),
       }),
     ),
@@ -145,6 +151,6 @@ function bestMsByYear(runsForKey: AthleteRun[]): Record<string, number> {
 }
 
 /** A gender column: only the two known codes survive; anything else — including null — reads as null. */
-function asGender(value: string | null): GenderType | null {
+export function asGender(value: string | null): GenderType | null {
   return value === Gender.male || value === Gender.female ? value : null;
 }

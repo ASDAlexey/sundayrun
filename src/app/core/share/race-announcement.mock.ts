@@ -5,6 +5,7 @@ import { RaceEvent } from '../models/race-event.interface';
 
 export const ANNOUNCEMENT_EVENT_MOCK: RaceEvent = {
   number: 160,
+  legacyNumber: null,
   dateIso: '2020-09-20',
   city: 'г. Таганрог',
   park: 'ПКиО им. Горького',

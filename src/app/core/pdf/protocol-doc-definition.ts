@@ -1,4 +1,5 @@
 import type { ContentColumns, ContentTable, ContentText, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
+import { formatRaceNumber } from '../github/race-number';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
 import { EMPTY_TIME } from '../protocol/protocol-builder.constant';
@@ -80,7 +81,7 @@ function buildPageHeader(event: RaceEvent): ContentColumns {
       { width: FLEX_COLUMN_WIDTH, text: formatRussianDateLong(event.dateIso) },
       {
         width: FLEX_COLUMN_WIDTH,
-        text: `${EVENT_TITLE_PREFIX}${event.number}${LINE_BREAK}${event.city}`,
+        text: `${EVENT_TITLE_PREFIX}${formatRaceNumber(event.number, event.legacyNumber)}${LINE_BREAK}${event.city}`,
         alignment: PDF_ALIGN_CENTER,
       },
       { width: FLEX_COLUMN_WIDTH, text: `${event.park}${LINE_BREAK}${event.clubName}`, alignment: PDF_ALIGN_RIGHT },

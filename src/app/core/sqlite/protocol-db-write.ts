@@ -2,14 +2,17 @@ import { eq } from 'drizzle-orm';
 
 import type { Database } from '@sqlite.org/sqlite-wasm';
 
-import { buildIndexEntry, removeIndexEntry, upsertIndexEntry } from '../github/archive-index';
+import { buildIndexEntry, removeIndexEntry, renumberIndexEvents, upsertIndexEntry } from '../github/archive-index';
 import { ArchiveIndexFile } from '../github/archive-index.interface';
 import { buildEventResultsFile, toEventResults } from '../github/results-file';
 import { EventResultsFile } from '../github/results-file.interface';
 import { applyEventToHistory, removeEventFromHistory } from '../history/athletes-rollup';
 import { AthletesHistory } from '../models/athletes-history.type';
+import { RaceEvent } from '../models/race-event.interface';
 import { deserializeDbInto } from './deserialize-db';
 import { narrowValues } from './protocol-db-narrow';
+import { recomputeStoredNotes } from './protocol-db-notes';
+import { recomputeEventSummaryCounts } from './protocol-db-summary';
 import { athletes, events as eventsTable, meta, participations, results as resultsTable, runs } from './protocol-db.schema';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
@@ -72,11 +75,14 @@ function rollupPublication(previous: PreviousState, update: ProtocolDbEventUpdat
     { slug, dateIso: update.event.dateIso },
     toEventResults(update.rows),
   );
+  // The organisers' legacy number belongs to the archive, not the form: a re-publication keeps it.
+  const legacyNumber = previous.index.events.find((entry) => entry.slug === slug)?.legacyNumber ?? update.event.legacyNumber;
+  const event: RaceEvent = { ...update.event, legacyNumber };
 
   return {
-    index: upsertIndexEntry(previous.index, buildIndexEntry(update.event, update.rows)),
+    index: upsertIndexEntry(previous.index, buildIndexEntry(event, update.rows)),
     history,
-    resultsFile: buildEventResultsFile(update.event, update.rows),
+    resultsFile: buildEventResultsFile(event, update.rows),
     removedSlug: null,
   };
 }
@@ -104,13 +110,19 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     }
 
     const ddb = oo1Drizzle(db);
-    const target = rollup({ index: await readIndexFile(ddb), history: await readHistory(ddb) });
+    const rolled = rollup({ index: await readIndexFile(ddb), history: await readHistory(ddb) });
+    // Numbers are positional, so any add or removal renumbers the whole archive.
+    const target: SyncTarget = { ...rolled, index: renumberIndexEvents(rolled.index) };
     const eventMeta = await readEventMeta(ddb, target.resultsFile);
 
     db.exec(BEGIN_TRANSACTION_SQL);
     await rewriteEvents(ddb, target.index, eventMeta);
     await rewriteResults(ddb, target.resultsFile, target.removedSlug);
     await rewriteAthletes(ddb, target.history);
+    // Every add or removal can shift later events' notes (first participation, records, year
+    // bests), so the whole archive's notes converge in the same transaction.
+    await recomputeStoredNotes(ddb);
+    await recomputeEventSummaryCounts(ddb);
     await ddb
       .insert(meta)
       .values({ key: PROTOCOL_DB_META_SCHEMA_VERSION_KEY, value: PROTOCOL_DB_SCHEMA_VERSION })
@@ -172,6 +184,7 @@ async function rewriteEvents(db: ProtocolDrizzle, index: ArchiveIndexFile, event
         slug: entry.slug,
         dateIso: entry.dateIso,
         number: entry.number,
+        legacyNumber: entry.legacyNumber,
         city: entry.city,
         park: entry.park,
         clubName,
@@ -181,6 +194,8 @@ async function rewriteEvents(db: ProtocolDrizzle, index: ArchiveIndexFile, event
         medianTimeMs: entry.medianTimeMs,
         bestMaleMs: entry.bestMaleMs,
         bestFemaleMs: entry.bestFemaleMs,
+        newcomerCount: entry.newcomerCount,
+        personalRecordCount: entry.personalRecordCount,
       };
     }),
   );

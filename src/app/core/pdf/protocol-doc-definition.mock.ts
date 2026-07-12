@@ -41,6 +41,7 @@ import {
 
 export const PDF_EVENT_MOCK: RaceEvent = {
   number: 160,
+  legacyNumber: '2.16',
   dateIso: '2020-09-20',
   city: 'г. Таганрог',
   park: 'ПКиО им. Горького',
@@ -110,7 +111,7 @@ export const PDF_ROWS_MOCK: ProtocolRow[] = [MALE_WINNER_ROW_MOCK, FEMALE_WINNER
 
 export const EXPECTED_LONG_DATE = '20 сентября 2020 г.';
 
-export const EXPECTED_CENTER_HEADER = 'Воскресный парковый пробег № 160\nг. Таганрог';
+export const EXPECTED_CENTER_HEADER = 'Воскресный парковый пробег № 160 (2.16)\nг. Таганрог';
 
 export const EXPECTED_RIGHT_HEADER = 'ПКиО им. Горького\nКЛБ «Легенда»';
 

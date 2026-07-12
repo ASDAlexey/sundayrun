@@ -6,6 +6,7 @@ export const events = sqliteTable('events', {
   slug: text('slug').primaryKey(),
   dateIso: text('date_iso').notNull(),
   number: real('number').notNull(),
+  legacyNumber: text('legacy_number'),
   city: text('city').notNull(),
   park: text('park').notNull(),
   clubName: text('club_name').notNull(),
@@ -15,6 +16,8 @@ export const events = sqliteTable('events', {
   medianTimeMs: integer('median_time_ms'),
   bestMaleMs: integer('best_male_ms'),
   bestFemaleMs: integer('best_female_ms'),
+  newcomerCount: integer('newcomer_count'),
+  personalRecordCount: integer('personal_record_count'),
 });
 
 export const results = sqliteTable(

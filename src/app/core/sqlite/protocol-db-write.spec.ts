@@ -10,7 +10,10 @@ import {
   EXISTING_DB_SEED,
   EXPECTED_APPLIED_EVENTS,
   EXPECTED_DNF_ONLY_HISTORY,
+  EXPECTED_STORED_ROWS,
   REMOVED_SLUG,
+  RENUMBERED_RACE_EVENT,
+  SOLE_RACE_EVENT,
   SOLE_EVENT_DB_SEED,
   SOLE_REMOVAL_MOCK,
 } from './protocol-db-write.mock';
@@ -53,7 +56,9 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
 
       await expect(readHistory(db)).resolves.toEqual(EXPECTED_PUBLISHED_HISTORY);
       expect((await readIndexFile(db)).events).toEqual(EXPECTED_APPLIED_EVENTS);
-      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(
+        buildEventResultsFile(RENUMBERED_RACE_EVENT, EXPECTED_STORED_ROWS),
+      );
     },
     ROUNDTRIP_TIMEOUT_MS,
   );
@@ -65,7 +70,9 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
 
       await expect(readHistory(db)).resolves.toEqual(EXPECTED_FIRST_PUBLISH_HISTORY);
       expect((await readIndexFile(db)).events.map((entry) => entry.slug)).toEqual([RACE_EVENT.dateIso]);
-      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(
+        buildEventResultsFile(SOLE_RACE_EVENT, EXPECTED_STORED_ROWS),
+      );
     },
     ROUNDTRIP_TIMEOUT_MS,
   );
@@ -91,7 +98,7 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
 
       await expect(readHistory(db)).resolves.toEqual({});
       expect((await readIndexFile(db)).events.map((entry) => entry.slug)).toEqual([RACE_EVENT.dateIso]);
-      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, []));
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(SOLE_RACE_EVENT, []));
     },
     ROUNDTRIP_TIMEOUT_MS,
   );
@@ -102,7 +109,7 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       const db = await reopen(await applyEventToDb(null, DNF_ONLY_UPDATE_MOCK));
 
       await expect(readHistory(db)).resolves.toEqual(EXPECTED_DNF_ONLY_HISTORY);
-      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, [PROTOCOL_ROWS[2]]));
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(SOLE_RACE_EVENT, [PROTOCOL_ROWS[2]]));
     },
     ROUNDTRIP_TIMEOUT_MS,
   );

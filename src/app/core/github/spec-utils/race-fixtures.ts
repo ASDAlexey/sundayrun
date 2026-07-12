@@ -5,6 +5,7 @@ import { RaceEvent } from '../../models/race-event.interface';
 
 export const RACE_EVENT: RaceEvent = {
   number: 12,
+  legacyNumber: null,
   dateIso: '2026-06-28',
   city: 'Курск',
   park: 'Боева дача',

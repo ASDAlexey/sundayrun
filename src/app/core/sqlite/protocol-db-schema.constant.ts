@@ -7,7 +7,7 @@
  * over `runs`) and file paths (reconstructed from `slug`, see `github/event-paths.ts`).
  */
 
-export const PROTOCOL_DB_SCHEMA_VERSION = '1';
+export const PROTOCOL_DB_SCHEMA_VERSION = '3';
 
 export const PROTOCOL_DB_META_SCHEMA_VERSION_KEY = 'schemaVersion';
 
@@ -17,6 +17,7 @@ CREATE TABLE events (
   slug TEXT PRIMARY KEY,
   date_iso TEXT NOT NULL,
   number REAL NOT NULL,
+  legacy_number TEXT,
   city TEXT NOT NULL,
   park TEXT NOT NULL,
   club_name TEXT NOT NULL,
@@ -25,8 +26,16 @@ CREATE TABLE events (
   finisher_count INTEGER,
   median_time_ms INTEGER,
   best_male_ms INTEGER,
-  best_female_ms INTEGER
+  best_female_ms INTEGER,
+  newcomer_count INTEGER,
+  personal_record_count INTEGER
 )`;
+
+/** v2 → v3: the note-derived counters; applied to the local db by `scripts/backfill-summary-counts.ts`. */
+export const PROTOCOL_DB_V3_MIGRATION_STATEMENTS: readonly string[] = [
+  'ALTER TABLE events ADD COLUMN newcomer_count INTEGER',
+  'ALTER TABLE events ADD COLUMN personal_record_count INTEGER',
+];
 
 /** Mirrors `ProtocolRow`; `idx` is the row's `index` (a reserved word in SQL). */
 export const PROTOCOL_DB_CREATE_RESULTS_TABLE = `
