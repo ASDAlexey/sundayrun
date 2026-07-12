@@ -1,97 +1,109 @@
-import { applyEventToDb, removeEventFromDb } from './protocol-db-write';
-import { PROTOCOL_DB_MAIN_SCHEMA } from './protocol-db-write.constant';
+import { buildEventResultsFile } from '../github/results-file';
+import { EXPECTED_FIRST_PUBLISH_HISTORY, EXPECTED_PUBLISHED_HISTORY } from '../github/publish-event.mock';
+import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
+import { selectEventResults } from '../../github/protocol-db-queries';
+import { readHistory, readIndexFile } from './protocol-db-read';
 import {
-  DB_REMOVAL_MOCK,
   DB_UPDATE_MOCK,
-  EXISTING_DB_BYTES_MOCK,
-  EXPECTED_APPLY_EXECUTED_EXISTING,
-  EXPECTED_APPLY_EXECUTED_FRESH,
-  EXPECTED_PASSTHROUGH_ATHLETE_INSERTS,
-  EXPECTED_REMOVE_EXECUTED,
-  MIXED_GENDER_DB_ROWS,
-  MIXED_GENDER_META_ROWS,
-  PRESERVED_EVENT_META_ROWS,
-  PREVIOUS_DB_ROWS,
-  UNKNOWN_REMOVAL_MOCK,
+  DNF_ONLY_UPDATE_MOCK,
+  EMPTY_ROWS_UPDATE_MOCK,
+  EXISTING_DB_SEED,
+  EXPECTED_APPLIED_EVENTS,
+  EXPECTED_DNF_ONLY_HISTORY,
+  REMOVED_SLUG,
+  SOLE_EVENT_DB_SEED,
+  SOLE_REMOVAL_MOCK,
 } from './protocol-db-write.mock';
-import {
-  ALLOC_FROM_TYPED_ARRAY_MOCK,
-  EXPECTED_DESERIALIZE_FLAGS,
-  FAKE_DESERIALIZE_POINTER,
-  FAKE_EXPORTED_BYTES,
-  FAKE_SQLITE3_STATE,
-  SQLITE3_DESERIALIZE_MOCK,
-  SQLITE3_JS_DB_EXPORT_MOCK,
-  SQLITE_ERROR_RC,
-  resetFakeSqlite3,
-} from './spec-utils/fake-sqlite3';
+import { applyEventToDb, removeEventFromDb } from './protocol-db-write';
+import { createProtocolDrizzle, ProtocolDrizzle } from './protocol-drizzle';
+import { exportMemoryProtocolDbBytes, openMemoryProtocolDbFromBytes } from './spec-utils/protocol-db-memory';
+
+/** The real engine is slow to spin up; each roundtrip opens the wasm db a few times over. */
+const ROUNDTRIP_TIMEOUT_MS = 30000;
 
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
-  const fake = await import('./spec-utils/fake-sqlite3');
+  const real = await import('./spec-utils/real-sqlite3');
 
-  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+  return { default: () => real.realSqlite3Init() };
 });
 
-describe('protocol-db-write', () => {
-  beforeEach(() => {
-    resetFakeSqlite3();
+describe('protocol-db-write (real-engine roundtrip)', () => {
+  let close: (() => void) | null = null;
+
+  afterEach(() => {
+    close?.();
+    close = null;
   });
 
-  it('applies an event to existing db bytes: reads the previous state back, preserves club meta and replaces only the published results', async () => {
-    FAKE_SQLITE3_STATE.rowsBySql = PREVIOUS_DB_ROWS;
-    FAKE_SQLITE3_STATE.eventMetaRows = PRESERVED_EVENT_META_ROWS;
+  /** Reopens exported bytes as a drizzle handle, so the written tables can be read straight back. */
+  async function reopen(bytes: Uint8Array): Promise<ProtocolDrizzle> {
+    const memory = await openMemoryProtocolDbFromBytes(bytes);
 
-    await expect(applyEventToDb(EXISTING_DB_BYTES_MOCK, DB_UPDATE_MOCK)).resolves.toBe(FAKE_EXPORTED_BYTES);
+    close = memory.close;
 
-    const db = FAKE_SQLITE3_STATE.dbs[0];
+    return createProtocolDrizzle(memory.db);
+  }
 
-    expect(ALLOC_FROM_TYPED_ARRAY_MOCK).toHaveBeenCalledWith(EXISTING_DB_BYTES_MOCK);
-    expect(SQLITE3_DESERIALIZE_MOCK).toHaveBeenCalledWith(
-      db,
-      PROTOCOL_DB_MAIN_SCHEMA,
-      FAKE_DESERIALIZE_POINTER,
-      EXISTING_DB_BYTES_MOCK.byteLength,
-      EXISTING_DB_BYTES_MOCK.byteLength,
-      EXPECTED_DESERIALIZE_FLAGS,
-    );
-    expect(db.executed).toEqual(EXPECTED_APPLY_EXECUTED_EXISTING);
-    expect(SQLITE3_JS_DB_EXPORT_MOCK).toHaveBeenCalledWith(db);
-    expect(db.closed, 'the connection is released after the export').toBe(true);
-  });
+  it(
+    'applies a publication to existing bytes: preserves club meta, rebuilds the archive and rollup and replaces only the published results',
+    async () => {
+      const existingBytes = await exportMemoryProtocolDbBytes(EXISTING_DB_SEED);
 
-  it('creates a fresh db with 1 KiB pages and the shared schema when no db is published yet', async () => {
-    await expect(applyEventToDb(null, DB_UPDATE_MOCK)).resolves.toBe(FAKE_EXPORTED_BYTES);
+      const db = await reopen(await applyEventToDb(existingBytes, DB_UPDATE_MOCK));
 
-    expect(SQLITE3_DESERIALIZE_MOCK).not.toHaveBeenCalled();
-    expect(FAKE_SQLITE3_STATE.dbs[0].executed).toEqual(EXPECTED_APPLY_EXECUTED_FRESH);
-  });
+      await expect(readHistory(db)).resolves.toEqual(EXPECTED_PUBLISHED_HISTORY);
+      expect((await readIndexFile(db)).events).toEqual(EXPECTED_APPLIED_EVENTS);
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
 
-  it('removes an event: drops its results rows and rebuilds the summaries without it', async () => {
-    FAKE_SQLITE3_STATE.rowsBySql = PREVIOUS_DB_ROWS;
-    FAKE_SQLITE3_STATE.eventMetaRows = PRESERVED_EVENT_META_ROWS;
+  it(
+    'creates a fresh db when no protocol.db is published yet, seeding it from the single event',
+    async () => {
+      const db = await reopen(await applyEventToDb(null, DB_UPDATE_MOCK));
 
-    await expect(removeEventFromDb(EXISTING_DB_BYTES_MOCK, DB_REMOVAL_MOCK)).resolves.toBe(FAKE_EXPORTED_BYTES);
+      await expect(readHistory(db)).resolves.toEqual(EXPECTED_FIRST_PUBLISH_HISTORY);
+      expect((await readIndexFile(db)).events.map((entry) => entry.slug)).toEqual([RACE_EVENT.dateIso]);
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
 
-    expect(FAKE_SQLITE3_STATE.dbs[0].executed).toEqual(EXPECTED_REMOVE_EXECUTED);
-  });
+  it(
+    'removes the only event, collapsing every table to empty',
+    async () => {
+      const existingBytes = await exportMemoryProtocolDbBytes(SOLE_EVENT_DB_SEED);
 
-  it('writes read athletes straight back, keeping a male code and a DNF null gender', async () => {
-    FAKE_SQLITE3_STATE.rowsBySql = MIXED_GENDER_DB_ROWS;
-    FAKE_SQLITE3_STATE.eventMetaRows = MIXED_GENDER_META_ROWS;
+      const db = await reopen(await removeEventFromDb(existingBytes, SOLE_REMOVAL_MOCK));
 
-    await expect(removeEventFromDb(EXISTING_DB_BYTES_MOCK, UNKNOWN_REMOVAL_MOCK)).resolves.toBe(FAKE_EXPORTED_BYTES);
+      await expect(readHistory(db)).resolves.toEqual({});
+      expect((await readIndexFile(db)).events).toEqual([]);
+      await expect(selectEventResults(db, REMOVED_SLUG), 'the removed slug has no results').resolves.toBeNull();
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
 
-    const { executed } = FAKE_SQLITE3_STATE.dbs[0];
+  it(
+    'publishes an event with no result rows: writes the archive entry but skips the results insert and creates no athletes',
+    async () => {
+      const db = await reopen(await applyEventToDb(null, EMPTY_ROWS_UPDATE_MOCK));
 
-    for (const athleteInsert of EXPECTED_PASSTHROUGH_ATHLETE_INSERTS) {
-      expect(executed).toContainEqual(athleteInsert);
-    }
-  });
+      await expect(readHistory(db)).resolves.toEqual({});
+      expect((await readIndexFile(db)).events.map((entry) => entry.slug)).toEqual([RACE_EVENT.dateIso]);
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, []));
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
 
-  it('closes the connection even when the downloaded bytes fail to deserialize', async () => {
-    FAKE_SQLITE3_STATE.deserializeRc = SQLITE_ERROR_RC;
+  it(
+    'publishes a DNF-only event: creates a run-less athlete, so the runs insert is skipped but the participation is written',
+    async () => {
+      const db = await reopen(await applyEventToDb(null, DNF_ONLY_UPDATE_MOCK));
 
-    await expect(applyEventToDb(EXISTING_DB_BYTES_MOCK, DB_UPDATE_MOCK)).rejects.toThrow(String(SQLITE_ERROR_RC));
-    expect(FAKE_SQLITE3_STATE.dbs[0].closed).toBe(true);
-  });
+      await expect(readHistory(db)).resolves.toEqual(EXPECTED_DNF_ONLY_HISTORY);
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(RACE_EVENT, [PROTOCOL_ROWS[2]]));
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
 });

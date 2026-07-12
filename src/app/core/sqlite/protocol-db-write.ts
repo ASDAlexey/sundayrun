@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm';
+
 import type { Database } from '@sqlite.org/sqlite-wasm';
 
 import { buildIndexEntry, removeIndexEntry, upsertIndexEntry } from '../github/archive-index';
@@ -7,31 +9,17 @@ import { EventResultsFile } from '../github/results-file.interface';
 import { applyEventToHistory, removeEventFromHistory } from '../history/athletes-rollup';
 import { AthletesHistory } from '../models/athletes-history.type';
 import { deserializeDbInto } from './deserialize-db';
+import { narrowValues } from './protocol-db-narrow';
+import { athletes, events as eventsTable, meta, participations, results as resultsTable, runs } from './protocol-db.schema';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
   PROTOCOL_DB_META_SCHEMA_VERSION_KEY,
   PROTOCOL_DB_SCHEMA_STATEMENTS,
   PROTOCOL_DB_SCHEMA_VERSION,
 } from './protocol-db-schema.constant';
-import {
-  BEGIN_TRANSACTION_SQL,
-  COMMIT_TRANSACTION_SQL,
-  DELETE_ALL_ATHLETES_SQL,
-  DELETE_ALL_EVENTS_SQL,
-  DELETE_ALL_PARTICIPATIONS_SQL,
-  DELETE_ALL_RUNS_SQL,
-  DELETE_RESULTS_BY_SLUG_SQL,
-  INSERT_ATHLETE_SQL,
-  INSERT_EVENT_SQL,
-  INSERT_PARTICIPATION_SQL,
-  INSERT_RESULT_SQL,
-  INSERT_RUN_SQL,
-  PROTOCOL_DB_PAGE_SIZE_PRAGMA,
-  SELECT_EVENT_META_SQL,
-  UPSERT_META_SQL,
-  VACUUM_SQL,
-} from './protocol-db-write.constant';
+import { BEGIN_TRANSACTION_SQL, COMMIT_TRANSACTION_SQL, PROTOCOL_DB_PAGE_SIZE_PRAGMA, VACUUM_SQL } from './protocol-db-write.constant';
 import { ProtocolDbEventMeta, ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
+import { createProtocolDrizzle, ProtocolDrizzle } from './protocol-drizzle';
 import { loadSqlite3 } from './sqlite-loader';
 
 /** The previous archive and athletes rollup, read back out of the db the write is updating. */
@@ -46,6 +34,19 @@ interface SyncTarget {
   history: AthletesHistory;
   resultsFile: EventResultsFile | null;
   removedSlug: string | null;
+}
+
+/**
+ * Wraps the SAME oo1 connection as a typed drizzle handle, so the reads and DML run through the
+ * query-builder while the schema/transaction/export plumbing stays on raw `db.exec`. The executor is
+ * synchronous under the hood; the `Promise.resolve` only satisfies the proxy-driver contract, and
+ * awaiting it inside the manual transaction is safe because nothing else touches the connection.
+ */
+function oo1Drizzle(db: Database): ProtocolDrizzle {
+  return createProtocolDrizzle({
+    queryValues: (sql, params) =>
+      Promise.resolve(db.exec(sql, { bind: [...params], rowMode: 'array', returnValue: 'resultRows' }).map(narrowValues)),
+  });
 }
 
 /**
@@ -102,14 +103,18 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
       deserializeDbInto(sqlite3, db, dbBytes);
     }
 
-    const target = rollup({ index: readIndexFile(db), history: readHistory(db) });
-    const eventMeta = readEventMeta(db, target.resultsFile);
+    const ddb = oo1Drizzle(db);
+    const target = rollup({ index: await readIndexFile(ddb), history: await readHistory(ddb) });
+    const eventMeta = await readEventMeta(ddb, target.resultsFile);
 
     db.exec(BEGIN_TRANSACTION_SQL);
-    rewriteEvents(db, target.index, eventMeta);
-    rewriteResults(db, target.resultsFile, target.removedSlug);
-    rewriteAthletes(db, target.history);
-    db.exec(UPSERT_META_SQL, { bind: [PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION] });
+    await rewriteEvents(ddb, target.index, eventMeta);
+    await rewriteResults(ddb, target.resultsFile, target.removedSlug);
+    await rewriteAthletes(ddb, target.history);
+    await ddb
+      .insert(meta)
+      .values({ key: PROTOCOL_DB_META_SCHEMA_VERSION_KEY, value: PROTOCOL_DB_SCHEMA_VERSION })
+      .onConflictDoUpdate({ target: meta.key, set: { value: PROTOCOL_DB_SCHEMA_VERSION } });
     db.exec(COMMIT_TRANSACTION_SQL);
     db.exec(VACUUM_SQL);
 
@@ -134,11 +139,14 @@ function createSchema(db: Database): void {
  * published event taking its values from the fresh results file. The archive is read back out of
  * the same `events` table, so every entry the rewrite writes has an entry here.
  */
-function readEventMeta(db: Database, resultsFile: EventResultsFile | null): Record<string, ProtocolDbEventMeta> {
+async function readEventMeta(db: ProtocolDrizzle, resultsFile: EventResultsFile | null): Promise<Record<string, ProtocolDbEventMeta>> {
   const meta: Record<string, ProtocolDbEventMeta> = {};
+  const rows = await db
+    .select({ slug: eventsTable.slug, clubName: eventsTable.clubName, chairman: eventsTable.chairman })
+    .from(eventsTable);
 
-  for (const row of db.exec(SELECT_EVENT_META_SQL, { returnValue: 'resultRows', rowMode: 'array' })) {
-    meta[String(row[0])] = { clubName: String(row[1]), chairman: String(row[2]) };
+  for (const row of rows) {
+    meta[row.slug] = { clubName: row.clubName, chairman: row.chairman };
   }
 
   if (resultsFile !== null) {
@@ -149,35 +157,39 @@ function readEventMeta(db: Database, resultsFile: EventResultsFile | null): Reco
 }
 
 /** `index` is the full updated truth (a few hundred rows), so a rewrite is simpler and safer than an upsert. */
-function rewriteEvents(db: Database, index: ArchiveIndexFile, eventMeta: Record<string, ProtocolDbEventMeta>): void {
-  db.exec(DELETE_ALL_EVENTS_SQL);
+async function rewriteEvents(db: ProtocolDrizzle, index: ArchiveIndexFile, eventMeta: Record<string, ProtocolDbEventMeta>): Promise<void> {
+  await db.delete(eventsTable);
 
-  for (const entry of index.events) {
-    const { clubName, chairman } = eventMeta[entry.slug];
+  if (index.events.length === 0) {
+    return;
+  }
 
-    db.exec(INSERT_EVENT_SQL, {
-      bind: [
-        entry.slug,
-        entry.dateIso,
-        entry.number,
-        entry.city,
-        entry.park,
+  await db.insert(eventsTable).values(
+    index.events.map((entry) => {
+      const { clubName, chairman } = eventMeta[entry.slug];
+
+      return {
+        slug: entry.slug,
+        dateIso: entry.dateIso,
+        number: entry.number,
+        city: entry.city,
+        park: entry.park,
         clubName,
         chairman,
-        entry.participantCount,
-        entry.finisherCount,
-        entry.avgTimeMs,
-        entry.bestMaleMs,
-        entry.bestFemaleMs,
-      ],
-    });
-  }
+        participantCount: entry.participantCount,
+        finisherCount: entry.finisherCount,
+        avgTimeMs: entry.avgTimeMs,
+        bestMaleMs: entry.bestMaleMs,
+        bestFemaleMs: entry.bestFemaleMs,
+      };
+    }),
+  );
 }
 
 /** Replaces only the published slug's rows and/or drops the removed slug's; other events' results stay. */
-function rewriteResults(db: Database, resultsFile: EventResultsFile | null, removedSlug: string | null): void {
+async function rewriteResults(db: ProtocolDrizzle, resultsFile: EventResultsFile | null, removedSlug: string | null): Promise<void> {
   if (removedSlug !== null) {
-    db.exec(DELETE_RESULTS_BY_SLUG_SQL, { bind: [removedSlug] });
+    await db.delete(resultsTable).where(eq(resultsTable.slug, removedSlug));
   }
 
   if (resultsFile === null) {
@@ -186,43 +198,68 @@ function rewriteResults(db: Database, resultsFile: EventResultsFile | null, remo
 
   const slug = resultsFile.event.dateIso;
 
-  db.exec(DELETE_RESULTS_BY_SLUG_SQL, { bind: [slug] });
+  await db.delete(resultsTable).where(eq(resultsTable.slug, slug));
 
-  for (const row of resultsFile.rows) {
-    db.exec(INSERT_RESULT_SQL, {
-      bind: [
-        slug,
-        row.index,
-        row.fullName,
-        row.time23,
-        row.time5,
-        row.totalMs,
-        row.distanceKm,
-        row.gender,
-        row.placeM,
-        row.placeF,
-        row.club,
-        row.note,
-      ],
-    });
+  if (resultsFile.rows.length === 0) {
+    return;
   }
+
+  await db.insert(resultsTable).values(
+    resultsFile.rows.map((row) => ({
+      slug,
+      idx: row.index,
+      fullName: row.fullName,
+      time23: row.time23,
+      time5: row.time5,
+      totalMs: row.totalMs,
+      distanceKm: row.distanceKm,
+      gender: row.gender,
+      placeM: row.placeM,
+      placeF: row.placeF,
+      club: row.club,
+      note: row.note,
+    })),
+  );
 }
 
 /** `athletes`/`runs`/`participations` mirror the rollup exactly, so a full rebuild guarantees db ≡ history. */
-function rewriteAthletes(db: Database, history: AthletesHistory): void {
-  db.exec(DELETE_ALL_PARTICIPATIONS_SQL);
-  db.exec(DELETE_ALL_RUNS_SQL);
-  db.exec(DELETE_ALL_ATHLETES_SQL);
+async function rewriteAthletes(db: ProtocolDrizzle, history: AthletesHistory): Promise<void> {
+  await db.delete(participations);
+  await db.delete(runs);
+  await db.delete(athletes);
 
-  for (const athlete of Object.values(history)) {
-    db.exec(INSERT_ATHLETE_SQL, { bind: [athlete.key, athlete.displayName, athlete.gender, athlete.bestMs] });
+  const athleteRecords = Object.values(history);
 
-    for (const run of athlete.runs) {
-      db.exec(INSERT_RUN_SQL, { bind: [athlete.key, run.dateIso, run.slug, run.timeMs, run.distanceKm] });
-    }
-
-    for (const slug of athlete.participationSlugs) {
-      db.exec(INSERT_PARTICIPATION_SQL, { bind: [athlete.key, slug] });
-    }
+  if (athleteRecords.length === 0) {
+    return;
   }
+
+  await db.insert(athletes).values(
+    athleteRecords.map((athlete) => ({
+      key: athlete.key,
+      displayName: athlete.displayName,
+      gender: athlete.gender,
+      bestMs: athlete.bestMs,
+    })),
+  );
+
+  const runRows = athleteRecords.flatMap((athlete) =>
+    athlete.runs.map((run) => ({
+      athleteKey: athlete.key,
+      dateIso: run.dateIso,
+      slug: run.slug,
+      timeMs: run.timeMs,
+      distanceKm: run.distanceKm,
+    })),
+  );
+
+  // A pure-DNF event leaves every athlete run-less, so the array can be empty; an athlete always has
+  // at least one participation, so — the empty-history case already returned — that insert is unguarded.
+  if (runRows.length > 0) {
+    await db.insert(runs).values(runRows);
+  }
+
+  await db
+    .insert(participations)
+    .values(athleteRecords.flatMap((athlete) => athlete.participationSlugs.map((slug) => ({ athleteKey: athlete.key, slug }))));
 }

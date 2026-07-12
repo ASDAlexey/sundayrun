@@ -1,41 +1,10 @@
-import { EXPECTED_NEW_ENTRY, NEWER_ENTRY, OLDER_ENTRY, STALE_INDEX } from '../github/archive-index.mock';
+import { EXPECTED_NEW_ENTRY, EXPECTED_UPSERTED_EVENTS, STALE_INDEX } from '../github/archive-index.mock';
 import { ArchiveIndexEntry } from '../github/archive-index.interface';
-import { EXPECTED_DELETED_HISTORY } from '../github/delete-event.mock';
-import { EXPECTED_FIRST_PUBLISH_HISTORY, EXPECTED_PUBLISHED_HISTORY, EXISTING_HISTORY } from '../github/publish-event.mock';
+import { EXISTING_HISTORY } from '../github/publish-event.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
 import { AthletesHistory } from '../models/athletes-history.type';
-import { Gender } from '../models/gender.enum';
-import {
-  PROTOCOL_DB_META_SCHEMA_VERSION_KEY,
-  PROTOCOL_DB_SCHEMA_STATEMENTS,
-  PROTOCOL_DB_SCHEMA_VERSION,
-} from './protocol-db-schema.constant';
-import {
-  BEGIN_TRANSACTION_SQL,
-  COMMIT_TRANSACTION_SQL,
-  DELETE_ALL_ATHLETES_SQL,
-  DELETE_ALL_EVENTS_SQL,
-  DELETE_ALL_PARTICIPATIONS_SQL,
-  DELETE_ALL_RUNS_SQL,
-  DELETE_RESULTS_BY_SLUG_SQL,
-  INSERT_ATHLETE_SQL,
-  INSERT_EVENT_SQL,
-  INSERT_PARTICIPATION_SQL,
-  INSERT_RESULT_SQL,
-  INSERT_RUN_SQL,
-  PROTOCOL_DB_PAGE_SIZE_PRAGMA,
-  SELECT_ALL_ATHLETES_SQL,
-  SELECT_ALL_EVENTS_SQL,
-  SELECT_ALL_PARTICIPATIONS_SQL,
-  SELECT_ALL_RUNS_SQL,
-  SELECT_EVENT_META_SQL,
-  UPSERT_META_SQL,
-  VACUUM_SQL,
-} from './protocol-db-write.constant';
+import { PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION } from './protocol-db-schema.constant';
 import { ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
-import { FakeExecCall } from './spec-utils/fake-sqlite3';
-
-export const EXISTING_DB_BYTES_MOCK = new Uint8Array([1, 2, 3, 4]);
 
 /** Publishes `RACE_EVENT` (slug 2026-06-28); the write reads the previous state back out of the db. */
 export const DB_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: PROTOCOL_ROWS };
@@ -43,204 +12,116 @@ export const DB_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: 
 /** Removes the 2026-06-28 event; the write reads the rest of the state from the db. */
 export const DB_REMOVAL_MOCK: ProtocolDbEventRemoval = { slug: RACE_EVENT.dateIso };
 
-/** Removes a slug that was never published, so every read athlete passes through the rewrite untouched. */
+/** Removes a slug that was never published, so the read state passes through the rewrite untouched. */
 export const UNKNOWN_REMOVAL_MOCK: ProtocolDbEventRemoval = { slug: '2000-01-01' };
 
-const MALE_ATHLETE_KEY = 'олег мужчина';
+/** The club metadata every previously-published event carries; the archive itself never stores it. */
+export const PRESERVED_CLUB_NAME = 'Старый клуб';
 
-const DNF_ATHLETE_KEY = 'дмитрий днф';
+export const PRESERVED_CHAIRMAN = 'Старый председатель';
 
-const PRESERVED_CLUB_NAME = 'Старый клуб';
+const q = (value: string): string => `'${value.replace(/'/g, "''")}'`;
 
-const PRESERVED_CHAIRMAN = 'Старый председатель';
+const num = (value: number | null): string => (value === null ? 'NULL' : String(value));
 
-/** The `events` rows `SELECT ... FROM events` returns for the previous archive (club columns excluded). */
-function allEventsRow(entry: ArchiveIndexEntry): Record<string, unknown> {
-  return {
-    slug: entry.slug,
-    date_iso: entry.dateIso,
-    number: entry.number,
-    city: entry.city,
-    park: entry.park,
-    participant_count: entry.participantCount,
-    finisher_count: entry.finisherCount,
-    avg_time_ms: entry.avgTimeMs,
-    best_male_ms: entry.bestMaleMs,
-    best_female_ms: entry.bestFemaleMs,
-  };
-}
+const gender = (value: string | null): string => (value === null ? 'NULL' : q(value));
 
-function athleteRows(history: AthletesHistory): Record<string, unknown>[] {
-  return Object.values(history).map((athlete) => ({
-    key: athlete.key,
-    display_name: athlete.displayName,
-    gender: athlete.gender,
-    best_ms: athlete.bestMs,
-  }));
-}
-
-function runRows(history: AthletesHistory): Record<string, unknown>[] {
-  return Object.values(history).flatMap((athlete) =>
-    athlete.runs.map((run) => ({
-      athlete_key: athlete.key,
-      date_iso: run.dateIso,
-      slug: run.slug,
-      time_ms: run.timeMs,
-      distance_km: run.distanceKm,
-    })),
+/** An `events` row carrying the preserved club meta, so `readEventMeta` keeps it across the rewrite. */
+function eventInsert(entry: ArchiveIndexEntry, clubName: string, chairman: string): string {
+  return (
+    `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${q(entry.city)}, ${q(entry.park)}, ` +
+    `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.avgTimeMs)}, ` +
+    `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)})`
   );
 }
 
-function participationRows(history: AthletesHistory): Record<string, unknown>[] {
-  return Object.values(history).flatMap((athlete) => athlete.participationSlugs.map((slug) => ({ athlete_key: athlete.key, slug })));
-}
-
-/** The four object-mode reads that reconstruct the previous archive and rollup from the db. */
-export const PREVIOUS_DB_ROWS: Record<string, unknown[]> = {
-  [SELECT_ALL_EVENTS_SQL]: STALE_INDEX.events.map(allEventsRow),
-  [SELECT_ALL_ATHLETES_SQL]: athleteRows(EXISTING_HISTORY),
-  [SELECT_ALL_RUNS_SQL]: runRows(EXISTING_HISTORY),
-  [SELECT_ALL_PARTICIPATIONS_SQL]: participationRows(EXISTING_HISTORY),
-};
-
-/** Each previous event's `SELECT slug, club_name, chairman FROM events` row, all sharing the preserved club meta. */
-export const PRESERVED_EVENT_META_ROWS: unknown[][] = STALE_INDEX.events.map((entry) => [
-  entry.slug,
-  PRESERVED_CLUB_NAME,
-  PRESERVED_CHAIRMAN,
-]);
-
-/** The five reads every sync runs before it writes: the archive, the three rollup tables and the club meta. */
-const READ_CALLS: FakeExecCall[] = [
-  { sql: SELECT_ALL_EVENTS_SQL },
-  { sql: SELECT_ALL_ATHLETES_SQL },
-  { sql: SELECT_ALL_RUNS_SQL },
-  { sql: SELECT_ALL_PARTICIPATIONS_SQL },
-  { sql: SELECT_EVENT_META_SQL },
-];
-
-function eventInsert(entry: ArchiveIndexEntry, clubName: string, chairman: string): FakeExecCall {
-  return {
-    sql: INSERT_EVENT_SQL,
-    bind: [
-      entry.slug,
-      entry.dateIso,
-      entry.number,
-      entry.city,
-      entry.park,
-      clubName,
-      chairman,
-      entry.participantCount,
-      entry.finisherCount,
-      entry.avgTimeMs,
-      entry.bestMaleMs,
-      entry.bestFemaleMs,
-    ],
-  };
-}
-
-const RESULT_INSERTS: FakeExecCall[] = PROTOCOL_ROWS.map((row) => ({
-  sql: INSERT_RESULT_SQL,
-  bind: [
-    RACE_EVENT.dateIso,
-    row.index,
-    row.fullName,
-    row.time23,
-    row.time5,
-    row.totalMs,
-    row.distanceKm,
-    row.gender,
-    row.placeM,
-    row.placeF,
-    row.club,
-    row.note,
-  ],
-}));
-
-function athleteInserts(history: AthletesHistory): FakeExecCall[] {
-  const calls: FakeExecCall[] = [];
+function athleteInserts(history: AthletesHistory): string[] {
+  const rows: string[] = [];
 
   for (const athlete of Object.values(history)) {
-    calls.push({ sql: INSERT_ATHLETE_SQL, bind: [athlete.key, athlete.displayName, athlete.gender, athlete.bestMs] });
-    calls.push(
-      ...athlete.runs.map(
-        (run): FakeExecCall => ({ sql: INSERT_RUN_SQL, bind: [athlete.key, run.dateIso, run.slug, run.timeMs, run.distanceKm] }),
-      ),
+    rows.push(
+      `INSERT INTO athletes VALUES (${q(athlete.key)}, ${q(athlete.displayName)}, ${gender(athlete.gender)}, ${num(athlete.bestMs)})`,
     );
-    calls.push(...athlete.participationSlugs.map((slug): FakeExecCall => ({ sql: INSERT_PARTICIPATION_SQL, bind: [athlete.key, slug] })));
+
+    for (const run of athlete.runs) {
+      rows.push(`INSERT INTO runs VALUES (${q(athlete.key)}, ${q(run.dateIso)}, ${q(run.slug)}, ${run.timeMs}, ${run.distanceKm})`);
+    }
+
+    for (const slug of athlete.participationSlugs) {
+      rows.push(`INSERT INTO participations VALUES (${q(athlete.key)}, ${q(slug)})`);
+    }
   }
 
-  return calls;
+  return rows;
 }
 
-/** The shared end of every sync: athletes rebuild, schema-version upsert, commit and compaction. */
-function syncTail(history: AthletesHistory): FakeExecCall[] {
-  return [
-    { sql: DELETE_ALL_PARTICIPATIONS_SQL },
-    { sql: DELETE_ALL_RUNS_SQL },
-    { sql: DELETE_ALL_ATHLETES_SQL },
-    ...athleteInserts(history),
-    { sql: UPSERT_META_SQL, bind: [PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION] },
-    { sql: COMMIT_TRANSACTION_SQL },
-    { sql: VACUUM_SQL },
-  ];
-}
+/** A pre-existing schema-version row, so applying to these bytes exercises the meta upsert's UPDATE path. */
+const META_SEED = `INSERT INTO meta VALUES ('${PROTOCOL_DB_META_SCHEMA_VERSION_KEY}', '${PROTOCOL_DB_SCHEMA_VERSION}')`;
 
-/** Deserialized db: the stale entry for the re-published slug is replaced, the untouched events keep their club meta. */
-export const EXPECTED_APPLY_EXECUTED_EXISTING: FakeExecCall[] = [
-  ...READ_CALLS,
-  { sql: BEGIN_TRANSACTION_SQL },
-  { sql: DELETE_ALL_EVENTS_SQL },
-  eventInsert(NEWER_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
-  eventInsert(EXPECTED_NEW_ENTRY, RACE_EVENT.clubName, RACE_EVENT.chairman),
-  eventInsert(OLDER_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
-  { sql: DELETE_RESULTS_BY_SLUG_SQL, bind: [RACE_EVENT.dateIso] },
-  ...RESULT_INSERTS,
-  ...syncTail(EXPECTED_PUBLISHED_HISTORY),
+/**
+ * The seed SQL for the previous `protocol.db`: the three unsorted `STALE_INDEX` events (each with the
+ * preserved club meta) and `EXISTING_HISTORY`. Exported to bytes, this is the image the write reads
+ * its previous state back out of.
+ */
+export const EXISTING_DB_SEED: readonly string[] = [
+  ...STALE_INDEX.events.map((entry) => eventInsert(entry, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN)),
+  ...athleteInserts(EXISTING_HISTORY),
+  META_SEED,
 ];
 
-/** Fresh db: the 1 KiB page pragma precedes the DDL; the empty reads yield an index with only the new event. */
-export const EXPECTED_APPLY_EXECUTED_FRESH: FakeExecCall[] = [
-  { sql: PROTOCOL_DB_PAGE_SIZE_PRAGMA },
-  ...PROTOCOL_DB_SCHEMA_STATEMENTS.map((sql): FakeExecCall => ({ sql })),
-  ...READ_CALLS,
-  { sql: BEGIN_TRANSACTION_SQL },
-  { sql: DELETE_ALL_EVENTS_SQL },
-  eventInsert(EXPECTED_NEW_ENTRY, RACE_EVENT.clubName, RACE_EVENT.chairman),
-  { sql: DELETE_RESULTS_BY_SLUG_SQL, bind: [RACE_EVENT.dateIso] },
-  ...RESULT_INSERTS,
-  ...syncTail(EXPECTED_FIRST_PUBLISH_HISTORY),
-];
+/** The archive `readIndexFile` reads back after the publication: newest first, the stale slug replaced. */
+export const EXPECTED_APPLIED_EVENTS: ArchiveIndexEntry[] = EXPECTED_UPSERTED_EVENTS;
 
-/** Removal: the removed slug drops out of the archive (db order, no results inserted) and out of the rollup. */
-export const EXPECTED_REMOVE_EXECUTED: FakeExecCall[] = [
-  ...READ_CALLS,
-  { sql: BEGIN_TRANSACTION_SQL },
-  { sql: DELETE_ALL_EVENTS_SQL },
-  eventInsert(OLDER_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
-  eventInsert(NEWER_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
-  { sql: DELETE_RESULTS_BY_SLUG_SQL, bind: [RACE_EVENT.dateIso] },
-  ...syncTail(EXPECTED_DELETED_HISTORY),
-];
+/** The removed slug (`RACE_EVENT`), matching Мария's stale run in `EXISTING_HISTORY`. */
+export const REMOVED_SLUG = RACE_EVENT.dateIso;
 
-/** A previous state whose read athletes span a male and a DNF (gender null), exercising every gender branch. */
-export const MIXED_GENDER_DB_ROWS: Record<string, unknown[]> = {
-  [SELECT_ALL_EVENTS_SQL]: [allEventsRow(NEWER_ENTRY)],
-  [SELECT_ALL_ATHLETES_SQL]: [
-    { key: MALE_ATHLETE_KEY, display_name: 'Олег Мужчина', gender: Gender.male, best_ms: 1200000 },
-    { key: DNF_ATHLETE_KEY, display_name: 'Дмитрий ДНФ', gender: null, best_ms: null },
-  ],
-  [SELECT_ALL_RUNS_SQL]: [],
-  [SELECT_ALL_PARTICIPATIONS_SQL]: [
-    { athlete_key: MALE_ATHLETE_KEY, slug: NEWER_ENTRY.slug },
-    { athlete_key: DNF_ATHLETE_KEY, slug: NEWER_ENTRY.slug },
-  ],
+/** A single-event archive entry for `RACE_EVENT`, so removing it empties every table. */
+const SOLE_ENTRY: ArchiveIndexEntry = {
+  ...EXPECTED_NEW_ENTRY,
+  finisherCount: null,
+  avgTimeMs: null,
+  bestMaleMs: null,
+  bestFemaleMs: null,
 };
 
-export const MIXED_GENDER_META_ROWS: unknown[][] = [[NEWER_ENTRY.slug, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN]];
+/** One athlete who only ran the sole event, so its removal leaves the rollup empty. */
+const SOLE_HISTORY: AthletesHistory = {
+  'мария иванова': {
+    key: 'мария иванова',
+    displayName: 'Мария Иванова',
+    gender: null,
+    participationSlugs: [REMOVED_SLUG],
+    runs: [{ dateIso: REMOVED_SLUG, slug: REMOVED_SLUG, timeMs: 1500000, distanceKm: 5 }],
+    bestMs: 1500000,
+    bestMsByYear: { '2026': 1500000 },
+  },
+};
 
-/** Both read athletes pass through untouched, so the male code and the null gender are written straight back. */
-export const EXPECTED_PASSTHROUGH_ATHLETE_INSERTS: FakeExecCall[] = [
-  { sql: INSERT_ATHLETE_SQL, bind: [MALE_ATHLETE_KEY, 'Олег Мужчина', Gender.male, 1200000] },
-  { sql: INSERT_ATHLETE_SQL, bind: [DNF_ATHLETE_KEY, 'Дмитрий ДНФ', null, null] },
+/** A db holding only the event to be removed; removing it drives every empty-rewrite guard. */
+export const SOLE_EVENT_DB_SEED: readonly string[] = [
+  eventInsert(SOLE_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
+  ...athleteInserts(SOLE_HISTORY),
+  META_SEED,
 ];
+
+/** Removes the sole event; the read state collapses to an empty archive and rollup. */
+export const SOLE_REMOVAL_MOCK: ProtocolDbEventRemoval = { slug: REMOVED_SLUG };
+
+/** A publication carrying no result rows at all: the results insert is skipped and no athlete is created. */
+export const EMPTY_ROWS_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: [] };
+
+/** A publication whose sole row is a DNF: an athlete is created run-less, so the runs insert is skipped. */
+export const DNF_ONLY_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: [PROTOCOL_ROWS[2]] };
+
+/** The DNF athlete `DNF_ONLY_UPDATE_MOCK` produces: one run-less participation in the published event. */
+export const EXPECTED_DNF_ONLY_HISTORY: AthletesHistory = {
+  'петр сидоров': {
+    key: 'петр сидоров',
+    displayName: 'Пётр Сидоров',
+    gender: null,
+    participationSlugs: [REMOVED_SLUG],
+    runs: [],
+    bestMs: null,
+    bestMsByYear: {},
+  },
+};

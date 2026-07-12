@@ -9,12 +9,9 @@ import { AthleteRun } from '../models/athlete-history.interface';
 import { AthletesHistory } from '../models/athletes-history.type';
 import { Gender, GenderType } from '../models/gender.enum';
 import { deserializeDbInto } from './deserialize-db';
-import {
-  SELECT_ALL_ATHLETES_SQL,
-  SELECT_ALL_EVENTS_SQL,
-  SELECT_ALL_PARTICIPATIONS_SQL,
-  SELECT_ALL_RUNS_SQL,
-} from './protocol-db-write.constant';
+import { narrowValues } from './protocol-db-narrow';
+import { athletes, events, participations, runs } from './protocol-db.schema';
+import { createProtocolDrizzle, ProtocolDrizzle } from './protocol-drizzle';
 import { loadSqlite3 } from './sqlite-loader';
 
 /**
@@ -29,33 +26,59 @@ export async function readHistoryFromDb(dbBytes: Uint8Array): Promise<AthletesHi
   try {
     deserializeDbInto(sqlite3, db, dbBytes);
 
-    return readHistory(db);
+    return await readHistory(oo1Drizzle(db));
   } finally {
     db.close();
   }
 }
 
-/** Reconstructs the archive from the `events` table — the reverse of `rewriteEvents`, minus club meta. */
-export function readIndexFile(db: Database): ArchiveIndexFile {
-  const events = db.exec(SELECT_ALL_EVENTS_SQL, { rowMode: 'object', returnValue: 'resultRows' }).map((row): ArchiveIndexEntry => {
-    const dateIso = readString(row['date_iso']);
-
-    return {
-      slug: readString(row['slug']),
-      dateIso,
-      number: readNumber(row['number']),
-      city: readString(row['city']),
-      park: readString(row['park']),
-      participantCount: readNumber(row['participant_count']),
-      finisherCount: readNumberOrNull(row['finisher_count']),
-      avgTimeMs: readNumberOrNull(row['avg_time_ms']),
-      bestMaleMs: readNumberOrNull(row['best_male_ms']),
-      bestFemaleMs: readNumberOrNull(row['best_female_ms']),
-      files: eventFilePaths(dateIso),
-    };
+/**
+ * Wraps a synchronous oo1 connection as a typed drizzle handle for the table reads. The proxy driver
+ * is async, so the sync `db.exec` result is resolved through a settled promise; the read path never
+ * interleaves other work on the connection, so this stays a straight, ordered read.
+ */
+function oo1Drizzle(db: Database): ProtocolDrizzle {
+  return createProtocolDrizzle({
+    queryValues: (sql, params) =>
+      Promise.resolve(db.exec(sql, { bind: [...params], rowMode: 'array', returnValue: 'resultRows' }).map(narrowValues)),
   });
+}
 
-  return { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events };
+/** Reconstructs the archive from the `events` table — the reverse of `rewriteEvents`, minus club meta. */
+export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFile> {
+  const rows = await db
+    .select({
+      slug: events.slug,
+      dateIso: events.dateIso,
+      number: events.number,
+      city: events.city,
+      park: events.park,
+      participantCount: events.participantCount,
+      finisherCount: events.finisherCount,
+      avgTimeMs: events.avgTimeMs,
+      bestMaleMs: events.bestMaleMs,
+      bestFemaleMs: events.bestFemaleMs,
+    })
+    .from(events);
+
+  return {
+    schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,
+    events: rows.map(
+      (row): ArchiveIndexEntry => ({
+        slug: row.slug,
+        dateIso: row.dateIso,
+        number: row.number,
+        city: row.city,
+        park: row.park,
+        participantCount: row.participantCount,
+        finisherCount: row.finisherCount,
+        avgTimeMs: row.avgTimeMs,
+        bestMaleMs: row.bestMaleMs,
+        bestFemaleMs: row.bestFemaleMs,
+        files: eventFilePaths(row.dateIso),
+      }),
+    ),
+  };
 }
 
 /**
@@ -63,34 +86,35 @@ export function readIndexFile(db: Database): ArchiveIndexFile {
  * `bestMsByYear` is derived, never stored, so it is recomputed from each record's 5 km runs, giving
  * the admin import the same complete history the old `athletes.json` carried.
  */
-export function readHistory(db: Database): AthletesHistory {
+export async function readHistory(db: ProtocolDrizzle): Promise<AthletesHistory> {
   const history: AthletesHistory = {};
 
-  for (const row of db.exec(SELECT_ALL_ATHLETES_SQL, { rowMode: 'object', returnValue: 'resultRows' })) {
-    const key = readString(row['key']);
+  const [athleteRows, runRows, participationRows] = await Promise.all([
+    db.select({ key: athletes.key, displayName: athletes.displayName, gender: athletes.gender, bestMs: athletes.bestMs }).from(athletes),
+    db
+      .select({ athleteKey: runs.athleteKey, dateIso: runs.dateIso, slug: runs.slug, timeMs: runs.timeMs, distanceKm: runs.distanceKm })
+      .from(runs),
+    db.select({ athleteKey: participations.athleteKey, slug: participations.slug }).from(participations),
+  ]);
 
-    history[key] = {
-      key,
-      displayName: readString(row['display_name']),
-      gender: readGender(row['gender']),
+  for (const row of athleteRows) {
+    history[row.key] = {
+      key: row.key,
+      displayName: row.displayName,
+      gender: asGender(row.gender),
       participationSlugs: [],
       runs: [],
-      bestMs: readNumberOrNull(row['best_ms']),
+      bestMs: row.bestMs,
       bestMsByYear: {},
     };
   }
 
-  for (const row of db.exec(SELECT_ALL_RUNS_SQL, { rowMode: 'object', returnValue: 'resultRows' })) {
-    history[readString(row['athlete_key'])].runs.push({
-      dateIso: readString(row['date_iso']),
-      slug: readString(row['slug']),
-      timeMs: readNumber(row['time_ms']),
-      distanceKm: readNumber(row['distance_km']),
-    });
+  for (const row of runRows) {
+    history[row.athleteKey].runs.push({ dateIso: row.dateIso, slug: row.slug, timeMs: row.timeMs, distanceKm: row.distanceKm });
   }
 
-  for (const row of db.exec(SELECT_ALL_PARTICIPATIONS_SQL, { rowMode: 'object', returnValue: 'resultRows' })) {
-    history[readString(row['athlete_key'])].participationSlugs.push(readString(row['slug']));
+  for (const row of participationRows) {
+    history[row.athleteKey].participationSlugs.push(row.slug);
   }
 
   for (const record of Object.values(history)) {
@@ -101,10 +125,10 @@ export function readHistory(db: Database): AthletesHistory {
 }
 
 /** The fastest 5 km time of each season, recomputed from the runs like the rollup keeps it. */
-function bestMsByYear(runs: AthleteRun[]): Record<string, number> {
+function bestMsByYear(runsForKey: AthleteRun[]): Record<string, number> {
   const bests: Record<string, number> = {};
 
-  for (const run of runs) {
+  for (const run of runsForKey) {
     if (run.distanceKm !== FIVE_KM_DISTANCE_KM) {
       continue;
     }
@@ -120,22 +144,7 @@ function bestMsByYear(runs: AthleteRun[]): Record<string, number> {
   return bests;
 }
 
-/** A required text column, read straight back as a string. */
-function readString(value: unknown): string {
-  return String(value);
-}
-
-/** A required numeric column, read back as a number. */
-function readNumber(value: unknown): number {
-  return Number(value);
-}
-
-/** A nullable numeric column: SQL null is preserved, every other value becomes a number. */
-function readNumberOrNull(value: unknown): number | null {
-  return value === null ? null : Number(value);
-}
-
 /** A gender column: only the two known codes survive; anything else — including null — reads as null. */
-function readGender(value: unknown): GenderType | null {
+function asGender(value: string | null): GenderType | null {
   return value === Gender.male || value === Gender.female ? value : null;
 }

@@ -4,16 +4,16 @@ import { TestBed } from '@angular/core/testing';
 import { HTTP_NOT_FOUND } from '../core/github/github-api.constant';
 import { GithubAuthError } from '../core/github/github-errors';
 import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
-import { FAKE_SQLITE3_STATE, resetFakeSqlite3 } from '../core/sqlite/spec-utils/fake-sqlite3';
+import { exportMemoryProtocolDbBytes } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { ADMIN_TOKEN_MOCK } from './admin-token.service.mock';
 import { AdminTokenService } from './admin-token.service';
 import { HistoryService } from './history.service';
-import { EXPECTED_DB_URL, EXPECTED_HISTORY, EXPECTED_HISTORY_INIT, HISTORY_DB_BYTES, HISTORY_DB_ROWS } from './history.service.mock';
+import { EXPECTED_DB_URL, EXPECTED_HISTORY, EXPECTED_HISTORY_INIT, HISTORY_DB_SEED } from './history.service.mock';
 
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
-  const fake = await import('../core/sqlite/spec-utils/fake-sqlite3');
+  const real = await import('../core/sqlite/spec-utils/real-sqlite3');
 
-  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+  return { default: () => real.realSqlite3Init() };
 });
 
 describe('HistoryService', () => {
@@ -23,7 +23,6 @@ describe('HistoryService', () => {
   let service: HistoryService;
 
   beforeEach(() => {
-    resetFakeSqlite3();
     fetchMock.mockReset();
     token.set(ADMIN_TOKEN_MOCK);
     vi.stubGlobal('fetch', fetchMock);
@@ -36,8 +35,9 @@ describe('HistoryService', () => {
   });
 
   it('downloads protocol.db through the authorized Contents API and reassembles the history, treating a missing db as empty', async () => {
-    FAKE_SQLITE3_STATE.rowsBySql = HISTORY_DB_ROWS;
-    fetchMock.mockResolvedValueOnce(new Response(HISTORY_DB_BYTES));
+    const dbBytes = await exportMemoryProtocolDbBytes(HISTORY_DB_SEED);
+
+    fetchMock.mockResolvedValueOnce(new Response(dbBytes.slice().buffer));
 
     await expect(service.loadHistory()).resolves.toEqual(EXPECTED_HISTORY);
     expect(fetchMock).toHaveBeenCalledWith(EXPECTED_DB_URL, EXPECTED_HISTORY_INIT);

@@ -10,7 +10,6 @@ import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { AthletesHistory } from '../core/models/athletes-history.type';
 import { Gender } from '../core/models/gender.enum';
-import { SELECT_ALL_ATHLETES_SQL, SELECT_ALL_PARTICIPATIONS_SQL, SELECT_ALL_RUNS_SQL } from '../core/sqlite/protocol-db-write.constant';
 import { ADMIN_TOKEN_MOCK } from './admin-token.service.mock';
 
 /** The Contents API url `loadHistory` must hit for `data/protocol.db`. */
@@ -25,10 +24,9 @@ export const EXPECTED_HISTORY_INIT = {
   },
 };
 
-/** The downloaded db bytes; their content is opaque here — the fake reads answer from `HISTORY_DB_ROWS`. */
-export const HISTORY_DB_BYTES = new Uint8Array([1, 2, 3, 4]);
-
 const ATHLETE_KEY = 'иван петров';
+
+const q = (value: string): string => `'${value}'`;
 
 /**
  * One athlete whose runs span the season best (the fastest), a slower same-year run and a 2.3 km run
@@ -41,20 +39,14 @@ const RUNS = [
   { dateIso: '2026-06-28', slug: '2026-06-28', timeMs: 900000, distanceKm: TWO_THREE_KM_DISTANCE_KM },
 ];
 
-/** The three athlete tables of one athlete, as the fake reads return them. */
-export const HISTORY_DB_ROWS: Record<string, unknown[]> = {
-  [SELECT_ALL_ATHLETES_SQL]: [{ key: ATHLETE_KEY, display_name: 'Иван Петров', gender: Gender.male, best_ms: 1500000 }],
-  [SELECT_ALL_RUNS_SQL]: RUNS.map((run) => ({
-    athlete_key: ATHLETE_KEY,
-    date_iso: run.dateIso,
-    slug: run.slug,
-    time_ms: run.timeMs,
-    distance_km: run.distanceKm,
-  })),
-  [SELECT_ALL_PARTICIPATIONS_SQL]: RUNS.map((run) => ({ athlete_key: ATHLETE_KEY, slug: run.slug })),
-};
+/** The seed SQL for one athlete's three tables; exported to bytes it is the `protocol.db` the service reads. */
+export const HISTORY_DB_SEED: readonly string[] = [
+  `INSERT INTO athletes VALUES (${q(ATHLETE_KEY)}, ${q('Иван Петров')}, ${q(Gender.male)}, 1500000)`,
+  ...RUNS.map((run) => `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q(run.dateIso)}, ${q(run.slug)}, ${run.timeMs}, ${run.distanceKm})`),
+  ...RUNS.map((run) => `INSERT INTO participations VALUES (${q(ATHLETE_KEY)}, ${q(run.slug)})`),
+];
 
-/** The history reassembled from `HISTORY_DB_ROWS`, with `bestMsByYear` recomputed from the 5 km runs. */
+/** The history reassembled from `HISTORY_DB_SEED`, with `bestMsByYear` recomputed from the 5 km runs. */
 export const EXPECTED_HISTORY: AthletesHistory = {
   [ATHLETE_KEY]: {
     key: ATHLETE_KEY,
