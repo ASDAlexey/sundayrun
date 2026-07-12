@@ -4,10 +4,12 @@ import { DOCUMENT, Injectable, PLATFORM_ID, inject } from '@angular/core';
 import type { SQLiteHTTPPool } from 'sqlite-wasm-http';
 
 import { environment } from '../../environments/environment';
+import { pinnedProtocolDbPath } from '../core/github/protocol-db-path';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { DbSource } from '../core/sqlite/db-source.enum';
 import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 import { CdnRefService } from './cdn-ref.service';
+import { DbFreshnessService } from './db-freshness.service';
 import { narrowValues } from '../core/sqlite/protocol-db-narrow';
 import {
   PROTOCOL_DB_BROWSER_ONLY_ERROR,
@@ -29,10 +31,16 @@ import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
  * Any failure — the worker bootstrap, an unsupported range request, a missing db, the statement
  * itself — rejects, and every caller falls back to the JSON path. During prerender `query`
  * rejects before touching the wasm module, keeping the static build clean.
+ *
+ * Cache freshness rides on the file *name*, not a query string: SQLite parses the open target as
+ * a URI and strips any `?…` before the VFS sees it, so a `?v=` buster never reaches HTTP. Instead
+ * the deploy bundles a copy named by the data commit (see `pinnedProtocolDbPath`), and the plain
+ * name is the fallback read while `DbFreshnessService` reports that copy's deploy still in flight.
  */
 @Injectable({ providedIn: 'root' })
 export class ProtocolDbService {
   readonly #cdnRef = inject(CdnRefService);
+  readonly #freshness = inject(DbFreshnessService);
   readonly #loadSqliteHttp = inject(SQLITE_HTTP_LOADER);
   readonly #document = inject(DOCUMENT);
   readonly #isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -93,28 +101,28 @@ export class ProtocolDbService {
 
   /**
    * The dev server's on-disk copy in local mode; otherwise the deploy-bundled db resolved against
-   * the base href (so it survives the deploy sub-path, like the self-hosted fonts and wasm) with
-   * the data sha as a `?v=` cache-buster — a publication redeploys the file and moves the sha, so
-   * the browser and Fastly fetch the new bytes instead of a stale range.
+   * the base href (so it survives the deploy sub-path, like the self-hosted fonts and wasm). The
+   * sha-named copy is preferred — its url moves with every publication, so no cache can hold it
+   * stale — and the plain name covers the deploy-in-flight window on the previous data.
    */
-  #dbUrl(ref: string): string {
+  async #dbUrl(ref: string): Promise<string> {
     if (environment.dbSource === DbSource.Local) {
       return environment.localDbUrl;
     }
 
-    const url = new URL(PROTOCOL_DB_PATH, this.#document.baseURI);
-    url.searchParams.set('v', ref);
+    const path = (await this.#freshness.pinnedDbAvailable(ref)) ? pinnedProtocolDbPath(ref) : PROTOCOL_DB_PATH;
 
-    return url.href;
+    return new URL(path, this.#document.baseURI).href;
   }
 
   /** The dynamic import keeps every wasm/worker byte out of the initial bundle and the prerender. */
   async #openPool(ref: string): Promise<SQLiteHTTPPool> {
+    const url = await this.#dbUrl(ref);
     const { createSQLiteHTTPPool } = await this.#loadSqliteHttp();
     const pool = await createSQLiteHTTPPool({ workers: PROTOCOL_DB_WORKER_COUNT, httpOptions: PROTOCOL_DB_HTTP_OPTIONS });
 
     try {
-      await pool.open(this.#dbUrl(ref));
+      await pool.open(url);
     } catch (error) {
       void pool.close().catch(() => undefined);
       throw error;

@@ -7,6 +7,8 @@ import { SERVER_PLATFORM_ID } from '../features/spec-utils/platform.mock';
 import { settle } from '../features/spec-utils/settle';
 import { CdnRefService } from './cdn-ref.service';
 import { cdnRefServiceMock } from './cdn-ref.service.mock';
+import { DbFreshnessService } from './db-freshness.service';
+import { dbFreshnessServiceMock } from './db-freshness.service.mock';
 import { ProtocolDbService } from './protocol-db.service';
 import { PROTOCOL_DB_BROWSER_ONLY_ERROR, PROTOCOL_DB_HTTP_OPTIONS, PROTOCOL_DB_WORKER_COUNT } from './protocol-db.service.constant';
 import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
@@ -18,6 +20,7 @@ import {
   DB_ROWS_MOCK,
   DB_SQL_MOCK,
   DOCUMENT_MOCK,
+  FALLBACK_PROTOCOL_DB_URL,
   LOCAL_DB_URL_MOCK,
   PINNED_PROTOCOL_DB_URL,
   PINNED_SHA_MOCK,
@@ -33,6 +36,8 @@ import {
 } from './protocol-db.service.mock';
 
 describe('ProtocolDbService', () => {
+  const freshnessMock = dbFreshnessServiceMock();
+
   let service: ProtocolDbService;
 
   beforeEach(() => {
@@ -41,9 +46,11 @@ describe('ProtocolDbService', () => {
     POOL_OPEN_MOCK.mockResolvedValue(undefined);
     POOL_EXEC_MOCK.mockResolvedValue(DB_EXEC_RESULTS_MOCK);
     POOL_CLOSE_MOCK.mockResolvedValue(undefined);
+    freshnessMock.pinnedDbAvailable.mockResolvedValue(true);
     TestBed.configureTestingModule({
       providers: [
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
+        { provide: DbFreshnessService, useValue: freshnessMock },
         { provide: SQLITE_HTTP_LOADER, useValue: LOAD_SQLITE_HTTP_MOCK },
         { provide: DOCUMENT, useValue: DOCUMENT_MOCK },
       ],
@@ -60,6 +67,15 @@ describe('ProtocolDbService', () => {
     await expect(service.queryValues(DB_SQL_MOCK, []), 'the params are spread into a fresh array').resolves.toEqual(DB_ROWS_MOCK);
     expect(CREATE_POOL_MOCK, 'the pool is cached for the session').toHaveBeenCalledTimes(1);
     expect(POOL_EXEC_MOCK).toHaveBeenLastCalledWith(DB_SQL_MOCK, [], { rowMode: 'array' });
+  });
+
+  it('reads the plain-named fallback while the deploy carrying the pinned copy is in flight', async () => {
+    freshnessMock.pinnedDbAvailable.mockResolvedValue(false);
+
+    await expect(service.queryValues(DB_SQL_MOCK, [])).resolves.toEqual(DB_ROWS_MOCK);
+    expect(POOL_OPEN_MOCK, 'the previous data stays readable under the plain name').toHaveBeenCalledExactlyOnceWith(
+      FALLBACK_PROTOCOL_DB_URL,
+    );
   });
 
   it('a pinned commit swaps in a pool over the new sha, closing the old one even when the close fails', async () => {
