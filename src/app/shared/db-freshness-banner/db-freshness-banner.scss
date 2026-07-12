@@ -1,0 +1,47 @@
+@use 'styles/typography' as t;
+
+.db-freshness-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  gap: 12px;
+  border-bottom: 1px solid var(--accent-line);
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+
+  &_ready {
+    color: var(--text);
+  }
+
+  &__spinner {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--accent-line);
+    border-radius: 50%;
+    border-top-color: var(--accent);
+    animation: db-freshness-banner-spin 900ms linear infinite;
+  }
+
+  &__text {
+    @include t.text('label', 'medium');
+  }
+
+  &__reload {
+    @include t.button-label;
+
+    padding: 4px 14px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--accent-contrast);
+    cursor: pointer;
+  }
+}
+
+@keyframes db-freshness-banner-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
