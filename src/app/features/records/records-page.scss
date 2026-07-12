@@ -253,6 +253,38 @@
     }
   }
 
+  &__athlete-cell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  &__athlete-cell &__athlete {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__crown {
+    @include t.text('label', 'small');
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    padding: 2px 8px;
+    gap: 5px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: var(--accent-glow);
+    color: var(--accent-light);
+    white-space: nowrap;
+  }
+
+  &__crown-icon {
+    flex: none;
+  }
+
   &__time {
     @include t.mono-value;
 
@@ -268,6 +300,63 @@
     &:hover {
       color: var(--accent);
     }
+  }
+
+  &__history {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__history-title {
+    @include t.text('title', 'large');
+
+    color: var(--text);
+  }
+
+  &__history-tagline {
+    @include t.text('body', 'medium');
+
+    max-width: 60ch;
+    color: var(--text-secondary);
+  }
+
+  &__timeline {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__timeline-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 12px 4px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-soft);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    // The standing record: the same tinted lane the podium rows wear.
+    &_current {
+      border-radius: var(--radius-xs);
+      background: linear-gradient(90deg, var(--accent-glow), transparent 55%);
+    }
+  }
+
+  &__delta {
+    @include t.text('label', 'small');
+
+    flex: none;
+    padding: 1px 6px;
+    border-radius: var(--radius-xs);
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
   }
 
   &__note {

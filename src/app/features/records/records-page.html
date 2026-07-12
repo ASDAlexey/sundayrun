@@ -137,7 +137,26 @@
                     <li *cdkVirtualFor="let row of men()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
                       <span class="records__place">{{ row.place }}</span>
 
-                      <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+                      <span class="records__athlete-cell">
+                        <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                        @if (row.crowned) {
+                          <span class="records__crown">
+                            <svg
+                              aria-hidden="true"
+                              class="records__crown-icon"
+                              fill="currentColor"
+                              height="10"
+                              viewBox="0 0 16 12"
+                              width="13"
+                            >
+                              <path d="M1 3l3.4 3L8 1l3.6 5L15 3l-1.6 8H2.6L1 3z" />
+                            </svg>
+
+                            {{ kingText() }}
+                          </span>
+                        }
+                      </span>
 
                       <span class="records__time">{{ row.timeText }}</span>
 
@@ -165,7 +184,26 @@
                     <li *cdkVirtualFor="let row of women()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
                       <span class="records__place">{{ row.place }}</span>
 
-                      <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+                      <span class="records__athlete-cell">
+                        <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                        @if (row.crowned) {
+                          <span class="records__crown">
+                            <svg
+                              aria-hidden="true"
+                              class="records__crown-icon"
+                              fill="currentColor"
+                              height="10"
+                              viewBox="0 0 16 12"
+                              width="13"
+                            >
+                              <path d="M1 3l3.4 3L8 1l3.6 5L15 3l-1.6 8H2.6L1 3z" />
+                            </svg>
+
+                            {{ queenText() }}
+                          </span>
+                        }
+                      </span>
 
                       <span class="records__time">{{ row.timeText }}</span>
 
@@ -180,6 +218,80 @@
           }
         </div>
       }
+
+      <section class="records__history">
+        <h2 class="records__history-title" i18n="@@records.historyTitle">История рекорда трассы</h2>
+
+        <p class="records__history-tagline" i18n="@@records.historyTagline">
+          Каждый забег, после которого рекорд трассы становился быстрее. Действующий рекорд — первой строкой.
+        </p>
+
+        <div class="records__boards">
+          @if (showMen()) {
+            <section class="records__board">
+              <div class="records__board-head">
+                <h3 class="records__board-title" i18n="@@records.men">Мужчины</h3>
+
+                <span class="records__board-count" i18n="@@records.historyCount">Обновлений: {{ menRecordTimeline().length }}</span>
+              </div>
+
+              @if (menRecordTimeline().length > 0) {
+                <ol class="records__timeline">
+                  @for (entry of menRecordTimeline(); track $index) {
+                    <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
+                      <span class="records__time">{{ entry.timeText }}</span>
+
+                      <span class="records__athlete-cell">
+                        <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
+
+                        @if (entry.improvementText !== null) {
+                          <span class="records__delta">{{ entry.improvementText }}</span>
+                        }
+                      </span>
+
+                      <a class="records__date" [routerLink]="entry.raceLink">{{ entry.dateShort }}</a>
+                    </li>
+                  }
+                </ol>
+              } @else {
+                <p class="records__board-empty" i18n="@@records.historyEmpty">Рекорд ещё не установлен.</p>
+              }
+            </section>
+          }
+
+          @if (showWomen()) {
+            <section class="records__board">
+              <div class="records__board-head">
+                <h3 class="records__board-title" i18n="@@records.women">Женщины</h3>
+
+                <span class="records__board-count" i18n="@@records.historyCount">Обновлений: {{ womenRecordTimeline().length }}</span>
+              </div>
+
+              @if (womenRecordTimeline().length > 0) {
+                <ol class="records__timeline">
+                  @for (entry of womenRecordTimeline(); track $index) {
+                    <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
+                      <span class="records__time">{{ entry.timeText }}</span>
+
+                      <span class="records__athlete-cell">
+                        <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
+
+                        @if (entry.improvementText !== null) {
+                          <span class="records__delta">{{ entry.improvementText }}</span>
+                        }
+                      </span>
+
+                      <a class="records__date" [routerLink]="entry.raceLink">{{ entry.dateShort }}</a>
+                    </li>
+                  }
+                </ol>
+              } @else {
+                <p class="records__board-empty" i18n="@@records.historyEmpty">Рекорд ещё не установлен.</p>
+              }
+            </section>
+          }
+        </div>
+      </section>
 
       <p class="records__note" i18n="@@records.note">Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.</p>
     }

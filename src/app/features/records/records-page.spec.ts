@@ -3,27 +3,36 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { EXPECTED_YEARS, LEADERBOARD_RECORDS, LEADERBOARD_YEAR } from '../../core/history/best-results.mock';
+import { EXPECTED_COURSE_RECORD_HISTORY } from '../../core/history/course-records.mock';
 import { Gender } from '../../core/models/gender.enum';
 import { AthletesService } from '../../github/athletes.service';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { RecordsPage } from './records-page';
-import { ALL_GENDERS_VALUE } from './records-page.constant';
+import { ALL_GENDERS_VALUE, KING_ALL_TIME_TEXT, KING_YEAR_PREFIX, QUEEN_ALL_TIME_TEXT } from './records-page.constant';
 import { RecordsStatus } from './records-page.enum';
 import {
+  EXPECTED_CROWNED_MEN_KEY,
+  EXPECTED_CROWNED_WOMEN_KEY,
   EXPECTED_MEN_NAMES,
+  EXPECTED_MEN_TIMELINE_DELTAS,
+  EXPECTED_MEN_TIMELINE_TIMES,
   EXPECTED_SEARCH_PLACE,
+  EXPECTED_TIE_CROWNED_KEY,
+  EXPECTED_TIMELINE_ROW_COUNT,
   EXPECTED_TOP_TIME_TEXT,
   EXPECTED_WOMEN_NAMES,
   EXPECTED_YEAR_RACE_SLUG,
   HISTORY_LOAD_ERROR_MESSAGE,
   NO_MATCH_QUERY,
   SEARCH_QUERY,
+  TIE_RECORDS,
 } from './records-page.mock';
 
 describe('RecordsPage', () => {
   const loadRecords = vi.fn();
+  const loadCourseRecords = vi.fn();
 
   let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<RecordsPage>;
@@ -32,10 +41,11 @@ describe('RecordsPage', () => {
     vi.clearAllMocks();
     platformId = BROWSER_PLATFORM_ID;
     loadRecords.mockResolvedValue(LEADERBOARD_RECORDS);
+    loadCourseRecords.mockResolvedValue(EXPECTED_COURSE_RECORD_HISTORY);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AthletesService, useValue: { loadRecords } },
+        { provide: AthletesService, useValue: { loadRecords, loadCourseRecords } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
     });
@@ -66,12 +76,28 @@ describe('RecordsPage', () => {
     expect(page.years()).toEqual(EXPECTED_YEARS);
     expect(page.menCount()).toBe(EXPECTED_MEN_NAMES.length);
     expect(page.womenCount()).toBe(EXPECTED_WOMEN_NAMES.length);
+    expect(
+      page.men().flatMap((row) => (row.crowned ? [row.key] : [])),
+      'the 19:00 tie stays with its first setter',
+    ).toEqual([EXPECTED_CROWNED_MEN_KEY]);
+    expect(page.women().flatMap((row) => (row.crowned ? [row.key] : []))).toEqual([EXPECTED_CROWNED_WOMEN_KEY]);
+    expect(page.kingText()).toBe(KING_ALL_TIME_TEXT);
+    expect(page.queenText()).toBe(QUEEN_ALL_TIME_TEXT);
+    expect(
+      page.menRecordTimeline().map((entry) => entry.timeText),
+      'the timeline leads with the standing record',
+    ).toEqual(EXPECTED_MEN_TIMELINE_TIMES);
+    expect(page.menRecordTimeline().map((entry) => entry.improvementText)).toEqual(EXPECTED_MEN_TIMELINE_DELTAS);
+    expect(page.menRecordTimeline().map((entry) => entry.current)).toEqual([true, false, false]);
 
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
 
-    expect(element.querySelectorAll('.records__board').length).toBe(2);
+    expect(element.querySelectorAll('.records__board').length, 'two leaderboards and two record timelines').toBe(4);
+    expect(element.querySelector('.records__history')).not.toBeNull();
+    expect(element.querySelectorAll('.records__timeline-row').length).toBe(EXPECTED_TIMELINE_ROW_COUNT);
+    expect(element.querySelectorAll('.records__timeline-row_current').length, 'one standing record per gender').toBe(2);
     expect(element.querySelector('.records__board-count').textContent).toContain(`${EXPECTED_MEN_NAMES.length}`);
     expect(element.querySelector('.records__viewport'), 'the board list virtualizes through the window scroll').not.toBeNull();
     expect(element.querySelector('.records__search-input')).not.toBeNull();
@@ -96,7 +122,10 @@ describe('RecordsPage', () => {
 
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelectorAll('.records__board').length, 'boards hide behind the no-matches message').toBe(0);
+    expect(
+      fixture.nativeElement.querySelectorAll('.records__board').length,
+      'leaderboards hide behind the no-matches message, the record timelines stay',
+    ).toBe(2);
   });
 
   it('filters by season and by gender', async () => {
@@ -108,16 +137,19 @@ describe('RecordsPage', () => {
 
     expect(page.men().map((row) => row.place)).toEqual([1]);
     expect(page.men()[0].raceLink.at(-1), 'the record run comes from the chosen season').toBe(EXPECTED_YEAR_RACE_SLUG);
+    expect(page.men()[0].crowned, 'the sole 2024 runner is the season king').toBe(true);
+    expect(page.kingText()).toBe(`${KING_YEAR_PREFIX} ${LEADERBOARD_YEAR}`);
     expect(page.women()).toEqual([]);
 
     page.onYearChange(ALL_YEARS_VALUE);
 
     expect(page.men().length).toBe(EXPECTED_MEN_NAMES.length);
+    expect(page.kingText(), 'the crown label follows the season filter back').toBe(KING_ALL_TIME_TEXT);
 
     page.onGenderChange(Gender.male);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelectorAll('.records__board').length).toBe(1);
+    expect(fixture.nativeElement.querySelectorAll('.records__board').length, 'one leaderboard and one timeline').toBe(2);
 
     page.setGender(Gender.female);
     page.onQueryChange(NO_MATCH_QUERY);
@@ -156,11 +188,19 @@ describe('RecordsPage', () => {
     expect(fixture.nativeElement.querySelector('.records__error').getAttribute('role')).toBe('alert');
   });
 
+  it('crowns the earliest runner of a three-way tie regardless of the alphabetic board order', async () => {
+    loadRecords.mockResolvedValue(TIE_RECORDS);
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.men().flatMap((row) => (row.crowned ? [row.key] : []))).toEqual([EXPECTED_TIE_CROWNED_KEY]);
+  });
+
   it('does not fetch during prerender and keeps the loading state for hydration', async () => {
     platformId = SERVER_PLATFORM_ID;
     fixture = await createPage();
 
     expect(loadRecords).not.toHaveBeenCalled();
+    expect(loadCourseRecords).not.toHaveBeenCalled();
     expect(fixture.componentInstance.status()).toBe(RecordsStatus.loading);
   });
 });
