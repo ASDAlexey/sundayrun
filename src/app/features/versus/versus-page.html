@@ -1,0 +1,191 @@
+<main class="versus" id="main" tabindex="-1">
+  <header class="versus__hero">
+    <p class="versus__eyebrow" i18n="@@versus.eyebrow">5 км · очные встречи</p>
+
+    <h1 class="versus__title" i18n="@@versus.title">Дуэль атлетов</h1>
+
+    <p class="versus__tagline" i18n="@@versus.tagline">
+      Выберите двух участников — и узнайте, сколько раз они бежали один забег и кто чаще финишировал впереди.
+    </p>
+  </header>
+
+  <section class="versus__picker">
+    <div class="versus__slots">
+      @if (leftSide(); as side) {
+        <span class="versus__slot">
+          <a class="versus__slot-name" [routerLink]="side.athleteLink">{{ side.displayName }}</a>
+
+          <button
+            aria-label="Убрать атлета"
+            class="versus__slot-clear"
+            i18n-aria-label="@@versus.clearLabel"
+            type="button"
+            (click)="clearLeft()"
+          >
+            ×
+          </button>
+        </span>
+      } @else {
+        <span class="versus__slot versus__slot_empty" i18n="@@versus.emptySlot">Атлет не выбран</span>
+      }
+
+      <span class="versus__vs" i18n="@@versus.vs">против</span>
+
+      @if (rightSide(); as side) {
+        <span class="versus__slot">
+          <a class="versus__slot-name" [routerLink]="side.athleteLink">{{ side.displayName }}</a>
+
+          <button
+            aria-label="Убрать атлета"
+            class="versus__slot-clear"
+            i18n-aria-label="@@versus.clearLabel"
+            type="button"
+            (click)="clearRight()"
+          >
+            ×
+          </button>
+        </span>
+      } @else {
+        <span class="versus__slot versus__slot_empty" i18n="@@versus.emptySlot">Атлет не выбран</span>
+      }
+    </div>
+
+    <div aria-live="polite" class="versus__status" role="status">
+      @if (status() === statuses.loading) {
+        <mat-progress-spinner class="versus__spinner" mode="indeterminate" [diameter]="24" />
+
+        <span i18n="@@versus.loading">Загружаем список атлетов…</span>
+      }
+    </div>
+
+    @switch (status()) {
+      @case (statuses.ready) {
+        @if (pickerOpen()) {
+          <label class="versus__search">
+            <svg
+              aria-hidden="true"
+              class="versus__search-icon"
+              fill="none"
+              height="13"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 14 14"
+              width="13"
+            >
+              <circle cx="6" cy="6" r="4.5" />
+              <path d="M9.5 9.5L13 13" />
+            </svg>
+
+            <input
+              #searchInput
+              aria-label="Поиск атлета по имени"
+              class="versus__search-input"
+              i18n-aria-label="@@versus.searchLabel"
+              i18n-placeholder="@@versus.searchPlaceholder"
+              id="versus-search"
+              placeholder="Найдите атлета по имени…"
+              type="search"
+              [value]="query()"
+              (input)="onQueryChange(searchInput.value)"
+            />
+          </label>
+
+          @if (suggestions().length > 0) {
+            <ul class="versus__suggestions">
+              @for (option of suggestions(); track option.key) {
+                <li class="versus__suggestion-item">
+                  <button class="versus__suggestion" type="button" (click)="pick(option.key)">
+                    <span class="versus__suggestion-name">{{ option.displayName }}</span>
+
+                    <span class="versus__suggestion-time">{{ option.bestTimeText }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        }
+      }
+      @case (statuses.error) {
+        <p class="versus__error" i18n="@@versus.error" role="alert">Не удалось загрузить список атлетов.</p>
+
+        <app-reload-button />
+      }
+    }
+  </section>
+
+  <div aria-live="polite" class="versus__status" role="status">
+    @switch (duelStatus()) {
+      @case (duelStatuses.loading) {
+        <mat-progress-spinner class="versus__spinner" mode="indeterminate" [diameter]="24" />
+
+        <span i18n="@@versus.duelLoading">Считаем очные встречи…</span>
+      }
+      @case (duelStatuses.notFound) {
+        <span i18n="@@versus.notFound">Атлет из ссылки не найден. История могла ещё не обновиться после публикации протокола.</span>
+      }
+    }
+  </div>
+
+  @switch (duelStatus()) {
+    @case (duelStatuses.ready) {
+      @if (leftSide(); as left) {
+        @if (rightSide(); as right) {
+          <section class="versus__score-card">
+            <div class="versus__scoreboard">
+              <a class="versus__score-name" [routerLink]="left.athleteLink">{{ left.displayName }}</a>
+
+              <span class="versus__score">{{ left.wins }} : {{ right.wins }}</span>
+
+              <a class="versus__score-name versus__score-name_right" [routerLink]="right.athleteLink">{{ right.displayName }}</a>
+            </div>
+
+            <p class="versus__score-meta">
+              <span i18n="@@versus.meetings">Встреч: {{ meetingCount() }}</span>
+
+              @if (drawCount() > 0) {
+                <span i18n="@@versus.draws">Ничьих: {{ drawCount() }}</span>
+              }
+            </p>
+          </section>
+
+          @if (meetings().length > 0) {
+            <section class="versus__meetings">
+              <h2 class="versus__meetings-title" i18n="@@versus.meetingsTitle">Все очные встречи</h2>
+
+              <ol class="versus__meetings-list">
+                @for (meeting of meetings(); track meeting.slug) {
+                  <li class="versus__meeting">
+                    <a class="versus__date" [routerLink]="meeting.raceLink">{{ meeting.dateShort }}</a>
+
+                    <span class="versus__time" [class.versus__time_won]="meeting.leftWon">{{ meeting.leftTimeText }}</span>
+
+                    <span class="versus__time" [class.versus__time_won]="meeting.rightWon">{{ meeting.rightTimeText }}</span>
+
+                    <span class="versus__gap">{{ meeting.gapText }}</span>
+                  </li>
+                }
+              </ol>
+
+              <p class="versus__note" i18n="@@versus.note">
+                Время слева — первый атлет, справа — второй; победитель встречи подсвечен, в последней колонке — разница. Дата ведёт на
+                протокол забега.
+              </p>
+            </section>
+          } @else {
+            <p class="versus__no-meetings" i18n="@@versus.noMeetings">Эти атлеты ещё ни разу не финишировали на одном забеге.</p>
+          }
+        }
+      }
+    }
+    @case (duelStatuses.notFound) {
+      <div class="versus__reset">
+        <a class="versus__reset-link" i18n="@@versus.reset" matButton="outlined" [routerLink]="versusLink">Сбросить выбор</a>
+      </div>
+    }
+    @case (duelStatuses.error) {
+      <p class="versus__error" i18n="@@versus.duelError" role="alert">Не удалось загрузить историю атлетов.</p>
+
+      <app-reload-button />
+    }
+  }
+</main>

@@ -1,0 +1,208 @@
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+
+import { normalizeAthleteKey } from '../../core/history/athlete-key';
+import { buildHeadToHead } from '../../core/history/head-to-head';
+import { HeadToHead, HeadToHeadMeeting } from '../../core/history/head-to-head.interface';
+import { AthleteRecord } from '../../core/models/athlete-history.interface';
+import { formatDuration } from '../../core/time/duration';
+import { formatRussianDateShort } from '../../core/time/russian-date';
+import { AthletesService } from '../../github/athletes.service';
+import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
+import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
+import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
+import { DRAW_GAP_TEXT, LEFT_ROUTE_PARAM, RIGHT_ROUTE_PARAM, VERSUS_SUGGESTION_LIMIT } from './versus-page.constant';
+import { DuelStatus, DuelStatusType, VersusStatus, VersusStatusType } from './versus-page.enum';
+import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from './versus-page.interface';
+
+/**
+ * The duel page: pick two athletes and see how many times they ran the same 5 km race and who
+ * finished ahead more often — «вы встречались 14 раз, счёт 9:5». `/vs/:left/:right` is a
+ * shareable URL; the athlete page links here with its athlete preselected.
+ */
+@Component({
+  selector: 'app-versus-page',
+  imports: [MatButtonModule, MatProgressSpinnerModule, ReloadButton, RouterLink],
+  templateUrl: './versus-page.html',
+  styleUrl: './versus-page.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class VersusPage {
+  readonly #athletes = inject(AthletesService);
+  readonly #router = inject(Router);
+  readonly #options = signal<AthleteRecord[]>([]);
+  readonly #left = signal<AthleteRecord | null>(null);
+  readonly #right = signal<AthleteRecord | null>(null);
+  readonly #duel = computed(() => toDuel(this.#left(), this.#right()));
+  // The lambda runs lazily, so referencing the record signals declared above is safe.
+  readonly #pickedKeys = computed(() => [this.#left()?.key, this.#right()?.key]);
+
+  readonly status = signal<VersusStatusType>(VersusStatus.loading);
+  readonly duelStatus = signal<DuelStatusType>(DuelStatus.idle);
+  readonly query = signal('');
+
+  readonly leftSide = computed(() => toSideView(this.#left(), this.#duel()?.leftWins ?? 0));
+  readonly rightSide = computed(() => toSideView(this.#right(), this.#duel()?.rightWins ?? 0));
+  readonly meetingCount = computed(() => this.#duel()?.meetingCount ?? 0);
+  readonly drawCount = computed(() => this.#duel()?.draws ?? 0);
+  readonly meetings = computed(() => (this.#duel()?.meetings ?? []).map(toMeetingView));
+  readonly suggestions = computed(() => suggest(this.#options(), this.query(), this.#pickedKeys()));
+  /** The search box stays until both slots are filled; a settled duel needs no picking. */
+  readonly pickerOpen = computed(() => this.duelStatus() === DuelStatus.idle);
+
+  protected readonly statuses = VersusStatus;
+  protected readonly duelStatuses = DuelStatus;
+  protected readonly versusLink = VERSUS_PAGE_LINK;
+
+  #leftKey = '';
+  #rightKey = '';
+
+  constructor() {
+    // Prerender bakes the calm loading state into static HTML; the directory arrives after hydration.
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      void this.#loadOptions();
+    }
+
+    // Same-route navigation reuses the component instance, so the pair is tracked reactively.
+    inject(ActivatedRoute)
+      .paramMap.pipe(takeUntilDestroyed())
+      .subscribe((params) => {
+        this.#leftKey = normalizeAthleteKey(params.get(LEFT_ROUTE_PARAM) ?? '');
+        this.#rightKey = normalizeAthleteKey(params.get(RIGHT_ROUTE_PARAM) ?? '');
+
+        // A duel against oneself is meaningless: the duplicated second key is dropped.
+        if (this.#rightKey === this.#leftKey) {
+          this.#rightKey = '';
+        }
+
+        void this.#loadDuel(this.#leftKey, this.#rightKey);
+      });
+  }
+
+  onQueryChange(query: string): void {
+    this.query.set(query);
+  }
+
+  /** Fills the first free slot and navigates, so every duel lands on a shareable URL. */
+  pick(key: string): void {
+    this.query.set('');
+    void this.#router.navigate(versusPath(this.#leftKey === '' ? key : this.#leftKey, this.#leftKey === '' ? this.#rightKey : key));
+  }
+
+  /** Clearing the first slot promotes the opponent into it: a lone athlete always sits left. */
+  clearLeft(): void {
+    void this.#router.navigate(versusPath(this.#rightKey, ''));
+  }
+
+  clearRight(): void {
+    void this.#router.navigate(versusPath(this.#leftKey, ''));
+  }
+
+  async #loadOptions(): Promise<void> {
+    try {
+      this.#options.set(await this.#athletes.loadRecords());
+      this.status.set(VersusStatus.ready);
+    } catch {
+      this.status.set(VersusStatus.error);
+    }
+  }
+
+  async #loadDuel(leftKey: string, rightKey: string): Promise<void> {
+    this.#left.set(null);
+    this.#right.set(null);
+
+    if (leftKey === '' && rightKey === '') {
+      this.duelStatus.set(DuelStatus.idle);
+
+      return;
+    }
+
+    this.duelStatus.set(DuelStatus.loading);
+
+    const next = await this.#resolveDuel(leftKey, rightKey);
+
+    // A newer navigation may have taken over while the records were loading.
+    if (leftKey !== this.#leftKey || rightKey !== this.#rightKey) {
+      return;
+    }
+
+    this.#left.set(next.left);
+    this.#right.set(next.right);
+    this.duelStatus.set(next.status);
+  }
+
+  async #resolveDuel(leftKey: string, rightKey: string): Promise<VersusDuelState> {
+    try {
+      const [left, right] = await Promise.all([
+        leftKey === '' ? null : this.#athletes.loadRecord(leftKey),
+        rightKey === '' ? null : this.#athletes.loadRecord(rightKey),
+      ]);
+
+      if ((leftKey !== '' && left === null) || (rightKey !== '' && right === null)) {
+        return { status: DuelStatus.notFound, left: null, right: null };
+      }
+
+      return { status: left !== null && right !== null ? DuelStatus.ready : DuelStatus.idle, left, right };
+    } catch {
+      return { status: DuelStatus.error, left: null, right: null };
+    }
+  }
+}
+
+function toDuel(left: AthleteRecord | null, right: AthleteRecord | null): HeadToHead | null {
+  return left === null || right === null ? null : buildHeadToHead(left.runs, right.runs);
+}
+
+function toSideView(record: AthleteRecord | null, wins: number): DuelSideView | null {
+  if (record === null) {
+    return null;
+  }
+
+  return { key: record.key, displayName: record.displayName, athleteLink: [ATHLETES_PAGE_LINK, record.key], wins };
+}
+
+/** Name matches for the free slot, already-picked athletes excluded; an empty query suggests nothing. */
+function suggest(options: AthleteRecord[], query: string, pickedKeys: (string | undefined)[]): AthleteOptionView[] {
+  const normalizedQuery = normalizeAthleteKey(query);
+
+  if (normalizedQuery === '') {
+    return [];
+  }
+
+  return options
+    .filter((option) => option.key.includes(normalizedQuery) && !pickedKeys.includes(option.key))
+    .sort((left, right) => left.displayName.localeCompare(right.displayName))
+    .slice(0, VERSUS_SUGGESTION_LIMIT)
+    .map(toOptionView);
+}
+
+function toOptionView(record: AthleteRecord): AthleteOptionView {
+  return {
+    key: record.key,
+    displayName: record.displayName,
+    bestTimeText: record.bestMs === null ? NO_BEST_TIME_TEXT : formatDuration(record.bestMs),
+  };
+}
+
+function toMeetingView(meeting: HeadToHeadMeeting): MeetingView {
+  return {
+    slug: meeting.slug,
+    raceLink: [RACE_PAGE_BASE_LINK, meeting.slug],
+    dateShort: formatRussianDateShort(meeting.dateIso),
+    leftTimeText: formatDuration(meeting.leftMs),
+    rightTimeText: formatDuration(meeting.rightMs),
+    leftWon: meeting.leftMs < meeting.rightMs,
+    rightWon: meeting.rightMs < meeting.leftMs,
+    gapText: meeting.leftMs === meeting.rightMs ? DRAW_GAP_TEXT : formatDuration(Math.abs(meeting.leftMs - meeting.rightMs)),
+  };
+}
+
+/** `/vs` plus the filled slots in order; a single athlete always occupies the first one. */
+function versusPath(first: string, second: string): string[] {
+  return [VERSUS_PAGE_LINK, ...(first === '' ? [] : [first]), ...(second === '' ? [] : [second])];
+}
