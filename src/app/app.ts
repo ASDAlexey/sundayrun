@@ -3,7 +3,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
-import { CREATOR_SITE_URL, HOME_PAGE_LINK, MAIN_CONTENT_ID, RACES_LIST_PAGE_LINK, VK_COMMUNITY_URL } from './app.constant';
+import {
+  CREATOR_SITE_URL,
+  HOME_PAGE_LINK,
+  MAIN_CONTENT_ID,
+  RACES_LIST_PAGE_LINK,
+  VERSUS_PAGE_LINK,
+  VK_COMMUNITY_URL,
+} from './app.constant';
 import { ADMIN_PAGE_LINK } from './features/admin/admin-page.constant';
 import { GUIDE_PAGE_LINK } from './features/guide/guide-page.constant';
 import { RECORDS_PAGE_LINK } from './features/records/records-page.constant';
@@ -23,6 +30,7 @@ export class App {
   protected readonly homeLink = HOME_PAGE_LINK;
   protected readonly racesLink = RACES_LIST_PAGE_LINK;
   protected readonly recordsLink = RECORDS_PAGE_LINK;
+  protected readonly versusLink = VERSUS_PAGE_LINK;
   protected readonly yearLink = YEAR_PAGE_BASE_LINK;
   protected readonly guideLink = GUIDE_PAGE_LINK;
   protected readonly adminLink = ADMIN_PAGE_LINK;
