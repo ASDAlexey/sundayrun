@@ -12,7 +12,7 @@ export const events = sqliteTable('events', {
   chairman: text('chairman').notNull(),
   participantCount: integer('participant_count').notNull(),
   finisherCount: integer('finisher_count'),
-  avgTimeMs: integer('avg_time_ms'),
+  medianTimeMs: integer('median_time_ms'),
   bestMaleMs: integer('best_male_ms'),
   bestFemaleMs: integer('best_female_ms'),
 });

@@ -138,7 +138,7 @@ export async function selectArchiveEvents(db: ProtocolDrizzle, limit?: number): 
       park: events.park,
       participantCount: events.participantCount,
       finisherCount: events.finisherCount,
-      avgTimeMs: events.avgTimeMs,
+      medianTimeMs: events.medianTimeMs,
       bestMaleMs: events.bestMaleMs,
       bestFemaleMs: events.bestFemaleMs,
     })
@@ -243,7 +243,7 @@ function toArchiveEntry(row: {
   park: string;
   participantCount: number;
   finisherCount: number | null;
-  avgTimeMs: number | null;
+  medianTimeMs: number | null;
   bestMaleMs: number | null;
   bestFemaleMs: number | null;
 }): ArchiveIndexEntry {
@@ -255,7 +255,7 @@ function toArchiveEntry(row: {
     park: row.park,
     participantCount: row.participantCount,
     finisherCount: row.finisherCount,
-    avgTimeMs: row.avgTimeMs,
+    medianTimeMs: row.medianTimeMs,
     bestMaleMs: row.bestMaleMs,
     bestFemaleMs: row.bestFemaleMs,
     files: eventFilePaths(row.dateIso),

@@ -30,7 +30,7 @@ const gender = (value: string | null): string => (value === null ? 'NULL' : q(va
 function eventInsert(entry: ArchiveIndexEntry, clubName: string, chairman: string): string {
   return (
     `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${q(entry.city)}, ${q(entry.park)}, ` +
-    `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.avgTimeMs)}, ` +
+    `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
     `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)})`
   );
 }
@@ -79,7 +79,7 @@ export const REMOVED_SLUG = RACE_EVENT.dateIso;
 const SOLE_ENTRY: ArchiveIndexEntry = {
   ...EXPECTED_NEW_ENTRY,
   finisherCount: null,
-  avgTimeMs: null,
+  medianTimeMs: null,
   bestMaleMs: null,
   bestFemaleMs: null,
 };

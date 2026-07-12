@@ -178,7 +178,7 @@ async function rewriteEvents(db: ProtocolDrizzle, index: ArchiveIndexFile, event
         chairman,
         participantCount: entry.participantCount,
         finisherCount: entry.finisherCount,
-        avgTimeMs: entry.avgTimeMs,
+        medianTimeMs: entry.medianTimeMs,
         bestMaleMs: entry.bestMaleMs,
         bestFemaleMs: entry.bestFemaleMs,
       };

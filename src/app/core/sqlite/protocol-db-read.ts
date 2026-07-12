@@ -55,7 +55,7 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
       park: events.park,
       participantCount: events.participantCount,
       finisherCount: events.finisherCount,
-      avgTimeMs: events.avgTimeMs,
+      medianTimeMs: events.medianTimeMs,
       bestMaleMs: events.bestMaleMs,
       bestFemaleMs: events.bestFemaleMs,
     })
@@ -72,7 +72,7 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
         park: row.park,
         participantCount: row.participantCount,
         finisherCount: row.finisherCount,
-        avgTimeMs: row.avgTimeMs,
+        medianTimeMs: row.medianTimeMs,
         bestMaleMs: row.bestMaleMs,
         bestFemaleMs: row.bestFemaleMs,
         files: eventFilePaths(row.dateIso),

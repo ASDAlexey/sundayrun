@@ -23,7 +23,7 @@ CREATE TABLE events (
   chairman TEXT NOT NULL,
   participant_count INTEGER NOT NULL,
   finisher_count INTEGER,
-  avg_time_ms INTEGER,
+  median_time_ms INTEGER,
   best_male_ms INTEGER,
   best_female_ms INTEGER
 )`;

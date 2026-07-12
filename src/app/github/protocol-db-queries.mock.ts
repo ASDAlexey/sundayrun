@@ -56,7 +56,7 @@ export const SEED_PARTICIPATIONS: readonly string[] = ['2024-05-05', '2024-06-06
 
 const eventInsert = (entry: ArchiveIndexEntry, clubName: string, chairman: string): string =>
   `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${q(entry.city)}, ${q(entry.park)}, ` +
-  `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.avgTimeMs)}, ` +
+  `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
   `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)})`;
 
 /** The two archive events (`EXISTING_INDEX`), each with its club metadata for the event read. */
