@@ -18,10 +18,15 @@ export function sortRuns(runs: AthleteRun[], sort: RunsSortType): AthleteRun[] {
   return [...runs].sort(sort === RunsSort.byDate ? compareByDateDescending : compareByTimeAscending);
 }
 
-/** `bestMsByYear` flattened into entries, newest year first. */
-export function yearBestEntries(bestMsByYear: Record<string, number>): YearBestEntry[] {
+/** `bestMsByYear` flattened into entries with race slugs, newest year first. */
+export function yearBestEntries(bestMsByYear: Record<string, number>, runs: AthleteRun[] = []): YearBestEntry[] {
   return Object.entries(bestMsByYear)
-    .map(([year, timeMs]) => ({ year, timeMs }))
+    .map(([year, timeMs]) => {
+      // Find the race slug for this year's best (earliest race with the best time).
+      const bestRun = runs.find((run) => isoYear(run.dateIso) === year && run.distanceKm === 5 && run.timeMs === timeMs);
+
+      return { year, timeMs, slug: bestRun?.slug ?? '' };
+    })
     .sort((left, right) => compareYearsDescending(left.year, right.year));
 }
 

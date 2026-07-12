@@ -154,6 +154,20 @@
     color: var(--accent);
   }
 
+  &__year-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+  }
+
   &__year-time {
     @include t.mono-value;
 

@@ -50,15 +50,17 @@
             <ul class="athlete__year-strip">
               @for (best of yearBests(); track best.year) {
                 <li class="athlete__year-cell" [class.athlete__year-cell_record]="best.isAllTime">
-                  <span class="athlete__year-label">
-                    {{ best.year }}
+                  <a class="athlete__year-link" [routerLink]="best.raceLink">
+                    <span class="athlete__year-label">
+                      {{ best.year }}
 
-                    @if (best.isAllTime) {
-                      <span class="athlete__year-mark" i18n="@@athlete.yearRecordMark">ЛР</span>
-                    }
-                  </span>
+                      @if (best.isAllTime) {
+                        <span class="athlete__year-mark" i18n="@@athlete.yearRecordMark">ЛР</span>
+                      }
+                    </span>
 
-                  <span class="athlete__year-time" [class.athlete__year-time_record]="best.isAllTime">{{ best.timeText }}</span>
+                    <span class="athlete__year-time" [class.athlete__year-time_record]="best.isAllTime">{{ best.timeText }}</span>
+                  </a>
                 </li>
               }
             </ul>

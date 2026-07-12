@@ -96,8 +96,9 @@ export class AthletePage {
 
   readonly yearBests = computed(() => {
     const bestMs = this.#record()?.bestMs ?? null;
+    const runs = this.#record()?.runs ?? [];
 
-    return yearBestEntries(this.#record()?.bestMsByYear ?? {}).map((entry) => toYearBestView(entry, bestMs));
+    return yearBestEntries(this.#record()?.bestMsByYear ?? {}, runs).map((entry) => toYearBestView(entry, bestMs));
   });
   readonly years = computed(() => distinctRunYears(this.#fiveKmRuns()));
   readonly runs = computed(() =>
@@ -216,7 +217,12 @@ function toRunView(run: AthleteRun, places: Record<string, number>, monthFinals:
 }
 
 function toYearBestView(entry: YearBestEntry, bestMs: number | null): YearBestView {
-  return { year: entry.year, timeText: formatDuration(entry.timeMs), isAllTime: entry.timeMs === bestMs };
+  return {
+    year: entry.year,
+    timeText: formatDuration(entry.timeMs),
+    raceLink: [RACE_PAGE_BASE_LINK, entry.slug],
+    isAllTime: entry.timeMs === bestMs,
+  };
 }
 
 function toTimeText(bestMs: number | null): string {

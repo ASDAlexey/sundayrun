@@ -34,6 +34,6 @@ export const EXPECTED_BY_TIME_ORDER: AthleteRun[] = [RUN_2026_SHORT, RUN_2026_FI
 export const BEST_MS_BY_YEAR: Record<string, number> = { '2025': 1500000, '2026': 1440000 };
 
 export const EXPECTED_YEAR_BESTS: YearBestEntry[] = [
-  { year: '2026', timeMs: 1440000 },
-  { year: '2025', timeMs: 1500000 },
+  { year: '2026', timeMs: 1440000, slug: '2026-01-10' },
+  { year: '2025', timeMs: 1500000, slug: '2025-12-27' },
 ];

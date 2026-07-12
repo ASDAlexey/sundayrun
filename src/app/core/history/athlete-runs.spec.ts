@@ -41,8 +41,12 @@ describe('sortRuns', () => {
 });
 
 describe('yearBestEntries', () => {
-  it('flattens the year bests into entries sorted newest year first', () => {
-    expect(yearBestEntries(BEST_MS_BY_YEAR)).toEqual(EXPECTED_YEAR_BESTS);
+  it('flattens the year bests into entries sorted newest year first; missing runs get empty slug', () => {
+    expect(yearBestEntries(BEST_MS_BY_YEAR, ATHLETE_RUNS)).toEqual(EXPECTED_YEAR_BESTS);
     expect(yearBestEntries({})).toEqual([]);
+    expect(yearBestEntries(BEST_MS_BY_YEAR)).toEqual([
+      { year: '2026', timeMs: 1440000, slug: '' },
+      { year: '2025', timeMs: 1500000, slug: '' },
+    ]);
   });
 });
