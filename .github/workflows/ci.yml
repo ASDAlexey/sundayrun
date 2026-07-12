@@ -3,10 +3,9 @@ name: CI / Deploy
 on:
   push:
     branches: [main]
-    # Protocol publications from /admin commit only under data/ — the site itself
-    # is unchanged, so skip the rebuild; the app reads data through jsDelivr.
-    paths-ignore:
-      - 'data/**'
+    # Publications commit under data/ and MUST rebuild: JSON is read live through jsDelivr, but the
+    # SQLite db is bundled into the Pages deploy (same-origin range reads — the public CDNs mangle
+    # ranges), so a data change reaches db readers only once the deploy carries the new file.
   pull_request:
   workflow_dispatch:
 
@@ -69,6 +68,8 @@ jobs:
         run: |
           test -f dist/parkrun/browser/ru/index.html
           grep -q 'base href="/${{ github.event.repository.name }}/ru/"' dist/parkrun/browser/ru/index.html
+          # the db must ship inside the deploy — the app reads it same-origin, base-href relative
+          test -f dist/parkrun/browser/ru/data/sundayrun.db
 
       - name: Add root redirect to RU locale
         run: |
