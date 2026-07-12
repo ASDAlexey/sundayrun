@@ -6,6 +6,7 @@ import { HomePage } from './features/home/home-page';
 import { RacePage } from './features/race/race-page';
 import { RecordsPage } from './features/records/records-page';
 import { RacesPage } from './features/races/races-page';
+import { VersusPage } from './features/versus/versus-page';
 import { YearPage } from './features/year/year-page';
 
 import { adminGuard } from './features/admin/admin.guard';
@@ -40,6 +41,22 @@ export const routes: Routes = [
     path: 'year/:year',
     title: $localize`:@@title.year:Итоги года — Воскресный парковый пробег`,
     component: YearPage,
+  },
+  // The duel flavours share the page: /vs picks the pair, deeper paths preselect one or both athletes.
+  {
+    path: 'vs',
+    title: $localize`:@@title.versus:Очные встречи — Воскресный парковый пробег`,
+    component: VersusPage,
+  },
+  {
+    path: 'vs/:left',
+    title: $localize`:@@title.versus:Очные встречи — Воскресный парковый пробег`,
+    component: VersusPage,
+  },
+  {
+    path: 'vs/:left/:right',
+    title: $localize`:@@title.versus:Очные встречи — Воскресный парковый пробег`,
+    component: VersusPage,
   },
   {
     path: 'admin',
