@@ -1,10 +1,13 @@
 import { FIRST_ARCHIVE_EVENT_NUMBER } from '../github/archive-index.constant';
 import { EXPECTED_NEW_ENTRY, EXPECTED_RENUMBERED_STALE_EVENTS, STALE_INDEX } from '../github/archive-index.mock';
 import { ArchiveIndexEntry } from '../github/archive-index.interface';
+import { eventFilePaths } from '../github/event-paths';
 import { EXISTING_HISTORY } from '../github/publish-event.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
-import { FIRST_PARTICIPATION_NOTE } from '../history/notes-builder.constant';
+import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
+import { FIRST_PARTICIPATION_NOTE, PERSONAL_RECORD_NOTE_PREFIX } from '../history/notes-builder.constant';
 import { AthletesHistory } from '../models/athletes-history.type';
+import { Gender } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
 import { PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION } from './protocol-db-schema.constant';
@@ -139,6 +142,93 @@ export const SOLE_EVENT_DB_SEED: readonly string[] = [
 
 /** Removes the sole event; the read state collapses to an empty archive and rollup. */
 export const SOLE_REMOVAL_MOCK: ProtocolDbEventRemoval = { slug: REMOVED_SLUG };
+
+/** A stored `results` row as raw SQL, so a seed can carry notes written before the auto-note baseline. */
+const resultInsert = (slug: string, row: ProtocolRow): string =>
+  `INSERT INTO results VALUES (${q(slug)}, ${row.index}, ${q(row.fullName)}, ${q(row.time23)}, ${q(row.time5)}, ` +
+  `${num(row.totalMs)}, ${num(row.distanceKm)}, ${gender(row.gender)}, ${num(row.placeM)}, ${num(row.placeF)}, ` +
+  `${q(row.club)}, ${q(row.note)})`;
+
+/** An event published before `AUTO_NOTES_BASELINE_ISO`, so the recompute must never rewrite its notes. */
+export const PRE_BASELINE_SLUG = '2023-06-04';
+
+/** The organiser-era record note the pre-baseline event stores; it must survive the recompute verbatim. */
+export const PRE_BASELINE_RECORD_NOTE = `${PERSONAL_RECORD_NOTE_PREFIX} 26:00)`;
+
+/** The pre-baseline archive entry; the organisers' legacy number exercises the non-null `legacy` seed side. */
+export const PRE_BASELINE_ENTRY: ArchiveIndexEntry = {
+  slug: PRE_BASELINE_SLUG,
+  dateIso: PRE_BASELINE_SLUG,
+  number: FIRST_ARCHIVE_EVENT_NUMBER,
+  legacyNumber: '7',
+  city: 'Курск',
+  park: 'Боева дача',
+  participantCount: 1,
+  finisherCount: 1,
+  medianTimeMs: 1560000,
+  bestMaleMs: 1560000,
+  bestFemaleMs: null,
+  newcomerCount: null,
+  personalRecordCount: null,
+  files: eventFilePaths(PRE_BASELINE_SLUG),
+};
+
+/** The pre-baseline event's sole stored row, carrying the preserved record note. */
+export const PRE_BASELINE_ROW: ProtocolRow = {
+  index: 1,
+  fullName: 'Древнев Олег',
+  time23: '12:00',
+  time5: '26:00',
+  totalMs: 1560000,
+  distanceKm: FIVE_KM_DISTANCE_KM,
+  gender: Gender.male,
+  placeM: 1,
+  placeF: null,
+  club: '',
+  note: PRE_BASELINE_RECORD_NOTE,
+};
+
+/** The rollup contribution of the pre-baseline event, keeping the seeded db self-consistent. */
+const PRE_BASELINE_HISTORY: AthletesHistory = {
+  'древнев олег': {
+    key: 'древнев олег',
+    displayName: 'Древнев Олег',
+    gender: Gender.male,
+    participationSlugs: [PRE_BASELINE_SLUG],
+    runs: [{ dateIso: PRE_BASELINE_SLUG, slug: PRE_BASELINE_SLUG, timeMs: 1560000, distanceKm: FIVE_KM_DISTANCE_KM }],
+    bestMs: 1560000,
+    bestMsByYear: { '2023': 1560000 },
+  },
+};
+
+/** A db holding one pre-baseline event WITH stored results, so the note recompute meets an older slug. */
+export const PRE_BASELINE_DB_SEED: readonly string[] = [
+  eventInsert(PRE_BASELINE_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
+  resultInsert(PRE_BASELINE_SLUG, PRE_BASELINE_ROW),
+  ...athleteInserts(PRE_BASELINE_HISTORY),
+  META_SEED,
+];
+
+/** The pre-baseline event as `selectEventResults` reads it back: renumbered first, club meta preserved. */
+export const PRE_BASELINE_RACE_EVENT: RaceEvent = {
+  number: FIRST_ARCHIVE_EVENT_NUMBER,
+  legacyNumber: PRE_BASELINE_ENTRY.legacyNumber,
+  dateIso: PRE_BASELINE_SLUG,
+  city: PRE_BASELINE_ENTRY.city,
+  park: PRE_BASELINE_ENTRY.park,
+  clubName: PRESERVED_CLUB_NAME,
+  chairman: PRESERVED_CHAIRMAN,
+};
+
+/**
+ * The archive after publishing `RACE_EVENT` on top of the pre-baseline seed: the counters converge
+ * from the stored notes — the preserved 'ЛР' note becomes the older event's record counter while
+ * the published rows' backfilled first participations land on the fresh entry.
+ */
+export const EXPECTED_PRE_BASELINE_EVENTS: ArchiveIndexEntry[] = [
+  { ...EXPECTED_NEW_ENTRY, number: FIRST_ARCHIVE_EVENT_NUMBER + 1, newcomerCount: 2 },
+  { ...PRE_BASELINE_ENTRY, newcomerCount: 0, personalRecordCount: 1 },
+];
 
 /** A publication carrying no result rows at all: the results insert is skipped and no athlete is created. */
 export const EMPTY_ROWS_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: [] };

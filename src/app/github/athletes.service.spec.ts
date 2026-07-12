@@ -8,7 +8,10 @@ import {
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
   EXPECTED_EVENT_SLUGS,
+  EXPECTED_FIRST_EVENT_DATE_BY_YEAR,
   EXPECTED_LEADERBOARD_RECORDS,
+  EXPECTED_LEGEND_FINISHES,
+  EXPECTED_RUN_PLACES,
   EXPECTED_SQL_STATS,
   POPULATED_SEED,
   UNKNOWN_ATHLETE_KEY,
@@ -39,19 +42,25 @@ describe('AthletesService', () => {
 
     await expect(service.loadRecord(ATHLETE_KEY)).resolves.toEqual(EXPECTED_ATHLETE_RECORD);
     await expect(service.loadRecord(UNKNOWN_ATHLETE_KEY), 'an unknown key resolves to null').resolves.toBeNull();
+    await expect(service.loadRunPlaces(ATHLETE_KEY)).resolves.toEqual(EXPECTED_RUN_PLACES);
     await expect(service.loadRecords()).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
     await expect(service.loadCourseRecords()).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(service.loadOverallStats()).resolves.toEqual(EXPECTED_SQL_STATS);
     await expect(service.loadEventSlugs()).resolves.toEqual(EXPECTED_EVENT_SLUGS);
+    await expect(service.loadFirstEventDateByYear()).resolves.toEqual(EXPECTED_FIRST_EVENT_DATE_BY_YEAR);
+    await expect(service.loadYearBadgeRarity(), 'no seeded year reaches a badge — an empty rarity map').resolves.toEqual({});
+    await expect(service.loadLegendFinishes()).resolves.toEqual(EXPECTED_LEGEND_FINISHES);
   });
 
   it('propagates a db failure from every read so the page can show a distinct error state', async () => {
     const service = await serviceOver({ queryValues: () => Promise.reject(new Error(PROTOCOL_DB_ERROR_MESSAGE)) });
 
     await expect(service.loadRecord(ATHLETE_KEY)).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadRunPlaces(ATHLETE_KEY)).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadRecords()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadCourseRecords()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadOverallStats()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadEventSlugs()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadLegendFinishes()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
   });
 });

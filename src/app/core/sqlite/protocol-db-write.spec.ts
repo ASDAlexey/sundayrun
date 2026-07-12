@@ -10,7 +10,12 @@ import {
   EXISTING_DB_SEED,
   EXPECTED_APPLIED_EVENTS,
   EXPECTED_DNF_ONLY_HISTORY,
+  EXPECTED_PRE_BASELINE_EVENTS,
   EXPECTED_STORED_ROWS,
+  PRE_BASELINE_DB_SEED,
+  PRE_BASELINE_RACE_EVENT,
+  PRE_BASELINE_ROW,
+  PRE_BASELINE_SLUG,
   REMOVED_SLUG,
   RENUMBERED_RACE_EVENT,
   SOLE_RACE_EVENT,
@@ -87,6 +92,21 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(readHistory(db)).resolves.toEqual({});
       expect((await readIndexFile(db)).events).toEqual([]);
       await expect(selectEventResults(db, REMOVED_SLUG), 'the removed slug has no results').resolves.toBeNull();
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
+
+  it(
+    'never rewrites pre-baseline notes, yet still counts them into the event summary counters',
+    async () => {
+      const existingBytes = await exportMemoryProtocolDbBytes(PRE_BASELINE_DB_SEED);
+
+      const db = await reopen(await applyEventToDb(existingBytes, DB_UPDATE_MOCK));
+
+      await expect(selectEventResults(db, PRE_BASELINE_SLUG), 'the stored record note survives verbatim').resolves.toEqual(
+        buildEventResultsFile(PRE_BASELINE_RACE_EVENT, [PRE_BASELINE_ROW]),
+      );
+      expect((await readIndexFile(db)).events).toEqual(EXPECTED_PRE_BASELINE_EVENTS);
     },
     ROUNDTRIP_TIMEOUT_MS,
   );

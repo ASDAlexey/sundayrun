@@ -1,13 +1,18 @@
 import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, like, min, sql } from 'drizzle-orm';
 
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
+import { yearBadgeRarity } from '../core/history/badge-rarity';
+import { YearBadgeRarity } from '../core/history/badge-rarity.type';
 import { eventFilePaths } from '../core/github/event-paths';
 import { buildEventResultsFile } from '../core/github/results-file';
 import { EventResultsFile } from '../core/github/results-file.interface';
+import { normalizeAthleteKey } from '../core/history/athlete-key';
 import { courseRecordHistory } from '../core/history/course-records';
 import { CourseRecordHistory } from '../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { isoYear } from '../core/history/iso-year';
+import { LegendFinish } from '../core/history/legend.interface';
+import { ParticipantRun } from '../core/history/notables.interface';
 import { PERSONAL_RECORD_NOTE_PREFIX } from '../core/history/notes-builder.constant';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { buildYearReview } from '../core/history/year-review';
@@ -56,6 +61,31 @@ export async function selectAthleteRecord(db: ProtocolDrizzle, key: string): Pro
     bestMs: athlete.bestMs,
     bestMsByYear: bestMsByYear(runRows),
   };
+}
+
+/**
+ * The gender places of one athlete's runs, slug → place — the «Место» column of the athlete page.
+ * A protocol row carries the place only in its own gender column, so the coalesce picks whichever
+ * side is filled. The rows are fetched by joining the athlete's runs (only finishers hold places)
+ * and matched back by the normalized name, because protocols keep the organisers' spelling while
+ * the history keys athletes by the normalized form. Rows without a place are simply absent.
+ */
+export async function selectAthleteRunPlaces(db: ProtocolDrizzle, key: string): Promise<Record<string, number>> {
+  const rows = await db
+    .select({ slug: results.slug, fullName: results.fullName, placeM: results.placeM, placeF: results.placeF })
+    .from(results)
+    .innerJoin(runs, and(eq(runs.slug, results.slug), eq(runs.athleteKey, key)));
+  const places: Record<string, number> = {};
+
+  for (const row of rows) {
+    const place = row.placeM ?? row.placeF;
+
+    if (place !== null && normalizeAthleteKey(row.fullName) === key) {
+      places[row.slug] = place;
+    }
+  }
+
+  return places;
 }
 
 /**
@@ -139,6 +169,19 @@ export async function selectCourseRecords(db: ProtocolDrizzle): Promise<CourseRe
   );
 }
 
+/**
+ * Every finished run (any distance) with the finisher's display name, oldest first — the
+ * «Легенда трассы» tally source. The window cut happens in `legendBoard`: the whole run history
+ * is a few thousand short rows, so no date filter is worth a second query for the anchor.
+ */
+export async function selectLegendFinishes(db: ProtocolDrizzle): Promise<LegendFinish[]> {
+  return db
+    .select({ key: runs.athleteKey, displayName: athletes.displayName, dateIso: runs.dateIso })
+    .from(runs)
+    .innerJoin(athletes, eq(athletes.key, runs.athleteKey))
+    .orderBy(asc(runs.dateIso), asc(runs.athleteKey));
+}
+
 /** Every event slug oldest first — the race chronology the streak scan walks (slug = ISO date). */
 export async function selectEventSlugs(db: ProtocolDrizzle): Promise<string[]> {
   const rows = await db.select({ slug: events.slug }).from(events).orderBy(asc(events.slug));
@@ -159,6 +202,39 @@ export async function selectFirstEventDateByYear(db: ProtocolDrizzle): Promise<R
   }
 
   return firstDateByYear;
+}
+
+/**
+ * Badge → the share of participants who ever earned it — the «есть у 12% участников» hint on badge
+ * chips. Activity aggregates per athlete-year feed the same `yearBadgesOf` rule the chips are
+ * awarded by; an athlete's earliest run of a year equals the year's first race date iff they
+ * finished that race, so no per-run scan is needed.
+ */
+export async function selectYearBadgeRarity(db: ProtocolDrizzle): Promise<YearBadgeRarity> {
+  const [activityRows, participantRows, firstEventDateByYear] = await Promise.all([
+    db
+      .select({
+        athleteKey: runs.athleteKey,
+        year: sql<string>`substr(${runs.dateIso}, 1, 4)`,
+        runCount: count(),
+        monthCount: countDistinct(sql`substr(${runs.dateIso}, 6, 2)`),
+        firstRunDateIso: min(runs.dateIso),
+      })
+      .from(runs)
+      .groupBy(runs.athleteKey, sql`substr(${runs.dateIso}, 1, 4)`),
+    db.select({ participantCount: countDistinct(participations.athleteKey) }).from(participations),
+    selectFirstEventDateByYear(db),
+  ]);
+  const [{ participantCount }] = participantRows;
+  const activities = activityRows.map((row) => ({
+    athleteKey: row.athleteKey,
+    year: asString(row.year),
+    runCount: row.runCount,
+    monthCount: row.monthCount,
+    firstRunDateIso: asString(row.firstRunDateIso),
+  }));
+
+  return yearBadgeRarity(activities, firstEventDateByYear, participantCount);
 }
 
 /** The «Итоги года» page payload: a handful of year-scoped selects boiled down by `buildYearReview`. */
@@ -197,12 +273,16 @@ export async function selectYearReview(db: ProtocolDrizzle, year: string): Promi
       .where(and(like(results.slug, yearPattern), like(results.note, `%${PERSONAL_RECORD_NOTE_PREFIX}%`))),
   ]);
 
+  // `count()` without GROUP BY always yields exactly one row, so the destructuring never misses.
+  const [newcomerCounts] = newcomerRows;
+  const [personalRecordCounts] = personalRecordRows;
+
   return buildYearReview({
     year,
     eventDates: eventRows.map((row) => row.slug),
     runRows: runRows.map((row) => ({ ...row, gender: asGender(row.gender) })),
-    newcomerCount: newcomerRows[0]?.value ?? 0,
-    personalRecordCount: personalRecordRows[0]?.value ?? 0,
+    newcomerCount: newcomerCounts.value,
+    personalRecordCount: personalRecordCounts.value,
   });
 }
 
@@ -293,6 +373,28 @@ export async function selectEventResults(db: ProtocolDrizzle, slug: string): Pro
     .orderBy(asc(results.idx));
 
   return buildEventResultsFile(event, rows.map(toProtocolRow));
+}
+
+/**
+ * Every 5 km run of every athlete who finished the 5 km at `slug` — the source of the protocol
+ * page's on-the-fly notables. Future runs relative to the event stay in: `buildEventNotables`
+ * cuts to the event date itself, and the read stays a single indexed join.
+ */
+export async function selectEventParticipantRuns(db: ProtocolDrizzle, slug: string): Promise<ParticipantRun[]> {
+  const eventAthletes = db.$with('event_athletes').as(
+    db
+      .select({ athleteKey: runs.athleteKey })
+      .from(runs)
+      .where(and(eq(runs.slug, slug), eq(runs.distanceKm, FIVE_KM_DISTANCE_KM))),
+  );
+
+  return db
+    .with(eventAthletes)
+    .select({ athleteKey: runs.athleteKey, dateIso: runs.dateIso, slug: runs.slug, timeMs: runs.timeMs, distanceKm: runs.distanceKm })
+    .from(runs)
+    .innerJoin(eventAthletes, eq(eventAthletes.athleteKey, runs.athleteKey))
+    .where(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM))
+    .orderBy(asc(runs.dateIso));
 }
 
 function toProtocolRow(row: {

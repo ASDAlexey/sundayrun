@@ -3,7 +3,11 @@ import { EXISTING_INDEX, NEWER_ENTRY, OLDER_ENTRY } from '../core/github/archive
 import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
 import { CourseRecordHistory } from '../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
+import { LegendFinish } from '../core/history/legend.interface';
+import { ParticipantRun } from '../core/history/notables.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
+import { YearBadge } from '../core/history/year-badges.enum';
+import { YearReview } from '../core/history/year-review.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
 import { Gender } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
@@ -78,6 +82,31 @@ export const SEED_WOMAN_RUN: readonly string[] = [
   `INSERT INTO runs VALUES (${q(RUNLESS_ATHLETE_KEY)}, ${q('2025-02-02')}, ${q('2025-02-02')}, 1700000, ${FIVE_KM_DISTANCE_KM})`,
 ];
 
+/**
+ * Protocol rows behind the seeded runs, feeding `selectAthleteRunPlaces`: places live under the
+ * organisers' spellings (one row is shouted in caps), a rival's row at a shared event must be
+ * matched away by name, the 2.3 km row carries no place at all, and Нина's row holds a women's
+ * place — the `placeF` side of the coalesce.
+ */
+export const SEED_RUN_RESULTS: readonly string[] = [
+  `INSERT INTO results VALUES (${q('2024-05-05')}, 1, ${q('Иванов Иван')}, ${q('12:00')}, ${q('26:40')}, 1600000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 3, NULL, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${q('2024-06-06')}, 1, ${q('ИВАНОВ ИВАН')}, ${q('11:15')}, ${q('25:00')}, 1500000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 1, NULL, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${q('2024-06-06')}, 2, ${q('Мария Иванова')}, ${q('11:30')}, ${q('25:30')}, 1530000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.female)}, NULL, 1, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${q('2025-04-04')}, 1, ${q('Иванов Иван')}, ${q('16:39')}, ${q('')}, 999000, 2.3, ` +
+    `${q(Gender.male)}, NULL, NULL, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${q('2025-02-02')}, 1, ${q('Новикова Нина')}, ${q('13:00')}, ${q('28:20')}, 1700000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.female)}, NULL, 1, ${q('')}, ${q('')})`,
+];
+
+/** Places of `ATHLETE_KEY`'s runs: both spellings resolve; the rival row and the place-less 2.3 km row do not. */
+export const EXPECTED_RUN_PLACES: Record<string, number> = { '2024-05-05': 3, '2024-06-06': 1 };
+
+/** Нина's single run resolves through the women's place column. */
+export const EXPECTED_WOMAN_RUN_PLACES: Record<string, number> = { '2025-02-02': 1 };
+
 /** The full populated db used by most assertions. */
 export const POPULATED_SEED: readonly string[] = [
   ...SEED_ATHLETES,
@@ -86,6 +115,7 @@ export const POPULATED_SEED: readonly string[] = [
   ...SEED_PARTICIPATIONS,
   ...SEED_EVENTS,
   ...SEED_RESULTS,
+  ...SEED_RUN_RESULTS,
 ];
 
 export const EXPECTED_ATHLETE_RECORD: AthleteRecord = {
@@ -205,6 +235,9 @@ export const EXPECTED_ARCHIVE_EVENTS: ArchiveIndexEntry[] = EXISTING_INDEX.event
 /** The seeded events oldest first — the chronology `selectEventSlugs` serves. */
 export const EXPECTED_EVENT_SLUGS: string[] = [OLDER_ENTRY.slug, NEWER_ENTRY.slug];
 
+/** Both seeded events fall into 2026, so its first race date is the older slug. */
+export const EXPECTED_FIRST_EVENT_DATE_BY_YEAR: Record<string, string> = { '2026': OLDER_ENTRY.slug };
+
 /** The `RACE_EVENT` (slug = its dateIso) with its club metadata, for the results-service read. */
 export const SEED_RACE_EVENT: readonly string[] = [
   `INSERT INTO events VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_EVENT.dateIso)}, ${RACE_EVENT.number}, ${legacy(RACE_EVENT.legacyNumber)}, ${q(RACE_EVENT.city)}, ` +
@@ -218,3 +251,73 @@ const resultInsert = (row: ProtocolRow): string =>
 
 /** Every `PROTOCOL_ROWS` row of the `RACE_EVENT`, so `selectEventResults` rebuilds the same file. */
 export const SEED_RACE_RESULTS: readonly string[] = PROTOCOL_ROWS.map(resultInsert);
+
+/** The 2024-05-05 event: `ATHLETE_KEY` is its only 5 km finisher among the seeded runs. */
+export const PARTICIPANT_RUNS_SLUG = '2024-05-05';
+
+/** His full 5 km chronology (the 2.3 km run never enters), as `selectEventParticipantRuns` serves it. */
+export const EXPECTED_PARTICIPANT_RUNS: ParticipantRun[] = [
+  { athleteKey: ATHLETE_KEY, dateIso: '2024-05-05', slug: '2024-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
+  { athleteKey: ATHLETE_KEY, dateIso: '2024-06-06', slug: '2024-06-06', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM },
+  { athleteKey: ATHLETE_KEY, dateIso: '2025-03-03', slug: '2025-03-03', timeMs: 1560000, distanceKm: FIVE_KM_DISTANCE_KM },
+  { athleteKey: ATHLETE_KEY, dateIso: '2025-05-05', slug: '2025-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
+];
+
+/** The year the review test reads — the one holding both seeded 2024 events and runs. */
+export const REVIEW_YEAR = '2024';
+
+/** The years the seeded events span, newest first — what `loadYears` serves the switcher. */
+export const EXPECTED_REVIEW_YEARS: string[] = ['2026', REVIEW_YEAR];
+
+/** The 2024 events behind the year-review read; the first carries the organisers' legacy number. */
+export const SEED_YEAR_EVENTS: readonly string[] = [
+  `INSERT INTO events VALUES (${q('2024-05-05')}, ${q('2024-05-05')}, 1, ${legacy('3')}, ${q('Курск')}, ${q('Боева дача')}, ` +
+    `${q('')}, ${q('')}, 1, 1, 1600000, 1600000, NULL, NULL, NULL)`,
+  `INSERT INTO events VALUES (${q('2024-06-06')}, ${q('2024-06-06')}, 2, ${legacy(null)}, ${q('Курск')}, ${q('Боева дача')}, ` +
+    `${q('')}, ${q('')}, 2, 2, 1560000, 1500000, NULL, NULL, NULL)`,
+];
+
+/** A corrupt gender code the typed write can never produce; every read must coerce it to genderless. */
+export const CORRUPT_GENDER_ATHLETE_KEY = 'хитров ян';
+
+export const SEED_CORRUPT_GENDER: readonly string[] = [
+  `INSERT INTO athletes VALUES (${q(CORRUPT_GENDER_ATHLETE_KEY)}, ${q('Хитров Ян')}, ${q('X')}, 1620000)`,
+  `INSERT INTO runs VALUES (${q(CORRUPT_GENDER_ATHLETE_KEY)}, ${q('2024-06-06')}, ${q('2024-06-06')}, 1620000, ${FIVE_KM_DISTANCE_KM})`,
+];
+
+/** `POPULATED_SEED` plus the 2024 events and the corrupt-gender athlete — the year-review db. */
+export const YEAR_REVIEW_SEED: readonly string[] = [...POPULATED_SEED, ...SEED_YEAR_EVENTS, ...SEED_CORRUPT_GENDER];
+
+/**
+ * `selectYearReview(db, REVIEW_YEAR)` over `YEAR_REVIEW_SEED`: Иванов's two 2024 runs make the
+ * men's median and best, the corrupt-gender run counts as a genderless finish, only Иванов's
+ * first participation falls into 2024, and no stored note carries a personal record.
+ */
+export const EXPECTED_DB_YEAR_REVIEW: YearReview = {
+  year: REVIEW_YEAR,
+  eventCount: 2,
+  finishCount: 3,
+  finisherCount: 2,
+  newcomerCount: 1,
+  personalRecordCount: 0,
+  medianTimeMenMs: 1550000,
+  medianTimeWomenMs: null,
+  bestMale: { key: ATHLETE_KEY, displayName: 'Иванов Иван', timeMs: 1500000, slug: '2024-06-06' },
+  bestFemale: null,
+  mostActive: [
+    { key: ATHLETE_KEY, displayName: 'Иванов Иван', finishCount: 2 },
+    { key: CORRUPT_GENDER_ATHLETE_KEY, displayName: 'Хитров Ян', finishCount: 1 },
+  ],
+  badgeHolders: [{ badge: YearBadge.newYearRace, holders: [{ key: ATHLETE_KEY, displayName: 'Иванов Иван' }] }],
+  firstEventSlug: '2024-05-05',
+};
+
+/** Every seeded finish (the 2.3 km run included) oldest first, as `selectLegendFinishes` serves it. */
+export const EXPECTED_LEGEND_FINISHES: LegendFinish[] = [
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', dateIso: '2024-05-05' },
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', dateIso: '2024-06-06' },
+  { key: RUNLESS_ATHLETE_KEY, displayName: 'Новикова Нина', dateIso: '2025-02-02' },
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', dateIso: '2025-03-03' },
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', dateIso: '2025-04-04' },
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', dateIso: '2025-05-05' },
+];

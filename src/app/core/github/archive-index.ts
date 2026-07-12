@@ -61,13 +61,13 @@ export function removeIndexEntry(index: ArchiveIndexFile, slug: string): Archive
  * Keeps the entries' order; returns a NEW file object, the input is never mutated.
  */
 export function renumberIndexEvents(index: ArchiveIndexFile): ArchiveIndexFile {
-  const numberBySlug = new Map<string, number>(
-    [...index.events]
-      .sort((left, right) => left.dateIso.localeCompare(right.dateIso))
-      .map((entry, position) => [entry.slug, FIRST_ARCHIVE_EVENT_NUMBER + position]),
-  );
+  // Slugs are unique (one publication per date), so every entry finds itself in the sorted copy.
+  const sortedSlugs = [...index.events].sort((left, right) => left.dateIso.localeCompare(right.dateIso)).map((entry) => entry.slug);
 
-  return { ...index, events: index.events.map((entry) => ({ ...entry, number: numberBySlug.get(entry.slug) ?? entry.number })) };
+  return {
+    ...index,
+    events: index.events.map((entry) => ({ ...entry, number: FIRST_ARCHIVE_EVENT_NUMBER + sortedSlugs.indexOf(entry.slug) })),
+  };
 }
 
 /**

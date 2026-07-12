@@ -11,24 +11,38 @@ import {
   selectArchiveEvents,
   selectAthleteRecord,
   selectAthleteRecords,
+  selectAthleteRunPlaces,
   selectCourseRecords,
+  selectEventParticipantRuns,
   selectEventResults,
   selectEventSlugs,
+  selectLegendFinishes,
   selectOverallStats,
+  selectYearBadgeRarity,
+  selectYearReview,
 } from './protocol-db-queries';
 import {
   ATHLETE_KEY,
   EXPECTED_ARCHIVE_EVENTS,
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
+  EXPECTED_DB_YEAR_REVIEW,
   EXPECTED_EMPTY_SQL_STATS,
   EXPECTED_EVENT_SLUGS,
   EXPECTED_LEADERBOARD_RECORDS,
+  EXPECTED_LEGEND_FINISHES,
+  EXPECTED_PARTICIPANT_RUNS,
+  EXPECTED_RUN_PLACES,
   EXPECTED_SQL_STATS,
+  EXPECTED_WOMAN_RUN_PLACES,
   LATEST_EVENTS_LIMIT,
+  PARTICIPANT_RUNS_SLUG,
   POPULATED_SEED,
+  REVIEW_YEAR,
+  RUNLESS_ATHLETE_KEY,
   UNKNOWN_ATHLETE_KEY,
   UNKNOWN_EVENT_SLUG,
+  YEAR_REVIEW_SEED,
 } from './protocol-db-queries.mock';
 
 /** The event NEWER_ENTRY was seeded with its club metadata, and its two result rows. */
@@ -92,6 +106,11 @@ describe('protocol-db-queries', () => {
 
     await expect(selectAthleteRecord(db, ATHLETE_KEY)).resolves.toEqual(EXPECTED_ATHLETE_RECORD);
     await expect(selectAthleteRecord(db, UNKNOWN_ATHLETE_KEY), 'an unknown key resolves null').resolves.toBeNull();
+    await expect(selectAthleteRunPlaces(db, ATHLETE_KEY)).resolves.toEqual(EXPECTED_RUN_PLACES);
+    await expect(selectAthleteRunPlaces(db, RUNLESS_ATHLETE_KEY), 'a women’s place comes from placeF').resolves.toEqual(
+      EXPECTED_WOMAN_RUN_PLACES,
+    );
+    await expect(selectAthleteRunPlaces(db, UNKNOWN_ATHLETE_KEY), 'an unknown key has no places').resolves.toEqual({});
     await expect(selectAthleteRecords(db)).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
     await expect(selectCourseRecords(db)).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_SQL_STATS);
@@ -100,6 +119,17 @@ describe('protocol-db-queries', () => {
     await expect(selectArchiveEvents(db, LATEST_EVENTS_LIMIT)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS.slice(0, LATEST_EVENTS_LIMIT));
     await expect(selectEventResults(db, NEWER_ENTRY.slug)).resolves.toEqual(buildEventResultsFile(EXPECTED_EVENT, EXPECTED_EVENT_ROWS));
     await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG), 'an unknown slug resolves null').resolves.toBeNull();
+    await expect(selectEventParticipantRuns(db, PARTICIPANT_RUNS_SLUG)).resolves.toEqual(EXPECTED_PARTICIPANT_RUNS);
+    await expect(selectEventParticipantRuns(db, UNKNOWN_EVENT_SLUG), 'an unknown slug has no participants').resolves.toEqual([]);
+    await expect(selectYearBadgeRarity(db), 'no seeded year reaches a badge — an empty rarity map').resolves.toEqual({});
+    await expect(selectLegendFinishes(db)).resolves.toEqual(EXPECTED_LEGEND_FINISHES);
+  });
+
+  it('boils one year of the archive down to its review and drops corrupt gender codes from the record scan', async () => {
+    const db = await drizzleFor(YEAR_REVIEW_SEED);
+
+    await expect(selectYearReview(db, REVIEW_YEAR)).resolves.toEqual(EXPECTED_DB_YEAR_REVIEW);
+    await expect(selectCourseRecords(db), 'the corrupt gender code never enters the record scan').resolves.toEqual(EXPECTED_COURSE_RECORDS);
   });
 
   it('keeps the zero-division and empty-median guards on an empty db', async () => {
@@ -108,5 +138,7 @@ describe('protocol-db-queries', () => {
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_EMPTY_SQL_STATS);
     await expect(selectCourseRecords(db), 'no runs mean no record history for either gender').resolves.toEqual(EMPTY_COURSE_RECORD_HISTORY);
     await expect(selectEventSlugs(db), 'an empty archive has no chronology').resolves.toEqual([]);
+    await expect(selectYearBadgeRarity(db), 'no participants — no rarity').resolves.toEqual({});
+    await expect(selectLegendFinishes(db), 'an empty archive has no legend finishes').resolves.toEqual([]);
   });
 });
