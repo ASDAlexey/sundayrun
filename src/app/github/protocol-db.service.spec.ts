@@ -1,4 +1,4 @@
-import { PLATFORM_ID } from '@angular/core';
+import { DOCUMENT, PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../environments/environment';
@@ -17,8 +17,9 @@ import {
   DB_PARAMS_MOCK,
   DB_ROWS_MOCK,
   DB_SQL_MOCK,
+  DOCUMENT_MOCK,
   LOCAL_DB_URL_MOCK,
-  PINNED_PROTOCOL_DB_CDN_URL,
+  PINNED_PROTOCOL_DB_URL,
   PINNED_SHA_MOCK,
   POOL_CLOSE_ERROR_MESSAGE,
   POOL_CLOSE_MOCK,
@@ -28,7 +29,7 @@ import {
   POOL_MOCK,
   POOL_OPEN_ERROR_MESSAGE,
   POOL_OPEN_MOCK,
-  PROTOCOL_DB_CDN_URL,
+  PROTOCOL_DB_URL,
 } from './protocol-db.service.mock';
 
 describe('ProtocolDbService', () => {
@@ -44,6 +45,7 @@ describe('ProtocolDbService', () => {
       providers: [
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
         { provide: SQLITE_HTTP_LOADER, useValue: LOAD_SQLITE_HTTP_MOCK },
+        { provide: DOCUMENT, useValue: DOCUMENT_MOCK },
       ],
     });
     service = TestBed.inject(ProtocolDbService);
@@ -52,7 +54,7 @@ describe('ProtocolDbService', () => {
   it('opens one sha-pinned pool per session and unwraps rows into positional value arrays', async () => {
     await expect(service.queryValues(DB_SQL_MOCK, DB_PARAMS_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
     expect(CREATE_POOL_MOCK).toHaveBeenCalledExactlyOnceWith({ workers: PROTOCOL_DB_WORKER_COUNT, httpOptions: PROTOCOL_DB_HTTP_OPTIONS });
-    expect(POOL_OPEN_MOCK).toHaveBeenCalledExactlyOnceWith(PROTOCOL_DB_CDN_URL);
+    expect(POOL_OPEN_MOCK).toHaveBeenCalledExactlyOnceWith(PROTOCOL_DB_URL);
     expect(POOL_EXEC_MOCK).toHaveBeenCalledExactlyOnceWith(DB_SQL_MOCK, DB_PARAMS_MOCK, { rowMode: 'array' });
 
     await expect(service.queryValues(DB_SQL_MOCK, []), 'the params are spread into a fresh array').resolves.toEqual(DB_ROWS_MOCK);
@@ -70,7 +72,7 @@ describe('ProtocolDbService', () => {
     await settle();
 
     expect(CREATE_POOL_MOCK).toHaveBeenCalledTimes(2);
-    expect(POOL_OPEN_MOCK).toHaveBeenLastCalledWith(PINNED_PROTOCOL_DB_CDN_URL);
+    expect(POOL_OPEN_MOCK).toHaveBeenLastCalledWith(PINNED_PROTOCOL_DB_URL);
     expect(POOL_CLOSE_MOCK, 'the superseded pool is released in the background').toHaveBeenCalledTimes(1);
   });
 

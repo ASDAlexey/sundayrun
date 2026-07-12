@@ -1,19 +1,34 @@
 import { vi } from 'vitest';
 
+import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { CDN_REF_SHA_MOCK } from './cdn-ref.service.mock';
 import { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK } from './spec-utils/fake-sqlite-pool';
 
 export { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK };
 
-/** jsDelivrFileUrl(PROTOCOL_DB_PATH, CDN_REF_SHA_MOCK): the sha-pinned CDN url of the SQLite artifact. */
-export const PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${CDN_REF_SHA_MOCK}/data/sundayrun.db`;
+/** The deploy base href the fake DOCUMENT reports, mirroring the `/sundayrun/ru/` Pages sub-path. */
+export const DB_BASE_URI_MOCK = 'https://sundayrun.example/sundayrun/ru/';
+
+/** The `DOCUMENT` stub the service resolves the db url against — only `baseURI` is read. */
+export const DOCUMENT_MOCK: Pick<Document, 'baseURI'> = { baseURI: DB_BASE_URI_MOCK };
+
+/** Mirrors `#dbUrl`: the db path resolved against the base href, cache-busted by the data sha. */
+function sameOriginDbUrl(ref: string): string {
+  const url = new URL(PROTOCOL_DB_PATH, DB_BASE_URI_MOCK);
+  url.searchParams.set('v', ref);
+
+  return url.href;
+}
+
+/** The same-origin url the Pages `dbSource` opens for the session's resolved data sha. */
+export const PROTOCOL_DB_URL = sameOriginDbUrl(CDN_REF_SHA_MOCK);
 
 /** The commit an admin publication pins mid-session, re-pointing the pool. */
 export const PINNED_SHA_MOCK = 'freshly-published-sha';
 
-export const PINNED_PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${PINNED_SHA_MOCK}/data/sundayrun.db`;
+export const PINNED_PROTOCOL_DB_URL = sameOriginDbUrl(PINNED_SHA_MOCK);
 
-/** The dev-server url the local `dbSource` reads instead of the CDN. */
+/** The dev-server url the local `dbSource` reads directly, without a base-href resolve. */
 export const LOCAL_DB_URL_MOCK = '/data/sundayrun.db';
 
 /** The `createSQLiteHTTPPool` the mocked `loadSqliteHttp` hands back (see `sqlite-http-loader.mock`). */
