@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
+import { YearReview } from '../../core/history/year-review.interface';
 import { YearReviewService } from '../../github/year-review.service';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
@@ -9,6 +10,8 @@ import { YEAR_ROUTE_PARAM } from './year-page.constant';
 import { YearStatus } from './year-page.enum';
 import {
   AVAILABLE_YEARS,
+  BESTLESS_STAT_COUNT,
+  BESTLESS_YEAR_REVIEW,
   REQUESTED_YEAR,
   REQUESTED_YEAR_REVIEW,
   UNKNOWN_YEAR,
@@ -70,6 +73,43 @@ describe('YearPage', () => {
 
     expect(fixture.componentInstance.status()).toBe(YearStatus.notFound);
     expect(fixture.componentInstance.view()).toBeNull();
+  });
+
+  it('maps an empty archive to notFound, hides the missing bests and medians, and drops a stale review', async () => {
+    loadYears.mockResolvedValueOnce([]);
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.status(), 'no years at all — nothing to open').toBe(YearStatus.notFound);
+    expect(page.years()).toEqual([]);
+
+    loadReview.mockResolvedValueOnce(BESTLESS_YEAR_REVIEW);
+    routeStub.setParams({ [YEAR_ROUTE_PARAM]: AVAILABLE_YEARS[0] });
+    await settle();
+
+    expect(page.status()).toBe(YearStatus.ready);
+    expect(page.view()?.bests, 'unknown bests render no cards').toEqual([]);
+    expect(page.view()?.stats.length, 'unknown medians never become stat tiles').toBe(BESTLESS_STAT_COUNT);
+
+    let resolveStale: (review: YearReview) => void = vi.fn();
+
+    loadReview.mockImplementationOnce(
+      () =>
+        new Promise<YearReview>((resolve) => {
+          resolveStale = resolve;
+        }),
+    );
+    routeStub.setParams({ [YEAR_ROUTE_PARAM]: REQUESTED_YEAR });
+    routeStub.setParams({ [YEAR_ROUTE_PARAM]: AVAILABLE_YEARS[0] });
+    await settle();
+
+    expect(page.view()?.year).toBe(AVAILABLE_YEARS[0]);
+
+    resolveStale(REQUESTED_YEAR_REVIEW);
+    await settle();
+
+    expect(page.view()?.year, 'the stale review must not override the newer view').toBe(AVAILABLE_YEARS[0]);
   });
 
   it('surfaces a load failure as the error state', async () => {
