@@ -1,4 +1,4 @@
-import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, like, min, sql } from 'drizzle-orm';
+import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, like, lt, min, sql } from 'drizzle-orm';
 
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
 import { yearBadgeRarity } from '../core/history/badge-rarity';
@@ -395,6 +395,26 @@ export async function selectEventParticipantRuns(db: ProtocolDrizzle, slug: stri
     .innerJoin(eventAthletes, eq(eventAthletes.athleteKey, runs.athleteKey))
     .where(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM))
     .orderBy(asc(runs.dateIso));
+}
+
+/**
+ * athleteKey → 5 km finishes strictly before `dateIso` — the publish-time «Финишей» column source.
+ * Strictly before, because the event being published is not stored yet (or, on a republish, must
+ * not count twice): `eventFinishCounts` adds the event's own finish itself.
+ */
+export async function selectFiveKmFinishCountsBefore(db: ProtocolDrizzle, dateIso: string): Promise<Record<string, number>> {
+  const rows = await db
+    .select({ athleteKey: runs.athleteKey, finishCount: count() })
+    .from(runs)
+    .where(and(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM), lt(runs.dateIso, dateIso)))
+    .groupBy(runs.athleteKey);
+  const counts: Record<string, number> = {};
+
+  for (const row of rows) {
+    counts[row.athleteKey] = row.finishCount;
+  }
+
+  return counts;
 }
 
 function toProtocolRow(row: {
