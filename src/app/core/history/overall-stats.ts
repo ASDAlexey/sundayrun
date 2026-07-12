@@ -1,6 +1,7 @@
 import { AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
+import { medianMs } from './median';
 import { OverallStats } from './overall-stats.interface';
 
 /**
@@ -48,16 +49,4 @@ export function computeOverallStats(history: AthletesHistory): OverallStats {
     medianTimeMenMs: medianMs(menTimesMs),
     medianTimeWomenMs: medianMs(womenTimesMs),
   };
-}
-
-/** An even-sized sample takes the mean of the two middle values, rounded to whole ms. */
-function medianMs(timesMs: number[]): number {
-  if (timesMs.length === 0) {
-    return 0;
-  }
-
-  const sorted = [...timesMs].sort((a, b) => a - b);
-  const middle = Math.floor(sorted.length / 2);
-
-  return sorted.length % 2 === 1 ? sorted[middle] : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
 }

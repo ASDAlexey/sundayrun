@@ -1,4 +1,5 @@
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
+import { medianMsOrNull } from '../history/median';
 import { Gender, GenderType } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
@@ -16,7 +17,7 @@ export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveI
     park: event.park,
     participantCount: rows.length,
     finisherCount: finisherTimesMs.length,
-    avgTimeMs: averageOf(finisherTimesMs),
+    medianTimeMs: medianMsOrNull(finisherTimesMs),
     bestMaleMs: bestOf(rows, Gender.male),
     bestFemaleMs: bestOf(rows, Gender.female),
     files: eventFilePaths(event.dateIso),
@@ -47,14 +48,6 @@ function fiveKmTimesMs(rows: ProtocolRow[], gender?: GenderType): number[] {
   return rows.flatMap((row) =>
     row.distanceKm === FIVE_KM_DISTANCE_KM && row.totalMs !== null && (gender === undefined || row.gender === gender) ? [row.totalMs] : [],
   );
-}
-
-function averageOf(timesMs: number[]): number | null {
-  if (timesMs.length === 0) {
-    return null;
-  }
-
-  return Math.round(timesMs.reduce((sum, ms) => sum + ms, 0) / timesMs.length);
 }
 
 function bestOf(rows: ProtocolRow[], gender: GenderType): number | null {

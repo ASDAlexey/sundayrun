@@ -13,7 +13,7 @@ export interface ArchiveIndexEntry {
   park: string;
   participantCount: number;
   finisherCount: number | null;
-  avgTimeMs: number | null;
+  medianTimeMs: number | null;
   bestMaleMs: number | null;
   bestFemaleMs: number | null;
   files: EventFilePaths;
