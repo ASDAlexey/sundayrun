@@ -7,7 +7,7 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
   {
     slug: '2026-07-05',
     protocolLink: [RACE_PAGE_BASE_LINK, '2026-07-05'],
-    number: 13,
+    number: '13',
     dateLong: '5 июля 2026 г.',
     city: 'Курск',
     park: 'Боева дача',
@@ -17,13 +17,15 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
       { label: 'Медиана', value: '31:02' },
       { label: 'Лучшее М', value: '17:36' },
       { label: 'Лучшее Ж', value: '20:38' },
+      { label: 'Новичка', value: '3' },
+      { label: 'Личных рекорда', value: '2' },
     ],
     pdfAriaLabel: 'Протокол пробега № 13 (PDF)',
   },
   {
     slug: '2026-06-21',
     protocolLink: [RACE_PAGE_BASE_LINK, '2026-06-21'],
-    number: 11,
+    number: '11',
     dateLong: '21 июня 2026 г.',
     city: 'Курск',
     park: 'Боева дача',
@@ -33,6 +35,8 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
       { label: 'Медиана', value: '29:13' },
       { label: 'Лучшее М', value: '19:43' },
       { label: 'Лучшее Ж', value: '22:40' },
+      // A zero record count builds no chip; the single newcomer takes the one-form label.
+      { label: 'Новичок', value: '1' },
     ],
     pdfAriaLabel: 'Протокол пробега № 11 (PDF)',
   },
@@ -64,6 +68,8 @@ export const PREVIOUS_YEAR_INDEX = {
       medianTimeMs: null,
       bestMaleMs: null,
       bestFemaleMs: null,
+      newcomerCount: null,
+      personalRecordCount: null,
       files: {
         sourceXlsx: 'data/events/2025-06-21/source.xlsx',
         resultsJson: 'data/events/2025-06-21/results.json',

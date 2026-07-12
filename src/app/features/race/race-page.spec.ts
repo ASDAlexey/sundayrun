@@ -80,6 +80,7 @@ describe('RacePage', () => {
     expect(element.querySelector('.race__title').textContent).toContain(String(EXPECTED_RACE_VIEW.number));
     expect(element.querySelector('.race__date').textContent.trim()).toBe(EXPECTED_RACE_VIEW.dateLong);
     expect(element.querySelector('.race__count').textContent).toContain(String(EXPECTED_RACE_VIEW.participantCount));
+    expect(element.querySelector('.race__summary').textContent.trim()).toBe(EXPECTED_RACE_VIEW.summaryText);
 
     const medianLines = [...element.querySelectorAll('.race__median')];
 

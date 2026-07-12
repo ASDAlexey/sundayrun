@@ -52,6 +52,12 @@
     color: var(--text-muted);
   }
 
+  &__summary {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
   &__median {
     @include t.text('label', 'medium');
 

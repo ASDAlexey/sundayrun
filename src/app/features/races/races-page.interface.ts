@@ -8,7 +8,8 @@ export interface RaceCardStat {
 export interface RaceListItem {
   slug: string;
   protocolLink: string[];
-  number: number;
+  /** Preformatted: '249 (2.72)' when the organisers' legacy number is known, plain '249' otherwise. */
+  number: string;
   dateLong: string;
   city: string;
   park: string;

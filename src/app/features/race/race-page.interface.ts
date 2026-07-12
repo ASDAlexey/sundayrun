@@ -27,11 +27,14 @@ export interface RacePageState {
  * `medianTimeM`/`medianTimeF` average the 5 km times per gender, `null` when no such finishers.
  */
 export interface RaceView {
-  number: number;
+  /** Preformatted: '249 (2.72)' when the organisers' legacy number is known, plain '249' otherwise. */
+  number: string;
   dateLong: string;
   city: string;
   park: string;
   participantCount: number;
+  /** Preformatted parkrun-style line: «8 финишёров, 2 новичка, 3 личных рекорда». */
+  summaryText: string;
   medianTimeM: string | null;
   medianTimeF: string | null;
   pdfAriaLabel: string;

@@ -6,10 +6,13 @@ import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { isValidEventSlug } from '../../core/github/event-slug';
+import { formatRaceNumber } from '../../core/github/race-number';
 import { EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { medianMsOrNull } from '../../core/history/median';
+import { summarizeRace } from '../../core/history/race-summary';
+import { pluralText } from '../../core/i18n/plural-text';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatDuration } from '../../core/time/duration';
@@ -25,6 +28,7 @@ import {
   MALE_GENDER_TEXT,
   RACE_TABLE_COLUMNS,
   SLUG_ROUTE_PARAM,
+  SUMMARY_PART_SEPARATOR,
 } from './race-page.constant';
 import { RaceStatus, RaceStatusType } from './race-page.enum';
 import { RacePageState, RaceRowView, RaceView } from './race-page.interface';
@@ -117,11 +121,12 @@ export class RacePage {
 
 function toRaceView(file: EventResultsFile): RaceView {
   return {
-    number: file.event.number,
+    number: formatRaceNumber(file.event.number, file.event.legacyNumber),
     dateLong: formatRussianDateLong(file.event.dateIso),
     city: file.event.city,
     park: file.event.park,
     participantCount: file.rows.length,
+    summaryText: summaryTextOf(file.rows),
     medianTimeM: medianTimeTextOf(file.rows, Gender.male),
     medianTimeF: medianTimeTextOf(file.rows, Gender.female),
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
@@ -146,6 +151,33 @@ function toRowView(row: ProtocolRow): RaceRowView {
     club: row.club,
     note: row.note,
   };
+}
+
+/**
+ * «8 финишёров, 2 новичка, 3 личных рекорда» — the parkrun-style line over the table, aggregated
+ * from the auto notes stored on the rows. Each plural form is a separate translatable message,
+ * like the year counts on the races page; ru only ever selects one/few/many, the rest alias.
+ */
+function summaryTextOf(rows: ProtocolRow[]): string {
+  const { finisherCount, newcomerCount, personalRecordCount } = summarizeRace(rows);
+
+  return [
+    pluralText(finisherCount, {
+      one: $localize`:@@race.summaryFinishersOne:${finisherCount}:count: финишёр`,
+      few: $localize`:@@race.summaryFinishersFew:${finisherCount}:count: финишёра`,
+      many: $localize`:@@race.summaryFinishersMany:${finisherCount}:count: финишёров`,
+    }),
+    pluralText(newcomerCount, {
+      one: $localize`:@@race.summaryNewcomersOne:${newcomerCount}:count: новичок`,
+      few: $localize`:@@race.summaryNewcomersFew:${newcomerCount}:count: новичка`,
+      many: $localize`:@@race.summaryNewcomersMany:${newcomerCount}:count: новичков`,
+    }),
+    pluralText(personalRecordCount, {
+      one: $localize`:@@race.summaryRecordsOne:${personalRecordCount}:count: личный рекорд`,
+      few: $localize`:@@race.summaryRecordsFew:${personalRecordCount}:count: личных рекорда`,
+      many: $localize`:@@race.summaryRecordsMany:${personalRecordCount}:count: личных рекордов`,
+    }),
+  ].join(SUMMARY_PART_SEPARATOR);
 }
 
 /** Median of the 5 km times for one gender; one-lap runners and DNF are excluded, null when nobody qualifies. */

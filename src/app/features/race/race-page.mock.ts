@@ -15,11 +15,13 @@ export const RESULTS_LOAD_ERROR_MESSAGE = 'results load failed';
 
 /** `toRaceView(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS))`. */
 export const EXPECTED_RACE_VIEW: RaceView = {
-  number: 12,
+  number: '12',
   dateLong: '28 июня 2026 г.',
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 3,
+  // The one-lap runner finishes too; the fixture notes carry no newcomer or record tokens.
+  summaryText: '2 финишёра, 0 новичков, 0 личных рекордов',
   // The only male ran the 2.3 km lap, so the male average has no qualifying 5 km times.
   medianTimeM: null,
   medianTimeF: '25:00',

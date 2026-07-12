@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { isoYear } from '../../core/history/iso-year';
+import { pluralText } from '../../core/i18n/plural-text';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
@@ -94,17 +95,11 @@ function toYearGroups(races: RaceListItem[]): RaceYearGroup[] {
 /**
  * «8 забегов» beside the year. The source locale is ru, so the plural category comes from the
  * ru rules; each form is a separate translatable message, like the other `$localize` labels.
- * A full form table instead of branching: ru only ever selects one/few/many, the rest alias.
  */
 function raceCountText(count: number): string {
-  const forms: Record<Intl.LDMLPluralRule, string> = {
+  return pluralText(count, {
     one: $localize`:@@races.yearCountOne:${count}:count: забег`,
     few: $localize`:@@races.yearCountFew:${count}:count: забега`,
     many: $localize`:@@races.yearCountMany:${count}:count: забегов`,
-    zero: $localize`:@@races.yearCountMany:${count}:count: забегов`,
-    two: $localize`:@@races.yearCountFew:${count}:count: забега`,
-    other: $localize`:@@races.yearCountMany:${count}:count: забегов`,
-  };
-
-  return forms[new Intl.PluralRules('ru').select(count)];
+  });
 }
