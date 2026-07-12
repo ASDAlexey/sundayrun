@@ -1,12 +1,15 @@
-import { buildIndexEntry, removeIndexEntry, upsertIndexEntry } from './archive-index';
+import { buildIndexEntry, eventNumberForDate, removeIndexEntry, renumberIndexEvents, upsertIndexEntry } from './archive-index';
+import { FIRST_ARCHIVE_EVENT_NUMBER } from './archive-index.constant';
 import {
   EXISTING_INDEX,
   EXPECTED_NEW_ENTRY,
   EXPECTED_NO_FINISHER_ENTRY,
+  EXPECTED_RENUMBERED_STALE_EVENTS,
   EXPECTED_UPSERTED_EVENTS,
   NEWER_ENTRY,
   OLDER_ENTRY,
   STALE_INDEX,
+  STALE_INDEX_DATES,
   STALE_SAME_SLUG_ENTRY,
 } from './archive-index.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from './spec-utils/race-fixtures';
@@ -39,5 +42,22 @@ describe('removeIndexEntry', () => {
     expect(removed.events).toEqual([OLDER_ENTRY, NEWER_ENTRY]);
     expect(untouched.events).toEqual(EXISTING_INDEX.events);
     expect(STALE_INDEX, 'input index must stay untouched').toEqual(snapshot);
+  });
+});
+
+describe('renumberIndexEvents', () => {
+  it('numbers entries by chronological position from the first archive number, keeping order and inputs intact', () => {
+    const snapshot = structuredClone(STALE_INDEX);
+    const renumbered = renumberIndexEvents(STALE_INDEX);
+
+    expect(renumbered.events).toEqual(EXPECTED_RENUMBERED_STALE_EVENTS);
+    expect(STALE_INDEX, 'input index must stay untouched').toEqual(snapshot);
+  });
+});
+
+describe('eventNumberForDate', () => {
+  it('counts only strictly earlier events, so a re-published date keeps its own number', () => {
+    expect(eventNumberForDate(STALE_INDEX_DATES, STALE_SAME_SLUG_ENTRY.dateIso)).toBe(EXPECTED_RENUMBERED_STALE_EVENTS[1].number);
+    expect(eventNumberForDate([], STALE_SAME_SLUG_ENTRY.dateIso), 'empty archive starts the numbering').toBe(FIRST_ARCHIVE_EVENT_NUMBER);
   });
 });

@@ -1,4 +1,4 @@
-import { ARCHIVE_INDEX_SCHEMA_VERSION } from './archive-index.constant';
+import { ARCHIVE_INDEX_SCHEMA_VERSION, FIRST_ARCHIVE_EVENT_NUMBER } from './archive-index.constant';
 import { ArchiveIndexEntry, ArchiveIndexFile } from './archive-index.interface';
 import { EXPECTED_EVENT_PATHS } from './event-paths.mock';
 
@@ -8,6 +8,7 @@ export const NEWER_ENTRY: ArchiveIndexEntry = {
   slug: '2026-07-05',
   dateIso: '2026-07-05',
   number: 13,
+  legacyNumber: null,
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 20,
@@ -15,6 +16,8 @@ export const NEWER_ENTRY: ArchiveIndexEntry = {
   medianTimeMs: 1862000,
   bestMaleMs: 1056000,
   bestFemaleMs: 1238000,
+  newcomerCount: 3,
+  personalRecordCount: 2,
   files: {
     sourceXlsx: 'data/events/2026-07-05/source.xlsx',
     resultsJson: 'data/events/2026-07-05/results.json',
@@ -25,6 +28,7 @@ export const OLDER_ENTRY: ArchiveIndexEntry = {
   slug: '2026-06-21',
   dateIso: '2026-06-21',
   number: 11,
+  legacyNumber: null,
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 15,
@@ -32,6 +36,8 @@ export const OLDER_ENTRY: ArchiveIndexEntry = {
   medianTimeMs: 1753000,
   bestMaleMs: 1183000,
   bestFemaleMs: 1360000,
+  newcomerCount: 1,
+  personalRecordCount: 0,
   files: {
     sourceXlsx: 'data/events/2026-06-21/source.xlsx',
     resultsJson: 'data/events/2026-06-21/results.json',
@@ -43,6 +49,7 @@ export const STALE_SAME_SLUG_ENTRY: ArchiveIndexEntry = {
   slug: '2026-06-28',
   dateIso: '2026-06-28',
   number: 12,
+  legacyNumber: null,
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 1,
@@ -50,6 +57,8 @@ export const STALE_SAME_SLUG_ENTRY: ArchiveIndexEntry = {
   medianTimeMs: null,
   bestMaleMs: null,
   bestFemaleMs: null,
+  newcomerCount: null,
+  personalRecordCount: null,
   files: EXPECTED_EVENT_PATHS,
 };
 
@@ -61,6 +70,7 @@ export const EXPECTED_NEW_ENTRY: ArchiveIndexEntry = {
   slug: '2026-06-28',
   dateIso: '2026-06-28',
   number: 12,
+  legacyNumber: null,
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 3,
@@ -68,6 +78,9 @@ export const EXPECTED_NEW_ENTRY: ArchiveIndexEntry = {
   medianTimeMs: 1500000,
   bestMaleMs: null,
   bestFemaleMs: 1500000,
+  // The fixture rows carry no newcomer or record notes.
+  newcomerCount: 0,
+  personalRecordCount: 0,
   files: EXPECTED_EVENT_PATHS,
 };
 
@@ -76,6 +89,7 @@ export const EXPECTED_NO_FINISHER_ENTRY: ArchiveIndexEntry = {
   slug: '2026-06-28',
   dateIso: '2026-06-28',
   number: 12,
+  legacyNumber: null,
   city: 'Курск',
   park: 'Боева дача',
   participantCount: 2,
@@ -83,6 +97,8 @@ export const EXPECTED_NO_FINISHER_ENTRY: ArchiveIndexEntry = {
   medianTimeMs: null,
   bestMaleMs: null,
   bestFemaleMs: null,
+  newcomerCount: 0,
+  personalRecordCount: 0,
   files: EXPECTED_EVENT_PATHS,
 };
 
@@ -96,3 +112,13 @@ export const STALE_INDEX: ArchiveIndexFile = {
 
 /** Newest first after any upsert. */
 export const EXPECTED_UPSERTED_EVENTS: ArchiveIndexEntry[] = [NEWER_ENTRY, EXPECTED_NEW_ENTRY, OLDER_ENTRY];
+
+/** `STALE_INDEX` renumbered by date — 2026-06-21 → 117, 2026-06-28 → 118, 2026-07-05 → 119 — order kept. */
+export const EXPECTED_RENUMBERED_STALE_EVENTS: ArchiveIndexEntry[] = [
+  { ...OLDER_ENTRY, number: FIRST_ARCHIVE_EVENT_NUMBER },
+  { ...STALE_SAME_SLUG_ENTRY, number: FIRST_ARCHIVE_EVENT_NUMBER + 1 },
+  { ...NEWER_ENTRY, number: FIRST_ARCHIVE_EVENT_NUMBER + 2 },
+];
+
+/** The archive dates behind `STALE_INDEX`, as `eventNumberForDate` receives them. */
+export const STALE_INDEX_DATES: string[] = [OLDER_ENTRY.dateIso, STALE_SAME_SLUG_ENTRY.dateIso, NEWER_ENTRY.dateIso];

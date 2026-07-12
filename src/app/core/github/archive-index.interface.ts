@@ -9,6 +9,8 @@ export interface ArchiveIndexEntry {
   slug: string;
   dateIso: string;
   number: number;
+  /** The number the organisers used before the positional numbering ('160' or '2.72'); null for new events. */
+  legacyNumber: string | null;
   city: string;
   park: string;
   participantCount: number;
@@ -16,6 +18,10 @@ export interface ArchiveIndexEntry {
   medianTimeMs: number | null;
   bestMaleMs: number | null;
   bestFemaleMs: number | null;
+  /** Rows noted 'Первое участие'; kept converged with the archive-wide note recompute on every db write. */
+  newcomerCount: number | null;
+  /** Rows with a personal record note, the legacy 'Личный рекорд' spelling included. */
+  personalRecordCount: number | null;
   files: EventFilePaths;
 }
 
