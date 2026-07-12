@@ -9,7 +9,7 @@ const ANNA = { key: 'петрова анна', displayName: 'Петрова Ан
 
 const OLEG = { key: 'сидоров олег', displayName: 'Сидоров Олег', gender: null } as const;
 
-const runRow = (athlete: typeof IVAN | typeof ANNA | typeof OLEG, dateIso: string, timeMs: number, distanceKm: number): YearRunRow => ({
+const runRow = (athlete: typeof ANNA | typeof IVAN | typeof OLEG, dateIso: string, timeMs: number, distanceKm: number): YearRunRow => ({
   ...athlete,
   dateIso,
   slug: dateIso,

@@ -39,14 +39,21 @@ export function hasProgressTrend(runs: AthleteRun[]): boolean {
   return bestPerDate(runs).length >= PROGRESS_MIN_POINTS;
 }
 
+/** All-time fastest run; `Infinity` for an empty history (the config builder bails out earlier anyway). */
+export function personalBestMs(runs: AthleteRun[]): number {
+  return Math.min(...runs.map((run) => run.timeMs));
+}
+
 /**
  * Full chart.js configuration for the best-time-per-date line: same-day runs collapse
  * to the fastest one, x is a real time scale (gaps between races stay visible), y is
  * the finish time, so an improving athlete draws a line descending to the green
- * personal-best dots. Zoom/pan is x-only and reports back through `onViewportChange`.
+ * personal-best dots. `bestMs` comes from the unfiltered history, so a year view marks
+ * only the true all-time record. Zoom/pan is x-only and reports back through `onViewportChange`.
  */
 export function buildProgressChartConfig(
   runs: AthleteRun[],
+  bestMs: number,
   palette: ProgressChartPalette,
   onViewportChange: ProgressViewportChange,
 ): ChartConfiguration<'line'> | null {
@@ -56,7 +63,6 @@ export function buildProgressChartConfig(
     return null;
   }
 
-  const bestMs = Math.min(...days.map((day) => day.timeMs));
   const isBest = days.map((day) => day.timeMs === bestMs);
 
   return {

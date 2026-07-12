@@ -18,10 +18,22 @@
     gap: 12px;
   }
 
+  &__heading {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
   &__title {
     @include t.text('title', 'medium');
 
     color: var(--text);
+  }
+
+  &__year {
+    @include t.text('title', 'medium');
+
+    color: var(--text-muted);
   }
 
   &__reset {

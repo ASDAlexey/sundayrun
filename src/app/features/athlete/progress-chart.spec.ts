@@ -4,7 +4,14 @@ import { Chart } from 'chart.js';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
 import { settle } from '../spec-utils/settle';
 import { ProgressChart } from './progress-chart';
-import { PROGRESS_RUNS, PROGRESS_RUNS_ALT, SAME_DAY_ONLY_RUNS } from './progress-chart.mock';
+import {
+  CHART_SINGLE_DATE_YEAR,
+  CHART_TREND_YEAR,
+  EXPECTED_TREND_YEAR_POINTS,
+  PROGRESS_RUNS,
+  PROGRESS_RUNS_ALT,
+  SAME_DAY_ONLY_RUNS,
+} from './progress-chart.mock';
 
 // jsdom has no canvas context, so the real chart.js can never run in specs.
 vi.mock('chart.js', () => {
@@ -113,6 +120,28 @@ describe('ProgressChart', () => {
 
     expect(chart.hasChart()).toBe(false);
     expect(chartConstructorMock).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('canvas')).toBeNull();
+  });
+
+  it('narrows the chart to the selected year and hides the card when the year has one race date', async () => {
+    const chart = await createChart(PROGRESS_RUNS);
+
+    fixture.componentRef.setInput('year', CHART_TREND_YEAR);
+    fixture.detectChanges();
+    await settle();
+
+    expect(chart.hasChart()).toBe(true);
+
+    const [, config] = chartConstructorMock.mock.calls.at(-1) ?? [];
+
+    expect(config?.data.datasets[0].data, 'only the in-year points are plotted').toEqual(EXPECTED_TREND_YEAR_POINTS);
+    expect(fixture.nativeElement.querySelector('.progress__year')?.textContent.trim()).toBe(CHART_TREND_YEAR);
+
+    fixture.componentRef.setInput('year', CHART_SINGLE_DATE_YEAR);
+    fixture.detectChanges();
+    await settle();
+
+    expect(chart.hasChart(), 'a single in-year race date is not a trend').toBe(false);
     expect(fixture.nativeElement.querySelector('canvas')).toBeNull();
   });
 });

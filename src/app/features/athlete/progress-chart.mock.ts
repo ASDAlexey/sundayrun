@@ -23,6 +23,23 @@ export const EXPECTED_PROGRESS_DAYS: ProgressDay[] = [
 
 export const EXPECTED_IS_BEST = [false, true, false];
 
+/** The all-time best of `PROGRESS_RUNS`. */
+export const PROGRESS_BEST_MS = 1_440_000;
+
+/** A record faster than every plotted day: the filtered-out-record case, no green dot may appear. */
+export const OFF_CHART_BEST_MS = 1_400_000;
+
+/** The year of `PROGRESS_RUNS` with two race dates — enough for an in-year trend. */
+export const CHART_TREND_YEAR = '2026';
+
+/** The year of `PROGRESS_RUNS` with a single race date — no in-year trend, the card hides. */
+export const CHART_SINGLE_DATE_YEAR = '2025';
+
+export const EXPECTED_TREND_YEAR_POINTS = [
+  { x: Date.parse('2026-01-03'), y: 1_440_000 },
+  { x: Date.parse('2026-01-10'), y: 1_500_000 },
+];
+
 export const EXPECTED_PROGRESS_POINTS = [
   { x: Date.parse('2025-12-27'), y: 1_500_000 },
   { x: Date.parse('2026-01-03'), y: 1_440_000 },
@@ -69,6 +86,8 @@ export const MOCK_PALETTE: ProgressChartPalette = {
 // Point-style arrays derived from EXPECTED_IS_BEST and MOCK_PALETTE.
 
 export const EXPECTED_POINT_BACKGROUNDS = ['#121214', '#3ecf8e', '#121214'];
+
+export const EXPECTED_POINT_BACKGROUNDS_NO_BEST = ['#121214', '#121214', '#121214'];
 
 export const EXPECTED_POINT_BORDERS = ['#f0912d', '#3ecf8e', '#f0912d'];
 

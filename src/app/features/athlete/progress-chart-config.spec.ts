@@ -6,6 +6,7 @@ import {
   formatEpochTick,
   formatTimeTick,
   hasProgressTrend,
+  personalBestMs,
   tooltipCallbacks,
   viewportNotifier,
 } from './progress-chart-config';
@@ -16,6 +17,7 @@ import {
   EXPECTED_AREA_TOP_COLOR,
   EXPECTED_IS_BEST,
   EXPECTED_POINT_BACKGROUNDS,
+  EXPECTED_POINT_BACKGROUNDS_NO_BEST,
   EXPECTED_POINT_BORDERS,
   EXPECTED_POINT_HOVER_RADII,
   EXPECTED_POINT_RADII,
@@ -27,26 +29,29 @@ import {
   EXPECTED_X_TICK_TEXT,
   EXPECTED_Y_TICK_TEXT,
   MOCK_PALETTE,
+  OFF_CHART_BEST_MS,
+  PROGRESS_BEST_MS,
   PROGRESS_RUNS,
   REGULAR_POINT_INDEX,
   SAME_DAY_ONLY_RUNS,
 } from './progress-chart.mock';
 
 describe('progress-chart-config', () => {
-  function buildConfig(): ChartConfiguration<'line'> | null {
-    return buildProgressChartConfig(PROGRESS_RUNS, MOCK_PALETTE, vi.fn());
+  function buildConfig(bestMs = PROGRESS_BEST_MS): ChartConfiguration<'line'> | null {
+    return buildProgressChartConfig(PROGRESS_RUNS, bestMs, MOCK_PALETTE, vi.fn());
   }
 
   it('needs two distinct race dates: same-day duplicates collapse and kill the trend', () => {
     expect(hasProgressTrend(PROGRESS_RUNS)).toBe(true);
     expect(hasProgressTrend(SAME_DAY_ONLY_RUNS)).toBe(false);
     expect(hasProgressTrend([])).toBe(false);
-    expect(buildProgressChartConfig(SAME_DAY_ONLY_RUNS, MOCK_PALETTE, vi.fn())).toBeNull();
+    expect(buildProgressChartConfig(SAME_DAY_ONLY_RUNS, PROGRESS_BEST_MS, MOCK_PALETTE, vi.fn())).toBeNull();
   });
 
   it('plots the fastest run per date chronologically and styles personal-best points distinctly', () => {
     const dataset = buildConfig()?.data.datasets[0];
 
+    expect(personalBestMs(PROGRESS_RUNS)).toBe(PROGRESS_BEST_MS);
     expect(dataset?.data).toEqual(EXPECTED_PROGRESS_POINTS);
     expect(dataset?.borderColor).toBe(MOCK_PALETTE.accent);
     expect(dataset?.fill).toBe('start');
@@ -54,6 +59,10 @@ describe('progress-chart-config', () => {
     expect(dataset?.pointBorderColor).toEqual(EXPECTED_POINT_BORDERS);
     expect(dataset?.pointRadius).toEqual(EXPECTED_POINT_RADII);
     expect(dataset?.pointHoverRadius).toEqual(EXPECTED_POINT_HOVER_RADII);
+    expect(
+      buildConfig(OFF_CHART_BEST_MS)?.data.datasets[0].pointBackgroundColor,
+      'no green dot when the record day is filtered out of the view',
+    ).toEqual(EXPECTED_POINT_BACKGROUNDS_NO_BEST);
   });
 
   it('formats tooltips and axis ticks as russian dates and durations', () => {

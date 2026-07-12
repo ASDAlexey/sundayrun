@@ -1,10 +1,22 @@
 @if (hasChart()) {
   <section class="progress">
     <div class="progress__head">
-      <h2 class="progress__title" i18n="@@athlete.progressTitle">Прогресс на 5 км</h2>
+      <div class="progress__heading">
+        <h2 class="progress__title" i18n="@@athlete.progressTitle">Прогресс на 5 км</h2>
+
+        @if (year() !== null) {
+          <span class="progress__year">{{ year() }}</span>
+        }
+      </div>
 
       @if (zoomed()) {
-        <button class="progress__reset" i18n="@@athlete.progressResetZoom" type="button" (click)="resetZoom()">Весь период</button>
+        <button class="progress__reset" type="button" (click)="resetZoom()">
+          @if (year() === null) {
+            <ng-container i18n="@@athlete.progressResetZoom">Весь период</ng-container>
+          } @else {
+            <ng-container i18n="@@athlete.progressResetZoomYear">Весь год</ng-container>
+          }
+        </button>
       }
     </div>
 

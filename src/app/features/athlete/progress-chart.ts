@@ -12,8 +12,9 @@ import {
 } from '@angular/core';
 import type { Chart } from 'chart.js';
 
+import { filterRuns } from '../../core/history/athlete-runs';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { buildProgressChartConfig, hasProgressTrend } from './progress-chart-config';
+import { buildProgressChartConfig, hasProgressTrend, personalBestMs } from './progress-chart-config';
 import { CANVAS_REF } from './progress-chart.constant';
 import { ProgressChartPalette } from './progress-chart.interface';
 
@@ -37,7 +38,9 @@ function loadChartClass(): Promise<ChartClass> {
 /**
  * Interactive best-time-per-date chart of an athlete's 5 km runs: tap-friendly tooltips,
  * pinch/wheel zoom and pan along the date axis, personal bests highlighted in green.
- * The whole card disappears until there are two distinct race dates.
+ * A `year` narrows the chart to the in-year progress; the green dots always mark the
+ * all-time record, so they vanish rather than drift when the record year is filtered out.
+ * The whole card disappears until the visible period has two distinct race dates.
  */
 @Component({
   selector: 'app-progress-chart',
@@ -46,8 +49,12 @@ function loadChartClass(): Promise<ChartClass> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressChart {
+  readonly #visibleRuns = computed(() => filterRuns(this.runs(), this.year(), null));
+
   readonly runs = input.required<AthleteRun[]>();
-  readonly hasChart = computed(() => hasProgressTrend(this.runs()));
+  /** `null` plots the whole history across years. */
+  readonly year = input<string | null>(null);
+  readonly hasChart = computed(() => hasProgressTrend(this.#visibleRuns()));
   readonly zoomed = signal(false);
 
   // Signal queries cannot live on ES-private (`#`) fields.
@@ -57,9 +64,9 @@ export class ProgressChart {
   #renderToken = 0;
 
   constructor() {
-    // The canvas lives under `@if (hasChart())`, so both signals drive one render effect.
+    // The canvas lives under `@if (hasChart())`, so all the signals drive one render effect.
     effect(() => {
-      void this.#render(this.runs(), this.canvasRef()?.nativeElement ?? null);
+      void this.#render(this.#visibleRuns(), personalBestMs(this.runs()), this.canvasRef()?.nativeElement ?? null);
     });
     inject(DestroyRef).onDestroy(() => this.#destroyChart());
   }
@@ -74,7 +81,7 @@ export class ProgressChart {
     this.zoomed.set(zoomed);
   };
 
-  async #render(runs: AthleteRun[], canvas: HTMLCanvasElement | null): Promise<void> {
+  async #render(runs: AthleteRun[], bestMs: number, canvas: HTMLCanvasElement | null): Promise<void> {
     const token = ++this.#renderToken;
 
     this.#destroyChart();
@@ -85,7 +92,7 @@ export class ProgressChart {
     }
 
     // The canvas can outlive the trend for one change-detection turn, so the builder's null gate is the real guard.
-    const config = buildProgressChartConfig(runs, readPalette(canvas), this.onViewportChange);
+    const config = buildProgressChartConfig(runs, bestMs, readPalette(canvas), this.onViewportChange);
 
     if (config === null) {
       return;
