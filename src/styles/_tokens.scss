@@ -1,48 +1,52 @@
 // ===========================================================
 //  Design tokens — Litely design language
-//  Dark · amber/gold signature · cool counter-glow for depth
-//  Inter + JetBrains Mono
+//  Dark · orange signature · Unbounded display + IBM Plex Mono
 // ===========================================================
 
 :root {
   --bg: #060607;
   --bg-alt: #0a0a0d;
-  --bg-subtle: #101013;
-  --surface: #131316;
-  --surface-hover: #1b1b20;
-  --border: #232329;
-  --border-hover: #36363f;
+  --bg-subtle: #0e0e10;
+  --surface: #121214;
+  --surface-hover: #17171a;
+  --border: #232327;
+  --border-soft: #1b1b1f;
+  --border-hover: #33333a;
 
-  --text: #f2f2f0;
-  --text-secondary: #a2a2a0;
-  --text-muted: #82827f;
+  --text: #efeff1;
+  --text-secondary: #a0a0a8;
+  --text-muted: #6e6e76;
 
-  // Signature accent — warm amber/gold
-  --accent: #f5a524;
-  --accent-light: #fcd34d;
+  // Signature accent — warm orange
+  --accent: #f0912d;
+  --accent-light: #ffb35c;
   --accent-warm: #fb8c3c;
-  --accent-deep: #c2740f;
+  --accent-deep: #e06e1b;
 
   // Cool counter-tone — used only for atmospheric depth (glow), never for text
   --accent-cool: #3b6dff;
   --accent-blue: #3b6dff;
 
-  --accent-glow: rgba(245, 165, 36, 0.14);
-  --accent-line: rgba(245, 165, 36, 0.32);
-  --accent-atmosphere: rgba(245, 165, 36, 0.06); // faint top vignette behind the page
-  --accent-contrast: #1a1205; // dark ink for text on warm-accent fills
-  --green: #34d399;
+  --accent-glow: rgba(240, 145, 45, 0.1);
+  --accent-line: rgba(240, 145, 45, 0.28);
+  --accent-atmosphere: rgba(240, 145, 45, 0.06); // faint top vignette behind the page
+  --accent-contrast: #1a0e02; // dark ink for text on warm-accent fills
+  --accent-gradient: linear-gradient(96deg, #ffb35c 0%, #f0912d 55%, #e06e1b 100%);
+
+  --green: #3ecf8e;
   --white: #fff;
   --black: #000;
 
   --radius: 16px;
+  --radius-md: 14px;
   --radius-sm: 10px;
   --radius-xs: 6px;
 
-  --maxw: 1100px;
+  --maxw: 1080px;
 
   --font: 'Inter Variable', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
-  --mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-display: 'Unbounded Variable', 'Inter Variable', -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', menlo, monospace;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
