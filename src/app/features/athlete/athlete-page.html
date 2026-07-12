@@ -54,6 +54,64 @@
         }
       </section>
 
+      @if (placements().hasPlaces) {
+        <section class="athlete__finals">
+          <h2 class="athlete__finals-title" i18n="@@athlete.finalsTitle">Итоговые забеги</h2>
+
+          <p class="athlete__finals-hint" i18n="@@athlete.finalsHint">Итоговый — последний забег месяца.</p>
+
+          @if (placements().bestFinalPlace !== null) {
+            <p class="athlete__finals-line" i18n="@@athlete.finalsBestPlace">Лучшее место в итоговом: {{ placements().bestFinalPlace }}</p>
+          }
+
+          @if (placements().podiumTexts.length > 0) {
+            <p class="athlete__finals-podium">
+              @for (podiumText of placements().podiumTexts; track podiumText) {
+                <span class="athlete__finals-chip">{{ podiumText }}</span>
+              }
+            </p>
+          }
+
+          @if (placements().bestRegularPlace !== null) {
+            <p class="athlete__finals-line" i18n="@@athlete.regularBestPlace">
+              Лучшее место в обычном забеге: {{ placements().bestRegularPlace }}
+            </p>
+          }
+        </section>
+      }
+
+      <section class="athlete__legend">
+        <h2 class="athlete__legend-title" i18n="@@athlete.legendTitle">Легенда трассы</h2>
+
+        <p class="athlete__legend-hint" i18n="@@athlete.legendHint">
+          Переходящий титул за максимум финишей за последние {{ legendWindowDays }} дней — темп не важен.
+        </p>
+
+        @if (legend().isLegend) {
+          <p class="athlete__legend-crown" i18n="@@athlete.legendCrown">👑 Корона у атлета: {{ legend().countText }} в текущем окне</p>
+        } @else {
+          @if (legend().legendName !== null) {
+            <p class="athlete__legend-holder" i18n="@@athlete.legendHolder">
+              Корону держит {{ legend().legendName }} — {{ legend().legendCountText }} в текущем окне.
+            </p>
+          } @else {
+            <p class="athlete__legend-holder" i18n="@@athlete.legendVacant">Корона пока свободна — её заберёт первый финишировавший.</p>
+          }
+
+          <p class="athlete__legend-progress" i18n="@@athlete.legendToCrown">
+            У атлета {{ legend().countText }}, до короны — {{ legend().toCrownText }}.
+          </p>
+
+          <mat-progress-bar
+            aria-label="Прогресс до короны"
+            class="athlete__legend-bar"
+            i18n-aria-label="@@athlete.legendBarLabel"
+            mode="determinate"
+            [value]="legend().progressPercent"
+          />
+        }
+      </section>
+
       @if (yearBadges().length > 0) {
         <section class="athlete__badges">
           <h2 class="athlete__badges-title" i18n="@@athlete.badgesTitle">Бейджи</h2>
@@ -65,7 +123,7 @@
 
                 <span class="athlete__badges-list">
                   @for (badge of yearEntry.badges; track badge) {
-                    <app-year-badge [badge]="badge" />
+                    <app-year-badge [badge]="badge" [rarityPercent]="badgeRarity()[badge] ?? null" />
                   }
                 </span>
               </li>
@@ -132,6 +190,10 @@
 
                   <td *matCellDef="let run" class="athlete__td" mat-cell>
                     <a class="athlete__race" [routerLink]="run.raceLink">{{ run.dateShort }}</a>
+
+                    @if (run.isMonthFinal) {
+                      <span class="athlete__final-badge" i18n="@@athlete.monthFinalBadge">итоговый</span>
+                    }
                   </td>
                 </ng-container>
 
@@ -141,8 +203,21 @@
                   <td *matCellDef="let run" class="athlete__td athlete__td_mono" mat-cell>{{ run.timeText }}</td>
                 </ng-container>
 
+                <ng-container matColumnDef="place">
+                  <th *matHeaderCellDef class="athlete__th" i18n="@@athlete.table.place" mat-header-cell scope="col">Место</th>
+
+                  <td *matCellDef="let run" class="athlete__td athlete__td_mono" mat-cell>
+                    <span class="athlete__place" [class.athlete__place_final]="run.isMonthFinal">{{ run.placeText }}</span>
+                  </td>
+                </ng-container>
+
                 <tr *matHeaderRowDef="runsTableColumns" mat-header-row></tr>
-                <tr *matRowDef="let run; columns: runsTableColumns" class="athlete__row" mat-row></tr>
+                <tr
+                  *matRowDef="let run; columns: runsTableColumns"
+                  class="athlete__row"
+                  mat-row
+                  [class.athlete__row_final]="run.isMonthFinal"
+                ></tr>
               </table>
             </div>
           }

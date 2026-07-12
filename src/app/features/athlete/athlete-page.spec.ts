@@ -16,18 +16,28 @@ import {
   ATHLETE_LOAD_ERROR_MESSAGE,
   ATHLETE_YEAR_FILTER,
   DENORMALIZED_KEY_PARAM,
+  EMPTY_LEGEND_VIEW,
+  EMPTY_PLACEMENTS_VIEW,
   EMPTY_STREAKS_VIEW,
   EVENT_SLUG_CHRONOLOGY,
+  EXPECTED_PLACEMENTS_VIEW,
   EXPECTED_BEST_TIME_TEXT,
   EXPECTED_BY_DATE_VIEWS,
   EXPECTED_BY_TIME_VIEWS,
+  EXPECTED_CHASER_LEGEND_VIEW,
   EXPECTED_DNF_STREAKS_VIEW,
+  EXPECTED_LEGEND_VIEW,
   EXPECTED_RUN_YEAR_OPTIONS,
   EXPECTED_SHORT_RUNNER_VIEWS,
   EXPECTED_STREAKS_VIEW,
   EXPECTED_YEAR_BEST_VIEWS,
   EXPECTED_YEAR_FILTERED_VIEWS,
+  LEGEND_FINISHES,
+  PLACEMENTS_EVENT_CHRONOLOGY,
+  PLACEMENTS_RUN_PLACES,
   SHORT_RUNNER_KEY_PARAM,
+  STUB_BADGE_RARITY,
+  STUB_RUN_PLACES,
   UNKNOWN_KEY_PARAM,
 } from './athlete-page.mock';
 
@@ -35,6 +45,9 @@ describe('AthletePage', () => {
   const loadRecord = vi.fn();
   const loadFirstEventDateByYear = vi.fn(() => Promise.resolve<Record<string, string>>({}));
   const loadEventSlugs = vi.fn(() => Promise.resolve([...EVENT_SLUG_CHRONOLOGY]));
+  const loadYearBadgeRarity = vi.fn(() => Promise.resolve(STUB_BADGE_RARITY));
+  const loadLegendFinishes = vi.fn(() => Promise.resolve([...LEGEND_FINISHES]));
+  const loadRunPlaces = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? STUB_RUN_PLACES : {}));
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -48,7 +61,10 @@ describe('AthletePage', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AthletesService, useValue: { loadRecord, loadFirstEventDateByYear, loadEventSlugs } },
+        {
+          provide: AthletesService,
+          useValue: { loadRecord, loadFirstEventDateByYear, loadEventSlugs, loadYearBadgeRarity, loadLegendFinishes, loadRunPlaces },
+        },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });
@@ -82,6 +98,8 @@ describe('AthletePage', () => {
     expect(page.years()).toEqual(EXPECTED_RUN_YEAR_OPTIONS);
     expect(page.runs(), 'runs are sorted by time by default').toEqual(EXPECTED_BY_TIME_VIEWS);
     expect(page.streaks(), 'all three races form one running streak').toEqual(EXPECTED_STREAKS_VIEW);
+    expect(page.badgeRarity(), 'the chips receive the loaded rarity shares').toEqual(STUB_BADGE_RARITY);
+    expect(page.legend(), 'three windowed finishes keep the crown here').toEqual(EXPECTED_LEGEND_VIEW);
 
     fixture.detectChanges();
 
@@ -97,9 +115,13 @@ describe('AthletePage', () => {
     expect(element.querySelector('.athlete__title').textContent.trim()).toBe(expectedRecord.displayName);
     expect(
       headers.map((header) => header.getAttribute('scope')),
-      'the table has date and time columns only',
-    ).toEqual(['col', 'col']);
+      'the table has date, time and place columns',
+    ).toEqual(['col', 'col', 'col']);
     expect(raceLinks.map((link) => link.textContent.trim())).toEqual(EXPECTED_BY_TIME_VIEWS.map((view) => view.dateShort));
+    expect(
+      [...element.querySelectorAll('.athlete__place')].map((cell) => cell.textContent.trim()),
+      'the place column shows the stored gender places and dashes the rest',
+    ).toEqual(EXPECTED_BY_TIME_VIEWS.map((view) => view.placeText));
     expect(raceLinks[0].getAttribute('href'), 'the date links to the online protocol').toBe(EXPECTED_BY_TIME_VIEWS[0].raceLink.join('/'));
     expect(
       filterChips.map((chip) => chip.textContent.trim()),
@@ -109,6 +131,8 @@ describe('AthletePage', () => {
       filterChips.map((chip) => chip.classList.contains('mat-button-toggle-checked')),
       'all years by default',
     ).toEqual([true, false, false]);
+    expect(element.querySelector('.athlete__legend-crown'), 'the holder sees the crown line').not.toBeNull();
+    expect(element.querySelector('.athlete__legend-bar'), 'the holder needs no progress bar').toBeNull();
   });
 
   it('filters by year, re-sorts by date and reports when no runs match', async () => {
@@ -157,10 +181,38 @@ describe('AthletePage', () => {
     expect(page.runs()).toEqual(EXPECTED_SHORT_RUNNER_VIEWS);
     expect(page.finishCount(), 'only the 5 km finish counts').toBe(EXPECTED_SHORT_RUNNER_VIEWS.length);
     expect(page.years(), 'the 2.3 km run year never becomes a chip').toEqual(['2026']);
+    expect(page.legend(), 'the chaser sees the holder and «до короны — 2 финиша»').toEqual(EXPECTED_CHASER_LEGEND_VIEW);
+
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement;
+
+    expect(element.querySelector('.athlete__legend-crown'), 'no crown line for the chaser').toBeNull();
+    expect(element.querySelector('.athlete__legend-holder').textContent, 'the holder is named').toContain(
+      EXPECTED_CHASER_LEGEND_VIEW.legendName,
+    );
+    expect(element.querySelector('.athlete__legend-bar'), 'the chaser gets the progress bar').not.toBeNull();
+  });
+
+  it('splits the best places by race kind and renders the finals card with podium chips', async () => {
+    loadEventSlugs.mockResolvedValueOnce([...PLACEMENTS_EVENT_CHRONOLOGY]);
+    loadRunPlaces.mockResolvedValueOnce({ ...PLACEMENTS_RUN_PLACES });
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.placements()).toEqual(EXPECTED_PLACEMENTS_VIEW);
+
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement;
+    const chips = [...element.querySelectorAll('.athlete__finals-chip')];
+
+    expect(element.querySelector('.athlete__finals-title'), 'places are known — the finals card is shown').not.toBeNull();
+    expect(chips.map((chip) => chip.textContent.trim())).toEqual(EXPECTED_PLACEMENTS_VIEW.podiumTexts);
   });
 
   it('shows the DNF-only athlete without records or a runs table', async () => {
     routeParams[KEY_ROUTE_PARAM] = DNF_ONLY_KEY;
+    loadLegendFinishes.mockResolvedValueOnce([]);
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -170,11 +222,17 @@ describe('AthletePage', () => {
     expect(page.bestTimeText()).toBe(NO_BEST_TIME_TEXT);
     expect(page.yearBests()).toEqual([]);
     expect(page.streaks(), 'a DNF still counted as showing up, the later misses ended the streak').toEqual(EXPECTED_DNF_STREAKS_VIEW);
+    expect(page.legend(), 'an empty board keeps the title vacant').toEqual(EMPTY_LEGEND_VIEW);
+    expect(page.placements(), 'a DNF carries no place').toEqual(EMPTY_PLACEMENTS_VIEW);
 
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
     const statusRegions = [...element.querySelectorAll('.athlete__status')];
+
+    expect(element.querySelector('.athlete__finals'), 'no known places — no finals card').toBeNull();
+
+    expect(element.querySelector('.athlete__legend-holder').textContent, 'the vacant title is announced').not.toBe('');
 
     expect(statusRegions.at(-1).getAttribute('aria-live'), 'the "no finishes" note is announced').toBe('polite');
     expect(statusRegions.at(-1).textContent.trim()).not.toBe('');
@@ -233,6 +291,7 @@ describe('AthletePage', () => {
     expect(page.years()).toEqual([]);
     expect(page.runs()).toEqual([]);
     expect(page.streaks()).toEqual(EMPTY_STREAKS_VIEW);
+    expect(page.legend(), 'a notFound load discards the board').toEqual(EMPTY_LEGEND_VIEW);
 
     fixture.detectChanges();
 

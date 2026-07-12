@@ -109,6 +109,84 @@
     }
   }
 
+  &__finals {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 8px;
+  }
+
+  &__finals-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__finals-hint {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__finals-line {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  &__finals-podium {
+    @include t.text('body', 'medium');
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--accent);
+  }
+
+  &__finals-chip {
+    white-space: nowrap;
+  }
+
+  &__legend {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 8px;
+  }
+
+  &__legend-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__legend-hint {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__legend-crown {
+    @include t.text('body', 'medium');
+
+    color: var(--accent);
+  }
+
+  &__legend-holder,
+  &__legend-progress {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  &__legend-bar {
+    margin-top: 4px;
+  }
+
   &__badges {
     @include c.card;
 
@@ -210,8 +288,29 @@
     }
   }
 
+  &__row_final {
+    background: var(--accent-glow);
+  }
+
   &__race {
     @include tbl.link;
+  }
+
+  &__final-badge {
+    @include t.mono-caption;
+    @include t.pill;
+
+    margin-left: 8px;
+    padding: 2px 8px;
+    border: 1px solid var(--accent-line);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  &__place_final {
+    @include t.semibold;
+
+    color: var(--accent);
   }
 
   &__not-found {
