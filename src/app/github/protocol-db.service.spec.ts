@@ -1,6 +1,8 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { environment } from '../../environments/environment';
+import { DbSource } from '../core/sqlite/db-source.enum';
 import { SERVER_PLATFORM_ID } from '../features/spec-utils/platform.mock';
 import { settle } from '../features/spec-utils/settle';
 import { CdnRefService } from './cdn-ref.service';
@@ -15,6 +17,7 @@ import {
   DB_PARAMS_MOCK,
   DB_ROWS_MOCK,
   DB_SQL_MOCK,
+  LOCAL_DB_URL_MOCK,
   PINNED_PROTOCOL_DB_CDN_URL,
   PINNED_SHA_MOCK,
   POOL_CLOSE_ERROR_MESSAGE,
@@ -124,5 +127,39 @@ describe('ProtocolDbService during prerender', () => {
   it('rejects before any wasm or worker code is imported', async () => {
     await expect(TestBed.inject(ProtocolDbService).queryValues(DB_SQL_MOCK, [])).rejects.toThrow(PROTOCOL_DB_BROWSER_ONLY_ERROR);
     expect(CREATE_POOL_MOCK).not.toHaveBeenCalled();
+  });
+});
+
+describe('ProtocolDbService reading a local db', () => {
+  const originalDbSource = environment.dbSource;
+  const originalLocalDbUrl = environment.localDbUrl;
+  const cdnRef = cdnRefServiceMock();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    CREATE_POOL_MOCK.mockResolvedValue(POOL_MOCK);
+    POOL_OPEN_MOCK.mockResolvedValue(undefined);
+    POOL_EXEC_MOCK.mockResolvedValue(DB_EXEC_RESULTS_MOCK);
+    environment.dbSource = DbSource.Local;
+    environment.localDbUrl = LOCAL_DB_URL_MOCK;
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CdnRefService, useValue: cdnRef },
+        { provide: SQLITE_HTTP_LOADER, useValue: LOAD_SQLITE_HTTP_MOCK },
+      ],
+    });
+  });
+
+  afterEach(() => {
+    environment.dbSource = originalDbSource;
+    environment.localDbUrl = originalLocalDbUrl;
+  });
+
+  it('opens the fixed on-disk url and never resolves a CDN ref', async () => {
+    const resolveSpy = vi.spyOn(cdnRef, 'resolve');
+
+    await expect(TestBed.inject(ProtocolDbService).queryValues(DB_SQL_MOCK, DB_PARAMS_MOCK)).resolves.toEqual(DB_ROWS_MOCK);
+    expect(POOL_OPEN_MOCK).toHaveBeenCalledExactlyOnceWith(LOCAL_DB_URL_MOCK);
+    expect(resolveSpy, 'the local source never touches the CDN').not.toHaveBeenCalled();
   });
 });

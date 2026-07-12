@@ -20,3 +20,6 @@ export const PROTOCOL_DB_BROWSER_ONLY_ERROR = 'sundayrun.db queries run in the b
  * Two attempts (one retry) masks a single blip; a genuinely unreachable db still fails fast.
  */
 export const PROTOCOL_DB_QUERY_ATTEMPTS = 2;
+
+/** The fixed pool key for the local db url — a single on-disk file has no sha to pin against. */
+export const PROTOCOL_DB_LOCAL_POOL_REF = 'local';

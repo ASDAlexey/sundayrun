@@ -3,26 +3,31 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 
 import type { SQLiteHTTPPool } from 'sqlite-wasm-http';
 
+import { environment } from '../../environments/environment';
 import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
+import { DbSource } from '../core/sqlite/db-source.enum';
 import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 import { CdnRefService } from './cdn-ref.service';
 import { narrowValues } from '../core/sqlite/protocol-db-narrow';
 import {
   PROTOCOL_DB_BROWSER_ONLY_ERROR,
   PROTOCOL_DB_HTTP_OPTIONS,
+  PROTOCOL_DB_LOCAL_POOL_REF,
   PROTOCOL_DB_QUERY_ATTEMPTS,
   PROTOCOL_DB_WORKER_COUNT,
 } from './protocol-db.service.constant';
 import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
 
 /**
- * A virtual SQLite connection to the sha-pinned `data/sundayrun.db` on the jsDelivr CDN: the
- * WASM engine (loaded lazily, browser-only) fetches just the db pages a statement touches via
- * HTTP range requests, so a keyed lookup moves kilobytes instead of whole JSON files. Any
- * failure — the worker bootstrap, an unsupported range request, a missing db at the pinned
- * sha, the statement itself — rejects, and every caller falls back to the JSON path. During
- * prerender `query` rejects before touching the wasm module, keeping the static build clean.
+ * A virtual SQLite connection to `data/sundayrun.db`: the WASM engine (loaded lazily,
+ * browser-only) fetches just the db pages a statement touches via HTTP range requests, so a
+ * keyed lookup moves kilobytes instead of whole JSON files. The source is `environment.dbSource`
+ * — the sha-pinned public file on the jsDelivr CDN in production, or the dev server's on-disk
+ * copy in local development (which skips the CDN ref lookup entirely). Any failure — the worker
+ * bootstrap, an unsupported range request, a missing db, the statement itself — rejects, and
+ * every caller falls back to the JSON path. During prerender `query` rejects before touching the
+ * wasm module, keeping the static build clean.
  */
 @Injectable({ providedIn: 'root' })
 export class ProtocolDbService {
@@ -48,7 +53,7 @@ export class ProtocolDbService {
    */
   async #queryWithRetry(sql: string, params: readonly ProtocolDbValue[], attemptsLeft: number): Promise<ProtocolDbValue[][]> {
     try {
-      const pool = await this.#poolFor(await this.#cdnRef.resolve());
+      const pool = await this.#poolFor(await this.#resolveRef());
       const results = await pool.exec(sql, [...params], { rowMode: 'array' });
 
       return results.map((result) => narrowValues(result.row));
@@ -79,13 +84,23 @@ export class ProtocolDbService {
     return this.#pool;
   }
 
+  /** The local source reads a fixed on-disk url, so it needs no CDN sha; the CDN source pins to one. */
+  #resolveRef(): Promise<string> {
+    return environment.dbSource === DbSource.Local ? Promise.resolve(PROTOCOL_DB_LOCAL_POOL_REF) : this.#cdnRef.resolve();
+  }
+
+  /** The dev server's `data/sundayrun.db` in local mode, the sha-pinned CDN file otherwise. */
+  #dbUrl(ref: string): string {
+    return environment.dbSource === DbSource.Local ? environment.localDbUrl : jsDelivrFileUrl(PROTOCOL_DB_PATH, ref);
+  }
+
   /** The dynamic import keeps every wasm/worker byte out of the initial bundle and the prerender. */
   async #openPool(ref: string): Promise<SQLiteHTTPPool> {
     const { createSQLiteHTTPPool } = await this.#loadSqliteHttp();
     const pool = await createSQLiteHTTPPool({ workers: PROTOCOL_DB_WORKER_COUNT, httpOptions: PROTOCOL_DB_HTTP_OPTIONS });
 
     try {
-      await pool.open(jsDelivrFileUrl(PROTOCOL_DB_PATH, ref));
+      await pool.open(this.#dbUrl(ref));
     } catch (error) {
       void pool.close().catch(() => undefined);
       throw error;
