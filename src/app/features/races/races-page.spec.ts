@@ -1,7 +1,5 @@
 import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSelect } from '@angular/material/select';
-import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 
 import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
@@ -11,7 +9,7 @@ import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { RacesPage } from './races-page';
-import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
+import { RACES_TRANSFER_KEY } from './races-page.constant';
 import { RacesStatus } from './races-page.enum';
 import { RaceListItem } from './races-page.interface';
 import {
@@ -64,6 +62,10 @@ describe('RacesPage', () => {
 
     expect(page.status()).toBe(RacesStatus.ready);
     expect(page.races()).toEqual(EXPECTED_RACE_ITEMS);
+    expect(
+      page.yearGroups().map((group) => group.countText),
+      'a same-year pair pluralizes as «забега»',
+    ).toEqual(['2 забега']);
 
     fixture.detectChanges();
 
@@ -96,7 +98,7 @@ describe('RacesPage', () => {
     expect(element.querySelector('.races__cdn-note')).not.toBeNull();
   });
 
-  it('filters the list by the selected year and resets on the all-years option', async () => {
+  it('filters the list through the year chips, groups it under year dividers and resets on the all-years chip', async () => {
     loadIndex.mockResolvedValue(PREVIOUS_YEAR_INDEX);
     fixture = await createPage();
 
@@ -105,26 +107,32 @@ describe('RacesPage', () => {
     expect(page.years()).toEqual(EXPECTED_YEARS);
     expect(page.visibleRaces().length, 'no filter by default').toBe(2);
     expect(page.visibleRaces()[1].stats, 'a pre-stats index entry renders without chips').toEqual([]);
+    expect(
+      page.yearGroups().map((group) => [group.year, group.countText, group.races.length]),
+      'one season section per year, newest first, with a pluralized count',
+    ).toEqual([
+      [EXPECTED_YEARS[0], '1 забег', 1],
+      [EXPECTED_YEARS[1], '1 забег', 1],
+    ]);
 
-    page.onYearChange(EXPECTED_YEARS[1]);
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    const chips = [...element.querySelectorAll<HTMLButtonElement>('.races__filter-chip')];
+
+    expect(chips.map((chip) => chip.textContent?.trim())).toEqual(['Все годы', ...EXPECTED_YEARS]);
+    expect(chips[0].getAttribute('aria-pressed'), 'the all-years chip is pressed by default').toBe('true');
+
+    chips[2].click();
+    fixture.detectChanges();
 
     expect(page.visibleRaces().map((race) => race.slug)).toEqual([PREVIOUS_YEAR_INDEX.events[1].slug]);
+    expect(element.querySelectorAll('.races__year-divider').length, 'a year filter keeps only its own section').toBe(1);
 
-    page.onYearChange(ALL_YEARS_VALUE);
-
-    expect(page.visibleRaces().length).toBe(2);
-
+    element.querySelector<HTMLButtonElement>('.races__filter-chip')?.click();
     fixture.detectChanges();
 
-    // mat-select stamps its options into the overlay only once opened.
-    const select: MatSelect = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
-
-    select.open();
-    fixture.detectChanges();
-
-    const options = select.options.map((option) => option.value);
-
-    expect(options).toEqual([ALL_YEARS_VALUE, ...EXPECTED_YEARS]);
+    expect(page.visibleRaces().length, 'the all-years chip resets the filter').toBe(2);
   });
 
   it('shows the empty state for an index without events', async () => {

@@ -14,7 +14,7 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     participantCount: 20,
     stats: [
       { label: 'Финишёров 5 км', value: '18' },
-      { label: 'Ср. время', value: '31:02' },
+      { label: 'Медиана', value: '31:02' },
       { label: 'Лучшее М', value: '17:36' },
       { label: 'Лучшее Ж', value: '20:38' },
     ],
@@ -30,7 +30,7 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     participantCount: 15,
     stats: [
       { label: 'Финишёров 5 км', value: '12' },
-      { label: 'Ср. время', value: '29:13' },
+      { label: 'Медиана', value: '29:13' },
       { label: 'Лучшее М', value: '19:43' },
       { label: 'Лучшее Ж', value: '22:40' },
     ],
@@ -61,7 +61,7 @@ export const PREVIOUS_YEAR_INDEX = {
       slug: '2025-06-21',
       dateIso: '2025-06-21',
       finisherCount: null,
-      avgTimeMs: null,
+      medianTimeMs: null,
       bestMaleMs: null,
       bestFemaleMs: null,
       files: {

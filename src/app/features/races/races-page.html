@@ -8,23 +8,29 @@
   </header>
 
   @if (status() === statuses.ready) {
-    <div class="races__filter">
-      <mat-form-field appearance="outline">
-        <mat-label class="races__filter-label" i18n="@@races.yearLabel">Год</mat-label>
+    <div aria-label="Фильтр по годам" class="races__filters" i18n-aria-label="@@races.yearFilterLabel" role="group">
+      <button
+        class="races__filter-chip"
+        i18n="@@races.allYears"
+        type="button"
+        [attr.aria-pressed]="year() === null"
+        [class.races__filter-chip_active]="year() === null"
+        (click)="onYearChange(allValue)"
+      >
+        Все годы
+      </button>
 
-        <mat-select
-          class="races__filter-select"
-          id="races-year"
-          [value]="year() ?? allValue"
-          (selectionChange)="onYearChange($event.value)"
+      @for (raceYear of years(); track raceYear) {
+        <button
+          class="races__filter-chip"
+          type="button"
+          [attr.aria-pressed]="year() === raceYear"
+          [class.races__filter-chip_active]="year() === raceYear"
+          (click)="onYearChange(raceYear)"
         >
-          <mat-option i18n="@@races.allYears" [value]="allValue">Все годы</mat-option>
-
-          @for (raceYear of years(); track raceYear) {
-            <mat-option [value]="raceYear">{{ raceYear }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+          {{ raceYear }}
+        </button>
+      }
     </div>
   }
 
@@ -43,13 +49,23 @@
 
   @switch (status()) {
     @case (statuses.ready) {
-      <ul class="races__list">
-        @for (race of visibleRaces(); track race.slug) {
-          <li class="races__race">
-            <app-race-card [race]="race" />
-          </li>
-        }
-      </ul>
+      @for (group of yearGroups(); track group.year) {
+        <section class="races__year">
+          <h2 class="races__year-divider">
+            <span class="races__year-value">{{ group.year }}</span>
+
+            <span class="races__year-count">{{ group.countText }}</span>
+          </h2>
+
+          <ul class="races__list">
+            @for (race of group.races; track race.slug) {
+              <li class="races__race">
+                <app-race-card [race]="race" />
+              </li>
+            }
+          </ul>
+        </section>
+      }
     }
     @case (statuses.error) {
       <p class="races__error" i18n="@@races.error" role="alert">Не удалось загрузить список забегов.</p>

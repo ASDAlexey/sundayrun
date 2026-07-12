@@ -67,15 +67,66 @@
     @include st.error-text;
   }
 
-  &__filter {
+  &__filters {
     display: flex;
-    flex-direction: column;
-    align-self: flex-start;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
-  &__filter-select {
-    min-width: 160px;
+  &__filter-chip {
+    @include t.mono-meta;
+
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      color 0.2s var(--ease),
+      border-color 0.2s var(--ease),
+      background 0.2s var(--ease);
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &_active {
+      border-color: var(--accent-line);
+      background: var(--accent-glow);
+      color: var(--accent-light);
+    }
+  }
+
+  &__year {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__year-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    &::after {
+      flex: 1;
+      height: 1px;
+      background: var(--border-soft);
+      content: '';
+    }
+  }
+
+  &__year-value {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__year-count {
+    @include t.mono-meta;
+
+    color: var(--text-muted);
   }
 
   &__list {

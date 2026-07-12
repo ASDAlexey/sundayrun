@@ -16,3 +16,10 @@ export interface RaceListItem {
   stats: RaceCardStat[];
   pdfAriaLabel: string;
 }
+
+/** One season section of the archive: a year divider («2026 · 8 забегов») over its cards. */
+export interface RaceYearGroup {
+  year: string;
+  countText: string;
+  races: RaceListItem[];
+}
