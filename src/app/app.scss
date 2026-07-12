@@ -145,6 +145,7 @@
   &__inner {
     display: grid;
     grid-template-columns: minmax(240px, 1.4fr) repeat(2, minmax(200px, 1fr));
+    align-items: center;
     max-width: var(--maxw);
     margin: 0 auto;
     padding: 40px 24px 32px;
@@ -157,18 +158,11 @@
     }
   }
 
-  // The neighbouring columns open with a label/small eyebrow plus the 4px block gap; the same
-  // offset here puts the brand name on one line with the organizer and developer names.
+  // Top-aligned with the organizer/developer eyebrows, so the logo sits level with their labels.
   &__brand {
     display: flex;
     align-items: flex-start;
-    padding-top: calc(#{t.label-small-line()} + 4px);
     gap: 12px;
-
-    // Stacked columns need no eyebrow compensation.
-    @media (width <= 720px) {
-      padding-top: 0;
-    }
   }
 
   &__mark {
