@@ -1,9 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 
+import { CourseRecordHistory } from '../core/history/course-records.type';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { selectAthleteRecord, selectAthleteRecords, selectOverallStats } from './protocol-db-queries';
+import {
+  selectAthleteRecord,
+  selectAthleteRecords,
+  selectCourseRecords,
+  selectFirstEventDateByYear,
+  selectOverallStats,
+} from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
@@ -27,8 +34,18 @@ export class AthletesService {
     return selectAthleteRecords(this.#db);
   }
 
+  /** The course record progression for the records page: every record-beating 5 km run per gender. */
+  loadCourseRecords(): Promise<CourseRecordHistory> {
+    return selectCourseRecords(this.#db);
+  }
+
   /** The home page totals as SQL aggregates. */
   loadOverallStats(): Promise<OverallStats> {
     return selectOverallStats(this.#db);
+  }
+
+  /** Year → the date of that year's first race; feeds the new-year badge on the athlete page. */
+  loadFirstEventDateByYear(): Promise<Record<string, string>> {
+    return selectFirstEventDateByYear(this.#db);
   }
 }

@@ -1,12 +1,17 @@
-import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, min, sql } from 'drizzle-orm';
+import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, like, min, sql } from 'drizzle-orm';
 
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
 import { eventFilePaths } from '../core/github/event-paths';
 import { buildEventResultsFile } from '../core/github/results-file';
 import { EventResultsFile } from '../core/github/results-file.interface';
+import { courseRecordHistory } from '../core/history/course-records';
+import { CourseRecordHistory } from '../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { isoYear } from '../core/history/iso-year';
+import { PERSONAL_RECORD_NOTE_PREFIX } from '../core/history/notes-builder.constant';
 import { OverallStats } from '../core/history/overall-stats.interface';
+import { buildYearReview } from '../core/history/year-review';
+import { YearReview } from '../core/history/year-review.interface';
 import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interface';
 import { Gender, GenderType } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
@@ -104,6 +109,96 @@ export async function selectAthleteRecords(db: ProtocolDrizzle): Promise<Athlete
   return athleteRows.map((row) => toLeaderboardRecord(row, runsByKey));
 }
 
+/**
+ * The course record progression per gender: every 5 km run of a gendered athlete feeds the
+ * `courseRecordHistory` scan, which keeps only the record-beating ones. The scan needs the full
+ * chronology (a record run later beaten within the same season still held the record for a while),
+ * so no per-year rollup can replace this read.
+ */
+export async function selectCourseRecords(db: ProtocolDrizzle): Promise<CourseRecordHistory> {
+  const rows = await db
+    .select({
+      key: athletes.key,
+      displayName: athletes.displayName,
+      gender: athletes.gender,
+      dateIso: runs.dateIso,
+      slug: runs.slug,
+      timeMs: runs.timeMs,
+    })
+    .from(runs)
+    .innerJoin(athletes, eq(athletes.key, runs.athleteKey))
+    .where(and(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM), isNotNull(athletes.gender)));
+
+  // The SQL filter already dropped genderless athletes; `flatMap` only narrows the type.
+  return courseRecordHistory(
+    rows.flatMap((row) => {
+      const gender = asGender(row.gender);
+
+      return gender === null ? [] : [{ ...row, gender }];
+    }),
+  );
+}
+
+/** Year → the date of that year's first race (the new-year one); also the source of the year list. */
+export async function selectFirstEventDateByYear(db: ProtocolDrizzle): Promise<Record<string, string>> {
+  const rows = await db
+    .select({ year: sql<string>`substr(${events.slug}, 1, 4)`, firstDate: min(events.slug) })
+    .from(events)
+    .groupBy(sql`substr(${events.slug}, 1, 4)`);
+  const firstDateByYear: Record<string, string> = {};
+
+  for (const row of rows) {
+    firstDateByYear[asString(row.year)] = asString(row.firstDate);
+  }
+
+  return firstDateByYear;
+}
+
+/** The «Итоги года» page payload: a handful of year-scoped selects boiled down by `buildYearReview`. */
+export async function selectYearReview(db: ProtocolDrizzle, year: string): Promise<YearReview> {
+  const yearPattern = `${year}-%`;
+  const firstParticipations = db.$with('first_participations').as(
+    db
+      .select({ athleteKey: participations.athleteKey, firstSlug: min(participations.slug).as('first_slug') })
+      .from(participations)
+      .groupBy(participations.athleteKey),
+  );
+
+  const [eventRows, runRows, newcomerRows, personalRecordRows] = await Promise.all([
+    db.select({ slug: events.slug }).from(events).where(like(events.slug, yearPattern)).orderBy(asc(events.slug)),
+    db
+      .select({
+        key: runs.athleteKey,
+        displayName: athletes.displayName,
+        gender: athletes.gender,
+        dateIso: runs.dateIso,
+        slug: runs.slug,
+        timeMs: runs.timeMs,
+        distanceKm: runs.distanceKm,
+      })
+      .from(runs)
+      .innerJoin(athletes, eq(athletes.key, runs.athleteKey))
+      .where(like(runs.dateIso, yearPattern)),
+    db
+      .with(firstParticipations)
+      .select({ value: count() })
+      .from(firstParticipations)
+      .where(like(firstParticipations.firstSlug, yearPattern)),
+    db
+      .select({ value: count() })
+      .from(results)
+      .where(and(like(results.slug, yearPattern), like(results.note, `%${PERSONAL_RECORD_NOTE_PREFIX}%`))),
+  ]);
+
+  return buildYearReview({
+    year,
+    eventDates: eventRows.map((row) => row.slug),
+    runRows: runRows.map((row) => ({ ...row, gender: asGender(row.gender) })),
+    newcomerCount: newcomerRows[0]?.value ?? 0,
+    personalRecordCount: personalRecordRows[0]?.value ?? 0,
+  });
+}
+
 /** Site-wide totals via SQL aggregates, shaped exactly like `computeOverallStats`. */
 export async function selectOverallStats(db: ProtocolDrizzle): Promise<OverallStats> {
   const [runCountsRows, eventCountsRows, medianTimeMenMs, medianTimeWomenMs] = await Promise.all([
@@ -134,6 +229,7 @@ export async function selectArchiveEvents(db: ProtocolDrizzle, limit?: number): 
       slug: events.slug,
       dateIso: events.dateIso,
       number: events.number,
+      legacyNumber: events.legacyNumber,
       city: events.city,
       park: events.park,
       participantCount: events.participantCount,
@@ -141,6 +237,8 @@ export async function selectArchiveEvents(db: ProtocolDrizzle, limit?: number): 
       medianTimeMs: events.medianTimeMs,
       bestMaleMs: events.bestMaleMs,
       bestFemaleMs: events.bestFemaleMs,
+      newcomerCount: events.newcomerCount,
+      personalRecordCount: events.personalRecordCount,
     })
     .from(events)
     .orderBy(desc(events.dateIso))
@@ -155,6 +253,7 @@ export async function selectEventResults(db: ProtocolDrizzle, slug: string): Pro
   const [event] = await db
     .select({
       number: events.number,
+      legacyNumber: events.legacyNumber,
       dateIso: events.dateIso,
       city: events.city,
       park: events.park,
@@ -239,6 +338,7 @@ function toArchiveEntry(row: {
   slug: string;
   dateIso: string;
   number: number;
+  legacyNumber: string | null;
   city: string;
   park: string;
   participantCount: number;
@@ -246,11 +346,14 @@ function toArchiveEntry(row: {
   medianTimeMs: number | null;
   bestMaleMs: number | null;
   bestFemaleMs: number | null;
+  newcomerCount: number | null;
+  personalRecordCount: number | null;
 }): ArchiveIndexEntry {
   return {
     slug: row.slug,
     dateIso: row.dateIso,
     number: row.number,
+    legacyNumber: row.legacyNumber,
     city: row.city,
     park: row.park,
     participantCount: row.participantCount,
@@ -258,6 +361,8 @@ function toArchiveEntry(row: {
     medianTimeMs: row.medianTimeMs,
     bestMaleMs: row.bestMaleMs,
     bestFemaleMs: row.bestFemaleMs,
+    newcomerCount: row.newcomerCount,
+    personalRecordCount: row.personalRecordCount,
     files: eventFilePaths(row.dateIso),
   };
 }

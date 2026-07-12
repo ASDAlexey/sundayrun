@@ -1,6 +1,7 @@
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
 import { EXISTING_INDEX, NEWER_ENTRY, OLDER_ENTRY } from '../core/github/archive-index.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
+import { CourseRecordHistory } from '../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
@@ -17,6 +18,8 @@ import { ProtocolRow } from '../core/models/protocol-row.interface';
 const q = (value: string): string => `'${value}'`;
 
 const num = (value: number | null): string => (value === null ? 'NULL' : String(value));
+
+const legacy = (value: string | null): string => (value === null ? 'NULL' : q(value));
 
 export const ATHLETE_KEY = 'иванов иван';
 
@@ -55,9 +58,9 @@ export const SEED_PARTICIPATIONS: readonly string[] = ['2024-05-05', '2024-06-06
 );
 
 const eventInsert = (entry: ArchiveIndexEntry, clubName: string, chairman: string): string =>
-  `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${q(entry.city)}, ${q(entry.park)}, ` +
+  `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${legacy(entry.legacyNumber)}, ${q(entry.city)}, ${q(entry.park)}, ` +
   `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
-  `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)})`;
+  `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)}, ${num(entry.newcomerCount)}, ${num(entry.personalRecordCount)})`;
 
 /** The two archive events (`EXISTING_INDEX`), each with its club metadata for the event read. */
 export const SEED_EVENTS: readonly string[] = [eventInsert(NEWER_ENTRY, 'Курск бегущий', 'Иванов Иван'), eventInsert(OLDER_ENTRY, '', '')];
@@ -135,6 +138,44 @@ export const EXPECTED_LEADERBOARD_RECORDS: AthleteRecord[] = [
 ];
 
 /**
+ * The men's record opens with the 2024-05-05 run and improves on 2024-06-06; the slower 2025 runs
+ * and the 2.3 km run never enter. The women's record is Нина's single run.
+ */
+export const EXPECTED_COURSE_RECORDS: CourseRecordHistory = {
+  [Gender.male]: [
+    {
+      key: ATHLETE_KEY,
+      displayName: 'Иванов Иван',
+      gender: Gender.male,
+      dateIso: '2024-05-05',
+      slug: '2024-05-05',
+      timeMs: 1600000,
+      previousMs: null,
+    },
+    {
+      key: ATHLETE_KEY,
+      displayName: 'Иванов Иван',
+      gender: Gender.male,
+      dateIso: '2024-06-06',
+      slug: '2024-06-06',
+      timeMs: 1500000,
+      previousMs: 1600000,
+    },
+  ],
+  [Gender.female]: [
+    {
+      key: RUNLESS_ATHLETE_KEY,
+      displayName: 'Новикова Нина',
+      gender: Gender.female,
+      dateIso: '2025-02-02',
+      slug: '2025-02-02',
+      timeMs: 1700000,
+      previousMs: null,
+    },
+  ],
+};
+
+/**
  * `count()` over runs counts all six seeded runs (the man's four 5 km runs, his 2.3 km run and the
  * woman's single 5 km run); `finishersCount` is the two distinct athletes. Median is per 5 km sample:
  * the man's four times (1600000, 1500000, 1560000, 1600000) average their middle pair (1560000,
@@ -163,8 +204,8 @@ export const EXPECTED_ARCHIVE_EVENTS: ArchiveIndexEntry[] = EXISTING_INDEX.event
 
 /** The `RACE_EVENT` (slug = its dateIso) with its club metadata, for the results-service read. */
 export const SEED_RACE_EVENT: readonly string[] = [
-  `INSERT INTO events VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_EVENT.dateIso)}, ${RACE_EVENT.number}, ${q(RACE_EVENT.city)}, ` +
-    `${q(RACE_EVENT.park)}, ${q(RACE_EVENT.clubName)}, ${q(RACE_EVENT.chairman)}, ${PROTOCOL_ROWS.length}, NULL, NULL, NULL, NULL)`,
+  `INSERT INTO events VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_EVENT.dateIso)}, ${RACE_EVENT.number}, ${legacy(RACE_EVENT.legacyNumber)}, ${q(RACE_EVENT.city)}, ` +
+    `${q(RACE_EVENT.park)}, ${q(RACE_EVENT.clubName)}, ${q(RACE_EVENT.chairman)}, ${PROTOCOL_ROWS.length}, NULL, NULL, NULL, NULL, NULL, NULL)`,
 ];
 
 const resultInsert = (row: ProtocolRow): string =>

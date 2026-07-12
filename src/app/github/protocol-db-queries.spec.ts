@@ -6,10 +6,12 @@ import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { Gender } from '../core/models/gender.enum';
 import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { createProtocolDrizzle, ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { EMPTY_COURSE_RECORD_HISTORY } from '../core/history/course-records.constant';
 import {
   selectArchiveEvents,
   selectAthleteRecord,
   selectAthleteRecords,
+  selectCourseRecords,
   selectEventResults,
   selectOverallStats,
 } from './protocol-db-queries';
@@ -17,6 +19,7 @@ import {
   ATHLETE_KEY,
   EXPECTED_ARCHIVE_EVENTS,
   EXPECTED_ATHLETE_RECORD,
+  EXPECTED_COURSE_RECORDS,
   EXPECTED_EMPTY_SQL_STATS,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_SQL_STATS,
@@ -29,6 +32,7 @@ import {
 /** The event NEWER_ENTRY was seeded with its club metadata, and its two result rows. */
 const EXPECTED_EVENT: RaceEvent = {
   number: NEWER_ENTRY.number,
+  legacyNumber: NEWER_ENTRY.legacyNumber,
   dateIso: NEWER_ENTRY.dateIso,
   city: NEWER_ENTRY.city,
   park: NEWER_ENTRY.park,
@@ -87,6 +91,7 @@ describe('protocol-db-queries', () => {
     await expect(selectAthleteRecord(db, ATHLETE_KEY)).resolves.toEqual(EXPECTED_ATHLETE_RECORD);
     await expect(selectAthleteRecord(db, UNKNOWN_ATHLETE_KEY), 'an unknown key resolves null').resolves.toBeNull();
     await expect(selectAthleteRecords(db)).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
+    await expect(selectCourseRecords(db)).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_SQL_STATS);
     await expect(selectArchiveEvents(db)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS);
     await expect(selectArchiveEvents(db, LATEST_EVENTS_LIMIT)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS.slice(0, LATEST_EVENTS_LIMIT));
@@ -98,5 +103,6 @@ describe('protocol-db-queries', () => {
     const db = await drizzleFor([]);
 
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_EMPTY_SQL_STATS);
+    await expect(selectCourseRecords(db), 'no runs mean no record history for either gender').resolves.toEqual(EMPTY_COURSE_RECORD_HISTORY);
   });
 });

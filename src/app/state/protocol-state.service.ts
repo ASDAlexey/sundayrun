@@ -2,7 +2,8 @@ import { Injectable, computed, signal } from '@angular/core';
 
 import { historyBeforeDate } from '../core/history/athletes-rollup';
 import { toAutoNoteInput } from '../core/history/auto-note-input';
-import { buildAutoNote } from '../core/history/notes-builder';
+import { buildEventAutoNotes } from '../core/history/event-auto-notes';
+import { mergeAutoNote } from '../core/history/note-merge';
 import { AthletesHistory } from '../core/models/athletes-history.type';
 import { GenderConfidence, GenderSource, GenderType } from '../core/models/gender.enum';
 import { Participant } from '../core/models/participant.interface';
@@ -19,11 +20,15 @@ export class ProtocolStateService {
   readonly #event = signal<RaceEvent | null>(null);
   readonly #sourceFile = signal<SourceFile | null>(null);
   readonly #suggestedDateIso = signal<string | null>(null);
+  readonly #publishedEventDates = signal<string[] | null>(null);
 
   readonly participants = this.#participants.asReadonly();
   readonly event = this.#event.asReadonly();
   readonly sourceFile = this.#sourceFile.asReadonly();
   readonly suggestedDateIso = this.#suggestedDateIso.asReadonly();
+
+  /** Dates of every published event (null until the history loads) — the base of the auto race number. */
+  readonly publishedEventDates = this.#publishedEventDates.asReadonly();
 
   readonly protocolRows = computed(() => buildProtocolRows(this.#participants()));
   readonly hasParticipants = computed(() => this.#participants().length > 0);
@@ -53,19 +58,29 @@ export class ProtocolStateService {
     this.#event.set(event);
   }
 
+  setPublishedEventDates(dates: string[]): void {
+    this.#publishedEventDates.set(dates);
+  }
+
   /**
-   * Recomputes every participant's note from the published history (personal record, year
-   * best, first participation). Deliberately overwrites manual notes: the organiser triggers
-   * it explicitly and can re-edit afterwards. The history is first cut to the events strictly
-   * before `dateIso`, so a re-publication never compares results against their own previous
+   * Recomputes every participant's auto note from the published history (personal record, year
+   * best among the same gender, first participation); manual note text is kept after the auto
+   * part (see `mergeAutoNote`). The history is first cut to the events strictly before
+   * `dateIso`, so a re-publication never compares results against their own previous
    * publication and a back-dated import never compares against future results.
    */
   applyAutoNotes(history: AthletesHistory, dateIso: string): void {
     const priorHistory = historyBeforeDate(history, dateIso);
 
-    this.#participants.update((participants) =>
-      participants.map((participant) => ({ ...participant, note: buildAutoNote(toAutoNoteInput(participant, dateIso), priorHistory) })),
-    );
+    this.#participants.update((participants) => {
+      const autoNotes = buildEventAutoNotes(
+        participants.map((participant) => toAutoNoteInput(participant, dateIso)),
+        priorHistory,
+        dateIso,
+      );
+
+      return participants.map((participant, index) => ({ ...participant, note: mergeAutoNote(autoNotes[index], participant.note) }));
+    });
   }
 
   reset(): void {
@@ -73,6 +88,7 @@ export class ProtocolStateService {
     this.#event.set(null);
     this.#sourceFile.set(null);
     this.#suggestedDateIso.set(null);
+    this.#publishedEventDates.set(null);
   }
 
   #updateParticipant(id: number, change: (participant: Participant) => Participant): void {

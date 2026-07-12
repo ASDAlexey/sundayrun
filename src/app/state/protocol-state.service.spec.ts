@@ -4,6 +4,7 @@ import { FIRST_PARTICIPATION_NOTE } from '../core/history/notes-builder.constant
 import { Gender, GenderConfidence, GenderSource } from '../core/models/gender.enum';
 import { ProtocolStateService } from './protocol-state.service';
 import {
+  EXPECTED_BACKDATED_NOTE,
   EXPECTED_MALE_TOTAL_MS,
   EXPECTED_PARTICIPANT_COUNT,
   EXPECTED_PR_NOTE,
@@ -15,6 +16,7 @@ import {
   KNOWN_MALE_ID,
   KNOWN_MALE_NAME,
   NOTE_TEXT,
+  PUBLISHED_EVENT_DATES,
   RACE_EVENT,
   REPUBLISHED_HISTORY,
   UNDATED_FILE_NAME,
@@ -98,7 +100,7 @@ describe('ProtocolStateService', () => {
 
     const afterAutoNotes = service.participants();
 
-    expect(afterAutoNotes[0], 'auto note overwrites the manual one').toMatchObject({ note: EXPECTED_PR_NOTE });
+    expect(afterAutoNotes[0], 'auto note is prepended, the manual token survives').toMatchObject({ note: EXPECTED_PR_NOTE });
     expect(afterAutoNotes[1].note).toBe(FIRST_PARTICIPATION_NOTE);
     expect(afterAutoNotes[2].note).toBe(FIRST_PARTICIPATION_NOTE);
 
@@ -114,7 +116,11 @@ describe('ProtocolStateService', () => {
 
     service.applyAutoNotes(FUTURE_ONLY_HISTORY, EXPECTED_SUGGESTED_DATE_ISO);
 
-    expect(service.participants()[0].note, 'a back-dated import must not see future runs').toBe(FIRST_PARTICIPATION_NOTE);
+    expect(service.participants()[0].note, 'a back-dated import must not see future runs').toBe(EXPECTED_BACKDATED_NOTE);
+
+    service.setPublishedEventDates(PUBLISHED_EVENT_DATES);
+
+    expect(service.publishedEventDates()).toEqual(PUBLISHED_EVENT_DATES);
 
     service.reset();
 
@@ -122,6 +128,7 @@ describe('ProtocolStateService', () => {
     expect(service.event()).toBeNull();
     expect(service.sourceFile()).toBeNull();
     expect(service.suggestedDateIso()).toBeNull();
+    expect(service.publishedEventDates()).toBeNull();
     expect(service.hasParticipants()).toBe(false);
     expect(service.canGenerate()).toBe(false);
   });

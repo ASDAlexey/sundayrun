@@ -6,6 +6,7 @@ import { AthletesService } from './athletes.service';
 import {
   ATHLETE_KEY,
   EXPECTED_ATHLETE_RECORD,
+  EXPECTED_COURSE_RECORDS,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_SQL_STATS,
   POPULATED_SEED,
@@ -38,6 +39,7 @@ describe('AthletesService', () => {
     await expect(service.loadRecord(ATHLETE_KEY)).resolves.toEqual(EXPECTED_ATHLETE_RECORD);
     await expect(service.loadRecord(UNKNOWN_ATHLETE_KEY), 'an unknown key resolves to null').resolves.toBeNull();
     await expect(service.loadRecords()).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
+    await expect(service.loadCourseRecords()).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(service.loadOverallStats()).resolves.toEqual(EXPECTED_SQL_STATS);
   });
 
@@ -46,6 +48,7 @@ describe('AthletesService', () => {
 
     await expect(service.loadRecord(ATHLETE_KEY)).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadRecords()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadCourseRecords()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadOverallStats()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
   });
 });
