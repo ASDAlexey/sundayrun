@@ -7,6 +7,18 @@ export interface AthletePageState {
   record: AthleteRecord | null;
   /** A year mapped to the archive's first race date of that year, feeding `athleteYearBadges`. */
   firstEventDateByYear: Record<string, string>;
+  /** Every event slug oldest first, feeding `athleteStreaks`. */
+  eventSlugs: string[];
+}
+
+/** The streaks card prepared for the template: pluralized week counts and the «Раж» tally. */
+export interface StreaksView {
+  /** «3 недели» — consecutive events counting back from the latest one. */
+  currentText: string;
+  /** «7 недель» — the longest run of consecutive events. */
+  maxText: string;
+  /** How many times three 5 km personal records landed in a row; 0 hides the line. */
+  rageCount: number;
 }
 
 /** One run prepared for the template: a preformatted date/time and a resolved protocol link. */

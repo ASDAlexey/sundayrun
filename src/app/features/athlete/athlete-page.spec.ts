@@ -16,11 +16,15 @@ import {
   ATHLETE_LOAD_ERROR_MESSAGE,
   ATHLETE_YEAR_FILTER,
   DENORMALIZED_KEY_PARAM,
+  EMPTY_STREAKS_VIEW,
+  EVENT_SLUG_CHRONOLOGY,
   EXPECTED_BEST_TIME_TEXT,
   EXPECTED_BY_DATE_VIEWS,
   EXPECTED_BY_TIME_VIEWS,
+  EXPECTED_DNF_STREAKS_VIEW,
   EXPECTED_RUN_YEAR_OPTIONS,
   EXPECTED_SHORT_RUNNER_VIEWS,
+  EXPECTED_STREAKS_VIEW,
   EXPECTED_YEAR_BEST_VIEWS,
   EXPECTED_YEAR_FILTERED_VIEWS,
   SHORT_RUNNER_KEY_PARAM,
@@ -30,6 +34,7 @@ import {
 describe('AthletePage', () => {
   const loadRecord = vi.fn();
   const loadFirstEventDateByYear = vi.fn(() => Promise.resolve<Record<string, string>>({}));
+  const loadEventSlugs = vi.fn(() => Promise.resolve([...EVENT_SLUG_CHRONOLOGY]));
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -43,7 +48,7 @@ describe('AthletePage', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AthletesService, useValue: { loadRecord, loadFirstEventDateByYear } },
+        { provide: AthletesService, useValue: { loadRecord, loadFirstEventDateByYear, loadEventSlugs } },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });
@@ -76,6 +81,7 @@ describe('AthletePage', () => {
     expect(page.yearBests()).toEqual(EXPECTED_YEAR_BEST_VIEWS);
     expect(page.years()).toEqual(EXPECTED_RUN_YEAR_OPTIONS);
     expect(page.runs(), 'runs are sorted by time by default').toEqual(EXPECTED_BY_TIME_VIEWS);
+    expect(page.streaks(), 'all three races form one running streak').toEqual(EXPECTED_STREAKS_VIEW);
 
     fixture.detectChanges();
 
@@ -163,6 +169,7 @@ describe('AthletePage', () => {
     expect(page.finishCount()).toBe(0);
     expect(page.bestTimeText()).toBe(NO_BEST_TIME_TEXT);
     expect(page.yearBests()).toEqual([]);
+    expect(page.streaks(), 'a DNF still counted as showing up, the later misses ended the streak').toEqual(EXPECTED_DNF_STREAKS_VIEW);
 
     fixture.detectChanges();
 
@@ -225,6 +232,7 @@ describe('AthletePage', () => {
     expect(page.yearBests()).toEqual([]);
     expect(page.years()).toEqual([]);
     expect(page.runs()).toEqual([]);
+    expect(page.streaks()).toEqual(EMPTY_STREAKS_VIEW);
 
     fixture.detectChanges();
 

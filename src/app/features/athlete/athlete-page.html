@@ -22,6 +22,8 @@
 
           <span class="athlete__counter" i18n="@@athlete.finishes">Финишей на 5 км: {{ finishCount() }}</span>
         </p>
+
+        <a class="athlete__versus" i18n="@@athlete.versusLink" matButton="outlined" [routerLink]="versusLink()">Очные встречи</a>
       </header>
 
       <section class="athlete__records">
@@ -35,6 +37,20 @@
               <li class="athlete__year-best" i18n="@@athlete.yearBest">{{ best.year }} г. — {{ best.timeText }}</li>
             }
           </ul>
+        }
+      </section>
+
+      <section class="athlete__streaks">
+        <h2 class="athlete__streaks-title" i18n="@@athlete.streaksTitle">Серии</h2>
+
+        <p class="athlete__streak" i18n="@@athlete.currentStreak">Текущая: {{ streaks().currentText }} подряд</p>
+
+        <p class="athlete__streak" i18n="@@athlete.maxStreak">Максимальная: {{ streaks().maxText }}</p>
+
+        @if (streaks().rageCount > 0) {
+          <p class="athlete__streak athlete__streak_rage" i18n="@@athlete.rage">
+            Раж ×{{ streaks().rageCount }} — три личных рекорда подряд
+          </p>
         }
       </section>
 
@@ -58,7 +74,7 @@
         </section>
       }
 
-      <app-progress-chart [runs]="progressRuns()" />
+      <app-progress-chart [runs]="progressRuns()" [year]="year()" />
 
       <p aria-live="polite" class="athlete__status" role="status">
         @if (finishCount() === 0) {

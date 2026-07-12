@@ -1,5 +1,5 @@
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { AthleteRunView, YearBestView } from './athlete-page.interface';
+import { AthleteRunView, StreaksView, YearBestView } from './athlete-page.interface';
 
 /** Denormalized on purpose: resolves to `REPEAT_RUNNER_KEY` only after key normalization. */
 export const DENORMALIZED_KEY_PARAM = ' ИВАНОВ ИВАН ';
@@ -60,3 +60,15 @@ export const EXPECTED_SHORT_RUNNER_VIEWS: AthleteRunView[] = [
     timeText: '23:20',
   },
 ];
+
+/** The full archive chronology the streaks run against — the three `EXPECTED_ROLLUP_HISTORY` races. */
+export const EVENT_SLUG_CHRONOLOGY: string[] = ['kuzminki-1', 'kuzminki-2', 'kuzminki-3'];
+
+/** Иванов ran all three races (one unbroken streak); his second 25:00 broke the record chain — no «Раж». */
+export const EXPECTED_STREAKS_VIEW: StreaksView = { currentText: '3 недели', maxText: '3 недели', rageCount: 0 };
+
+/** The DNF-only athlete showed up to the first race alone: the streak is over but stays on record. */
+export const EXPECTED_DNF_STREAKS_VIEW: StreaksView = { currentText: '0 недель', maxText: '1 неделя', rageCount: 0 };
+
+/** No athlete — no streaks. */
+export const EMPTY_STREAKS_VIEW: StreaksView = { currentText: '0 недель', maxText: '0 недель', rageCount: 0 };

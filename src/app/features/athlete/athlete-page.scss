@@ -35,6 +35,11 @@
     color: var(--text-muted);
   }
 
+  &__versus {
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+
   &__status {
     @include st.status-text;
   }
@@ -77,6 +82,31 @@
     @include t.text('body', 'medium');
 
     color: var(--text-secondary);
+  }
+
+  &__streaks {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 8px;
+  }
+
+  &__streaks-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__streak {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+
+    &_rage {
+      color: var(--accent);
+    }
   }
 
   &__badges {
