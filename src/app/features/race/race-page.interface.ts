@@ -24,7 +24,7 @@ export interface RacePageState {
 
 /**
  * The whole protocol prepared for the template: event header, pdf button label and the rows.
- * `avgTimeM`/`avgTimeF` average the 5 km times per gender, `null` when no such finishers.
+ * `medianTimeM`/`medianTimeF` average the 5 km times per gender, `null` when no such finishers.
  */
 export interface RaceView {
   number: number;
@@ -32,8 +32,8 @@ export interface RaceView {
   city: string;
   park: string;
   participantCount: number;
-  avgTimeM: string | null;
-  avgTimeF: string | null;
+  medianTimeM: string | null;
+  medianTimeF: string | null;
   pdfAriaLabel: string;
   rows: RaceRowView[];
 }

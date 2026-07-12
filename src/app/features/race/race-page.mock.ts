@@ -21,8 +21,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
   park: 'Боева дача',
   participantCount: 3,
   // The only male ran the 2.3 km lap, so the male average has no qualifying 5 km times.
-  avgTimeM: null,
-  avgTimeF: '25:00',
+  medianTimeM: null,
+  medianTimeF: '25:00',
   pdfAriaLabel: 'Протокол пробега № 12 (PDF)',
   rows: [
     {

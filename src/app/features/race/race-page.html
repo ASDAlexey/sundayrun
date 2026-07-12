@@ -25,12 +25,12 @@
 
             <p class="race__count" i18n="@@race.participantCount">Участников: {{ view.participantCount }}</p>
 
-            @if (view.avgTimeM; as avgTime) {
-              <p class="race__avg" i18n="@@race.avgTimeM">Ср. время М: {{ avgTime }}</p>
+            @if (view.medianTimeM; as medianTime) {
+              <p class="race__median" i18n="@@race.medianTimeM">Медиана М: {{ medianTime }}</p>
             }
 
-            @if (view.avgTimeF; as avgTime) {
-              <p class="race__avg" i18n="@@race.avgTimeF">Ср. время Ж: {{ avgTime }}</p>
+            @if (view.medianTimeF; as medianTime) {
+              <p class="race__median" i18n="@@race.medianTimeF">Медиана Ж: {{ medianTime }}</p>
             }
           </div>
 

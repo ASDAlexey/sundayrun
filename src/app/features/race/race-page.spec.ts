@@ -81,10 +81,10 @@ describe('RacePage', () => {
     expect(element.querySelector('.race__date').textContent.trim()).toBe(EXPECTED_RACE_VIEW.dateLong);
     expect(element.querySelector('.race__count').textContent).toContain(String(EXPECTED_RACE_VIEW.participantCount));
 
-    const avgLines = [...element.querySelectorAll('.race__avg')];
+    const medianLines = [...element.querySelectorAll('.race__median')];
 
-    expect(avgLines.length, 'only genders with 5 km finishers get an average line').toBe(1);
-    expect(avgLines[0].textContent).toContain(EXPECTED_RACE_VIEW.avgTimeF);
+    expect(medianLines.length, 'only genders with 5 km finishers get an average line').toBe(1);
+    expect(medianLines[0].textContent).toContain(EXPECTED_RACE_VIEW.medianTimeF);
     expect(pdfButton.tagName, 'the pdf action generates on click instead of linking to a file').toBe('BUTTON');
     expect(pdfButton.getAttribute('aria-label')).toBe(EXPECTED_RACE_VIEW.pdfAriaLabel);
     expect(headers.length, 'the nine PDF columns plus the average pace').toBe(10);
