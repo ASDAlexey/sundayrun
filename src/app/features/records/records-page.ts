@@ -20,7 +20,7 @@ import { AthletesService } from '../../github/athletes.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
-import { ALL_GENDERS_VALUE, RECORDS_ROW_HEIGHT_PX } from './records-page.constant';
+import { ALL_GENDERS_VALUE, RECORDS_PODIUM_SIZE, RECORDS_ROW_HEIGHT_PX } from './records-page.constant';
 import { RecordsStatus, RecordsStatusType } from './records-page.enum';
 import { BestResultView } from './records-page.interface';
 
@@ -68,6 +68,7 @@ export class RecordsPage {
   protected readonly allYearsValue = ALL_YEARS_VALUE;
   protected readonly allGendersValue = ALL_GENDERS_VALUE;
   protected readonly rowHeightPx = RECORDS_ROW_HEIGHT_PX;
+  protected readonly podiumSize = RECORDS_PODIUM_SIZE;
 
   constructor() {
     // Prerender bakes the calm loading state into static HTML; live data arrives after hydration.

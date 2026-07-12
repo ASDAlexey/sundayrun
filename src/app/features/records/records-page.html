@@ -89,7 +89,7 @@
               @if (men().length > 0) {
                 <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
                   <ol class="records__list">
-                    <li *cdkVirtualFor="let row of men()" class="records__row">
+                    <li *cdkVirtualFor="let row of men()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
                       <span class="records__place">{{ row.place }}</span>
 
                       <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
@@ -117,7 +117,7 @@
               @if (women().length > 0) {
                 <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
                   <ol class="records__list">
-                    <li *cdkVirtualFor="let row of women()" class="records__row">
+                    <li *cdkVirtualFor="let row of women()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
                       <span class="records__place">{{ row.place }}</span>
 
                       <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
