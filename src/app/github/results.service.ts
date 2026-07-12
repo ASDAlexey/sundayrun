@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { EventResultsFile } from '../core/github/results-file.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { selectEventParticipantRuns, selectEventResults } from './protocol-db-queries';
+import { selectEventParticipantRuns, selectEventResults, selectFiveKmFinishCountsBefore } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
@@ -50,5 +50,10 @@ export class ResultsService {
   /** Every 5 km run of the event's finishers, feeding the protocol page's on-the-fly notables. */
   loadParticipantRuns(slug: string): Promise<ParticipantRun[]> {
     return selectEventParticipantRuns(this.#db, slug);
+  }
+
+  /** athleteKey → 5 km finishes strictly before `dateIso`, feeding the publish-time «Финишей» column. */
+  loadFinishCountsBefore(dateIso: string): Promise<Record<string, number>> {
+    return selectFiveKmFinishCountsBefore(this.#db, dateIso);
   }
 }

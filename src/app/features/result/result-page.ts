@@ -6,10 +6,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 
+import { eventFinishCounts } from '../../core/history/finish-counts';
 import { composeRaceAnnouncement } from '../../core/share/race-announcement';
 import { LINE_SEPARATOR } from '../../core/share/race-announcement.constant';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { AdminTokenService } from '../../github/admin-token.service';
+import { ResultsService } from '../../github/results.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
 import { triggerBlobDownload } from '../../pdf/blob-download';
@@ -39,6 +41,7 @@ export class ResultPage implements OnDestroy {
   readonly #router = inject(Router);
   readonly #sanitizer = inject(DomSanitizer);
   readonly #github = inject(GithubStorageService);
+  readonly #results = inject(ResultsService);
   readonly #adminToken = inject(AdminTokenService);
   readonly #protocolImage = inject(ProtocolImageService);
   readonly #document = inject(DOCUMENT);
@@ -210,13 +213,25 @@ export class ResultPage implements OnDestroy {
     this.description.set(composeRaceAnnouncement(event, rows));
 
     try {
-      const blob = await this.#pdf.generateProtocolBlob(event, rows);
+      const blob = await this.#pdf.generateProtocolBlob(event, rows, await this.#finishCounts(event.dateIso));
 
       this.#blob.set(blob);
       this.objectUrl.set(URL.createObjectURL(blob));
       this.status.set(ResultStatus.ready);
     } catch {
       this.status.set(ResultStatus.error);
+    }
+  }
+
+  /**
+   * The «Финишей» column source: the stored prior counts plus this event's own finishes.
+   * A blank column beats a wrong count, so a failed db read drops the counts, never the PDF.
+   */
+  async #finishCounts(dateIso: string): Promise<Record<string, number>> {
+    try {
+      return eventFinishCounts(this.#store.protocolRows(), await this.#results.loadFinishCountsBefore(dateIso));
+    } catch {
+      return {};
     }
   }
 }
