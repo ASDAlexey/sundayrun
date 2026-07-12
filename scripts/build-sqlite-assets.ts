@@ -17,9 +17,10 @@
  * Idempotent: safe to re-run; the emitted `public/sqlite-http/` tree stays gitignored.
  */
 import { copyFileSync, mkdirSync, rmSync, statSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { build, type BuildOptions } from 'esbuild';
+import { build, type BuildOptions, type Plugin } from 'esbuild';
 
 const root = join(import.meta.dir, '..');
 const packageDir = join(root, 'node_modules', 'sqlite-wasm-http');
@@ -34,7 +35,60 @@ const outDir = join(root, 'public', 'sqlite-http');
  */
 const CLASSIC_WORKER_DEFINE = { 'import.meta.url': 'self.location.href' };
 
-const SHARED: BuildOptions = { bundle: true, minify: true, platform: 'browser' };
+/**
+ * Both VFS backends size the db from the `Content-Length` of a HEAD probe. GitHub Pages
+ * gzip-encodes every response the browser accepts compressed — HEAD included — so that header
+ * carries the *compressed* byte count and SQLite reads the file as truncated (`SQLITE_CORRUPT`).
+ * Range responses are always served identity with a `Content-Range: bytes 0-0/<total>` trailer,
+ * so the probe becomes a one-byte ranged GET and the size comes from `Content-Range`, falling
+ * back to `Content-Length` for servers that ignore `Range` (where identity is the only option).
+ * Applied as exact-string rewrites of the package dist so a version bump that moves the code
+ * fails the build loudly instead of shipping the bug back.
+ */
+const SIZE_PROBE_PATCHES: Record<string, readonly { from: string; to: string }[]> = {
+  'vfs-sync-http.js': [
+    {
+      from: "xhr.open('HEAD', url, false);",
+      to: "xhr.open('GET', url, false); xhr.setRequestHeader('Range', 'bytes=0-0');",
+    },
+    {
+      from: "fh.size = BigInt((_a = xhr.getResponseHeader('Content-Length')) !== null && _a !== void 0 ? _a : 0);",
+      to: "fh.size = BigInt((xhr.getResponseHeader('Content-Range') ?? '').split('/')[1] ?? xhr.getResponseHeader('Content-Length') ?? 0);",
+    },
+  ],
+  'vfs-http-worker.js': [
+    {
+      from: "entry = fetch(msg.url, { method: 'HEAD', headers: Object.assign({}, options === null || options === void 0 ? void 0 : options.headers) })",
+      to: "entry = fetch(msg.url, { method: 'GET', headers: Object.assign({ Range: 'bytes=0-0' }, options === null || options === void 0 ? void 0 : options.headers) })",
+    },
+    {
+      from: "size: BigInt((_a = head.headers.get('Content-Length')) !== null && _a !== void 0 ? _a : 0),",
+      to: "size: BigInt((head.headers.get('Content-Range') ?? '').split('/')[1] ?? head.headers.get('Content-Length') ?? 0),",
+    },
+  ],
+};
+
+const patchSizeProbe: Plugin = {
+  name: 'patch-size-probe',
+  setup(pluginBuild) {
+    pluginBuild.onLoad({ filter: /vfs-(sync-http|http-worker)\.js$/ }, async (args) => {
+      const name = args.path.split('/').pop() ?? '';
+      let contents = await readFile(args.path, 'utf8');
+
+      for (const { from, to } of SIZE_PROBE_PATCHES[name]) {
+        if (!contents.includes(from)) {
+          throw new Error(`patch-size-probe: pattern not found in ${name} — re-check the patch against the installed sqlite-wasm-http`);
+        }
+
+        contents = contents.replace(from, to);
+      }
+
+      return { contents, loader: 'js' };
+    });
+  },
+};
+
+const SHARED: BuildOptions = { bundle: true, minify: true, platform: 'browser', plugins: [patchSizeProbe] };
 
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });

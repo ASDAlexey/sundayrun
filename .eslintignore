@@ -1,6 +1,8 @@
 dist
 coverage
 .angular
+# Root-level HTML is only static design mockups, never app templates.
+/*.html
 _legacy
 content
 scripts
