@@ -50,8 +50,8 @@ function oo1Drizzle(db: Database): ProtocolDrizzle {
 }
 
 /**
- * Applies one publication to the downloaded `protocol.db` bytes (null → a fresh db with the shared
- * schema) and returns the updated bytes. `protocol.db` is the single source of truth, so the write
+ * Applies one publication to the downloaded `sundayrun.db` bytes (null → a fresh db with the shared
+ * schema) and returns the updated bytes. `sundayrun.db` is the single source of truth, so the write
  * reads the previous archive and rollup back out of the db, rolls the event on top, and rebuilds the
  * `events` and athlete tables; only the published slug's `results` rows are replaced.
  */

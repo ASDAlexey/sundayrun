@@ -28,7 +28,7 @@ describe('AthletesService', () => {
     return TestBed.inject(AthletesService);
   }
 
-  it('serves the athlete record, the leaderboards and the overall stats from protocol.db', async () => {
+  it('serves the athlete record, the leaderboards and the overall stats from sundayrun.db', async () => {
     const memory = await createMemoryProtocolDb(POPULATED_SEED);
 
     close = memory.close;

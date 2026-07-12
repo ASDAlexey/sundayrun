@@ -3,4 +3,4 @@
  * read adapter opens this file during the static prerender. `readFile` resolves it against `cwd`,
  * which `ng build` runs from the project root.
  */
-export const PROTOCOL_DB_LOCAL_PATH = 'data/protocol.db';
+export const PROTOCOL_DB_LOCAL_PATH = 'data/sundayrun.db';

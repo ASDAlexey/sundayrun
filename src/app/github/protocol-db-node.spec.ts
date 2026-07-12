@@ -18,7 +18,7 @@ describe('createNodeProtocolDb', () => {
 
   it('opens the local db once and answers value-array queries with narrowed rows', async () => {
     dir = await mkdtemp(join(tmpdir(), 'protocol-db-node-'));
-    const dbPath = join(dir, 'protocol.db');
+    const dbPath = join(dir, 'sundayrun.db');
 
     await writeFile(dbPath, await exportMemoryProtocolDbBytes(NODE_SEED_SQL));
 

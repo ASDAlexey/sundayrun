@@ -7,7 +7,7 @@ import { selectArchiveEvents } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
- * Reads the public event archive from `protocol.db` over HTTP range requests — the only source now
+ * Reads the public event archive from `sundayrun.db` over HTTP range requests — the only source now
  * that the JSON mirror is gone. The db service retries a transient range failure; a persistent one
  * rejects, so the page shows its error state with a reload. An empty archive is simply the db
  * returning no rows, which stays distinct from a load failure.

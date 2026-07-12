@@ -4,7 +4,7 @@ import { RaceEvent } from '../models/race-event.interface';
 /**
  * Publication payload: the event's metadata and its protocol rows. The write reads the previous
  * archive and athletes rollup back out of the db it is updating, so the caller no longer supplies
- * the derived index/history — `protocol.db` is the single source of truth.
+ * the derived index/history — `sundayrun.db` is the single source of truth.
  */
 export interface ProtocolDbEventUpdate {
   event: RaceEvent;

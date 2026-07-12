@@ -9,7 +9,7 @@ import { AdminTokenService } from './admin-token.service';
 import { HISTORY_MISSING_TOKEN_MESSAGE } from './history.service.constant';
 
 /**
- * Reads the accumulated athletes history out of `protocol.db` for the admin import. Goes through the
+ * Reads the accumulated athletes history out of `sundayrun.db` for the admin import. Goes through the
  * authorized Contents API rather than a jsDelivr range request: during a back-to-back import of old
  * events the CDN would keep serving a stale copy for up to its cache TTL, so the whole file is
  * downloaded and reassembled in memory.

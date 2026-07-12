@@ -6,7 +6,7 @@ import { selectEventResults } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
- * Anonymous read of one event's protocol from `protocol.db` over HTTP range requests — the only
+ * Anonymous read of one event's protocol from `sundayrun.db` over HTTP range requests — the only
  * source now that the JSON mirror is gone. An unknown slug resolves to null ("no such protocol");
  * the db service retries a transient range failure, and a persistent one rejects so the page can
  * distinguish "not found" from "could not be loaded". Loads are cached per slug for the session.

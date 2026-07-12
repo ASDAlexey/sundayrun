@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DOCUMENT, inject } from '@angular/c
 
 /**
  * A button that reloads the page, shown beside a load-failure message. With the JSON mirror gone, a
- * persistent `protocol.db` read failure surfaces as an error; reloading re-runs the read (the
+ * persistent `sundayrun.db` read failure surfaces as an error; reloading re-runs the read (the
  * prerendered HTML paints instantly, then the browser refetches), which is the visitor's retry.
  */
 @Component({

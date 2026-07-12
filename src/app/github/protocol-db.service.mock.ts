@@ -6,12 +6,12 @@ import { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK } from './sp
 export { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK };
 
 /** jsDelivrFileUrl(PROTOCOL_DB_PATH, CDN_REF_SHA_MOCK): the sha-pinned CDN url of the SQLite artifact. */
-export const PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${CDN_REF_SHA_MOCK}/data/protocol.db`;
+export const PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${CDN_REF_SHA_MOCK}/data/sundayrun.db`;
 
 /** The commit an admin publication pins mid-session, re-pointing the pool. */
 export const PINNED_SHA_MOCK = 'freshly-published-sha';
 
-export const PINNED_PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${PINNED_SHA_MOCK}/data/protocol.db`;
+export const PINNED_PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey/sundayrun@${PINNED_SHA_MOCK}/data/sundayrun.db`;
 
 /** The `createSQLiteHTTPPool` the mocked `loadSqliteHttp` hands back (see `sqlite-http-loader.mock`). */
 export const CREATE_POOL_MOCK = vi.fn();
@@ -49,4 +49,4 @@ export const POOL_EXEC_ERROR_MESSAGE = 'statement failed';
 export const POOL_CLOSE_ERROR_MESSAGE = 'close timed out';
 
 /** The generic db failure the service specs use to drive the JSON fallback. */
-export const PROTOCOL_DB_ERROR_MESSAGE = 'protocol.db unreachable';
+export const PROTOCOL_DB_ERROR_MESSAGE = 'sundayrun.db unreachable';

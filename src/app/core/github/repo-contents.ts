@@ -18,7 +18,7 @@ export async function fetchRepoFileText(
   return response === null ? null : response.text();
 }
 
-/** The binary sibling of `fetchRepoFileText` (for `data/protocol.db`); the same status mapping. */
+/** The binary sibling of `fetchRepoFileText` (for `data/sundayrun.db`); the same status mapping. */
 export async function fetchRepoFileBytes(
   token: string,
   path: string,

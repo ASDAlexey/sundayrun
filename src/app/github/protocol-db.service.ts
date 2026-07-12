@@ -17,7 +17,7 @@ import {
 import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
 
 /**
- * A virtual SQLite connection to the sha-pinned `data/protocol.db` on the jsDelivr CDN: the
+ * A virtual SQLite connection to the sha-pinned `data/sundayrun.db` on the jsDelivr CDN: the
  * WASM engine (loaded lazily, browser-only) fetches just the db pages a statement touches via
  * HTTP range requests, so a keyed lookup moves kilobytes instead of whole JSON files. Any
  * failure — the worker bootstrap, an unsupported range request, a missing db at the pinned

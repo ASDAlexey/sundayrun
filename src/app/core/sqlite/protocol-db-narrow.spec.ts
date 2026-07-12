@@ -14,7 +14,7 @@ describe('narrowValues', () => {
 
     close = memory.close;
 
-    // `x'01'` is a real BLOB, the one SQLValue kind protocol.db never stores; the engine returns it
+    // `x'01'` is a real BLOB, the one SQLValue kind sundayrun.db never stores; the engine returns it
     // as a Uint8Array, so this drives the narrower's fold-to-null path against the true boundary.
     await expect(memory.db.queryValues("SELECT 42, 'ok', NULL, x'01'", [])).resolves.toEqual([[42, 'ok', null, null]]);
     expect(narrowValues([1, 'a', null]), 'the primitives pass straight through').toEqual([1, 'a', null]);

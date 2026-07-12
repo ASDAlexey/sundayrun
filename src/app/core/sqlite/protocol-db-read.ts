@@ -15,7 +15,7 @@ import { createProtocolDrizzle, ProtocolDrizzle } from './protocol-drizzle';
 import { loadSqlite3 } from './sqlite-loader';
 
 /**
- * Reconstructs the accumulated athletes history from a downloaded `protocol.db` image. The admin
+ * Reconstructs the accumulated athletes history from a downloaded `sundayrun.db` image. The admin
  * import reads it through the authorized Contents API rather than a range request, so it needs the
  * whole file in memory: the CDN would serve a stale copy during a back-to-back import of old events.
  */

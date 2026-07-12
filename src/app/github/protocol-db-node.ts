@@ -10,7 +10,7 @@ import { narrowValues } from '../core/sqlite/protocol-db-narrow';
 
 /**
  * The Node counterpart to `ProtocolDbService`, used by the static prerender: it reads the local
- * `data/protocol.db` file once, deserializes it into an in-memory sqlite-wasm connection, and
+ * `data/sundayrun.db` file once, deserializes it into an in-memory sqlite-wasm connection, and
  * answers the very queries `protocol-db-queries` runs in the browser — so the build renders pages
  * from the database instead of the JSON mirror, with no HTTP range requests to fail. The file is
  * opened lazily on the first query and the connection is kept for the whole build. Node-only (it

@@ -3,7 +3,7 @@ import type { Database, Sqlite3Static } from '@sqlite.org/sqlite-wasm';
 import { PROTOCOL_DB_MAIN_SCHEMA } from './protocol-db-write.constant';
 
 /**
- * Loads a downloaded `protocol.db` image into a fresh connection's `main` schema. Shared by the
+ * Loads a downloaded `sundayrun.db` image into a fresh connection's `main` schema. Shared by the
  * browser write path and the Node read adapter: both open an empty `oo1.DB` and hand it the bytes
  * they fetched (over the GitHub API or from disk) instead of pointing SQLite at a file, since the
  * wasm build has no real filesystem. `checkRc` turns a non-zero result code into a throw.

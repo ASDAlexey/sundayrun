@@ -11,7 +11,7 @@ export const PROTOCOL_DB_WORKER_COUNT = 1;
  */
 export const PROTOCOL_DB_HTTP_OPTIONS: VFSHTTP.Options = { maxPageSize: 1024, backendType: 'sync' };
 
-export const PROTOCOL_DB_BROWSER_ONLY_ERROR = 'protocol.db queries run in the browser only';
+export const PROTOCOL_DB_BROWSER_ONLY_ERROR = 'sundayrun.db queries run in the browser only';
 
 /**
  * How many times a single query is attempted before it surfaces the failure. With the JSON fallback

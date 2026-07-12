@@ -47,7 +47,7 @@ function createDeleteFetch(overrides: Record<string, RouteHandler> = {}): Mock<G
   );
 }
 
-/** Base64 blob contents in upload order: protocol.db, then the version pointer's version.json — the deletion uploads nothing. */
+/** Base64 blob contents in upload order: sundayrun.db, then the version pointer's version.json — the deletion uploads nothing. */
 function blobContents(fetchFn: Mock<GithubFetchFn>): string[] {
   const bodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, POST_METHOD, GIT_BLOBS_URL);
 

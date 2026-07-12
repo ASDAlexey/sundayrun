@@ -33,7 +33,7 @@ export async function createMemoryProtocolDb(seedSql: readonly string[]): Promis
   };
 }
 
-/** Builds the same seeded db and exports its bytes, so a real `protocol.db` image can be written to disk. */
+/** Builds the same seeded db and exports its bytes, so a real `sundayrun.db` image can be written to disk. */
 export async function exportMemoryProtocolDbBytes(seedSql: readonly string[]): Promise<Uint8Array> {
   const sqlite3 = await loadSqlite3Node();
   const conn = new sqlite3.oo1.DB();
@@ -55,7 +55,7 @@ export async function exportMemoryProtocolDbBytes(seedSql: readonly string[]): P
   }
 }
 
-/** Deserializes an exported `protocol.db` image and exposes it as a {@link ProtocolDb} for readback assertions. */
+/** Deserializes an exported `sundayrun.db` image and exposes it as a {@link ProtocolDb} for readback assertions. */
 export async function openMemoryProtocolDbFromBytes(dbBytes: Uint8Array): Promise<{ db: ProtocolDb; close(): void }> {
   const sqlite3 = await loadSqlite3Node();
   const conn = new sqlite3.oo1.DB();

@@ -11,7 +11,7 @@ import { publishVersionPointer } from './version-pointer';
 
 /**
  * The mirror of `publishEvent`: removes one published event from the protocols repository as a
- * single atomic commit — the `source.xlsx` workbook is deleted and the derived `protocol.db` is
+ * single atomic commit — the `source.xlsx` workbook is deleted and the derived `sundayrun.db` is
  * rewritten without the event's entry, rollup contribution and results rows. The db is downloaded
  * fresh on every commit attempt (a concurrent publication is merged, not overwritten) and is the
  * single source of truth, so a rebuild failure fails the deletion. Finishes by pointing
@@ -33,7 +33,7 @@ export async function deleteEvent(token: string, slug: string, fetchFn: GithubFe
   return commitSha;
 }
 
-/** Re-downloads `protocol.db`, drops the slug from it and deletes the source workbook; once per attempt. */
+/** Re-downloads `sundayrun.db`, drops the slug from it and deletes the source workbook; once per attempt. */
 async function buildCommitFiles(fetchFn: GithubFetchFn, token: string, slug: string, paths: EventFilePaths): Promise<CommitFile[]> {
   const dbFile = await buildProtocolDbCommitFile(token, (dbBytes) => removeEventFromDb(dbBytes, { slug }), fetchFn);
 

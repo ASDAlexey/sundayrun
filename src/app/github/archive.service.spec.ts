@@ -22,7 +22,7 @@ describe('ArchiveService', () => {
     return TestBed.inject(ArchiveService);
   }
 
-  it('serves the full index and the latest slice from protocol.db', async () => {
+  it('serves the full index and the latest slice from sundayrun.db', async () => {
     const memory = await createMemoryProtocolDb(SEED_EVENTS);
 
     close = memory.close;

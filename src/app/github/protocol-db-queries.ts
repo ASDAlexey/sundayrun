@@ -15,7 +15,7 @@ import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { asGender, asNumber, asString } from './protocol-db-row';
 
 /**
- * The typed reads the public pages run against `protocol.db`, expressed through the drizzle
+ * The typed reads the public pages run against `sundayrun.db`, expressed through the drizzle
  * query-builder — each mirrors what the page used to derive from a whole JSON file but touches only
  * the db pages its keys live on. Every function returns the exact shape the page logic consumes;
  * aggregate-derived nullable columns and gender are coerced with the `protocol-db-row` readers.

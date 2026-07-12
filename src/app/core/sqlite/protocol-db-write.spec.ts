@@ -59,7 +59,7 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
   );
 
   it(
-    'creates a fresh db when no protocol.db is published yet, seeding it from the single event',
+    'creates a fresh db when no sundayrun.db is published yet, seeding it from the single event',
     async () => {
       const db = await reopen(await applyEventToDb(null, DB_UPDATE_MOCK));
 

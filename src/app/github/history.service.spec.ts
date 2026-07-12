@@ -34,7 +34,7 @@ describe('HistoryService', () => {
     vi.unstubAllGlobals();
   });
 
-  it('downloads protocol.db through the authorized Contents API and reassembles the history, treating a missing db as empty', async () => {
+  it('downloads sundayrun.db through the authorized Contents API and reassembles the history, treating a missing db as empty', async () => {
     const dbBytes = await exportMemoryProtocolDbBytes(HISTORY_DB_SEED);
 
     fetchMock.mockResolvedValueOnce(new Response(dbBytes.slice().buffer));
@@ -44,7 +44,7 @@ describe('HistoryService', () => {
 
     fetchMock.mockResolvedValueOnce(statusResponse(HTTP_NOT_FOUND));
 
-    await expect(service.loadHistory(), 'protocol.db not published yet').resolves.toEqual({});
+    await expect(service.loadHistory(), 'sundayrun.db not published yet').resolves.toEqual({});
   });
 
   it('rejects with GithubAuthError without touching the network when the token is missing', async () => {

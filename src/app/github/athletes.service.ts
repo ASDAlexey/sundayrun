@@ -7,7 +7,7 @@ import { selectAthleteRecord, selectAthleteRecords, selectOverallStats } from '.
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
- * Anonymous read of the public athletes history from `protocol.db` over HTTP range requests — the
+ * Anonymous read of the public athletes history from `sundayrun.db` over HTTP range requests — the
  * visitor-facing counterpart of the admin-only `HistoryService` (which needs a fresh copy via the
  * authorized Contents API). `loadRecord`/`loadRecords`/`loadOverallStats` run keyed selects or SQL
  * aggregates; the db service retries a transient range failure, and a persistent one rejects so the

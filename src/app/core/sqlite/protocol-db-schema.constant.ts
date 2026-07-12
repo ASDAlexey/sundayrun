@@ -1,5 +1,5 @@
 /**
- * DDL for `data/protocol.db` — the single source of truth for the public archive. The browser
+ * DDL for `data/sundayrun.db` — the single source of truth for the public archive. The browser
  * publish flow updates it in place, reading the previous state back out of it before each write;
  * a from-scratch rebuild recovers it from git history.
  *

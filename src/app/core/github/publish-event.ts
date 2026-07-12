@@ -13,7 +13,7 @@ import { publishVersionPointer } from './version-pointer';
 
 /**
  * Publishes one event into the protocols repository as a single atomic commit: the `source.xlsx`
- * workbook and the derived `protocol.db`, which is the single source of truth. The db is downloaded
+ * workbook and the derived `sundayrun.db`, which is the single source of truth. The db is downloaded
  * fresh on every commit attempt and the event is rolled onto it — re-publishing the same date first
  * strips the previous contribution, so the operation is idempotent, and a concurrent publication is
  * merged instead of overwritten. Finishes by pointing `version.json` at the new commit — the
@@ -38,7 +38,7 @@ export async function publishEvent(
   return { commitSha };
 }
 
-/** Re-downloads `protocol.db`, rolls the event onto it and pairs it with the source workbook; once per attempt. */
+/** Re-downloads `sundayrun.db`, rolls the event onto it and pairs it with the source workbook; once per attempt. */
 async function buildCommitFiles(
   fetchFn: GithubFetchFn,
   token: string,

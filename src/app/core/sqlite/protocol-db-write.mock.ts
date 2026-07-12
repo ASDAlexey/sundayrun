@@ -59,7 +59,7 @@ function athleteInserts(history: AthletesHistory): string[] {
 const META_SEED = `INSERT INTO meta VALUES ('${PROTOCOL_DB_META_SCHEMA_VERSION_KEY}', '${PROTOCOL_DB_SCHEMA_VERSION}')`;
 
 /**
- * The seed SQL for the previous `protocol.db`: the three unsorted `STALE_INDEX` events (each with the
+ * The seed SQL for the previous `sundayrun.db`: the three unsorted `STALE_INDEX` events (each with the
  * preserved club meta) and `EXISTING_HISTORY`. Exported to bytes, this is the image the write reads
  * its previous state back out of.
  */

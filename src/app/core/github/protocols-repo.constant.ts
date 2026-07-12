@@ -14,7 +14,7 @@ export const SITE_META_JSON_PATH = `${DATA_DIRECTORY}site-meta.json`;
 export const VERSION_JSON_PATH = `${DATA_DIRECTORY}version.json`;
 
 /** The SQLite database: the single source of truth for the archive; read via http range requests, sha-pinned. */
-export const PROTOCOL_DB_PATH = `${DATA_DIRECTORY}protocol.db`;
+export const PROTOCOL_DB_PATH = `${DATA_DIRECTORY}sundayrun.db`;
 
 /** Per-event files live under `data/events/<dateIso>/`. */
 export const EVENTS_DIRECTORY = `${DATA_DIRECTORY}events/`;

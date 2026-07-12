@@ -2,7 +2,7 @@ import { ProtocolDbValue } from './protocol-db-value.type';
 
 /**
  * The wasm boundary hands back positional `SQLValue[]` rows — a wider union than the number/string/null
- * `protocol.db` actually stores. Rebuilding each row with `narrowValue` turns that external shape into a
+ * `sundayrun.db` actually stores. Rebuilding each row with `narrowValue` turns that external shape into a
  * `ProtocolDbValue[]` by construction, so the executors (the browser range service, the Node adapter and
  * the in-memory oo1 wrapper alike) never resort to a type assertion.
  */

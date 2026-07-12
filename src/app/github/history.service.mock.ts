@@ -12,7 +12,7 @@ import { AthletesHistory } from '../core/models/athletes-history.type';
 import { Gender } from '../core/models/gender.enum';
 import { ADMIN_TOKEN_MOCK } from './admin-token.service.mock';
 
-/** The Contents API url `loadHistory` must hit for `data/protocol.db`. */
+/** The Contents API url `loadHistory` must hit for `data/sundayrun.db`. */
 export const EXPECTED_DB_URL = `${REPO_CONTENTS_URL}${PROTOCOL_DB_PATH}${CONTENTS_REF_QUERY}`;
 
 /** Raw-accept init carrying the stored organiser token. */
@@ -39,7 +39,7 @@ const RUNS = [
   { dateIso: '2026-06-28', slug: '2026-06-28', timeMs: 900000, distanceKm: TWO_THREE_KM_DISTANCE_KM },
 ];
 
-/** The seed SQL for one athlete's three tables; exported to bytes it is the `protocol.db` the service reads. */
+/** The seed SQL for one athlete's three tables; exported to bytes it is the `sundayrun.db` the service reads. */
 export const HISTORY_DB_SEED: readonly string[] = [
   `INSERT INTO athletes VALUES (${q(ATHLETE_KEY)}, ${q('Иван Петров')}, ${q(Gender.male)}, 1500000)`,
   ...RUNS.map((run) => `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q(run.dateIso)}, ${q(run.slug)}, ${run.timeMs}, ${run.distanceKm})`),

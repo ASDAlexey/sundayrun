@@ -62,7 +62,7 @@ function createPublishFetch(overrides: Record<string, RouteHandler> = {}): Mock<
   );
 }
 
-/** Base64 blob contents in upload order: source.xlsx, protocol.db, then the version pointer's version.json. */
+/** Base64 blob contents in upload order: source.xlsx, sundayrun.db, then the version pointer's version.json. */
 function blobContents(fetchFn: Mock<GithubFetchFn>): string[] {
   const bodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, POST_METHOD, GIT_BLOBS_URL);
 
