@@ -12,6 +12,13 @@
   color: var(--text-secondary);
   white-space: nowrap;
 
+  &__rarity {
+    @include t.text('label', 'small');
+
+    margin-left: 8px;
+    opacity: 0.72;
+  }
+
   &_gold {
     border-color: var(--accent);
     background: var(--accent);
