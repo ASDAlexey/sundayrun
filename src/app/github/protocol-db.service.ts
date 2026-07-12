@@ -5,15 +5,15 @@ import type { SQLiteHTTPPool } from 'sqlite-wasm-http';
 
 import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
+import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 import { CdnRefService } from './cdn-ref.service';
-import { narrowRow } from './protocol-db-narrow';
+import { narrowValues } from '../core/sqlite/protocol-db-narrow';
 import {
   PROTOCOL_DB_BROWSER_ONLY_ERROR,
   PROTOCOL_DB_HTTP_OPTIONS,
   PROTOCOL_DB_QUERY_ATTEMPTS,
   PROTOCOL_DB_WORKER_COUNT,
 } from './protocol-db.service.constant';
-import { ProtocolDbBindings, ProtocolDbRow } from './protocol-db.service.type';
 import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
 
 /**
@@ -33,31 +33,31 @@ export class ProtocolDbService {
   #poolRef = '';
   #pool: Promise<SQLiteHTTPPool> | null = null;
 
-  /** Rows as plain objects keyed by the column aliases of `sql`, narrowed to the db's value kinds. */
-  async query(sql: string, bindings?: ProtocolDbBindings): Promise<ProtocolDbRow[]> {
+  /** Rows as positional value arrays for the columns of `sql`, narrowed to the db's value kinds. */
+  async queryValues(sql: string, params: readonly ProtocolDbValue[]): Promise<ProtocolDbValue[][]> {
     if (!this.#isBrowser) {
       throw new Error(PROTOCOL_DB_BROWSER_ONLY_ERROR);
     }
 
-    return this.#queryWithRetry(sql, bindings, PROTOCOL_DB_QUERY_ATTEMPTS);
+    return this.#queryWithRetry(sql, params, PROTOCOL_DB_QUERY_ATTEMPTS);
   }
 
   /**
    * A failed attempt evicts the half-made pool (see `#poolFor`), so retrying reconnects over a fresh
    * pool — enough to ride out a single transient range failure now that no JSON fallback follows.
    */
-  async #queryWithRetry(sql: string, bindings: ProtocolDbBindings | undefined, attemptsLeft: number): Promise<ProtocolDbRow[]> {
+  async #queryWithRetry(sql: string, params: readonly ProtocolDbValue[], attemptsLeft: number): Promise<ProtocolDbValue[][]> {
     try {
       const pool = await this.#poolFor(await this.#cdnRef.resolve());
-      const results = await pool.exec(sql, bindings, { rowMode: 'object' });
+      const results = await pool.exec(sql, [...params], { rowMode: 'array' });
 
-      return results.map((result) => narrowRow(result.row));
+      return results.map((result) => narrowValues(result.row));
     } catch (error) {
       if (attemptsLeft <= 1) {
         throw error;
       }
 
-      return this.#queryWithRetry(sql, bindings, attemptsLeft - 1);
+      return this.#queryWithRetry(sql, params, attemptsLeft - 1);
     }
   }
 

@@ -1,6 +1,6 @@
 import { InjectionToken, inject } from '@angular/core';
 
-import { ProtocolDb } from './protocol-db.interface';
+import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
 import { ProtocolDbService } from './protocol-db.service';
 
 /**

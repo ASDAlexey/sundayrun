@@ -16,23 +16,25 @@ export const PINNED_PROTOCOL_DB_CDN_URL = `https://cdn.jsdelivr.net/gh/ASDAlexey
 /** The `createSQLiteHTTPPool` the mocked `loadSqliteHttp` hands back (see `sqlite-http-loader.mock`). */
 export const CREATE_POOL_MOCK = vi.fn();
 
-export const DB_SQL_MOCK = 'SELECT slug FROM events';
+export const DB_SQL_MOCK = 'SELECT slug, number, note, digest FROM events WHERE full_name = ?';
 
-export const DB_BINDINGS_MOCK = { $key: 'иванов иван' };
+/** Positional params bound `?`-style, exactly as drizzle's proxy driver hands them over. */
+export const DB_PARAMS_MOCK = ['иванов иван'];
 
 /**
- * The raw worker rows the wasm boundary returns, spanning every value kind the service must narrow:
- * a string, a number, a SQL null and a blob (a non number|string|null that folds to null).
+ * The raw worker rows the wasm boundary returns as positional value arrays, spanning every value kind
+ * the service must narrow: a string, a number, a SQL null and a blob (a non number|string|null that
+ * folds to null).
  */
 export const DB_RAW_ROWS_MOCK = [
-  { slug: '2026-06-21', number: 12, note: null, digest: new Uint8Array([1]) },
-  { slug: '2026-06-28', number: 42, note: null, digest: new Uint8Array([2]) },
+  ['2026-06-21', 12, null, new Uint8Array([1])],
+  ['2026-06-28', 42, null, new Uint8Array([2])],
 ];
 
 /** The same rows after narrowing: the blob is the only value that changes, folding to null. */
 export const DB_ROWS_MOCK = [
-  { slug: '2026-06-21', number: 12, note: null, digest: null },
-  { slug: '2026-06-28', number: 42, note: null, digest: null },
+  ['2026-06-21', 12, null, null],
+  ['2026-06-28', 42, null, null],
 ];
 
 /** The worker1 `exec` answer shape the service unwraps: one `{ row, … }` envelope per raw row. */

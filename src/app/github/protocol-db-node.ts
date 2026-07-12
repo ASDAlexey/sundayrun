@@ -3,10 +3,10 @@ import { readFile } from 'node:fs/promises';
 import type { Database } from '@sqlite.org/sqlite-wasm';
 
 import { deserializeDbInto } from '../core/sqlite/deserialize-db';
+import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
+import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 import { loadSqlite3Node } from '../core/sqlite/sqlite-loader-node';
-import { narrowRow } from './protocol-db-narrow';
-import { ProtocolDb } from './protocol-db.interface';
-import { ProtocolDbBindings, ProtocolDbRow } from './protocol-db.service.type';
+import { narrowValues } from '../core/sqlite/protocol-db-narrow';
 
 /**
  * The Node counterpart to `ProtocolDbService`, used by the static prerender: it reads the local
@@ -22,11 +22,11 @@ export function createNodeProtocolDb(dbPath: string): ProtocolDb {
   const open = (): Promise<Database> => (connection ??= openDatabase(dbPath));
 
   return {
-    async query(sql: string, bindings?: ProtocolDbBindings): Promise<ProtocolDbRow[]> {
+    async queryValues(sql: string, params: readonly ProtocolDbValue[]): Promise<ProtocolDbValue[][]> {
       const db = await open();
-      const rows = db.exec(sql, { bind: bindings, rowMode: 'object', returnValue: 'resultRows' });
+      const rows = db.exec(sql, { bind: [...params], rowMode: 'array', returnValue: 'resultRows' });
 
-      return rows.map(narrowRow);
+      return rows.map(narrowValues);
     },
   };
 }
