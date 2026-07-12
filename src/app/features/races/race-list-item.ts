@@ -29,7 +29,7 @@ function toCardStats(entry: ArchiveIndexEntry): RaceCardStat[] {
     stats.push({ label: $localize`:@@races.statFinishers:Финишёров 5 км`, value: String(finisherCount) });
   }
 
-  appendTimeStat(stats, $localize`:@@races.statAvgTime:Ср. время`, entry.avgTimeMs ?? null);
+  appendTimeStat(stats, $localize`:@@races.statMedianTime:Медиана`, entry.medianTimeMs ?? null);
   appendTimeStat(stats, $localize`:@@races.statBestMale:Лучшее М`, entry.bestMaleMs ?? null);
   appendTimeStat(stats, $localize`:@@races.statBestFemale:Лучшее Ж`, entry.bestFemaleMs ?? null);
 
