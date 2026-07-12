@@ -8,6 +8,7 @@
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — архитектура, выбор технологий, формат хранилища
 - [docs/ADMIN_TOKEN.md](docs/ADMIN_TOKEN.md) — как организатору создать GitHub-токен (пошагово)
 - [docs/SEO.md](docs/SEO.md) — что сделано для SEO и ручные шаги после деплоя (Search Console, Яндекс Вебмастер)
+- [docs/IDEAS.md](docs/IDEAS.md) — банк идей на будущее (исследование аналогов, статистика, геймификация, аналитика)
 
 Английское имя проекта и публичного репозитория — **sundayrun** (бренд SundayRUN используется сообществом пробега); URL деплоя `https://asdalexey.github.io/sundayrun/` захардкожен в `src/index.html`, `public/sitemap.xml` и `TOKEN_HELP_URL` — при другом имени репозитория обновить их.
 
