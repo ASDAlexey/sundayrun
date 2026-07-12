@@ -14,6 +14,8 @@ export interface RaceRowView {
   placeFText: string;
   club: string;
   note: string;
+  /** Preformatted on-the-fly notable («2-й результат за всё время»); empty when nothing stands out. */
+  notableText: string;
 }
 
 /** The resolved page state for one slug, applied atomically after the load settles. */
@@ -37,6 +39,8 @@ export interface RaceView {
   summaryText: string;
   medianTimeM: string | null;
   medianTimeF: string | null;
+  /** True for the month-final («итоговый») race — the header gets the accent badge. */
+  isMonthFinal: boolean;
   pdfAriaLabel: string;
   rows: RaceRowView[];
 }

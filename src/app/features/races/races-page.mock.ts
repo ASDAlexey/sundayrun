@@ -2,6 +2,9 @@ import { NEWER_ENTRY, OLDER_ENTRY } from '../../core/github/archive-index.mock';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { RaceListItem } from './races-page.interface';
 
+/** The frozen «today» the page specs pin `isoToday` to: July is still open, June is closed. */
+export const RACES_TODAY_ISO = '2026-07-12';
+
 /** EXISTING_INDEX events (newest first) mapped by toListItem: long dates, protocol routes and pdf button labels. */
 export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
   {
@@ -12,6 +15,8 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     city: 'Курск',
     park: 'Боева дача',
     participantCount: 20,
+    // The latest race of the still-open month is not the final yet.
+    isMonthFinal: false,
     stats: [
       { label: 'Финишёров 5 км', value: '18' },
       { label: 'Медиана', value: '31:02' },
@@ -30,6 +35,8 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     city: 'Курск',
     park: 'Боева дача',
     participantCount: 15,
+    // The last June race against the frozen July «today» — the month's final.
+    isMonthFinal: true,
     stats: [
       { label: 'Финишёров 5 км', value: '12' },
       { label: 'Медиана', value: '29:13' },

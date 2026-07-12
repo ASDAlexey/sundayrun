@@ -24,6 +24,21 @@
     }
   }
 
+  // The month-final («итоговый») race keeps the accent outline even at rest.
+  &_final {
+    --mat-card-outlined-outline-color: var(--accent-line);
+  }
+
+  &__final-badge {
+    @include t.mono-caption;
+    @include t.pill;
+
+    padding: 3px 10px;
+    border: 1px solid var(--accent-line);
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
   &__info {
     display: flex;
     flex-direction: column;

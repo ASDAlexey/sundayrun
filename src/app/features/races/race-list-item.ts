@@ -1,14 +1,30 @@
 import { ArchiveIndexEntry } from '../../core/github/archive-index.interface';
 import { formatRaceNumber } from '../../core/github/race-number';
+import { monthFinalSlugs } from '../../core/history/month-finals';
 import { pluralText } from '../../core/i18n/plural-text';
 import { RuPluralForms } from '../../core/i18n/plural-text.interface';
 import { formatDuration } from '../../core/time/duration';
+import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { RaceCardStat, RaceListItem } from './races-page.interface';
 
+/**
+ * The card list with each month's final («итоговый») race marked. The mark only needs the months
+ * present in `entries`: the archive arrives as a newest-first contiguous slice, so any month it
+ * contains brings its last race along, and the still-open current month never marks one.
+ */
+export function toRaceListItems(entries: ArchiveIndexEntry[], todayIso: string = isoToday()): RaceListItem[] {
+  const finals = monthFinalSlugs(
+    entries.map((entry) => entry.slug),
+    todayIso,
+  );
+
+  return entries.map((entry) => toRaceListItem(entry, finals.has(entry.slug)));
+}
+
 /** The index arrives already sorted newest-first; entries are only reshaped, never re-sorted. */
-export function toRaceListItem(entry: ArchiveIndexEntry): RaceListItem {
+export function toRaceListItem(entry: ArchiveIndexEntry, isMonthFinal: boolean): RaceListItem {
   return {
     slug: entry.slug,
     protocolLink: [RACE_PAGE_BASE_LINK, entry.slug],
@@ -17,6 +33,7 @@ export function toRaceListItem(entry: ArchiveIndexEntry): RaceListItem {
     city: entry.city,
     park: entry.park,
     participantCount: entry.participantCount,
+    isMonthFinal,
     stats: toCardStats(entry),
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@races.pdfAriaLabel:Протокол пробега № ${entry.number}:number: (PDF)`,

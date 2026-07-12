@@ -11,12 +11,18 @@ import { EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { medianMsOrNull } from '../../core/history/median';
+import { monthFinalSlugs } from '../../core/history/month-finals';
+import { buildEventNotables } from '../../core/history/notables';
+import { NotableKind } from '../../core/history/notables.enum';
+import { Notable } from '../../core/history/notables.interface';
 import { summarizeRace } from '../../core/history/race-summary';
 import { pluralText } from '../../core/i18n/plural-text';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatDuration } from '../../core/time/duration';
+import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateLong } from '../../core/time/russian-date';
+import { AthletesService } from '../../github/athletes.service';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
@@ -43,6 +49,7 @@ import { RacePageState, RaceRowView, RaceView } from './race-page.interface';
 })
 export class RacePage {
   readonly #results = inject(ResultsService);
+  readonly #athletes = inject(AthletesService);
   readonly #protocolPdf = inject(ProtocolPdfService);
 
   readonly status = signal<RaceStatusType>(RaceStatus.loading);
@@ -106,20 +113,32 @@ export class RacePage {
     }
 
     try {
-      const file = await this.#results.loadResults(slug);
+      const [file, participantRuns, eventSlugs] = await Promise.all([
+        this.#results.loadResults(slug),
+        // The notables and the month-final mark are garnish: a failed read still renders the protocol.
+        this.#results.loadParticipantRuns(slug).catch(() => []),
+        this.#athletes.loadEventSlugs().catch(() => []),
+      ]);
 
       if (file === null) {
         return { status: RaceStatus.notFound, race: null };
       }
 
-      return { status: RaceStatus.ready, race: toRaceView(file) };
+      return {
+        status: RaceStatus.ready,
+        race: toRaceView(
+          file,
+          buildEventNotables(participantRuns, slug, file.event.dateIso),
+          monthFinalSlugs(eventSlugs, isoToday()).has(slug),
+        ),
+      };
     } catch {
       return { status: RaceStatus.error, race: null };
     }
   }
 }
 
-function toRaceView(file: EventResultsFile): RaceView {
+function toRaceView(file: EventResultsFile, notables: Record<string, Notable>, isMonthFinal: boolean): RaceView {
   return {
     number: formatRaceNumber(file.event.number, file.event.legacyNumber),
     dateLong: formatRussianDateLong(file.event.dateIso),
@@ -129,13 +148,14 @@ function toRaceView(file: EventResultsFile): RaceView {
     summaryText: summaryTextOf(file.rows),
     medianTimeM: medianTimeTextOf(file.rows, Gender.male),
     medianTimeF: medianTimeTextOf(file.rows, Gender.female),
+    isMonthFinal,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
-    rows: file.rows.map(toRowView),
+    rows: file.rows.map((row) => toRowView(row, notables)),
   };
 }
 
-function toRowView(row: ProtocolRow): RaceRowView {
+function toRowView(row: ProtocolRow, notables: Record<string, Notable>): RaceRowView {
   return {
     index: row.index,
     fullName: row.fullName,
@@ -150,7 +170,24 @@ function toRowView(row: ProtocolRow): RaceRowView {
     placeFText: placeTextOf(row.placeF),
     club: row.club,
     note: row.note,
+    notableText: toNotableText(notables[normalizeAthleteKey(row.fullName)]),
   };
+}
+
+/**
+ * The Smashrun-style chip next to the stored note. The window length is fixed in the message —
+ * it mirrors `NOTABLE_WINDOW_MONTHS`, which the builder applies.
+ */
+function toNotableText(notable: Notable | undefined): string {
+  if (notable === undefined) {
+    return '';
+  }
+
+  if (notable.kind === NotableKind.allTimeRank) {
+    return $localize`:@@race.notableAllTimeRank:${notable.rank}:rank:-й результат за всё время`;
+  }
+
+  return $localize`:@@race.notableWindowBest:Лучший результат за 6 месяцев`;
 }
 
 /**

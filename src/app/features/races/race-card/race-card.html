@@ -1,6 +1,10 @@
-<mat-card appearance="outlined" class="race-card">
+<mat-card appearance="outlined" class="race-card" [class.race-card_final]="race().isMonthFinal">
   <mat-card-header class="race-card__info">
     <h3 class="race-card__title" i18n="@@races.raceTitle" matCardTitle>Пробег № {{ race().number }}</h3>
+
+    @if (race().isMonthFinal) {
+      <span class="race-card__final-badge" i18n="@@races.monthFinalBadge">Итоговый забег месяца</span>
+    }
 
     <p class="race-card__date">{{ race().dateLong }}</p>
 

@@ -19,6 +19,7 @@ import {
   EXPECTED_YEARS,
   INDEX_LOAD_ERROR_MESSAGE,
   PREVIOUS_YEAR_INDEX,
+  RACES_TODAY_ISO,
 } from './races-page.mock';
 
 const RACES_KEY = makeStateKey<{ data: RaceListItem[] } | null>(RACES_TRANSFER_KEY);
@@ -31,6 +32,9 @@ describe('RacesPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // The month-final mark depends on the calendar, so only Date is faked (real timers keep `settle` working).
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(RACES_TODAY_ISO));
     platformId = BROWSER_PLATFORM_ID;
     loadIndex.mockResolvedValue(EXISTING_INDEX);
     TestBed.configureTestingModule({
@@ -45,6 +49,7 @@ describe('RacesPage', () => {
 
   afterEach(() => {
     fixture.destroy();
+    vi.useRealTimers();
   });
 
   async function createPage(): Promise<ComponentFixture<RacesPage>> {
@@ -76,6 +81,11 @@ describe('RacesPage', () => {
     const statValues = [...element.querySelectorAll('.race-card__stat-value')].map((node) => node.textContent.trim());
 
     expect(titles).toEqual(EXPECTED_RACE_TITLES);
+    expect(
+      [...element.querySelectorAll('.race-card')].map((card) => card.classList.contains('race-card_final')),
+      'only the closed month’s last race carries the «итоговый» accent',
+    ).toEqual(EXPECTED_RACE_ITEMS.map((item) => item.isMonthFinal));
+    expect(element.querySelectorAll('.race-card__final-badge').length, 'the month-final card shows its badge').toBe(1);
     expect(statValues, 'every stat chip renders its preformatted value').toEqual(
       EXPECTED_RACE_ITEMS.flatMap((item) => item.stats.map((stat) => stat.value)),
     );

@@ -19,6 +19,10 @@
           <div class="race__header-info">
             <h1 class="race__title" i18n="@@race.title">Пробег № {{ view.number }}</h1>
 
+            @if (view.isMonthFinal) {
+              <span class="race__final-badge" i18n="@@race.monthFinalBadge">Итоговый забег месяца</span>
+            }
+
             <p class="race__date">{{ view.dateLong }}</p>
 
             <p class="race__place">{{ view.city }}, {{ view.park }}</p>
@@ -119,7 +123,13 @@
             <ng-container matColumnDef="note">
               <th *matHeaderCellDef class="race__th" i18n="@@race.table.note" mat-header-cell scope="col">Примечание</th>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.note }}</td>
+              <td *matCellDef="let row" class="race__td" mat-cell>
+                {{ row.note }}
+
+                @if (row.notableText !== '') {
+                  <span class="race__notable">{{ row.notableText }}</span>
+                }
+              </td>
             </ng-container>
 
             <tr *matHeaderRowDef="tableColumns" mat-header-row></tr>

@@ -6,7 +6,7 @@ import { pluralText } from '../../core/i18n/plural-text';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
-import { toRaceListItem } from './race-list-item';
+import { toRaceListItems } from './race-list-item';
 import { RaceCard } from './race-card/race-card';
 import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
 import { RacesStatus, RacesStatusType } from './races-page.enum';
@@ -51,7 +51,7 @@ export class RacesPage {
   async #loadRaces(): Promise<RaceListItem[]> {
     const index = await this.#archive.loadIndex();
 
-    return index.events.map((entry) => toRaceListItem(entry));
+    return toRaceListItems(index.events);
   }
 
   #applyRaces(races: RaceListItem[]): void {

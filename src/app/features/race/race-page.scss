@@ -34,6 +34,18 @@
     color: var(--text);
   }
 
+  &__final-badge {
+    @include t.mono-caption;
+    @include t.pill;
+
+    align-self: flex-start;
+    margin: 2px 0;
+    padding: 3px 10px;
+    border: 1px solid var(--accent-line);
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
   &__date {
     @include t.text('body', 'large');
 
@@ -121,6 +133,18 @@
 
   &__athlete {
     @include tbl.link;
+  }
+
+  &__notable {
+    @include t.text('label', 'small');
+
+    display: inline-flex;
+    padding: 1px 8px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: var(--accent-glow);
+    color: var(--accent-light);
+    white-space: nowrap;
   }
 
   &__not-found {

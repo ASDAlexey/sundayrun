@@ -14,6 +14,8 @@ export interface RaceListItem {
   city: string;
   park: string;
   participantCount: number;
+  /** True for the month-final («итоговый») race — the card gets the accent badge and outline. */
+  isMonthFinal: boolean;
   stats: RaceCardStat[];
   pdfAriaLabel: string;
 }
