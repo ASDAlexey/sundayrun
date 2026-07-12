@@ -8,6 +8,21 @@
   --mat-card-outlined-outline-color: var(--border);
 
   height: 100%;
+  transition:
+    border-color 0.15s var(--ease),
+    transform 0.15s var(--ease);
+
+  &:hover {
+    --mat-card-outlined-outline-color: var(--accent-line);
+
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
+  }
 
   &__info {
     display: flex;
@@ -23,9 +38,9 @@
   }
 
   &__date {
-    @include t.text('body', 'large');
+    @include t.mono-meta;
 
-    color: var(--text-secondary);
+    color: var(--text-muted);
   }
 
   &__place {
@@ -41,30 +56,33 @@
   }
 
   &__stats {
-    display: flex;
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
     flex-basis: 100%;
-    flex-wrap: wrap;
-    gap: 8px 24px;
+    margin: 0;
+    padding: 14px 0 0;
+    gap: 4px 12px;
+    border-top: 1px solid var(--border-soft);
     list-style: none;
   }
 
   &__stat {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-  }
-
-  &__stat-label {
-    @include t.text('label', 'small');
-
-    color: var(--text-muted);
+    gap: 4px;
   }
 
   &__stat-value {
-    @include t.text('body', 'medium');
+    @include t.mono-value;
 
     color: var(--text);
-    font-family: var(--mono);
+  }
+
+  &__stat-label {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
   }
 
   &__actions {

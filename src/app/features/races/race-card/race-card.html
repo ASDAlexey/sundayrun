@@ -14,9 +14,9 @@
       <ul class="race-card__stats">
         @for (stat of race().stats; track stat.label) {
           <li class="race-card__stat">
-            <span class="race-card__stat-label">{{ stat.label }}</span>
-
             <span class="race-card__stat-value">{{ stat.value }}</span>
+
+            <span class="race-card__stat-label">{{ stat.label }}</span>
           </li>
         }
       </ul>
