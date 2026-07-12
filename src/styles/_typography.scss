@@ -63,11 +63,6 @@
   letter-spacing: 0.02em;
 }
 
-// One label/small line box — lets a layout reserve the eyebrow row next to columns without one.
-@function label-small-line() {
-  @return 0.68rem * 1.4;
-}
-
 @mixin text($role, $size) {
   @if $role == 'display' and $size == 'large' {
     @include _display-large;
