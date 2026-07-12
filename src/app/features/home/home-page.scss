@@ -197,7 +197,14 @@
   // Material renders the button chrome; only the arrow glyph stays ours.
   &__latest-all {
     &::after {
-      content: ' →';
+      display: inline-block;
+      margin-left: 8px;
+      content: '→';
+      transition: transform 0.2s ease;
+    }
+
+    &:hover::after {
+      transform: translateX(3px);
     }
   }
 
@@ -218,6 +225,17 @@
 
   &__all-cta {
     align-self: center;
+
+    &::after {
+      display: inline-block;
+      margin-left: 8px;
+      content: '→';
+      transition: transform 0.2s ease;
+    }
+
+    &:hover::after {
+      transform: translateX(3px);
+    }
   }
 
   &__status {
@@ -287,7 +305,14 @@
   // Material renders the button chrome; only the arrow glyph stays ours.
   &__course-vk {
     &::after {
-      content: ' ↗';
+      display: inline-block;
+      margin-left: 8px;
+      content: '↗';
+      transition: transform 0.2s ease;
+    }
+
+    &:hover::after {
+      transform: translate(2px, -2px);
     }
   }
 
