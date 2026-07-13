@@ -1,5 +1,5 @@
 /**
- * Structural subsets of the native drag/keyboard events: the page needs only
+ * Structural subsets of the native drag/keyboard events: the component needs only
  * these members, and plain objects can implement them in specs without type
  * assertions (jsdom has no DragEvent/DataTransfer constructors).
  */

@@ -1,0 +1,62 @@
+@use 'styles/typography' as t;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dropzone {
+  &__zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px;
+    gap: 8px;
+    border: 1px dashed var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: var(--accent-atmosphere);
+    text-align: center;
+    cursor: pointer;
+    transition:
+      border-color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease);
+
+    // Keyboard focus is handled by the global :focus-visible outline.
+    &:hover {
+      border-color: var(--accent);
+    }
+
+    &_over {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+  }
+
+  &__icon {
+    margin-bottom: 4px;
+    color: var(--accent);
+  }
+
+  &__prompt {
+    @include t.button-label;
+
+    color: var(--text);
+  }
+
+  &__meta {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
+  &__error {
+    @include t.text('body', 'medium');
+
+    color: var(--accent-warm);
+  }
+
+  &__input {
+    display: none;
+  }
+}

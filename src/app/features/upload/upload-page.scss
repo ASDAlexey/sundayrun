@@ -1,3 +1,4 @@
+@use 'styles/card' as c;
 @use 'styles/section' as s;
 @use 'styles/typography' as t;
 
@@ -7,15 +8,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
 
   &__card {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
     width: 100%;
     max-width: 560px;
-  }
-
-  &__card-content {
     padding: 40px;
+    gap: 16px;
   }
 
   &__title {
@@ -27,43 +29,6 @@
   &__hint {
     @include t.text('body', 'medium');
 
-    margin-top: 12px;
     color: var(--text-secondary);
-  }
-
-  &__zone {
-    @include t.text('body', 'medium');
-
-    margin-top: 24px;
-    padding: 48px 24px;
-    border: 1px dashed var(--border-hover);
-    border-radius: var(--radius-sm);
-    color: var(--text-secondary);
-    text-align: center;
-    cursor: pointer;
-    transition:
-      border-color var(--transition-time) var(--ease),
-      background var(--transition-time) var(--ease);
-
-    // Keyboard focus is handled by the global :focus-visible outline.
-    &:hover {
-      border-color: var(--accent-line);
-    }
-
-    &_over {
-      border-color: var(--accent);
-      background: var(--accent-glow);
-    }
-  }
-
-  &__error {
-    @include t.text('body', 'medium');
-
-    margin-top: 16px;
-    color: var(--accent-warm);
-  }
-
-  &__input {
-    display: none;
   }
 }

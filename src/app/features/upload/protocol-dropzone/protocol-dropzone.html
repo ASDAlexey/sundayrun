@@ -1,0 +1,40 @@
+<div
+  aria-label="Выбрать файл протокола"
+  class="dropzone__zone"
+  i18n-aria-label="@@upload.zoneAriaLabel"
+  role="button"
+  tabindex="0"
+  [class.dropzone__zone_over]="isDragOver()"
+  (click)="openFileDialog()"
+  (dragleave)="onDragLeave()"
+  (dragover)="onDragOver($event)"
+  (drop)="onDrop($event)"
+  (keydown)="onZoneKeydown($event)"
+>
+  <svg
+    aria-hidden="true"
+    class="dropzone__icon"
+    fill="none"
+    height="22"
+    stroke="currentColor"
+    stroke-width="1.6"
+    viewBox="0 0 22 22"
+    width="22"
+  >
+    <path d="M11 18V5" />
+
+    <path d="M5.5 10.5L11 5l5.5 5.5" />
+  </svg>
+
+  <span class="dropzone__prompt" i18n="@@upload.zonePrompt">Выберите файл протокола</span>
+
+  <span class="dropzone__meta" i18n="@@upload.zoneMeta">или перетащите сюда · xlsx</span>
+</div>
+
+@if (hasError()) {
+  <p class="dropzone__error" i18n="@@upload.error" role="alert">
+    Не удалось прочитать файл. Убедитесь, что это .xlsx-экспорт приложения-секундомера.
+  </p>
+}
+
+<input #fileInput accept=".xlsx" class="dropzone__input" type="file" (change)="onFileSelected(fileInput.files)" />

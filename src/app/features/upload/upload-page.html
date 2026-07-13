@@ -1,33 +1,9 @@
 <main class="upload" id="main" tabindex="-1">
-  <mat-card appearance="outlined" class="upload__card">
-    <mat-card-content class="upload__card-content">
-      <h1 class="upload__title" i18n="@@upload.title">Загрузка результатов забега</h1>
+  <section class="upload__card">
+    <h1 class="upload__title" i18n="@@upload.title">Загрузка результатов забега</h1>
 
-      <p class="upload__hint" i18n="@@upload.hint">Экспорт приложения-секундомера — файл .xlsx с именами, итоговым временем и кругами.</p>
+    <p class="upload__hint" i18n="@@upload.hint">Экспорт приложения-секундомера — файл .xlsx с именами, итоговым временем и кругами.</p>
 
-      <div
-        aria-label="Выбрать файл с результатами"
-        class="upload__zone"
-        i18n-aria-label="@@upload.zoneAriaLabel"
-        role="button"
-        tabindex="0"
-        [class.upload__zone_over]="isDragOver()"
-        (click)="openFileDialog()"
-        (dragleave)="onDragLeave()"
-        (dragover)="onDragOver($event)"
-        (drop)="onDrop($event)"
-        (keydown)="onZoneKeydown($event)"
-      >
-        <span class="upload__prompt" i18n="@@upload.zonePrompt">Перетащите файл сюда или нажмите, чтобы выбрать</span>
-      </div>
-
-      @if (hasError()) {
-        <p class="upload__error" i18n="@@upload.error" role="alert">
-          Не удалось прочитать файл. Убедитесь, что это .xlsx-экспорт приложения-секундомера.
-        </p>
-      }
-
-      <input #fileInput accept=".xlsx" class="upload__input" type="file" (change)="onFileSelected(fileInput.files)" />
-    </mat-card-content>
-  </mat-card>
+    <app-protocol-dropzone />
+  </section>
 </main>
