@@ -262,9 +262,13 @@
         </section>
       }
 
-      <app-form-card [runs]="progressRuns()" />
+      <app-rating-card [courseRecords]="courseRecords()" [gender]="gender()" [runs]="progressRuns()" [winnerEvents]="winnerEvents()" />
+
+      <app-form-card [anchorIso]="formAnchorIso()" [runs]="progressRuns()" />
 
       <app-progress-chart [runs]="progressRuns()" [year]="year()" />
+
+      <app-weather-card [runs]="progressRuns()" [weather]="weatherRows()" [year]="year()" />
 
       <app-lifetime-card [runs]="allRuns()" />
 

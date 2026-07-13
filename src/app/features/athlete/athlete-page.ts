@@ -12,12 +12,14 @@ import { currentCourseRecordEntries } from '../../core/history/course-records';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
 import { legendBoard, legendProgress } from '../../core/history/legend';
 import { LEGEND_WINDOW_DAYS } from '../../core/history/legend.constant';
+import { newestEventIso } from '../../core/history/runner-scores';
 import { LegendProgress } from '../../core/history/legend.interface';
 import { isoYear } from '../../core/history/iso-year';
 import { athleteStreaks } from '../../core/history/streaks';
 import { AthleteStreaks } from '../../core/history/streaks.interface';
 import { athleteYearActivity, athleteYearBadges } from '../../core/history/year-badges';
 import { YearBadge, YearBadgeType } from '../../core/history/year-badges.enum';
+import { EventWeatherRow } from '../../core/history/weather-records.interface';
 import { athleteYearRankBadges } from '../../core/history/year-ranks';
 import { distinctRunYears, filterRuns, sortRuns, yearBestEntries } from '../../core/history/athlete-runs';
 import { RunsSort, RunsSortType } from '../../core/history/athlete-runs.enum';
@@ -61,6 +63,8 @@ import { BadgeCatalog } from './badge-catalog/badge-catalog';
 import { FormCard } from './form-card';
 import { LifetimeCard } from './lifetime-card';
 import { ProgressChart } from './progress-chart';
+import { RatingCard } from './rating-card';
+import { WeatherCard } from './weather-card';
 
 /** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
 @Component({
@@ -75,8 +79,10 @@ import { ProgressChart } from './progress-chart';
     MatProgressSpinnerModule,
     MatTableModule,
     ProgressChart,
+    RatingCard,
     ReloadButton,
     RouterLink,
+    WeatherCard,
     YearBadgeChip,
   ],
   templateUrl: './athlete-page.html',
@@ -95,6 +101,8 @@ export class AthletePage {
   readonly #bestFirstLap = signal<AthletePageState['bestFirstLap']>(null);
   readonly #yearBests = signal<AthletePageState['yearBests']>([]);
   readonly #courseRecords = signal<AthletePageState['courseRecords']>(EMPTY_COURSE_RECORD_HISTORY);
+  readonly #winnerEvents = signal<AthletePageState['winnerEvents']>([]);
+  readonly #weatherRows = signal<EventWeatherRow[]>([]);
   readonly #todayIso = isoToday();
   /** The month-final events («итоговые») of the archive; the still-open current month marks none. */
   readonly #monthFinals = computed(() => monthFinalSlugs(this.#eventSlugs(), this.#todayIso));
@@ -163,6 +171,13 @@ export class AthletePage {
   readonly badgeRarity = this.#badgeRarity.asReadonly();
   /** «Король» chips read as «Королева» on a woman's page. */
   readonly gender = computed(() => this.#record()?.gender ?? null);
+  /** The «Рейтинг» card sources: the score denominators and the record the grade divides by. */
+  readonly winnerEvents = this.#winnerEvents.asReadonly();
+  /** The archive's newest event day anchors the form staleness — no wall clock, like the rating. */
+  readonly formAnchorIso = computed(() => newestEventIso(this.#winnerEvents()));
+  readonly courseRecords = this.#courseRecords.asReadonly();
+  /** The «Погодные рекорды» card joins the runs with the stored per-event weather itself. */
+  readonly weatherRows = this.#weatherRows.asReadonly();
   /** The running calendar year of the badge-progress lines. */
   readonly currentYear = isoYear(this.#todayIso);
   /** The running year's activity — the «Все награды» catalog teases the next badge with it. */
@@ -263,7 +278,8 @@ export class AthletePage {
     this.rivalsYear.set(null);
     this.sort.set(RunsSort.byTime);
 
-    const next = await this.#resolveState(key);
+    // The weather card is garnish, so its rows ride outside the atomic state and a failed read leaves them empty.
+    const [next, weatherRows] = await Promise.all([this.#resolveState(key), this.#athletes.loadWeatherRows().catch(() => [])]);
 
     // A newer navigation may have taken over while the history was loading.
     if (key !== this.#key) {
@@ -280,6 +296,8 @@ export class AthletePage {
     this.#bestFirstLap.set(next.bestFirstLap);
     this.#yearBests.set(next.yearBests);
     this.#courseRecords.set(next.courseRecords);
+    this.#winnerEvents.set(next.winnerEvents);
+    this.#weatherRows.set(weatherRows);
     this.status.set(next.status);
   }
 
@@ -296,6 +314,7 @@ export class AthletePage {
         bestFirstLap,
         yearBests,
         courseRecords,
+        winnerEvents,
       ] = await Promise.all([
         this.#athletes.loadRecord(key),
         this.#athletes.loadFirstEventDateByYear(),
@@ -307,6 +326,7 @@ export class AthletePage {
         this.#athletes.loadBestFirstLap(key),
         this.#athletes.loadYearBests(),
         this.#athletes.loadCourseRecords(),
+        this.#athletes.loadEventWinnerTimes(),
       ]);
 
       if (record === null) {
@@ -325,6 +345,7 @@ export class AthletePage {
         bestFirstLap,
         yearBests,
         courseRecords,
+        winnerEvents,
       };
     } catch {
       return emptyAthleteState(AthleteStatus.error);
@@ -346,6 +367,7 @@ function emptyAthleteState(status: AthleteStatusType): AthletePageState {
     bestFirstLap: null,
     yearBests: [],
     courseRecords: EMPTY_COURSE_RECORD_HISTORY,
+    winnerEvents: [],
   };
 }
 

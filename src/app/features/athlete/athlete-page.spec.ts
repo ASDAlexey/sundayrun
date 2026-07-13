@@ -19,6 +19,7 @@ import {
   ATHLETE_COURSE_RECORDS,
   ATHLETE_LOAD_ERROR_MESSAGE,
   ATHLETE_RIVAL_RUNS,
+  ATHLETE_WINNER_EVENTS,
   ATHLETE_YEAR_BESTS,
   ATHLETE_YEAR_FILTER,
   DENORMALIZED_KEY_PARAM,
@@ -88,6 +89,9 @@ describe('AthletePage', () => {
   const loadBestFirstLap = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? ATHLETE_BEST_FIRST_LAP : null));
   const loadYearBests = vi.fn(() => Promise.resolve([...ATHLETE_YEAR_BESTS]));
   const loadCourseRecords = vi.fn(() => Promise.resolve(ATHLETE_COURSE_RECORDS));
+  const loadEventWinnerTimes = vi.fn(() => Promise.resolve([...ATHLETE_WINNER_EVENTS]));
+  // The weather-card scan is covered by its own spec; an empty read keeps the card out of the page here.
+  const loadWeatherRows = vi.fn(() => Promise.resolve([]));
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -114,6 +118,8 @@ describe('AthletePage', () => {
             loadBestFirstLap,
             loadYearBests,
             loadCourseRecords,
+            loadEventWinnerTimes,
+            loadWeatherRows,
           },
         },
         { provide: ActivatedRoute, useValue: routeStub },
@@ -447,5 +453,15 @@ describe('AthletePage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.athlete__error').getAttribute('role')).toBe('alert');
+  });
+
+  it('leaves the weather card rows empty when the weather read fails', async () => {
+    loadWeatherRows.mockRejectedValueOnce(new Error(ATHLETE_LOAD_ERROR_MESSAGE));
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.status(), 'the weather is garnish — the page still renders').toBe(AthleteStatus.ready);
+    expect(page.weatherRows()).toEqual([]);
   });
 });

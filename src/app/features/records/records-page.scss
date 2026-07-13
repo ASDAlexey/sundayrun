@@ -229,6 +229,63 @@
     color: var(--text-muted);
   }
 
+  &__rating-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 56px 56px 56px;
+    align-items: center;
+
+    // Must match RECORDS_ROW_HEIGHT_PX — the virtual scroll strategy assumes this exact height.
+    height: 52px;
+    padding: 0 4px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-soft);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    // Top-3: a tinted lane fading right, echoing a podium.
+    &_podium {
+      border-radius: var(--radius-xs);
+      background: linear-gradient(90deg, var(--accent-glow), transparent 55%);
+    }
+
+    &_head {
+      height: auto;
+      padding: 4px;
+      border-bottom: 0;
+    }
+  }
+
+  &__rating-row_podium &__place {
+    @include t.podium-rank;
+    @include t.gradient-text;
+  }
+
+  &__rating-col {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  &__rating-gender {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
+  &__rating-value {
+    @include t.mono-value;
+
+    color: var(--text);
+    text-align: right;
+
+    &_form {
+      color: var(--accent);
+    }
+  }
+
   &__place {
     @include t.text('label', 'medium');
 
@@ -386,6 +443,32 @@
   &__lap-time {
     @include t.mono-value;
     @include t.gradient-text;
+  }
+
+  &__weather {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__weather-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 12px 4px;
+    gap: 12px;
+  }
+
+  &__weather-value {
+    @include t.mono-value;
+
+    color: var(--text);
+  }
+
+  &__weather-detail {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
   }
 
   &__chart {

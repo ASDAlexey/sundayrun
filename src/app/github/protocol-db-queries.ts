@@ -18,6 +18,7 @@ import { ParticipantRun } from '../core/history/notables.interface';
 import { buildPreviousBests } from '../core/history/previous-bests';
 import { PreviousBest } from '../core/history/previous-bests.interface';
 import { RivalRun } from '../core/history/rivals.interface';
+import { EventWinnerTimes } from '../core/history/runner-scores.interface';
 import { PERSONAL_RECORD_NOTE_PREFIX } from '../core/history/notes-builder.constant';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { buildYearReview } from '../core/history/year-review';
@@ -26,7 +27,7 @@ import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interf
 import { parseDuration } from '../core/time/duration';
 import { Gender, GenderType } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
-import { athletes, events, participations, results, runs } from '../core/sqlite/protocol-db.schema';
+import { athletes, eventWeather, events, participations, results, runs } from '../core/sqlite/protocol-db.schema';
 import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { asGender, asNumber, asString } from './protocol-db-row';
 
@@ -250,6 +251,14 @@ export async function selectHistoryRunRows(db: ProtocolDrizzle): Promise<History
     .orderBy(asc(runs.dateIso));
 }
 
+/** Every event's fastest 5 km time per gender — the denominators of the runner scores. */
+export function selectEventWinnerTimes(db: ProtocolDrizzle): Promise<EventWinnerTimes[]> {
+  return db
+    .select({ slug: events.slug, dateIso: events.dateIso, bestMaleMs: events.bestMaleMs, bestFemaleMs: events.bestFemaleMs })
+    .from(events)
+    .orderBy(asc(events.slug));
+}
+
 /** Every event slug oldest first — the race chronology the streak scan walks (slug = ISO date). */
 export async function selectEventSlugs(db: ProtocolDrizzle): Promise<string[]> {
   const rows = await db.select({ slug: events.slug }).from(events).orderBy(asc(events.slug));
@@ -365,8 +374,16 @@ export async function selectArchiveEvents(db: ProtocolDrizzle, limit?: number): 
       bestFemaleMs: events.bestFemaleMs,
       newcomerCount: events.newcomerCount,
       personalRecordCount: events.personalRecordCount,
+      // A left join keeps events published before the weather fetch; `weatherSlug` marks a real row.
+      weatherSlug: eventWeather.slug,
+      temperatureC: eventWeather.temperatureC,
+      apparentC: eventWeather.apparentC,
+      precipitationMm: eventWeather.precipitationMm,
+      windKmh: eventWeather.windKmh,
+      weatherCode: eventWeather.weatherCode,
     })
     .from(events)
+    .leftJoin(eventWeather, eq(eventWeather.slug, events.slug))
     .orderBy(desc(events.dateIso))
     .$dynamic();
   const rows = await (limit === undefined ? base : base.limit(limit));
@@ -558,6 +575,12 @@ function toArchiveEntry(row: {
   bestFemaleMs: number | null;
   newcomerCount: number | null;
   personalRecordCount: number | null;
+  weatherSlug: string | null;
+  temperatureC: number | null;
+  apparentC: number | null;
+  precipitationMm: number | null;
+  windKmh: number | null;
+  weatherCode: number | null;
 }): ArchiveIndexEntry {
   return {
     slug: row.slug,
@@ -575,6 +598,17 @@ function toArchiveEntry(row: {
     bestFemaleMs: row.bestFemaleMs,
     newcomerCount: row.newcomerCount,
     personalRecordCount: row.personalRecordCount,
+    // Absent join → no weather; a real row keeps its individually-nullable readings intact.
+    weather:
+      row.weatherSlug === null
+        ? null
+        : {
+            temperatureC: row.temperatureC,
+            apparentC: row.apparentC,
+            precipitationMm: row.precipitationMm,
+            windKmh: row.windKmh,
+            weatherCode: row.weatherCode,
+          },
     files: eventFilePaths(row.dateIso),
   };
 }

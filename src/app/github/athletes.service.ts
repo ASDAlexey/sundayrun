@@ -7,7 +7,9 @@ import { FirstLapRecords } from '../core/history/first-lap.type';
 import { LegendFinish } from '../core/history/legend.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { RivalRun } from '../core/history/rivals.interface';
+import { EventWinnerTimes } from '../core/history/runner-scores.interface';
 import { SeasonRun } from '../core/history/season-positions.interface';
+import { EventWeatherRow } from '../core/history/weather-records.interface';
 import { YearBestRow } from '../core/history/year-ranks.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
@@ -19,6 +21,7 @@ import {
   selectAthleteRunPlaces,
   selectCourseRecords,
   selectEventSlugs,
+  selectEventWinnerTimes,
   selectFirstEventDateByYear,
   selectFirstLapRecords,
   selectLegendFinishes,
@@ -26,6 +29,7 @@ import {
   selectRivalRuns,
 } from './protocol-db-queries';
 import { selectSeasonLapRuns, selectSeasonRuns } from './protocol-db-season';
+import { selectEventWeatherRows } from './protocol-db-weather';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
@@ -94,6 +98,11 @@ export class AthletesService {
     return selectEventSlugs(this.#db);
   }
 
+  /** Every event's per-gender winning 5 km times; the runner-score denominators of the ratings. */
+  loadEventWinnerTimes(): Promise<EventWinnerTimes[]> {
+    return selectEventWinnerTimes(this.#db);
+  }
+
   /** Badge → the share of participants who ever earned it; the rarity hint on the badge chips. */
   loadYearBadgeRarity(): Promise<YearBadgeRarity> {
     return selectYearBadgeRarity(this.#db);
@@ -112,5 +121,10 @@ export class AthletesService {
   /** Every 5 km finish at the athlete's events (own rows included); feeds the «Соперники» card. */
   loadRivalRuns(key: string): Promise<RivalRun[]> {
     return selectRivalRuns(this.#db, key);
+  }
+
+  /** Every event's stored 9:00 weather; feeds the weather extremes and the athlete's weather bests. */
+  loadWeatherRows(): Promise<EventWeatherRow[]> {
+    return selectEventWeatherRows(this.#db);
   }
 }

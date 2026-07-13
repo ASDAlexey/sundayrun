@@ -47,9 +47,20 @@
           >
             Гонка за сезон
           </button>
+
+          <button
+            class="records__seg-option"
+            i18n="@@records.viewRating"
+            type="button"
+            [attr.aria-pressed]="view() === views.rating"
+            [class.records__seg-option_active]="view() === views.rating"
+            (click)="onViewChange(views.rating)"
+          >
+            Рейтинг
+          </button>
         </div>
 
-        @if (view() === views.table) {
+        @if (view() !== views.chart) {
           <label class="records__search">
             <svg
               aria-hidden="true"
@@ -80,32 +91,34 @@
           </label>
         }
 
-        <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
-          @if (view() === views.table) {
-            <button
-              class="records__seg-option"
-              i18n="@@records.allYears"
-              type="button"
-              [attr.aria-pressed]="yearSegValue() === null"
-              [class.records__seg-option_active]="yearSegValue() === null"
-              (click)="onYearChange(allYearsValue)"
-            >
-              Все годы
-            </button>
-          }
+        @if (view() !== views.rating) {
+          <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
+            @if (view() === views.table) {
+              <button
+                class="records__seg-option"
+                i18n="@@records.allYears"
+                type="button"
+                [attr.aria-pressed]="yearSegValue() === null"
+                [class.records__seg-option_active]="yearSegValue() === null"
+                (click)="onYearChange(allYearsValue)"
+              >
+                Все годы
+              </button>
+            }
 
-          @for (boardYear of years(); track boardYear) {
-            <button
-              class="records__seg-option"
-              type="button"
-              [attr.aria-pressed]="yearSegValue() === boardYear"
-              [class.records__seg-option_active]="yearSegValue() === boardYear"
-              (click)="onYearChange(boardYear)"
-            >
-              {{ boardYear }}
-            </button>
-          }
-        </div>
+            @for (boardYear of years(); track boardYear) {
+              <button
+                class="records__seg-option"
+                type="button"
+                [attr.aria-pressed]="yearSegValue() === boardYear"
+                [class.records__seg-option_active]="yearSegValue() === boardYear"
+                (click)="onYearChange(boardYear)"
+              >
+                {{ boardYear }}
+              </button>
+            }
+          </div>
+        }
 
         <div aria-label="Пол" class="records__seg" i18n-aria-label="@@records.genderFilterLabel" role="group">
           <button
@@ -402,9 +415,93 @@
           </div>
         </section>
 
+        @if (weatherViews().length > 0) {
+          <section class="records__weather">
+            <h2 class="records__history-title" i18n="@@records.weatherTitle">Погодные рекорды</h2>
+
+            <p class="records__history-tagline" i18n="@@records.weatherTagline">
+              Самые суровые утра пробега — температура и ветер в 9:00 у трассы по метеоархиву. Фильтр по годам сужает поиск до сезона.
+            </p>
+
+            <div class="records__boards">
+              @for (extreme of weatherViews(); track extreme.label) {
+                <section class="records__board">
+                  <div class="records__board-head">
+                    <h3 class="records__board-title">{{ extreme.label }}</h3>
+                  </div>
+
+                  <div class="records__weather-row">
+                    <span class="records__weather-value">{{ extreme.valueText }}</span>
+
+                    @if (extreme.detailText) {
+                      <span class="records__weather-detail">{{ extreme.detailText }}</span>
+                    }
+
+                    <a class="records__date" [routerLink]="extreme.raceLink">{{ extreme.dateShort }}</a>
+                  </div>
+                </section>
+              }
+            </div>
+          </section>
+        }
+
         <p class="records__note" i18n="@@records.note">
           Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.
         </p>
+      } @else if (view() === views.rating) {
+        <section class="records__rating">
+          <h2 class="records__history-title" i18n="@@records.ratingTitle">Рейтинг</h2>
+
+          <p class="records__history-tagline" i18n="@@records.ratingTagline">
+            Общий зачёт мужчин и женщин: каждый финиш оценивается в процентах от времени победителя своего пола. Индекс формы — пять лучших
+            забегов за последние 12 месяцев, свежие весомее; средний счёт — по всем стартам; грейд — личный рекорд против рекорда трассы.
+            Год без финишей выводит из рейтинга.
+          </p>
+
+          <div class="records__board-head">
+            <span class="records__board-count" i18n="@@records.ratingCount">В рейтинге: {{ ratingCount() }}</span>
+          </div>
+
+          @if (ratingRows().length > 0) {
+            <div aria-hidden="true" class="records__rating-row records__rating-row_head">
+              <span></span>
+
+              <span></span>
+
+              <span class="records__rating-col" i18n="@@records.ratingColForm">Форма</span>
+
+              <span class="records__rating-col" i18n="@@records.ratingColRank">Счёт</span>
+
+              <span class="records__rating-col" i18n="@@records.ratingColGrade">Грейд</span>
+            </div>
+
+            <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
+              <ol class="records__list">
+                <li
+                  *cdkVirtualFor="let row of ratingRows()"
+                  class="records__rating-row"
+                  [class.records__rating-row_podium]="row.place <= podiumSize"
+                >
+                  <span class="records__place">{{ row.place }}</span>
+
+                  <span class="records__athlete-cell">
+                    <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                    <span class="records__rating-gender">{{ row.genderText }}</span>
+                  </span>
+
+                  <span class="records__rating-value records__rating-value_form">{{ row.formText }}</span>
+
+                  <span class="records__rating-value">{{ row.rankText }}</span>
+
+                  <span class="records__rating-value">{{ row.gradeText }}</span>
+                </li>
+              </ol>
+            </cdk-virtual-scroll-viewport>
+          } @else {
+            <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+          }
+        </section>
       } @else {
         <section class="records__chart">
           <h2 class="records__history-title" i18n="@@records.chartTitle">Гонка за сезон {{ chartYear() }}</h2>

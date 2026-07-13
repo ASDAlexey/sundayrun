@@ -11,6 +11,8 @@ import { PreviousBest } from '../core/history/previous-bests.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { SeasonRun } from '../core/history/season-positions.interface';
 import { RivalRun } from '../core/history/rivals.interface';
+import { EventWinnerTimes } from '../core/history/runner-scores.interface';
+import { EventWeatherRow } from '../core/history/weather-records.interface';
 import { YearBadge } from '../core/history/year-badges.enum';
 import { YearReview } from '../core/history/year-review.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
@@ -146,6 +148,23 @@ export const EXPECTED_DB_BEST_FIRST_LAP: AthleteFirstLap = { dateIso: '2024-06-0
 /** Нина's single run resolves through the women's place column. */
 export const EXPECTED_WOMAN_RUN_PLACES: Record<string, number> = { '2025-02-02': 1 };
 
+/**
+ * Stored 9:00 readings: two on the run-history events (the newer of which kept only the temperature)
+ * and one on the newer archive event, so `selectArchiveEvents` joins a real reading there while the
+ * older archive event, left unseeded, exercises the null branch.
+ */
+export const SEED_WEATHER: readonly string[] = [
+  `INSERT INTO event_weather VALUES (${q('2024-05-05')}, -2.5, -6, 0, 14.3, 3)`,
+  `INSERT INTO event_weather VALUES (${q('2024-06-06')}, 21.4, NULL, NULL, NULL, NULL)`,
+  `INSERT INTO event_weather VALUES (${q(NEWER_ENTRY.slug)}, 24.6, 25.1, 0, 9.4, 1)`,
+];
+
+export const EXPECTED_DB_WEATHER_ROWS: EventWeatherRow[] = [
+  { slug: '2024-05-05', temperatureC: -2.5, apparentC: -6, precipitationMm: 0, windKmh: 14.3, weatherCode: 3 },
+  { slug: '2024-06-06', temperatureC: 21.4, apparentC: null, precipitationMm: null, windKmh: null, weatherCode: null },
+  { slug: NEWER_ENTRY.slug, temperatureC: 24.6, apparentC: 25.1, precipitationMm: 0, windKmh: 9.4, weatherCode: 1 },
+];
+
 /** The full populated db used by most assertions. */
 export const POPULATED_SEED: readonly string[] = [
   ...SEED_ATHLETES,
@@ -156,6 +175,7 @@ export const POPULATED_SEED: readonly string[] = [
   ...SEED_EVENTS,
   ...SEED_RESULTS,
   ...SEED_RUN_RESULTS,
+  ...SEED_WEATHER,
 ];
 
 export const EXPECTED_ATHLETE_RECORD: AthleteRecord = {
@@ -274,6 +294,12 @@ export const EXPECTED_ARCHIVE_EVENTS: ArchiveIndexEntry[] = EXISTING_INDEX.event
 
 /** The seeded events oldest first — the chronology `selectEventSlugs` serves. */
 export const EXPECTED_EVENT_SLUGS: string[] = [OLDER_ENTRY.slug, NEWER_ENTRY.slug];
+
+/** The seeded per-gender winning times, oldest event first — the runner-score denominators. */
+export const EXPECTED_WINNER_TIMES: EventWinnerTimes[] = [
+  { slug: OLDER_ENTRY.slug, dateIso: OLDER_ENTRY.dateIso, bestMaleMs: OLDER_ENTRY.bestMaleMs, bestFemaleMs: OLDER_ENTRY.bestFemaleMs },
+  { slug: NEWER_ENTRY.slug, dateIso: NEWER_ENTRY.dateIso, bestMaleMs: NEWER_ENTRY.bestMaleMs, bestFemaleMs: NEWER_ENTRY.bestFemaleMs },
+];
 
 /** Both seeded events fall into 2026, so its first race date is the older slug. */
 export const EXPECTED_FIRST_EVENT_DATE_BY_YEAR: Record<string, string> = { '2026': OLDER_ENTRY.slug };

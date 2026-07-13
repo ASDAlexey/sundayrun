@@ -1,11 +1,21 @@
+import { EXPECTED_COURSE_RECORD_HISTORY } from '../../core/history/course-records.mock';
+import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
+import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { EventWeatherRow } from '../../core/history/weather-records.interface';
 import { SeasonRun } from '../../core/history/season-positions.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { Gender } from '../../core/models/gender.enum';
+import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
-import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { RECORD_DELTA_SIGN } from './records-page.constant';
-import { ChartPick, FirstLapRecordView } from './records-page.interface';
+import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
+import {
+  NO_GRADE_TEXT,
+  RECORD_DELTA_SIGN,
+  WEATHER_COLDEST_LABEL,
+  WEATHER_HOTTEST_LABEL,
+  WEATHER_WINDIEST_LABEL,
+} from './records-page.constant';
+import { ChartPick, FirstLapRecordView, RatingRowView, WeatherExtremeView } from './records-page.interface';
 
 export const HISTORY_LOAD_ERROR_MESSAGE = 'history load failed';
 
@@ -50,6 +60,62 @@ export const EXPECTED_SEARCH_PLACE = 2;
 
 export const NO_MATCH_QUERY = 'нет такого атлета';
 
+/**
+ * Winner times behind LEADERBOARD_RECORDS' events. Быстров won five of his six starts and lost
+ * once (95), Азбукин and Тихонов lost their only races (95 and 90), Ланская lost hers (96).
+ * The newest event day — 2025-05-11 — anchors the form year, leaving only Быстров's 2024 run out.
+ */
+export const RATING_WINNER_EVENTS: EventWinnerTimes[] = [
+  { slug: '2024-03-10', dateIso: '2024-03-10', bestMaleMs: 1260000, bestFemaleMs: null },
+  { slug: '2025-03-02', dateIso: '2025-03-02', bestMaleMs: 1200000, bestFemaleMs: null },
+  { slug: '2025-03-09', dateIso: '2025-03-09', bestMaleMs: 1140000, bestFemaleMs: null },
+  { slug: '2025-03-16', dateIso: '2025-03-16', bestMaleMs: 1140000, bestFemaleMs: null },
+  { slug: '2025-03-23', dateIso: '2025-03-23', bestMaleMs: 1140000, bestFemaleMs: null },
+  { slug: '2025-03-30', dateIso: '2025-03-30', bestMaleMs: 1197000, bestFemaleMs: null },
+  { slug: '2025-04-06', dateIso: '2025-04-06', bestMaleMs: 1083000, bestFemaleMs: null },
+  { slug: '2025-05-04', dateIso: '2025-05-04', bestMaleMs: 1620000, bestFemaleMs: null },
+  { slug: '2025-05-11', dateIso: '2025-05-11', bestMaleMs: null, bestFemaleMs: 1440000 },
+];
+
+const ratingRow = (
+  place: number,
+  key: string,
+  displayName: string,
+  gender: GenderType,
+  formText: string,
+  rankText: string,
+  gradeText: string,
+): RatingRowView => ({
+  place,
+  key,
+  athleteLink: [ATHLETES_PAGE_LINK, key],
+  displayName,
+  gender,
+  genderText: gender === Gender.male ? MALE_GENDER_TEXT : FEMALE_GENDER_TEXT,
+  formText,
+  rankText,
+  gradeText,
+});
+
+/** The men's records only: the vacant women's board leaves Ланская without a grade. */
+export const RATING_COURSE_RECORDS: CourseRecordHistory = {
+  [Gender.male]: EXPECTED_COURSE_RECORD_HISTORY[Gender.male],
+  [Gender.female]: [],
+};
+
+/**
+ * The combined board over `RATING_COURSE_RECORDS`: Быстров's five window scores weight into 99
+ * (rank 99,2 over six starts), then the one-race athletes by their single score; the men grade
+ * against the 19:00 record (the slowest at 63,3), Ланская grades on a dash — the women's board is
+ * vacant here. Сошедшая Софья never ran — no row.
+ */
+export const EXPECTED_RATING_ROWS: RatingRowView[] = [
+  ratingRow(1, 'быстров борис', 'Быстров Борис', Gender.male, '99', '99,2', '100'),
+  ratingRow(2, 'ланская лидия', 'Ланская Лидия', Gender.female, '96', '96', NO_GRADE_TEXT),
+  ratingRow(3, 'азбукин андрей', 'Азбукин Андрей', Gender.male, '95', '95', '100'),
+  ratingRow(4, 'тихонов трофим', 'Тихонов Трофим', Gender.male, '90', '90', '63,3'),
+];
+
 /** Быстров's 2024 record run, reachable through the year filter. */
 export const EXPECTED_YEAR_RACE_SLUG = '2024-03-10';
 
@@ -84,6 +150,67 @@ export const EXPECTED_WOMEN_FIRST_LAP_VIEW: FirstLapRecordView = {
   dateShort: '11.05.2025 г.',
   raceLink: [RACE_PAGE_BASE_LINK, '2025-05-11'],
 };
+
+/** `WEATHER_ROWS_MOCK` (see weather-records.mock) prepared for the template: all-time extremes. */
+export const EXPECTED_WEATHER_VIEWS: WeatherExtremeView[] = [
+  {
+    label: WEATHER_COLDEST_LABEL,
+    valueText: '🌨️ -14°',
+    detailText: 'ветер 11 км/ч',
+    dateShort: '11.02.2024 г.',
+    raceLink: [RACE_PAGE_BASE_LINK, '2024-02-11'],
+  },
+  {
+    label: WEATHER_HOTTEST_LABEL,
+    valueText: '☀️ +31°',
+    detailText: 'ветер 2 км/ч',
+    dateShort: '13.07.2025 г.',
+    raceLink: [RACE_PAGE_BASE_LINK, '2025-07-13'],
+  },
+  {
+    label: WEATHER_WINDIEST_LABEL,
+    valueText: '💨 40 км/ч',
+    detailText: '+27°',
+    dateShort: '02.06.2024 г.',
+    raceLink: [RACE_PAGE_BASE_LINK, '2024-06-02'],
+  },
+];
+
+/** The season the year-filter test narrows the weather extremes to. */
+export const WEATHER_SEASON_YEAR = '2025';
+
+/** The 2025 season slice of `WEATHER_ROWS_MOCK`: its coldest day stores no wind, so no detail line. */
+export const EXPECTED_2025_COLDEST_VIEW: WeatherExtremeView = {
+  label: WEATHER_COLDEST_LABEL,
+  valueText: '☁️ -3°',
+  detailText: '',
+  dateShort: '05.01.2025 г.',
+  raceLink: [RACE_PAGE_BASE_LINK, '2025-01-05'],
+};
+
+/** Two events with a temperature but no stored wind — the extremes drop the windiest card. */
+export const WINDLESS_WEATHER_ROWS: EventWeatherRow[] = [
+  { slug: '2024-02-11', temperatureC: -8, apparentC: null, precipitationMm: null, windKmh: null, weatherCode: 71 },
+  { slug: '2024-07-14', temperatureC: 29, apparentC: null, precipitationMm: null, windKmh: null, weatherCode: 0 },
+];
+
+/** `WINDLESS_WEATHER_ROWS` prepared for the template: only the cold and hot cards, no wind card. */
+export const EXPECTED_WINDLESS_WEATHER_VIEWS: WeatherExtremeView[] = [
+  {
+    label: WEATHER_COLDEST_LABEL,
+    valueText: '🌨️ -8°',
+    detailText: '',
+    dateShort: '11.02.2024 г.',
+    raceLink: [RACE_PAGE_BASE_LINK, '2024-02-11'],
+  },
+  {
+    label: WEATHER_HOTTEST_LABEL,
+    valueText: '☀️ +29°',
+    detailText: '',
+    dateShort: '14.07.2024 г.',
+    raceLink: [RACE_PAGE_BASE_LINK, '2024-07-14'],
+  },
+];
 
 const tieRecord = (key: string, displayName: string, dateIso: string): AthleteRecord => ({
   key,

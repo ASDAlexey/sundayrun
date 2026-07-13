@@ -3,6 +3,7 @@ import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { LegendFinish } from '../../core/history/legend.interface';
 import { RivalRun } from '../../core/history/rivals.interface';
+import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { YearBestRow } from '../../core/history/year-ranks.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthleteStatusType } from './athlete-page.enum';
@@ -29,6 +30,8 @@ export interface AthletePageState {
   yearBests: YearBestRow[];
   /** The course record progression; its standing holders wear the «Король трассы» badge. */
   courseRecords: CourseRecordHistory;
+  /** Every event's per-gender winning times, feeding the «Рейтинг» card scores. */
+  winnerEvents: EventWinnerTimes[];
 }
 
 /** The «Лучший первый круг» profile value prepared for the template; null hides it. */

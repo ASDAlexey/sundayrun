@@ -6,6 +6,7 @@ import { LegendFinish } from '../../core/history/legend.interface';
 import { MEME_THRESHOLDS } from '../../core/history/meme-thresholds.constant';
 import { MemeThreshold } from '../../core/history/meme-thresholds.interface';
 import { RivalRun } from '../../core/history/rivals.interface';
+import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { AthleteYearBadges } from '../../core/history/year-badges';
 import { YearBadge } from '../../core/history/year-badges.enum';
 import { YearBestRow } from '../../core/history/year-ranks.interface';
@@ -176,6 +177,13 @@ export const ATHLETE_COURSE_RECORDS: CourseRecordHistory = {
   ],
   [Gender.female]: [],
 };
+
+/** The per-gender winning times of the three rollup events, feeding the «Рейтинг» card. */
+export const ATHLETE_WINNER_EVENTS: EventWinnerTimes[] = [
+  { slug: 'kuzminki-1', dateIso: '2025-12-27', bestMaleMs: 1500000, bestFemaleMs: 1620000 },
+  { slug: 'kuzminki-2', dateIso: '2026-01-03', bestMaleMs: 1400000, bestFemaleMs: 1680000 },
+  { slug: 'kuzminki-3', dateIso: '2026-01-10', bestMaleMs: 1500000, bestFemaleMs: 1500000 },
+];
 
 /** The ranking crowns lead the 2026 row; the activity criteria award nothing on three runs. */
 export const EXPECTED_RANK_YEAR_BADGES: AthleteYearBadges[] = [{ year: '2026', badges: [YearBadge.courseKing, YearBadge.yearKing] }];

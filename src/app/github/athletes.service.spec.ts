@@ -10,6 +10,7 @@ import {
   EXPECTED_COURSE_RECORDS,
   EXPECTED_DB_BEST_FIRST_LAP,
   EXPECTED_DB_FIRST_LAP_RECORDS,
+  EXPECTED_DB_WEATHER_ROWS,
   EXPECTED_EVENT_SLUGS,
   EXPECTED_FIRST_EVENT_DATE_BY_YEAR,
   EXPECTED_LEADERBOARD_RECORDS,
@@ -19,6 +20,7 @@ import {
   EXPECTED_SEASON_RUNS,
   EXPECTED_SQL_STATS,
   EXPECTED_SEASON_LAP_RUNS,
+  EXPECTED_WINNER_TIMES,
   POPULATED_SEED,
   SEASON_RUNS_YEAR,
   UNKNOWN_ATHLETE_KEY,
@@ -54,6 +56,8 @@ describe('AthletesService', () => {
     await expect(service.loadCourseRecords()).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(service.loadOverallStats()).resolves.toEqual(EXPECTED_SQL_STATS);
     await expect(service.loadEventSlugs()).resolves.toEqual(EXPECTED_EVENT_SLUGS);
+    await expect(service.loadEventWinnerTimes()).resolves.toEqual(EXPECTED_WINNER_TIMES);
+    await expect(service.loadWeatherRows()).resolves.toEqual(EXPECTED_DB_WEATHER_ROWS);
     await expect(service.loadFirstEventDateByYear()).resolves.toEqual(EXPECTED_FIRST_EVENT_DATE_BY_YEAR);
     await expect(service.loadYearBadgeRarity(), 'the ranking crowns reach the rarity map').resolves.toEqual(EXPECTED_DB_BADGE_RARITY);
     await expect(service.loadYearBests()).resolves.toEqual(EXPECTED_DB_YEAR_BEST_ROWS);

@@ -15,15 +15,23 @@ import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { EMPTY_FIRST_LAP_RECORDS } from '../../core/history/first-lap.constant';
 import { FirstLapRun } from '../../core/history/first-lap.interface';
 import { FirstLapRecords } from '../../core/history/first-lap.type';
+import { ratingBoard } from '../../core/history/rating-board';
+import { newestEventIso, winnerTimesBySlug } from '../../core/history/runner-scores';
+import { EventWinnerTimes, RatingRow } from '../../core/history/runner-scores.interface';
+import { scoreText } from '../../core/history/score-text';
 import { buildSeasonPositions } from '../../core/history/season-positions';
 import { SeasonPositionLine, SeasonRun } from '../../core/history/season-positions.interface';
+import { weatherExtremes } from '../../core/history/weather-records';
+import { EventWeatherRow, WeatherExtreme, WeatherExtremes } from '../../core/history/weather-records.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
+import { temperatureText } from '../../core/weather/temperature-text';
+import { weatherIconOf } from '../../core/weather/weather-icon';
 import { AthletesService } from '../../github/athletes.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
-import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
+import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { BumpChart } from './bump-chart/bump-chart';
 import {
@@ -31,15 +39,27 @@ import {
   CHART_SUGGESTION_LIMIT,
   KING_ALL_TIME_TEXT,
   KING_YEAR_PREFIX,
+  NO_GRADE_TEXT,
   QUEEN_ALL_TIME_TEXT,
   QUEEN_YEAR_PREFIX,
   RECORDS_PODIUM_SIZE,
   RECORDS_ROW_HEIGHT_PX,
   RECORDS_VIEW_QUERY_PARAM,
   RECORD_DELTA_SIGN,
+  WEATHER_COLDEST_LABEL,
+  WEATHER_HOTTEST_LABEL,
+  WEATHER_WINDIEST_LABEL,
+  WINDIEST_VALUE_ICON,
 } from './records-page.constant';
 import { RecordsStatus, RecordsStatusType, RecordsView, RecordsViewType, SeasonMetric, SeasonMetricType } from './records-page.enum';
-import { BestResultView, ChartPick, CourseRecordView, FirstLapRecordView } from './records-page.interface';
+import {
+  BestResultView,
+  ChartPick,
+  CourseRecordView,
+  FirstLapRecordView,
+  RatingRowView,
+  WeatherExtremeView,
+} from './records-page.interface';
 
 /**
  * Full 5 km leaderboards with a name search, season and gender filters, and virtual scroll.
@@ -48,7 +68,9 @@ import { BestResultView, ChartPick, CourseRecordView, FirstLapRecordView } from 
  * The «Гонка за сезон» view (also reachable via `/records?view=chart`) swaps the boards for the
  * season bump chart: the standings race of the chosen year (the newest one while the year filter
  * says «Все годы»), loaded lazily per season, with its own «find yourself» picker that keeps the
- * chosen athletes' lines lit on both charts.
+ * chosen athletes' lines lit on both charts. The «Рейтинг» view (`/records?view=rating`) shows the
+ * combined М+Ж board of runner scores: who is in form right now, sorted by the weighted top-5 of
+ * the last year.
  */
 @Component({
   selector: 'app-records-page',
@@ -63,9 +85,17 @@ export class RecordsPage {
   readonly #records = signal<AthleteRecord[]>([]);
   readonly #courseRecords = signal<CourseRecordHistory>(EMPTY_COURSE_RECORD_HISTORY);
   readonly #firstLapRecords = signal<FirstLapRecords>(EMPTY_FIRST_LAP_RECORDS);
+  readonly #weatherRows = signal<EventWeatherRow[]>([]);
+  readonly #winnerEvents = signal<EventWinnerTimes[]>([]);
   // The lambdas run lazily, so referencing the filter signals declared below is safe.
   readonly #menBoard = computed(() => toBoard(this.#records(), Gender.male, this.year()));
   readonly #womenBoard = computed(() => toBoard(this.#records(), Gender.female, this.year()));
+  /** The combined М+Ж rating board; places are fixed before the search and gender filters cut it. */
+  readonly #ratingBoard = computed(() =>
+    ratingBoard(this.#records(), winnerTimesBySlug(this.#winnerEvents()), this.#courseRecords(), newestEventIso(this.#winnerEvents())).map(
+      toRatingRowView,
+    ),
+  );
 
   readonly #seasonRuns = signal<ReadonlyMap<string, SeasonRun[]>>(new Map());
   readonly #chartRuns = computed(() => {
@@ -98,6 +128,16 @@ export class RecordsPage {
   readonly highlightedKeys = computed(() => this.chartPicks().map((pick) => pick.key));
   readonly men = computed(() => searchRows(this.#menBoard(), this.query()));
   readonly women = computed(() => searchRows(this.#womenBoard(), this.query()));
+  /** The visible rating rows: the search and the gender filter never move the fixed places. */
+  readonly ratingRows = computed(() => {
+    const gender = this.gender();
+    const rows = searchRows(this.#ratingBoard(), this.query());
+
+    return gender === null ? rows : rows.filter((row) => row.gender === gender);
+  });
+
+  /** How many athletes the full rating board ranks, ignoring the search and the filters. */
+  readonly ratingCount = computed(() => this.#ratingBoard().length);
   /** Board sizes ignore the search box: the badge always shows how many athletes the board ranks. */
   readonly menCount = computed(() => this.#menBoard().length);
   readonly womenCount = computed(() => this.#womenBoard().length);
@@ -110,6 +150,8 @@ export class RecordsPage {
   readonly womenRecordTimeline = computed(() => toTimeline(this.#courseRecords()[Gender.female]));
   readonly menFirstLap = computed(() => toFirstLapView(this.#firstLapRecords()[Gender.male]));
   readonly womenFirstLap = computed(() => toFirstLapView(this.#firstLapRecords()[Gender.female]));
+  /** The weather extreme cards of the chosen season (or all time); empty hides the section. */
+  readonly weatherViews = computed(() => toWeatherViews(weatherExtremes(this.#weatherRows(), this.year())));
 
   protected readonly statuses = RecordsStatus;
   protected readonly views = RecordsView;
@@ -168,9 +210,15 @@ export class RecordsPage {
     this.chartPicks.update((picks) => picks.filter((pick) => pick.key !== key));
   }
 
-  /** `?view=chart` (the guide's «Гонка за сезон» link) opens the page straight on the chart. */
+  /** `?view=chart` and `?view=rating` (the guide's deep links) open the page straight on that view. */
   #initialView(): RecordsViewType {
-    return this.#route.snapshot.queryParamMap.get(RECORDS_VIEW_QUERY_PARAM) === RecordsView.chart ? RecordsView.chart : RecordsView.table;
+    const param = this.#route.snapshot.queryParamMap.get(RECORDS_VIEW_QUERY_PARAM);
+
+    if (param === RecordsView.chart || param === RecordsView.rating) {
+      return param;
+    }
+
+    return RecordsView.table;
   }
 
   /** Chart data loads lazily, once per season and metric; a cached one flips the chart straight to ready. */
@@ -210,15 +258,20 @@ export class RecordsPage {
 
   async #load(): Promise<void> {
     try {
-      const [records, courseRecords, firstLapRecords] = await Promise.all([
+      const [records, courseRecords, firstLapRecords, weatherRows, winnerEvents] = await Promise.all([
         this.#athletes.loadRecords(),
         this.#athletes.loadCourseRecords(),
         this.#athletes.loadFirstLapRecords(),
+        // The weather extremes are garnish: a failed read still renders the boards.
+        this.#athletes.loadWeatherRows().catch(() => []),
+        this.#athletes.loadEventWinnerTimes(),
       ]);
 
       this.#records.set(records);
       this.#courseRecords.set(courseRecords);
       this.#firstLapRecords.set(firstLapRecords);
+      this.#weatherRows.set(weatherRows);
+      this.#winnerEvents.set(winnerEvents);
       this.status.set(records.length === 0 ? RecordsStatus.empty : RecordsStatus.ready);
       // A deep link straight into the chart view needs its season as soon as the years are known.
       this.#ensureSeason();
@@ -273,7 +326,7 @@ function suggestChartPicks(lines: SeasonPositionLine[], query: string, picks: Ch
 }
 
 /** Name search keeps each row's place from the full board, so a found athlete shows their real rank. */
-function searchRows(rows: BestResultView[], query: string): BestResultView[] {
+function searchRows<T extends { key: string }>(rows: T[], query: string): T[] {
   const normalizedQuery = normalizeAthleteKey(query);
 
   if (normalizedQuery === '') {
@@ -281,6 +334,21 @@ function searchRows(rows: BestResultView[], query: string): BestResultView[] {
   }
 
   return rows.filter((row) => row.key.includes(normalizedQuery));
+}
+
+/** One rating row for the template; the board arrives sorted, so the index IS the place. */
+function toRatingRowView(row: RatingRow, index: number): RatingRowView {
+  return {
+    place: index + 1,
+    key: row.key,
+    athleteLink: [ATHLETES_PAGE_LINK, row.key],
+    displayName: row.displayName,
+    gender: row.gender,
+    genderText: row.gender === Gender.male ? MALE_GENDER_TEXT : FEMALE_GENDER_TEXT,
+    formText: scoreText(row.formIndex),
+    rankText: scoreText(row.runnerRank),
+    gradeText: row.localGrade === null ? NO_GRADE_TEXT : scoreText(row.localGrade),
+  };
 }
 
 function toView(result: BestResult, index: number, crowned: string | null): BestResultView {
@@ -310,6 +378,49 @@ function toFirstLapView(record: FirstLapRun | null): FirstLapRecordView | null {
     dateShort: formatRussianDateShort(record.dateIso),
     raceLink: [RACE_PAGE_BASE_LINK, record.slug],
   };
+}
+
+/** The extreme cards in display order; a scope without stored wind readings drops the wind card. */
+function toWeatherViews(extremes: WeatherExtremes | null): WeatherExtremeView[] {
+  if (extremes === null) {
+    return [];
+  }
+
+  const views = [
+    toTemperatureExtremeView(WEATHER_COLDEST_LABEL, extremes.coldest),
+    toTemperatureExtremeView(WEATHER_HOTTEST_LABEL, extremes.hottest),
+  ];
+
+  if (extremes.windiest !== null) {
+    const windKmh = Math.round(extremes.windiest.windKmh);
+
+    views.push({
+      label: WEATHER_WINDIEST_LABEL,
+      valueText: `${WINDIEST_VALUE_ICON} ` + $localize`:@@records.windValue:${windKmh}:windKmh: км/ч`,
+      detailText: temperatureText(extremes.windiest.temperatureC),
+      dateShort: formatRussianDateShort(extremes.windiest.slug),
+      raceLink: [RACE_PAGE_BASE_LINK, extremes.windiest.slug],
+    });
+  }
+
+  return views;
+}
+
+/** A temperature record card: the day's sky icon with the reading, the wind as the detail line. */
+function toTemperatureExtremeView(label: string, extreme: WeatherExtreme): WeatherExtremeView {
+  return {
+    label,
+    valueText: `${weatherIconOf(extreme.weatherCode)} ${temperatureText(extreme.temperatureC)}`.trim(),
+    detailText: extreme.windKmh === null ? '' : windText(extreme.windKmh),
+    dateShort: formatRussianDateShort(extreme.slug),
+    raceLink: [RACE_PAGE_BASE_LINK, extreme.slug],
+  };
+}
+
+function windText(windKmh: number): string {
+  const rounded = Math.round(windKmh);
+
+  return $localize`:@@records.weatherWind:ветер ${rounded}:windKmh: км/ч`;
 }
 
 /** The all-time crown label, or the short prefix with the chosen season («Король 2024»). */

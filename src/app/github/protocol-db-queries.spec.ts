@@ -18,6 +18,7 @@ import {
   selectEventParticipantRuns,
   selectEventResults,
   selectEventSlugs,
+  selectEventWinnerTimes,
   selectFirstLapRecords,
   selectFiveKmFinishCountsBefore,
   selectPreviousBestsBefore,
@@ -46,6 +47,7 @@ import {
   EXPECTED_RIVAL_RUNS,
   EXPECTED_RUN_PLACES,
   EXPECTED_SQL_STATS,
+  EXPECTED_WINNER_TIMES,
   EXPECTED_WOMAN_RUN_PLACES,
   FINISH_COUNTS_BEFORE_DATE,
   LATEST_EVENTS_LIMIT,
@@ -131,6 +133,7 @@ describe('protocol-db-queries', () => {
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_SQL_STATS);
     await expect(selectArchiveEvents(db)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS);
     await expect(selectEventSlugs(db)).resolves.toEqual(EXPECTED_EVENT_SLUGS);
+    await expect(selectEventWinnerTimes(db)).resolves.toEqual(EXPECTED_WINNER_TIMES);
     await expect(selectArchiveEvents(db, LATEST_EVENTS_LIMIT)).resolves.toEqual(EXPECTED_ARCHIVE_EVENTS.slice(0, LATEST_EVENTS_LIMIT));
     await expect(selectEventResults(db, NEWER_ENTRY.slug)).resolves.toEqual(buildEventResultsFile(EXPECTED_EVENT, EXPECTED_EVENT_ROWS));
     await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG), 'an unknown slug resolves null').resolves.toBeNull();
@@ -173,6 +176,7 @@ describe('protocol-db-queries', () => {
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_EMPTY_SQL_STATS);
     await expect(selectCourseRecords(db), 'no runs mean no record history for either gender').resolves.toEqual(EMPTY_COURSE_RECORD_HISTORY);
     await expect(selectEventSlugs(db), 'an empty archive has no chronology').resolves.toEqual([]);
+    await expect(selectEventWinnerTimes(db), 'an empty archive has no winner times').resolves.toEqual([]);
     await expect(selectLegendFinishes(db), 'an empty archive has no legend finishes').resolves.toEqual([]);
     await expect(selectFiveKmFinishCountsBefore(db, FINISH_COUNTS_BEFORE_DATE), 'no runs mean no counts').resolves.toEqual({});
     await expect(selectPreviousBestsBefore(db, FINISH_COUNTS_BEFORE_DATE), 'no runs mean no previous bests').resolves.toEqual({});
