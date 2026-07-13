@@ -18,10 +18,10 @@ export function buildSeasonPositions(runs: SeasonRun[], gender: GenderType): Sea
     }
   }
 
-  const eventDates = [...runsByDate.keys()].sort();
+  const events = [...runsByDate.entries()].sort(([left], [right]) => left.localeCompare(right));
   const bests = new Map<string, SeasonRun>();
-  const snapshots = eventDates.map((date) => {
-    for (const run of runsByDate.get(date) ?? []) {
+  const snapshots = events.map(([, eventRuns]) => {
+    for (const run of eventRuns) {
       const best = bests.get(run.key);
 
       if (best === undefined || run.timeMs < best.timeMs) {
@@ -31,32 +31,27 @@ export function buildSeasonPositions(runs: SeasonRun[], gender: GenderType): Sea
 
     return rankSnapshot(bests);
   });
-  const finalSnapshot = snapshots.at(-1) ?? new Map<string, SeasonPositionPoint>();
 
-  return { eventDates, lines: toLines(bests, finalSnapshot, snapshots), rankedCount: finalSnapshot.size };
+  return { eventDates: events.map(([date]) => date), lines: toLines(bests, snapshots), rankedCount: bests.size };
+}
+
+/** The standings order behind every snapshot and the final line list: time, then name like `bestResults`. */
+function rankedBests(bests: Map<string, SeasonRun>): SeasonRun[] {
+  return [...bests.values()].sort(
+    (left, right) => left.timeMs - right.timeMs || left.displayName.localeCompare(right.displayName, NAME_COLLATION_LOCALE),
+  );
 }
 
 /** Key → the standings point (1-based position, season best), ranked exactly like `bestResults`. */
 function rankSnapshot(bests: Map<string, SeasonRun>): Map<string, SeasonPositionPoint> {
-  const ranked = [...bests.values()].sort(
-    (left, right) => left.timeMs - right.timeMs || left.displayName.localeCompare(right.displayName, NAME_COLLATION_LOCALE),
-  );
-
-  return new Map(ranked.map((run, index) => [run.key, { position: index + 1, bestMs: run.timeMs }]));
+  return new Map(rankedBests(bests).map((run, index) => [run.key, { position: index + 1, bestMs: run.timeMs }]));
 }
 
 /** Every ranked athlete in the final order, each with the point at every event (null pre-debut). */
-function toLines(
-  bests: Map<string, SeasonRun>,
-  finalSnapshot: Map<string, SeasonPositionPoint>,
-  snapshots: Map<string, SeasonPositionPoint>[],
-): SeasonPositionLine[] {
-  return [...bests.values()]
-    .map((best) => ({ best, position: finalSnapshot.get(best.key)?.position ?? Number.POSITIVE_INFINITY }))
-    .sort((left, right) => left.position - right.position)
-    .map(({ best }) => ({
-      key: best.key,
-      displayName: best.displayName,
-      points: snapshots.map((snapshot) => snapshot.get(best.key) ?? null),
-    }));
+function toLines(bests: Map<string, SeasonRun>, snapshots: Map<string, SeasonPositionPoint>[]): SeasonPositionLine[] {
+  return rankedBests(bests).map((best) => ({
+    key: best.key,
+    displayName: best.displayName,
+    points: snapshots.map((snapshot) => snapshot.get(best.key) ?? null),
+  }));
 }

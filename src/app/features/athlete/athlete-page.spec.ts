@@ -56,6 +56,25 @@ import {
   UNKNOWN_KEY_PARAM,
 } from './athlete-page.mock';
 
+// jsdom has no canvas context, so the embedded progress chart's lazy chart.js import mocks away.
+vi.mock('chart.js', () => ({
+  // A `function` (not an arrow) so the chart component's `new Chart(...)` can construct it.
+  Chart: Object.assign(
+    vi.fn(function chartMock() {
+      return { destroy: vi.fn(), resetZoom: vi.fn() };
+    }),
+    { register: vi.fn() },
+  ),
+  Filler: {},
+  LinearScale: {},
+  LineController: {},
+  LineElement: {},
+  PointElement: {},
+  Tooltip: {},
+}));
+
+vi.mock('chartjs-plugin-zoom', () => ({ default: {} }));
+
 polyfillDialogModal();
 
 describe('AthletePage', () => {
