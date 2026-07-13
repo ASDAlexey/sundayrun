@@ -24,6 +24,16 @@
         <rect class="year-badge__podium-step year-badge__podium-step_first" height="23" rx="1" width="12" x="18" y="20" />
         <rect class="year-badge__podium-step year-badge__podium-step_third" height="12" rx="1" width="12" x="31" y="31" />
       }
+      @case (arts.loop) {
+        <path class="year-badge__loop" d="M33.2 37.2 A13 13 0 1 1 33.2 18.8" />
+        <polygon class="year-badge__loop-head" points="37.1,22.7 35.5,16.5 30.9,21.1" />
+      }
+      @case (arts.heart) {
+        <path
+          class="year-badge__heart"
+          d="M24 41 C15.5 34.5 9 28.5 9 21.8 C9 16.8 12.8 13 17.6 13 C20.4 13 22.9 14.6 24 17 C25.1 14.6 27.6 13 30.4 13 C35.2 13 39 16.8 39 21.8 C39 28.5 32.5 34.5 24 41 Z"
+        />
+      }
       @case (arts.laurel) {
         <path class="year-badge__laurel" d="M15 13 C6.5 20, 6.5 36, 15 43" />
         <path class="year-badge__laurel" d="M33 13 C41.5 20, 41.5 36, 33 43" />

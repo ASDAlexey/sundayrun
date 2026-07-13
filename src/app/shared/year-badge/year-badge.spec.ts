@@ -63,5 +63,15 @@ describe('YearBadgeChip', () => {
     fixture.detectChanges();
 
     expect(chip.querySelector('.year-badge__laurel-count').textContent.trim(), 'the laurel carries its cut').toBe('10');
+
+    fixture.componentRef.setInput('badge', YearBadge.comeback);
+    fixture.detectChanges();
+
+    expect(chip.querySelector('.year-badge__loop'), 'the comeback badge draws the return loop').not.toBeNull();
+
+    fixture.componentRef.setInput('badge', YearBadge.cameAnyway);
+    fixture.detectChanges();
+
+    expect(chip.querySelector('.year-badge__heart'), 'the participation badge draws the heart').not.toBeNull();
   });
 });

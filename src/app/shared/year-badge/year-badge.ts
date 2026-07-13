@@ -12,7 +12,7 @@ import {
 } from './year-badge.constant';
 import { YearBadgeArt } from './year-badge.enum';
 
-/** One yearly award with drawn art: rosette medals, a 12-segment wheel, a snowflake, crowns, laurels. */
+/** One yearly award with drawn art: rosette medals, a 12-segment wheel, a snowflake, crowns, laurels, a comeback loop, a heart. */
 @Component({
   selector: 'app-year-badge',
   templateUrl: './year-badge.html',

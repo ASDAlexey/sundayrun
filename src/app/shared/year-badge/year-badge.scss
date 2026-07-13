@@ -127,6 +127,27 @@
     }
   }
 
+  &__loop {
+    fill: none;
+    stroke: var(--green);
+    stroke-linecap: round;
+    stroke-width: 3;
+  }
+
+  &__loop-head {
+    fill: var(--green);
+    stroke: var(--green);
+    stroke-linejoin: round;
+    stroke-width: 1;
+  }
+
+  &__heart {
+    fill: color-mix(in srgb, var(--chart-4) 12%, var(--surface));
+    stroke: var(--chart-4);
+    stroke-linejoin: round;
+    stroke-width: 2.2;
+  }
+
   &__laurel {
     fill: none;
     stroke: var(--laurel);
