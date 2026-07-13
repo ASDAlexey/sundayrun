@@ -1,9 +1,11 @@
-import { PLATFORM_ID } from '@angular/core';
+import { PLATFORM_ID, WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, Router, provideRouter } from '@angular/router';
 
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
+import { SelfAthlete } from '../../state/self-athlete.interface';
+import { SelfAthleteService } from '../../state/self-athlete.service';
 import { VERSUS_PAGE_LINK } from '../../app.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
@@ -27,6 +29,7 @@ import {
   UNKNOWN_KEY,
   VERSUS_LOAD_ERROR_MESSAGE,
   VERSUS_RECORDS,
+  VERSUS_SELF_PICK,
   EXPECTED_WINNING_TIMES,
 } from './versus-page.mock';
 
@@ -37,6 +40,7 @@ describe('VersusPage', () => {
 
   let platformId = BROWSER_PLATFORM_ID;
   let routeStub: ActivatedRouteStub;
+  let selfSignal: WritableSignal<SelfAthlete | null>;
   let fixture: ComponentFixture<VersusPage>;
 
   beforeEach(() => {
@@ -47,10 +51,12 @@ describe('VersusPage', () => {
     loadRecord.mockImplementation((key: string) => Promise.resolve(VERSUS_RECORDS[key] ?? null));
     loadRecords.mockImplementation(() => Promise.resolve(DIRECTORY_RECORDS));
     routeStub = activatedRouteStub(routeParams);
+    selfSignal = signal<SelfAthlete | null>(null);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         { provide: AthletesService, useValue: { loadRecord, loadRecords } },
+        { provide: SelfAthleteService, useValue: { self: selfSignal } },
         { provide: ActivatedRoute, useValue: routeStub },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
@@ -216,6 +222,32 @@ describe('VersusPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelectorAll('.versus__error').length, 'both error notes render').toBe(2);
+  });
+
+  it('prefills the bare picker with the picked self once, via a replaceUrl redirect', async () => {
+    selfSignal.set(VERSUS_SELF_PICK);
+
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    fixture = await createPage();
+
+    expect(navigate).toHaveBeenCalledExactlyOnceWith([VERSUS_PAGE_LINK, LEFT_KEY], { replaceUrl: true });
+
+    routeStub.setParams({ [LEFT_ROUTE_PARAM]: LEFT_KEY });
+    await settle();
+
+    const page = fixture.componentInstance;
+
+    expect(page.leftSide()?.key).toBe(LEFT_KEY);
+    expect(page.duelStatus(), 'the prefilled slot waits for an opponent').toBe(DuelStatus.idle);
+
+    page.clearLeft();
+    routeStub.setParams({});
+    await settle();
+
+    expect(navigate).toHaveBeenCalledWith([VERSUS_PAGE_LINK]);
+    expect(page.leftSide(), 'clearing sticks — the prefill fires only on the first arrival').toBeNull();
+    expect(page.duelStatus()).toBe(DuelStatus.idle);
   });
 
   it('does not fetch the directory during prerender and keeps the loading state for hydration', async () => {

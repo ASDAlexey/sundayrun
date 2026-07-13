@@ -99,7 +99,7 @@
     @include t.text('body', 'medium');
 
     color: var(--text);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--accent);
@@ -114,7 +114,7 @@
     background: none;
     color: var(--text-muted);
     cursor: pointer;
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--red);
@@ -138,7 +138,7 @@
     border-radius: var(--radius-sm);
     background: var(--bg);
     color: var(--text-muted);
-    transition: border-color 0.2s var(--ease);
+    transition: border-color var(--transition-time) var(--ease);
 
     &:focus-within {
       border-color: var(--accent);
@@ -191,7 +191,7 @@
     background: none;
     text-align: left;
     cursor: pointer;
-    transition: background 0.2s var(--ease);
+    transition: background var(--transition-time) var(--ease);
 
     &:hover {
       background: var(--surface-hover);
@@ -231,7 +231,7 @@
     @include t.text('title', 'large');
 
     color: var(--text);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--accent);
@@ -305,7 +305,7 @@
     @include t.text('label', 'small');
 
     color: var(--text-muted);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--accent);

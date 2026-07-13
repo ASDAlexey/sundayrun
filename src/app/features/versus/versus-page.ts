@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
+import { suggestAthletes } from '../../core/history/athlete-suggest';
 import { buildHeadToHead } from '../../core/history/head-to-head';
 import { HeadToHead, HeadToHeadMeeting } from '../../core/history/head-to-head.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
@@ -13,6 +14,7 @@ import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { SelfAthleteService } from '../../state/self-athlete.service';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
@@ -35,6 +37,7 @@ import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from '.
 export class VersusPage {
   readonly #athletes = inject(AthletesService);
   readonly #router = inject(Router);
+  readonly #selfAthlete = inject(SelfAthleteService);
   readonly #options = signal<AthleteRecord[]>([]);
   readonly #left = signal<AthleteRecord | null>(null);
   readonly #right = signal<AthleteRecord | null>(null);
@@ -62,6 +65,9 @@ export class VersusPage {
   #leftKey = '';
   #rightKey = '';
 
+  /** Only the very first (bare `/vs`) arrival auto-fills; clearing both slots later must stick. */
+  #selfPrefillPending = true;
+
   constructor() {
     // Prerender bakes the calm loading state into static HTML; the directory arrives after hydration.
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
@@ -78,6 +84,10 @@ export class VersusPage {
         // A duel against oneself is meaningless: the duplicated second key is dropped.
         if (this.#rightKey === this.#leftKey) {
           this.#rightKey = '';
+        }
+
+        if (this.#prefillSelf()) {
+          return;
         }
 
         void this.#loadDuel(this.#leftKey, this.#rightKey);
@@ -101,6 +111,25 @@ export class VersusPage {
 
   clearRight(): void {
     void this.#router.navigate(versusPath(this.#leftKey, ''));
+  }
+
+  /** Bare `/vs` with a picked self («Выбери себя») lands on `/vs/:self` — the visitor duels, not spectates. */
+  #prefillSelf(): boolean {
+    if (!this.#selfPrefillPending) {
+      return false;
+    }
+
+    this.#selfPrefillPending = false;
+
+    const self = this.#selfAthlete.self();
+
+    if (this.#leftKey !== '' || this.#rightKey !== '' || self === null) {
+      return false;
+    }
+
+    void this.#router.navigate(versusPath(self.key, ''), { replaceUrl: true });
+
+    return true;
   }
 
   async #loadOptions(): Promise<void> {
@@ -166,19 +195,9 @@ function toSideView(record: AthleteRecord | null, wins: number): DuelSideView | 
   return { key: record.key, displayName: record.displayName, athleteLink: [ATHLETES_PAGE_LINK, record.key], wins };
 }
 
-/** Name matches for the free slot, already-picked athletes excluded; an empty query suggests nothing. */
+/** Name matches for the free slot, already-picked athletes excluded. */
 function suggest(options: AthleteRecord[], query: string, pickedKeys: (string | undefined)[]): AthleteOptionView[] {
-  const normalizedQuery = normalizeAthleteKey(query);
-
-  if (normalizedQuery === '') {
-    return [];
-  }
-
-  return options
-    .filter((option) => option.key.includes(normalizedQuery) && !pickedKeys.includes(option.key))
-    .sort((left, right) => left.displayName.localeCompare(right.displayName))
-    .slice(0, VERSUS_SUGGESTION_LIMIT)
-    .map(toOptionView);
+  return suggestAthletes(options, query, pickedKeys, VERSUS_SUGGESTION_LIMIT).map(toOptionView);
 }
 
 function toOptionView(record: AthleteRecord): AthleteOptionView {

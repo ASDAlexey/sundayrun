@@ -1,5 +1,6 @@
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
+import { SelfAthlete } from '../../state/self-athlete.interface';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
@@ -127,3 +128,6 @@ export const EXPECTED_SHARED_PREFIX_OPTIONS: AthleteOptionView[] = [
   { key: TIMELESS_KEY, displayName: 'Петренко Ольга', bestTimeText: NO_BEST_TIME_TEXT },
   EXPECTED_SUGGESTION_OPTION,
 ];
+
+/** The header pick («Выбери себя») that prefills the bare `/vs` with Пётр. */
+export const VERSUS_SELF_PICK: SelfAthlete = { key: LEFT_KEY, displayName: 'Петров Пётр' };
