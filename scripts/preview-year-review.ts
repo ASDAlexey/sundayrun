@@ -5,11 +5,12 @@
 import { Database } from 'bun:sqlite';
 
 import { createProtocolDrizzle } from '../src/app/core/sqlite/protocol-drizzle';
+import { ProtocolDbValue } from '../src/app/core/sqlite/protocol-db-value.type';
 import { selectFirstEventDateByYear, selectYearReview } from '../src/app/github/protocol-db-queries';
 
 const db = new Database('data/sundayrun.db', { readonly: true });
 const ddb = createProtocolDrizzle({
-  queryValues: (sql, params) => Promise.resolve(db.prepare(sql).values(...(params as never[])) as unknown[][]),
+  queryValues: (sql, params) => Promise.resolve(db.prepare(sql).values(...(params as never[])) as ProtocolDbValue[][]),
 });
 
 const years = Object.keys(await selectFirstEventDateByYear(ddb)).sort((a, b) => b.localeCompare(a));

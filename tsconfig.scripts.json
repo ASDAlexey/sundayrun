@@ -1,0 +1,9 @@
+/* Type-checks the Bun build/tooling scripts, which run under `bun` and use Node built-ins. */
+{
+  "compilerOptions": {
+    "outDir": "./out-tsc/scripts",
+    "types": ["bun", "node"]
+  },
+  "extends": "./tsconfig.json",
+  "include": ["scripts/**/*.ts"]
+}
