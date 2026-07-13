@@ -126,6 +126,14 @@ await build({
 copyFileSync(join(depsDir, 'sqlite3-opfs-async-proxy.js'), join(outDir, 'sqlite3-opfs-async-proxy.js'));
 copyFileSync(join(depsDir, 'sqlite3.wasm'), join(outDir, 'sqlite3.wasm'));
 
+// The in-memory deserialize path (`@sqlite.org/sqlite-wasm`, used to read `sundayrun.db` on import)
+// loads its own, separate `sqlite3.wasm` at runtime. The bundler leaves the lookup relative to the app
+// base, so the binary must sit at the web root; `sqlite-loader.ts` pins `locateFile` to `document.baseURI`.
+const deserializeWasm = join(root, 'node_modules', '@sqlite.org', 'sqlite-wasm', 'dist', 'sqlite3.wasm');
+const deserializeWasmOut = join(root, 'public', 'sqlite3.wasm');
+
+copyFileSync(deserializeWasm, deserializeWasmOut);
+
 const emitted = [
   'index.js',
   'sqlite-worker.js',
@@ -140,3 +148,6 @@ for (const name of emitted) {
   const kib = (statSync(join(outDir, name)).size / 1024).toFixed(1);
   console.log(`  ${name.padEnd(38)} ${kib.padStart(8)} KiB`);
 }
+
+const deserializeKib = (statSync(deserializeWasmOut).size / 1024).toFixed(1);
+console.log(`public/sqlite3.wasm is up to date: ${deserializeKib} KiB`);
