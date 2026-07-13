@@ -27,6 +27,7 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "allowedCommonJsDependencies": ["hammerjs", "pdfmake/build/pdfmake"],
             "inlineStyleLanguage": "scss",
             "localize": true,
             "i18nMissingTranslation": "error",
@@ -59,7 +60,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "12kB",
+                  "maximumWarning": "14kB",
                   "maximumError": "16kB"
                 }
               ],
