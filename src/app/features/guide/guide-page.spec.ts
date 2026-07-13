@@ -5,7 +5,7 @@ import { VERSUS_PAGE_LINK } from '../../app.constant';
 import { RECORDS_PAGE_LINK } from '../records/records-page.constant';
 import { YEAR_PAGE_BASE_LINK } from '../year/year-page.constant';
 import { GuidePage } from './guide-page';
-import { EXPECTED_GUIDE_CARD_COUNT } from './guide-page.mock';
+import { EXPECTED_CHART_LINK_HREF, EXPECTED_GUIDE_CARD_COUNT } from './guide-page.mock';
 
 describe('GuidePage', () => {
   let fixture: ComponentFixture<GuidePage>;
@@ -31,7 +31,15 @@ describe('GuidePage', () => {
     expect(cards.length).toBe(EXPECTED_GUIDE_CARD_COUNT);
     expect(
       links.map((link) => link.getAttribute('href')),
-      'the two athlete-page titles route through the records search, the rest link home pages',
-    ).toEqual([RECORDS_PAGE_LINK, RECORDS_PAGE_LINK, YEAR_PAGE_BASE_LINK, YEAR_PAGE_BASE_LINK, VERSUS_PAGE_LINK]);
+      'the records-anchored titles route through the records page, the rest link home pages',
+    ).toEqual([
+      RECORDS_PAGE_LINK,
+      RECORDS_PAGE_LINK,
+      EXPECTED_CHART_LINK_HREF,
+      RECORDS_PAGE_LINK,
+      YEAR_PAGE_BASE_LINK,
+      YEAR_PAGE_BASE_LINK,
+      VERSUS_PAGE_LINK,
+    ]);
   });
 });

@@ -20,6 +20,31 @@
     </li>
 
     <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.firstLapTitle">⏱ Рекорд первого круга</h2>
+
+      <p class="guide__card-text" i18n="@@guide.firstLapText">
+        Самый быстрый первый круг — 2,3 км — среди финишёров полной дистанции. Учитываются забеги, где хронометраж записал время кругов.
+        Свой лучший круг виден на странице атлета.
+      </p>
+
+      <a class="guide__card-link" i18n="@@guide.firstLapLink" [routerLink]="recordsLink">Смотреть на странице «Рекорды»</a>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.bumpTitle">📊 Гонка за сезон</h2>
+
+      <p class="guide__card-text" i18n="@@guide.bumpText">
+        Как менялись места в таблице лучших времён сезона неделя за неделей: линии всех участников, обгоны и камбэки — как в турнирной
+        таблице лиги. Переключатель «Первый круг» показывает ту же гонку по лучшим сплитам 2,3 км. Найдите себя и друзей через поиск на
+        вкладке «Гонка за сезон» страницы «Рекорды».
+      </p>
+
+      <a class="guide__card-link" i18n="@@guide.bumpLink" [queryParams]="chartQueryParams" [routerLink]="recordsLink">
+        Открыть «Гонку за сезон»
+      </a>
+    </li>
+
+    <li class="guide__card">
       <h2 class="guide__card-title" i18n="@@guide.legendTitle">🏅 Легенда трассы</h2>
 
       <p class="guide__card-text" i18n="@@guide.legendText">
@@ -51,8 +76,9 @@
       <h2 class="guide__card-title" i18n="@@guide.badgesTitle">🎖 Бейджи года</h2>
 
       <p class="guide__card-text" i18n="@@guide.badgesText">
-        30/40/50 финишей за год, все 12 месяцев в строю и новогодний забег — первый старт года. Бейджи видны на странице атлета и в итогах
-        года.
+        30/40/50 финишей за год, все 12 месяцев в строю, новогодний забег — первый старт года. Плюс награды за скорость: король и королева
+        трассы, лучший результат года, призёры и топ-10/топ-30 сезона — в текущем году такие места ещё можно потерять. Бейджи видны на
+        странице атлета.
       </p>
 
       <a class="guide__card-link" i18n="@@guide.badgesLink" [routerLink]="yearLink">Смотреть в «Итогах года»</a>
@@ -76,6 +102,25 @@
       </p>
 
       <a class="guide__card-link" i18n="@@guide.versusLink" [routerLink]="versusLink">Собрать дуэль</a>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.rivalsTitle">🤝 Соперники</h2>
+
+      <p class="guide__card-text" i18n="@@guide.rivalsText">
+        С кем атлет чаще всего финишировал рядом — в пределах десяти секунд. Топ соперников со счётом очных близких финишей живёт на
+        странице атлета, а фильтр по году показывает соперников сезона.
+      </p>
+    </li>
+
+    <li class="guide__card">
+      <h2 class="guide__card-title" i18n="@@guide.memesTitle">🦛 Мем-пороги</h2>
+
+      <p class="guide__card-text" i18n="@@guide.memesText">
+        Лестница знаменитых времён, пересчитанных в эквивалент на 5 км: от темпа марафона Опры Уинфри до мирового рекорда и бегемота на
+        рывке. Личный рекорд атлета встаёт на свою ступеньку — видно, кого он уже обгоняет и сколько осталось до следующего порога. Живёт на
+        странице атлета.
+      </p>
     </li>
 
     <li class="guide__card">
