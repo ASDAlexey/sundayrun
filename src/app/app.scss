@@ -84,6 +84,7 @@
 
   &__nav {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
   }
@@ -119,8 +120,19 @@
       padding: 14px 16px;
     }
 
+    // The nav spans the full width below the brand so its links + self-pick wrap
+    // onto their own lines instead of overflowing off the right edge.
+    &__nav {
+      width: 100%;
+    }
+
     &__nav-link {
       padding: 8px 10px;
+    }
+
+    // Push the self-pick control to its own trailing line, right-aligned under the links.
+    &__self {
+      margin-left: auto;
     }
   }
 }

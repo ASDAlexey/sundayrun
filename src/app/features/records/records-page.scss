@@ -83,6 +83,24 @@
     }
   }
 
+  // Phones: trim the rank/rating rows' edge padding, gaps and place column so the
+  // athlete name keeps a readable width beside the fixed score columns.
+  @media (width <= 560px) {
+    &__row,
+    &__rating-row {
+      padding-inline: 0;
+      gap: 8px;
+    }
+
+    &__row {
+      grid-template-columns: 28px 1fr auto auto;
+    }
+
+    &__rating-row {
+      grid-template-columns: 28px 1fr 56px 56px 56px;
+    }
+  }
+
   &__search {
     display: flex;
     align-items: center;
