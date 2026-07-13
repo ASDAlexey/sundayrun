@@ -1,0 +1,79 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+.form-card {
+  @include c.card;
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 8px;
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__hint {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__now {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+
+    &_peak {
+      color: var(--accent);
+    }
+  }
+
+  &__peak {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  &__chart {
+    width: 100%;
+    height: auto;
+    margin-top: 4px;
+  }
+
+  &__line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+
+  &__dot {
+    &_peak {
+      fill: var(--green);
+    }
+
+    &_current {
+      fill: var(--accent);
+    }
+  }
+
+  &__legend-row {
+    @include t.text('label', 'small');
+
+    display: flex;
+    gap: 16px;
+    color: var(--text-muted);
+  }
+
+  &__legend-item {
+    &_peak {
+      color: var(--green);
+    }
+
+    &_current {
+      color: var(--accent);
+    }
+  }
+}

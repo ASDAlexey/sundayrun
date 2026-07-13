@@ -1,0 +1,37 @@
+@if (view(); as form) {
+  <section class="form-card">
+    <h2 class="form-card__title" i18n="@@athlete.formTitle">Форма</h2>
+
+    <p class="form-card__hint" i18n="@@athlete.formHint">
+      Скользящая медиана последних {{ formWindowSize }} финишей на 5 км; 100% — лучший отрезок за всю историю.
+    </p>
+
+    @if (form.isAtPeak) {
+      <p class="form-card__now form-card__now_peak" i18n="@@athlete.formAtPeak">Атлет сейчас на пике формы 🔥</p>
+    } @else {
+      <p class="form-card__now" i18n="@@athlete.formNow">Сейчас — {{ form.currentPercent }}% от пика.</p>
+
+      <p class="form-card__peak" i18n="@@athlete.formPeak">Лучшая форма была в {{ form.peakMonthText }} года.</p>
+    }
+
+    <svg
+      aria-label="График формы по забегам"
+      class="form-card__chart"
+      i18n-aria-label="@@athlete.formChartLabel"
+      role="img"
+      [attr.viewBox]="chartViewBox"
+    >
+      <polyline class="form-card__line" [attr.points]="form.linePoints" />
+
+      <circle class="form-card__dot form-card__dot_peak" r="5" [attr.cx]="form.peakDot.x" [attr.cy]="form.peakDot.y" />
+
+      <circle class="form-card__dot form-card__dot_current" r="5" [attr.cx]="form.currentDot.x" [attr.cy]="form.currentDot.y" />
+    </svg>
+
+    <p class="form-card__legend-row">
+      <span class="form-card__legend-item form-card__legend-item_peak" i18n="@@athlete.formLegendPeak">● пик</span>
+
+      <span class="form-card__legend-item form-card__legend-item_current" i18n="@@athlete.formLegendCurrent">● сейчас</span>
+    </p>
+  </section>
+}
