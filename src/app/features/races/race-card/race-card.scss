@@ -4,8 +4,8 @@
 
 // The card surface (border, radius, background) comes from mat-card; the tokens
 // pin the outlined appearance to the Litely palette. The inner layout is plain
-// flex — the header row, the hero with the dynamics chart and side stats, the
-// М/Ж times block and the actions pinned to the bottom edge.
+// flex — the header row, then the hero with the dynamics chart, the М/Ж times
+// block and the actions pinned together to the bottom edge.
 .race-card {
   --mat-card-outlined-container-color: var(--surface);
   --mat-card-outlined-outline-color: var(--border);
@@ -36,9 +36,9 @@
 
   &__head {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
+    gap: 8px 12px;
   }
 
   &__title {
@@ -59,6 +59,7 @@
   &__date {
     @include t.mono-meta;
 
+    margin-left: auto;
     padding: 4px 10px;
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-xs);
@@ -66,24 +67,28 @@
     white-space: nowrap;
   }
 
+  // Lives in the header row next to the race number, so it costs no extra card height.
   &__final-badge {
     @include t.mono-caption;
     @include t.pill;
 
     display: inline-flex;
     align-items: baseline;
-    align-self: flex-start;
     padding: 3px 10px;
     gap: 6px;
     border: 1px solid var(--accent-line);
     background: var(--accent-glow);
     color: var(--accent);
+    white-space: nowrap;
   }
 
+  // `margin-top: auto` soaks up the card's free height here, so the hero,
+  // the М/Ж block and the actions sit flush with the bottom on every card.
   &__hero {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    margin-top: auto;
     gap: 10px 16px;
   }
 
@@ -284,7 +289,6 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    margin-top: auto;
     gap: 8px;
   }
 

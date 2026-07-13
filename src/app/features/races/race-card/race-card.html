@@ -8,16 +8,16 @@
       }
     </h3>
 
+    @if (race().isMonthFinal) {
+      <span class="race-card__final-badge">
+        <span aria-hidden="true">★</span>
+
+        <ng-container i18n="@@races.monthFinalBadge">Итоговый забег месяца</ng-container>
+      </span>
+    }
+
     <span class="race-card__date">{{ race().dateText }}</span>
   </header>
-
-  @if (race().isMonthFinal) {
-    <span class="race-card__final-badge">
-      <span aria-hidden="true">★</span>
-
-      <ng-container i18n="@@races.monthFinalBadge">Итоговый забег месяца</ng-container>
-    </span>
-  }
 
   <div class="race-card__hero">
     <span class="race-card__hero-value">{{ race().hero.value }}</span>
