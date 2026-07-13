@@ -14,6 +14,22 @@ export const RUSSIAN_MONTHS_GENITIVE: readonly string[] = [
   'декабря',
 ];
 
+/** Russian month names in prepositional case («в мае»), indexed by `month - 1`. */
+export const RUSSIAN_MONTHS_PREPOSITIONAL: readonly string[] = [
+  'январе',
+  'феврале',
+  'марте',
+  'апреле',
+  'мае',
+  'июне',
+  'июле',
+  'августе',
+  'сентябре',
+  'октябре',
+  'ноябре',
+  'декабре',
+];
+
 /** Three-letter month abbreviations for the race-card date chip, indexed by `month - 1`. */
 export const RUSSIAN_MONTHS_SHORT: readonly string[] = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 

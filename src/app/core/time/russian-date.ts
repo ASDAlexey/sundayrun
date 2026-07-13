@@ -4,6 +4,7 @@ import {
   ISO_DATE_PATTERN,
   LAST_DAY,
   RUSSIAN_MONTHS_GENITIVE,
+  RUSSIAN_MONTHS_PREPOSITIONAL,
   RUSSIAN_MONTHS_SHORT,
   RUSSIAN_WEEKDAYS_SHORT,
   YEAR_SUFFIX,
@@ -28,6 +29,13 @@ export function formatRussianDateCompact(dateIso: string): string {
   const [year, month, day] = parseIsoDate(dateIso);
 
   return `${Number(day)} ${RUSSIAN_MONTHS_SHORT[Number(month) - FIRST_MONTH]} ${year}`;
+}
+
+/** '2025-05-18' → 'мае 2025' for «лучшая форма была в мае 2025 года». Throws on an invalid ISO date. */
+export function formatRussianMonthPrepositional(dateIso: string): string {
+  const [year, month] = parseIsoDate(dateIso);
+
+  return `${RUSSIAN_MONTHS_PREPOSITIONAL[Number(month) - FIRST_MONTH]} ${year}`;
 }
 
 /** '2025-12-28' → 'вс · 28 дек 2025' for the race-card date chip. Throws on an invalid ISO date. */

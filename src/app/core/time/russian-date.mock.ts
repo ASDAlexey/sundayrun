@@ -28,6 +28,12 @@ export const FORMAT_RUSSIAN_DATE_CHIP_CASES: readonly (readonly [string, string]
   ['2026-07-05', 'вс · 5 июл 2026'],
 ];
 
+/** [ISO input, expected prepositional month 'мае 2025']. */
+export const FORMAT_RUSSIAN_MONTH_PREPOSITIONAL_CASES: readonly (readonly [string, string])[] = [
+  ['2025-05-18', 'мае 2025'],
+  ['2026-01-05', 'январе 2026'],
+];
+
 /** Malformed or out-of-range ISO strings that must throw. */
 export const INVALID_ISO_DATE_CASES: readonly string[] = [
   '',
