@@ -139,6 +139,7 @@
     // The hover bubble: the finisher count from `data-count` floats up over the bar.
     &::after {
       @include t.mono-caption;
+
       position: absolute;
       bottom: calc(100% + 4px);
       left: 50%;
@@ -148,7 +149,6 @@
       border: 1px solid var(--border-hover);
       border-radius: var(--radius-xs);
       background: var(--surface-hover);
-
       content: attr(data-count);
       color: var(--text);
       white-space: nowrap;
