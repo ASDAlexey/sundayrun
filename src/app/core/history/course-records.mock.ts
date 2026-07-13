@@ -1,5 +1,5 @@
 import { Gender } from '../models/gender.enum';
-import { CourseRecordRun } from './course-records.interface';
+import { CourseRecordEntry, CourseRecordRun } from './course-records.interface';
 import { CourseRecordHistory } from './course-records.type';
 
 /**
@@ -69,3 +69,9 @@ export const EXPECTED_COURSE_RECORD_HISTORY: CourseRecordHistory = {
     },
   ],
 };
+
+/** The standing king and queen — the last progression entry of each gender. */
+export const EXPECTED_CURRENT_RECORD_ENTRIES: CourseRecordEntry[] = [
+  EXPECTED_COURSE_RECORD_HISTORY[Gender.male][2],
+  EXPECTED_COURSE_RECORD_HISTORY[Gender.female][0],
+];

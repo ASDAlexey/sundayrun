@@ -7,18 +7,24 @@ import { YearBadgeType } from './year-badges.enum';
 /**
  * How rare each badge is — «есть у 12% участников» on a badge chip. An athlete owns a badge once
  * any of their years earned it, so multi-year holders count once; the denominator is everyone who
- * ever started, badge or not.
+ * ever started, badge or not. `extraHolders` brings the ranking badges (computed off their own
+ * sources) into the same map.
  */
 export function yearBadgeRarity(
   rows: YearBadgeActivityRow[],
   firstEventDateByYear: Record<string, string>,
   participantCount: number,
+  extraHolders: ReadonlyMap<YearBadgeType, ReadonlySet<string>> = new Map(),
 ): YearBadgeRarity {
   if (participantCount <= 0) {
     return {};
   }
 
   const holdersByBadge = new Map<YearBadgeType, Set<string>>();
+
+  for (const [badge, keys] of extraHolders) {
+    holdersByBadge.set(badge, new Set(keys));
+  }
 
   for (const row of rows) {
     const badges = yearBadgesOf({

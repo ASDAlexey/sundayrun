@@ -1,6 +1,6 @@
 import { YearBadgeActivityRow } from './badge-rarity.interface';
 import { YearBadgeRarity } from './badge-rarity.type';
-import { YearBadge } from './year-badges.enum';
+import { YearBadge, YearBadgeType } from './year-badges.enum';
 
 /** Year → its first race, the new-year one; 2024 is deliberately unknown. */
 export const RARITY_FIRST_EVENT_DATE_BY_YEAR: Record<string, string> = { '2025': '2025-01-05', '2026': '2026-01-04' };
@@ -27,4 +27,17 @@ export const EXPECTED_RARITY: YearBadgeRarity = {
   [YearBadge.obsessiveBronze]: 8,
   [YearBadge.allMonths]: 4,
   [YearBadge.newYearRace]: 8,
+};
+
+/** The ranking holders as computed off their own sources: one course crown, two year kings. */
+export const RARITY_EXTRA_HOLDERS = new Map<YearBadgeType, ReadonlySet<string>>([
+  [YearBadge.courseKing, new Set(['anna'])],
+  [YearBadge.yearKing, new Set(['anna', 'boris'])],
+]);
+
+/** The activity rarity plus the merged-in ranking badges: 1 of 25 → 4%, 2 of 25 → 8%. */
+export const EXPECTED_RARITY_WITH_EXTRAS: YearBadgeRarity = {
+  ...EXPECTED_RARITY,
+  [YearBadge.courseKing]: 4,
+  [YearBadge.yearKing]: 8,
 };

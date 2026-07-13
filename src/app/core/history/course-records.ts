@@ -1,5 +1,5 @@
 import { Gender } from '../models/gender.enum';
-import { CourseRecordRun } from './course-records.interface';
+import { CourseRecordEntry, CourseRecordRun } from './course-records.interface';
 import { CourseRecordHistory } from './course-records.type';
 
 /**
@@ -22,4 +22,9 @@ export function courseRecordHistory(runs: readonly CourseRecordRun[]): CourseRec
   }
 
   return history;
+}
+
+/** The standing record holders — the king and the queen of the course; a recordless gender crowns nobody. */
+export function currentCourseRecordEntries(history: CourseRecordHistory): CourseRecordEntry[] {
+  return [history[Gender.male].at(-1), history[Gender.female].at(-1)].filter((entry): entry is CourseRecordEntry => entry !== undefined);
 }

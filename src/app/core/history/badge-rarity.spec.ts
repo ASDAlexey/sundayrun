@@ -1,5 +1,12 @@
 import { yearBadgeRarity } from './badge-rarity';
-import { EXPECTED_RARITY, RARITY_FIRST_EVENT_DATE_BY_YEAR, RARITY_PARTICIPANT_COUNT, RARITY_ROWS } from './badge-rarity.mock';
+import {
+  EXPECTED_RARITY,
+  EXPECTED_RARITY_WITH_EXTRAS,
+  RARITY_EXTRA_HOLDERS,
+  RARITY_FIRST_EVENT_DATE_BY_YEAR,
+  RARITY_PARTICIPANT_COUNT,
+  RARITY_ROWS,
+} from './badge-rarity.mock';
 import { YearBadge } from './year-badges.enum';
 
 const HUGE_PARTICIPANT_COUNT = 1000;
@@ -13,5 +20,9 @@ describe('yearBadgeRarity', () => {
     ).toBe(1);
     expect(yearBadgeRarity(RARITY_ROWS, RARITY_FIRST_EVENT_DATE_BY_YEAR, 0), 'no participants — no rarity').toEqual({});
     expect(yearBadgeRarity([], RARITY_FIRST_EVENT_DATE_BY_YEAR, RARITY_PARTICIPANT_COUNT), 'no activity — no rarity').toEqual({});
+    expect(
+      yearBadgeRarity(RARITY_ROWS, RARITY_FIRST_EVENT_DATE_BY_YEAR, RARITY_PARTICIPANT_COUNT, RARITY_EXTRA_HOLDERS),
+      'the ranking holders merge into the same map',
+    ).toEqual(EXPECTED_RARITY_WITH_EXTRAS);
   });
 });
