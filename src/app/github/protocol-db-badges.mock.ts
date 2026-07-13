@@ -16,11 +16,13 @@ export const EXPECTED_DB_YEAR_BEST_ROWS: YearBestRow[] = [
 ];
 
 /**
- * No seeded year reaches an activity badge, but the one-lane ranking tables crown both athletes:
+ * No seeded year reaches a run-count badge, but the one-lane ranking tables crown both athletes:
  * Иванов is the year king of 2024/2025 and the standing course king, Нина the queen of 2025 and
- * the course queen — 2 holders of 2 participants → 100%.
+ * the course queen — 2 holders of 2 participants → 100%. Иванов's 270-day break before his 2025
+ * opener also makes him the lone comeback holder → 50%.
  */
 export const EXPECTED_DB_BADGE_RARITY: YearBadgeRarity = {
   [YearBadge.courseKing]: 100,
   [YearBadge.yearKing]: 100,
+  [YearBadge.comeback]: 50,
 };

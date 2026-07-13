@@ -5,6 +5,7 @@ import { eventFilePaths } from '../core/github/event-paths';
 import { buildEventResultsFile } from '../core/github/results-file';
 import { EventResultsFile } from '../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../core/history/athlete-key';
+import { HistoryRunRow } from '../core/history/badge-signals.interface';
 import { courseRecordHistory } from '../core/history/course-records';
 import { CourseRecordHistory } from '../core/history/course-records.type';
 import { bestFirstLap, firstLapRecords } from '../core/history/first-lap';
@@ -241,6 +242,14 @@ export async function selectLegendFinishes(db: ProtocolDrizzle): Promise<LegendF
     .orderBy(asc(runs.dateIso), asc(runs.athleteKey));
 }
 
+/** Every finished run keyed by athlete, oldest first — the cross-year badge signals source. */
+export async function selectHistoryRunRows(db: ProtocolDrizzle): Promise<HistoryRunRow[]> {
+  return db
+    .select({ athleteKey: runs.athleteKey, dateIso: runs.dateIso, timeMs: runs.timeMs, distanceKm: runs.distanceKm })
+    .from(runs)
+    .orderBy(asc(runs.dateIso));
+}
+
 /** Every event slug oldest first — the race chronology the streak scan walks (slug = ISO date). */
 export async function selectEventSlugs(db: ProtocolDrizzle): Promise<string[]> {
   const rows = await db.select({ slug: events.slug }).from(events).orderBy(asc(events.slug));
@@ -273,7 +282,7 @@ export async function selectYearReview(db: ProtocolDrizzle, year: string): Promi
       .groupBy(participations.athleteKey),
   );
 
-  const [eventRows, runRows, newcomerRows, personalRecordRows] = await Promise.all([
+  const [eventRows, runRows, historyRows, newcomerRows, personalRecordRows] = await Promise.all([
     db.select({ slug: events.slug }).from(events).where(like(events.slug, yearPattern)).orderBy(asc(events.slug)),
     db
       .select({
@@ -288,6 +297,7 @@ export async function selectYearReview(db: ProtocolDrizzle, year: string): Promi
       .from(runs)
       .innerJoin(athletes, eq(athletes.key, runs.athleteKey))
       .where(like(runs.dateIso, yearPattern)),
+    selectHistoryRunRows(db),
     db
       .with(firstParticipations)
       .select({ value: count() })
@@ -307,6 +317,7 @@ export async function selectYearReview(db: ProtocolDrizzle, year: string): Promi
     year,
     eventDates: eventRows.map((row) => row.slug),
     runRows: runRows.map((row) => ({ ...row, gender: asGender(row.gender) })),
+    historyRows,
     newcomerCount: newcomerCounts.value,
     personalRecordCount: personalRecordCounts.value,
   });
