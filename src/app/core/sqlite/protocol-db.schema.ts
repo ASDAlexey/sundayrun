@@ -22,6 +22,15 @@ export const events = sqliteTable('events', {
   personalRecordCount: integer('personal_record_count'),
 });
 
+export const eventWeather = sqliteTable('event_weather', {
+  slug: text('slug').primaryKey(),
+  temperatureC: real('temperature_c'),
+  apparentC: real('apparent_c'),
+  precipitationMm: real('precipitation_mm'),
+  windKmh: real('wind_kmh'),
+  weatherCode: integer('weather_code'),
+});
+
 export const results = sqliteTable(
   'results',
   {

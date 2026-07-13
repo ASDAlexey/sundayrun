@@ -20,6 +20,7 @@ export const NEWER_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: 1238000,
   newcomerCount: 3,
   personalRecordCount: 2,
+  weather: { temperatureC: 24.6, apparentC: 25.1, precipitationMm: 0, windKmh: 9.4, weatherCode: 1 },
   files: {
     sourceXlsx: 'data/events/2026-07-05/source.xlsx',
     resultsJson: 'data/events/2026-07-05/results.json',
@@ -42,6 +43,7 @@ export const OLDER_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: 1360000,
   newcomerCount: 1,
   personalRecordCount: 0,
+  weather: null,
   files: {
     sourceXlsx: 'data/events/2026-06-21/source.xlsx',
     resultsJson: 'data/events/2026-06-21/results.json',
@@ -65,6 +67,7 @@ export const STALE_SAME_SLUG_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: null,
   newcomerCount: null,
   personalRecordCount: null,
+  weather: null,
   files: EXPECTED_EVENT_PATHS,
 };
 
@@ -89,6 +92,7 @@ export const EXPECTED_NEW_ENTRY: ArchiveIndexEntry = {
   // The fixture rows carry no newcomer or record notes.
   newcomerCount: 0,
   personalRecordCount: 0,
+  weather: null,
   files: EXPECTED_EVENT_PATHS,
 };
 
@@ -109,6 +113,7 @@ export const EXPECTED_NO_FINISHER_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: null,
   newcomerCount: 0,
   personalRecordCount: 0,
+  weather: null,
   files: EXPECTED_EVENT_PATHS,
 };
 

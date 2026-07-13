@@ -1,7 +1,9 @@
 import { buildEventResultsFile } from '../github/results-file';
 import { EXPECTED_FIRST_PUBLISH_HISTORY, EXPECTED_PUBLISHED_HISTORY } from '../github/publish-event.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
+import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
 import { selectEventResults } from '../../github/protocol-db-queries';
+import { selectEventWeather } from '../../github/protocol-db-weather';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
   DB_UPDATE_MOCK,
@@ -12,6 +14,8 @@ import {
   EXPECTED_DNF_ONLY_HISTORY,
   EXPECTED_PRE_BASELINE_EVENTS,
   EXPECTED_STORED_ROWS,
+  PRESERVED_WEATHER,
+  PRESERVED_WEATHER_SLUG,
   PRE_BASELINE_DB_SEED,
   PRE_BASELINE_RACE_EVENT,
   PRE_BASELINE_ROW,
@@ -64,6 +68,10 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(
         buildEventResultsFile(RENUMBERED_RACE_EVENT, EXPECTED_STORED_ROWS),
       );
+      await expect(selectEventWeather(db, RACE_EVENT.dateIso), 'the stale weather row is overwritten').resolves.toEqual(WEATHER_MOCK);
+      await expect(selectEventWeather(db, PRESERVED_WEATHER_SLUG), 'other events keep their stored weather').resolves.toEqual(
+        PRESERVED_WEATHER,
+      );
     },
     ROUNDTRIP_TIMEOUT_MS,
   );
@@ -92,6 +100,7 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(readHistory(db)).resolves.toEqual({});
       expect((await readIndexFile(db)).events).toEqual([]);
       await expect(selectEventResults(db, REMOVED_SLUG), 'the removed slug has no results').resolves.toBeNull();
+      await expect(selectEventWeather(db, REMOVED_SLUG), 'the removed slug has no weather').resolves.toBeNull();
     },
     ROUNDTRIP_TIMEOUT_MS,
   );

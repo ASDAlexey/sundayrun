@@ -10,11 +10,13 @@ import { AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
+import { EventWeather } from '../weather/event-weather.interface';
+import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
 import { PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION } from './protocol-db-schema.constant';
 import { ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
 
-/** Publishes `RACE_EVENT` (slug 2026-06-28); the write reads the previous state back out of the db. */
-export const DB_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: PROTOCOL_ROWS };
+/** Publishes `RACE_EVENT` (slug 2026-06-28) with its publish-time weather; the write reads the previous state back out of the db. */
+export const DB_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: PROTOCOL_ROWS, weather: WEATHER_MOCK };
 
 /**
  * `PROTOCOL_ROWS` as the write stores them: the full-archive note recompute backfills the auto
@@ -85,6 +87,18 @@ function athleteInserts(history: AthletesHistory): string[] {
 /** A pre-existing schema-version row, so applying to these bytes exercises the meta upsert's UPDATE path. */
 const META_SEED = `INSERT INTO meta VALUES ('${PROTOCOL_DB_META_SCHEMA_VERSION_KEY}', '${PROTOCOL_DB_SCHEMA_VERSION}')`;
 
+const weatherInsert = (slug: string, weather: EventWeather): string =>
+  `INSERT INTO event_weather VALUES (${q(slug)}, ${num(weather.temperatureC)}, ${num(weather.apparentC)}, ` +
+  `${num(weather.precipitationMm)}, ${num(weather.windKmh)}, ${num(weather.weatherCode)})`;
+
+/** A stale weather row for the re-published slug, so the publication exercises the upsert's UPDATE path. */
+const STALE_WEATHER: EventWeather = { temperatureC: -10, apparentC: -15, precipitationMm: 5, windKmh: 40, weatherCode: 75 };
+
+/** The seeded weather of an untouched event; a publication must leave it exactly as stored. */
+export const PRESERVED_WEATHER_SLUG = STALE_INDEX.events[0].slug;
+
+export const PRESERVED_WEATHER: EventWeather = { temperatureC: 3.5, apparentC: 1.2, precipitationMm: 0.4, windKmh: 18, weatherCode: 61 };
+
 /**
  * The seed SQL for the previous `sundayrun.db`: the three unsorted `STALE_INDEX` events (each with the
  * preserved club meta) and `EXISTING_HISTORY`. Exported to bytes, this is the image the write reads
@@ -93,6 +107,8 @@ const META_SEED = `INSERT INTO meta VALUES ('${PROTOCOL_DB_META_SCHEMA_VERSION_K
 export const EXISTING_DB_SEED: readonly string[] = [
   ...STALE_INDEX.events.map((entry) => eventInsert(entry, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN)),
   ...athleteInserts(EXISTING_HISTORY),
+  weatherInsert(RACE_EVENT.dateIso, STALE_WEATHER),
+  weatherInsert(PRESERVED_WEATHER_SLUG, PRESERVED_WEATHER),
   META_SEED,
 ];
 
@@ -104,7 +120,8 @@ export const EXISTING_DB_SEED: readonly string[] = [
  * land on the fresh entry.
  */
 export const EXPECTED_APPLIED_EVENTS: ArchiveIndexEntry[] = [
-  { ...EXPECTED_RENUMBERED_STALE_EVENTS[2], newcomerCount: 0, personalRecordCount: 0 },
+  // `readIndexFile` rebuilds from the `events` table alone, so no entry carries the joined weather.
+  { ...EXPECTED_RENUMBERED_STALE_EVENTS[2], newcomerCount: 0, personalRecordCount: 0, weather: null },
   { ...EXPECTED_NEW_ENTRY, number: EXPECTED_RENUMBERED_STALE_EVENTS[1].number, newcomerCount: 2 },
   { ...EXPECTED_RENUMBERED_STALE_EVENTS[0], newcomerCount: 0, personalRecordCount: 0 },
 ];
@@ -138,6 +155,7 @@ const SOLE_HISTORY: AthletesHistory = {
 export const SOLE_EVENT_DB_SEED: readonly string[] = [
   eventInsert(SOLE_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
   ...athleteInserts(SOLE_HISTORY),
+  weatherInsert(REMOVED_SLUG, PRESERVED_WEATHER),
   META_SEED,
 ];
 
@@ -173,6 +191,7 @@ export const PRE_BASELINE_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: null,
   newcomerCount: null,
   personalRecordCount: null,
+  weather: null,
   files: eventFilePaths(PRE_BASELINE_SLUG),
 };
 

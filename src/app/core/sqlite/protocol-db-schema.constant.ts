@@ -7,7 +7,7 @@
  * over `runs`) and file paths (reconstructed from `slug`, see `github/event-paths.ts`).
  */
 
-export const PROTOCOL_DB_SCHEMA_VERSION = '4';
+export const PROTOCOL_DB_SCHEMA_VERSION = '5';
 
 export const PROTOCOL_DB_META_SCHEMA_VERSION_KEY = 'schemaVersion';
 
@@ -44,6 +44,24 @@ export const PROTOCOL_DB_V4_MIGRATION_STATEMENTS: readonly string[] = [
   'ALTER TABLE events ADD COLUMN median_male_ms INTEGER',
   'ALTER TABLE events ADD COLUMN median_female_ms INTEGER',
 ];
+
+/**
+ * Mirrors `EventWeather` (see `core/weather`), keyed by the event slug: the 9:00 course readings
+ * fetched at publish time. IF NOT EXISTS lets the same DDL double as the v4 → v5 migration, which
+ * the write path applies to any pre-v5 bytes it deserializes.
+ */
+export const PROTOCOL_DB_CREATE_EVENT_WEATHER_TABLE = `
+CREATE TABLE IF NOT EXISTS event_weather (
+  slug TEXT PRIMARY KEY,
+  temperature_c REAL,
+  apparent_c REAL,
+  precipitation_mm REAL,
+  wind_kmh REAL,
+  weather_code INTEGER
+)`;
+
+/** v4 → v5: the per-event weather; applied to the local db by `scripts/backfill-weather.ts`. */
+export const PROTOCOL_DB_V5_MIGRATION_STATEMENTS: readonly string[] = [PROTOCOL_DB_CREATE_EVENT_WEATHER_TABLE];
 
 /** Mirrors `ProtocolRow`; `idx` is the row's `index` (a reserved word in SQL). */
 export const PROTOCOL_DB_CREATE_RESULTS_TABLE = `
@@ -106,6 +124,7 @@ export const PROTOCOL_DB_CREATE_ATHLETES_GENDER_BEST_MS_INDEX = 'CREATE INDEX at
 /** Full schema in application order; `results.slug` lookups are covered by the composite PK. */
 export const PROTOCOL_DB_SCHEMA_STATEMENTS: readonly string[] = [
   PROTOCOL_DB_CREATE_EVENTS_TABLE,
+  PROTOCOL_DB_CREATE_EVENT_WEATHER_TABLE,
   PROTOCOL_DB_CREATE_RESULTS_TABLE,
   PROTOCOL_DB_CREATE_ATHLETES_TABLE,
   PROTOCOL_DB_CREATE_RUNS_TABLE,

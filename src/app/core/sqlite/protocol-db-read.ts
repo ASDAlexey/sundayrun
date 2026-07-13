@@ -85,6 +85,8 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
         bestFemaleMs: row.bestFemaleMs,
         newcomerCount: row.newcomerCount,
         personalRecordCount: row.personalRecordCount,
+        // The rollup this feeds never reads weather; it lives in its own table, untouched by the rewrite.
+        weather: null,
         files: eventFilePaths(row.dateIso),
       }),
     ),

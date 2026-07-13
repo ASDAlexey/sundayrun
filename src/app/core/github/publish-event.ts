@@ -1,5 +1,8 @@
 import { bytesToBase64 } from '../encoding/base64';
 import { applyEventToDb } from '../sqlite/protocol-db-write';
+import { isoToday } from '../time/iso-today';
+import { EventWeather } from '../weather/event-weather.interface';
+import { fetchEventWeather } from '../weather/fetch-event-weather';
 import { eventFilePaths } from './event-paths';
 import { EventFilePaths } from './event-paths.interface';
 import { COMMIT_MESSAGE_PREFIX } from './github-api.constant';
@@ -19,6 +22,9 @@ import { publishVersionPointer } from './version-pointer';
  * merged instead of overwritten. Finishes by pointing `version.json` at the new commit — the
  * sha-pinned data urls are immutable, so nothing else needs a purge. The returned sha references the
  * data commit; the protocol PDF is generated on the fly from the results, never stored.
+ *
+ * The event date's 9:00 course weather rides along into the db; it is fetched once per publication
+ * (not per commit attempt — the readings cannot change) and a failed fetch publishes without it.
  */
 export async function publishEvent(
   token: string,
@@ -26,9 +32,10 @@ export async function publishEvent(
   fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
 ): Promise<PublishEventResult> {
   const paths = eventFilePaths(input.event.dateIso);
+  const weather = await fetchEventWeather(input.event.dateIso, isoToday(), fetchFn);
   const commitSha = await commitFilesAtomically(
     token,
-    () => buildCommitFiles(fetchFn, token, input, paths),
+    () => buildCommitFiles(fetchFn, token, input, paths, weather),
     `${COMMIT_MESSAGE_PREFIX}${input.event.dateIso}`,
     fetchFn,
   );
@@ -44,10 +51,11 @@ async function buildCommitFiles(
   token: string,
   input: PublishEventInput,
   paths: EventFilePaths,
+  weather: EventWeather | null,
 ): Promise<CommitFile[]> {
   const dbFile = await buildProtocolDbCommitFile(
     token,
-    (dbBytes) => applyEventToDb(dbBytes, { event: input.event, rows: input.rows }),
+    (dbBytes) => applyEventToDb(dbBytes, { event: input.event, rows: input.rows, weather }),
     fetchFn,
   );
 

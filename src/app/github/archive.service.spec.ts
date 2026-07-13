@@ -4,7 +4,7 @@ import { ARCHIVE_INDEX_SCHEMA_VERSION } from '../core/github/archive-index.const
 import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
 import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { ArchiveService } from './archive.service';
-import { EXPECTED_ARCHIVE_EVENTS, LATEST_EVENTS_LIMIT, SEED_EVENTS } from './protocol-db-queries.mock';
+import { EXPECTED_ARCHIVE_EVENTS, LATEST_EVENTS_LIMIT, SEED_EVENTS, SEED_WEATHER } from './protocol-db-queries.mock';
 import { PROTOCOL_DB_ERROR_MESSAGE } from './protocol-db.service.mock';
 import { PROTOCOL_DB } from './protocol-db.token';
 
@@ -23,7 +23,7 @@ describe('ArchiveService', () => {
   }
 
   it('serves the full index and the latest slice from sundayrun.db', async () => {
-    const memory = await createMemoryProtocolDb(SEED_EVENTS);
+    const memory = await createMemoryProtocolDb([...SEED_EVENTS, ...SEED_WEATHER]);
 
     close = memory.close;
 

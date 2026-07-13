@@ -33,6 +33,9 @@ export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveI
     bestFemaleMs: bestOf(rows, Gender.female),
     newcomerCount,
     personalRecordCount,
+    // The 9:00 course weather lives in its own `event_weather` table, applied alongside this write
+    // and re-joined by `selectArchiveEvents` on read; the write-path entry never carries it.
+    weather: null,
     files: eventFilePaths(event.dateIso),
   };
 }

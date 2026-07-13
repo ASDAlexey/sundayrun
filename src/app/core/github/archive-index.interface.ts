@@ -1,3 +1,4 @@
+import { EventWeather } from '../weather/event-weather.interface';
 import { EventFilePaths } from './event-paths.interface';
 
 /**
@@ -25,6 +26,8 @@ export interface ArchiveIndexEntry {
   newcomerCount: number | null;
   /** Rows with a personal record note, the legacy 'Личный рекорд' spelling included. */
   personalRecordCount: number | null;
+  /** The event's stored 9:00 course weather for the card; null before the fetch existed or it failed. */
+  weather: EventWeather | null;
   files: EventFilePaths;
 }
 

@@ -43,6 +43,7 @@ import {
   statusResponse,
 } from './spec-utils/github-fetch-router';
 import { VERSION_FILE_SCHEMA_VERSION } from './version-file.constant';
+import { WEATHER_ARCHIVE_API_URL } from '../weather/weather-api.constant';
 import { EXPECTED_VERSION_COMMIT_MESSAGE, EXPECTED_VERSION_PURGE_URL, POINTER_COMMIT_SHA_MOCK } from './version-pointer.mock';
 
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
@@ -110,6 +111,10 @@ describe('publishEvent', () => {
       calledUrls.filter((url) => url.startsWith(JSDELIVR_PURGE_BASE_URL)),
       'sha-pinned data urls never need a purge',
     ).toEqual([EXPECTED_VERSION_PURGE_URL]);
+    expect(
+      calledUrls.some((url) => url.startsWith(`${WEATHER_ARCHIVE_API_URL}?`)),
+      'the publish-time weather fetch rides the injected fetch; its unrouted rejection publishes without weather',
+    ).toBe(true);
   });
 
   it('creates a fresh db from scratch when none is published yet', async () => {

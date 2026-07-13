@@ -9,16 +9,18 @@ import { EventResultsFile } from '../github/results-file.interface';
 import { applyEventToHistory, removeEventFromHistory } from '../history/athletes-rollup';
 import { AthletesHistory } from '../models/athletes-history.type';
 import { RaceEvent } from '../models/race-event.interface';
+import { EventWeather } from '../weather/event-weather.interface';
 import { deserializeDbInto } from './deserialize-db';
 import { narrowValues } from './protocol-db-narrow';
 import { recomputeStoredNotes } from './protocol-db-notes';
 import { recomputeEventSummaryCounts } from './protocol-db-summary';
-import { athletes, events as eventsTable, meta, participations, results as resultsTable, runs } from './protocol-db.schema';
+import { athletes, eventWeather, events as eventsTable, meta, participations, results as resultsTable, runs } from './protocol-db.schema';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
   PROTOCOL_DB_META_SCHEMA_VERSION_KEY,
   PROTOCOL_DB_SCHEMA_STATEMENTS,
   PROTOCOL_DB_SCHEMA_VERSION,
+  PROTOCOL_DB_V5_MIGRATION_STATEMENTS,
 } from './protocol-db-schema.constant';
 import { BEGIN_TRANSACTION_SQL, COMMIT_TRANSACTION_SQL, PROTOCOL_DB_PAGE_SIZE_PRAGMA, VACUUM_SQL } from './protocol-db-write.constant';
 import { ProtocolDbEventMeta, ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
@@ -37,6 +39,13 @@ interface SyncTarget {
   history: AthletesHistory;
   resultsFile: EventResultsFile | null;
   removedSlug: string | null;
+  weather: PublishedWeather | null;
+}
+
+/** The published slug's publish-time weather readings; null (no fetch, or it failed) leaves the stored row alone. */
+interface PublishedWeather {
+  slug: string;
+  readings: EventWeather;
 }
 
 /**
@@ -84,6 +93,7 @@ function rollupPublication(previous: PreviousState, update: ProtocolDbEventUpdat
     history,
     resultsFile: buildEventResultsFile(event, update.rows),
     removedSlug: null,
+    weather: update.weather ? { slug, readings: update.weather } : null,
   };
 }
 
@@ -94,6 +104,7 @@ function rollupDeletion(previous: PreviousState, removal: ProtocolDbEventRemoval
     history: removeEventFromHistory(previous.history, removal.slug),
     resultsFile: null,
     removedSlug: removal.slug,
+    weather: null,
   };
 }
 
@@ -107,6 +118,11 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
       createSchema(db);
     } else {
       deserializeDbInto(sqlite3, db, dbBytes);
+
+      // Downloaded bytes may predate the weather table; the statement is IF NOT EXISTS, so this is a no-op on v5 bytes.
+      for (const statement of PROTOCOL_DB_V5_MIGRATION_STATEMENTS) {
+        db.exec(statement);
+      }
     }
 
     const ddb = oo1Drizzle(db);
@@ -118,6 +134,7 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     db.exec(BEGIN_TRANSACTION_SQL);
     await rewriteEvents(ddb, target.index, eventMeta);
     await rewriteResults(ddb, target.resultsFile, target.removedSlug);
+    await rewriteEventWeather(ddb, target.weather, target.removedSlug);
     await rewriteAthletes(ddb, target.history);
     // Every add or removal can shift later events' notes (first participation, records, year
     // bests), so the whole archive's notes converge in the same transaction.
@@ -237,6 +254,25 @@ async function rewriteResults(db: ProtocolDrizzle, resultsFile: EventResultsFile
       note: row.note,
     })),
   );
+}
+
+/**
+ * Upserts the published slug's weather and drops the removed slug's; every other row survives the
+ * publication untouched — unlike `events`, this table is never rebuilt from the index, because the
+ * readings are only fetchable around publish time.
+ */
+async function rewriteEventWeather(db: ProtocolDrizzle, weather: PublishedWeather | null, removedSlug: string | null): Promise<void> {
+  if (removedSlug !== null) {
+    await db.delete(eventWeather).where(eq(eventWeather.slug, removedSlug));
+  }
+
+  if (weather === null) {
+    return;
+  }
+
+  const row = { slug: weather.slug, ...weather.readings };
+
+  await db.insert(eventWeather).values(row).onConflictDoUpdate({ target: eventWeather.slug, set: row });
 }
 
 /** `athletes`/`runs`/`participations` mirror the rollup exactly, so a full rebuild guarantees db ≡ history. */
