@@ -57,25 +57,26 @@ describe('PreviewPage', () => {
         { provide: HistoryService, useValue: { loadHistory } },
       ],
     });
-    fixture = TestBed.createComponent(PreviewPage);
   });
 
   afterEach(() => {
     fixture.destroy();
   });
 
-  it('hides the warning, disables generation and skips the history load until the event date is known', () => {
+  it('hides the warning, disables generation and loads the history so the auto number can unblock the form', () => {
+    fixture = TestBed.createComponent(PreviewPage);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.hasUnverified()).toBe(false);
     expect(fixture.nativeElement.querySelector('.preview__warning')).toBeNull();
     expect(fixture.nativeElement.querySelector('.preview__generate').disabled).toBe(true);
-    expect(loadHistory, 'no event date yet — nothing to load').not.toHaveBeenCalled();
+    expect(loadHistory, 'archive dates feed the positional race number').toHaveBeenCalled();
   });
 
   it('shows the unverified counter as a live status, enables the button and navigates to /result on click', () => {
     unknownGenderCount.set(UNVERIFIED_COUNT);
     canGenerate.set(true);
+    fixture = TestBed.createComponent(PreviewPage);
     fixture.detectChanges();
 
     const warning = fixture.nativeElement.querySelector('.preview__warning');
@@ -94,11 +95,12 @@ describe('PreviewPage', () => {
     expect(navigate).toHaveBeenCalledWith(RESULT_ROUTE_COMMANDS);
   });
 
-  it('auto-applies the history notes once the event date arrives and surfaces a load failure', async () => {
+  it('loads history on init, applies the notes once the event date is published and surfaces a load failure', async () => {
     let resolveHistory!: (history: AthletesHistory) => void;
 
     loadHistory.mockReturnValueOnce(new Promise((resolve) => (resolveHistory = resolve)));
     event.set(RACE_EVENT);
+    fixture = TestBed.createComponent(PreviewPage);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.historyStatus()).toBe(HistoryNotesStatus.loading);
@@ -107,15 +109,17 @@ describe('PreviewPage', () => {
 
     resolveHistory(VALID_HISTORY);
     await settle();
+    fixture.detectChanges();
 
-    expect(applyAutoNotes).toHaveBeenCalledWith(VALID_HISTORY, RACE_EVENT.dateIso);
     expect(setPublishedEventDates, 'the loaded archive dates feed the auto race number').toHaveBeenCalledWith(EXPECTED_PUBLISHED_DATES);
+    expect(applyAutoNotes).toHaveBeenCalledWith(VALID_HISTORY, RACE_EVENT.dateIso);
     expect(fixture.componentInstance.historyStatus()).toBe(HistoryNotesStatus.idle);
 
     event.set({ ...RACE_EVENT, dateIso: CHANGED_EVENT_DATE_ISO });
     fixture.detectChanges();
 
-    expect(loadHistory, 'a date edit must not overwrite manual note fixes').toHaveBeenCalledTimes(1);
+    expect(loadHistory, 'history loads once; a date edit must not overwrite manual note fixes').toHaveBeenCalledTimes(1);
+    expect(applyAutoNotes).toHaveBeenCalledTimes(1);
 
     fixture.destroy();
     loadHistory.mockRejectedValueOnce(new Error(HISTORY_LOAD_ERROR_MESSAGE));
@@ -128,6 +132,5 @@ describe('PreviewPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.preview__history-error').getAttribute('role')).toBe('alert');
-    expect(applyAutoNotes).toHaveBeenCalledTimes(1);
   });
 });

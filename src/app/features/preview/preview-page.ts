@@ -3,6 +3,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
 import { eventDatesFromHistory } from '../../core/history/event-dates';
+import { AthletesHistory } from '../../core/models/athletes-history.type';
 import { HistoryService } from '../../github/history.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { EventForm } from './event-form/event-form';
@@ -26,6 +27,9 @@ export class PreviewPage {
   /** Auto notes are computed against the event date, which the form only publishes when valid. */
   readonly #eventDateIso = computed(() => this.#store.event()?.dateIso ?? null);
 
+  /** The loaded archive, kept so the auto notes can run once the event date is published. */
+  readonly #loadedHistory = signal<AthletesHistory | null>(null);
+
   readonly canGenerate = this.#store.canGenerate;
   readonly unknownGenderCount = this.#store.unknownGenderCount;
   readonly hasUnverified = computed(() => this.unknownGenderCount() > 0);
@@ -39,13 +43,19 @@ export class PreviewPage {
   #notesApplied = false;
 
   constructor() {
-    // The form publishes the prefilled event right after init, so the notes arrive with the page.
+    // History loads with the page so the archive dates feed the positional race number, which is what
+    // makes the (auto-numbered) event form valid — without it the event is never published and the
+    // Generate button stays disabled.
+    void this.#loadHistory();
+
+    // The number derived above lets the form publish the event; only then is the notes date known.
     effect(() => {
       const dateIso = this.#eventDateIso();
+      const history = this.#loadedHistory();
 
-      if (dateIso !== null && !this.#notesApplied) {
+      if (dateIso !== null && history !== null && !this.#notesApplied) {
         this.#notesApplied = true;
-        void this.#applyHistoryNotes(dateIso);
+        this.#store.applyAutoNotes(history, dateIso);
       }
     });
   }
@@ -54,15 +64,15 @@ export class PreviewPage {
     await this.#router.navigate(RESULT_ROUTE_COMMANDS);
   }
 
-  /** Loads the published history, applies the auto notes and feeds the event dates to the auto race number. */
-  async #applyHistoryNotes(dateIso: string): Promise<void> {
+  /** Loads the published history and feeds the event dates to the auto race number. */
+  async #loadHistory(): Promise<void> {
     this.historyStatus.set(HistoryNotesStatus.loading);
 
     try {
       const history = await this.#history.loadHistory();
 
       this.#store.setPublishedEventDates(eventDatesFromHistory(history));
-      this.#store.applyAutoNotes(history, dateIso);
+      this.#loadedHistory.set(history);
       this.historyStatus.set(HistoryNotesStatus.idle);
     } catch {
       this.historyStatus.set(HistoryNotesStatus.error);
