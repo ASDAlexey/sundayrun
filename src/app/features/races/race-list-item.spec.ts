@@ -6,6 +6,7 @@ import {
   EXPECTED_DECLINE_TREND,
   EXPECTED_FEMALE_ONLY_GENDERS,
   EXPECTED_LEGACY_NUMBER_TOOLTIP,
+  EXPECTED_NEWER_WEATHER_TEXT,
   EXPECTED_NOTELESS_HERO,
   EXPECTED_RECORDLESS_HERO,
   LEGACY_NUMBERED_ENTRY,
@@ -22,6 +23,7 @@ describe('race-list-item', () => {
 
     expect(noteless.hero, 'null note counts fall back to dimmed zeros instead of hiding the rows').toEqual(EXPECTED_NOTELESS_HERO);
     expect(noteless.genders, 'note-less aggregates also carry no times').toEqual([]);
+    expect(noteless.weatherText, 'a race without a stored reading carries no weather line').toBe('');
 
     const [decline] = toRaceListItems(DECLINE_ENTRIES, EDGE_CASES_TODAY_ISO);
 
@@ -34,5 +36,6 @@ describe('race-list-item', () => {
     const [legacyNumbered] = toRaceListItems([LEGACY_NUMBERED_ENTRY], EDGE_CASES_TODAY_ISO);
 
     expect(legacyNumbered.numberTooltip, 'a legacy number grows the «new vs old» tooltip').toBe(EXPECTED_LEGACY_NUMBER_TOOLTIP);
+    expect(legacyNumbered.weatherText, 'a stored reading becomes the card weather line').toBe(EXPECTED_NEWER_WEATHER_TEXT);
   });
 });

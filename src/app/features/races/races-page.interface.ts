@@ -60,6 +60,8 @@ export interface RaceListItem {
   hero: RaceCardHero;
   /** The М/Ж times block; a gender without any known time is dropped, an empty block hides entirely. */
   genders: RaceCardGenderBlock[];
+  /** «☀️ +26°, ветер 10 км/ч» — the stored course weather; empty when the race has none, then hidden. */
+  weatherText: string;
   pdfAriaLabel: string;
 }
 

@@ -314,6 +314,15 @@
     @include st.error-text;
   }
 
+  // The stored course weather, tucked into the gap the arrow points at; hidden when the race has none.
+  &__weather {
+    @include t.text('label', 'medium');
+
+    margin-left: auto;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
   // The decorative shortcut to the same protocol page; the accessible link is the button.
   &__go {
     @include t.text('title', 'medium');
@@ -326,6 +335,11 @@
     &:hover {
       color: var(--accent);
     }
+  }
+
+  // With weather present it owns the spacer, so the arrow just trails it by the row gap.
+  &__actions:has(&__weather) &__go {
+    margin-left: 0;
   }
 }
 

@@ -4,6 +4,7 @@ import { pluralText } from '../../core/i18n/plural-text';
 import { formatDuration } from '../../core/time/duration';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateChip } from '../../core/time/russian-date';
+import { weatherLineText } from '../../core/weather/weather-line';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { TREND_WINDOW_SIZE } from './races-page.constant';
 import { RaceCardGenderBlock, RaceCardHero, RaceCardSideStat, RaceCardTrend, RaceListItem } from './races-page.interface';
@@ -42,6 +43,7 @@ export function toRaceListItem(entry: ArchiveIndexEntry, isMonthFinal: boolean, 
     isMonthFinal,
     hero: toCardHero(entry, trend),
     genders: toCardGenders(entry),
+    weatherText: weatherLineText(entry.weather),
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@races.pdfAriaLabel:Протокол пробега № ${entry.number}:number: (PDF)`,
   };

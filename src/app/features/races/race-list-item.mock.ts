@@ -32,6 +32,9 @@ export const LEGACY_NUMBERED_ENTRY: ArchiveIndexEntry = { ...NEWER_ENTRY, legacy
 
 export const EXPECTED_LEGACY_NUMBER_TOOLTIP = 'Новая нумерация — № 13, старая — 2.72';
 
+/** NEWER_ENTRY's stored reading on the card: the mostly-clear icon, +25° rounded and the 9 km/h wind. */
+export const EXPECTED_NEWER_WEATHER_TEXT = '🌤️ +25°, ветер 9 км/ч';
+
 /** NOTELESS_ENTRY a week after NEWER_ENTRY, newest first: two finishers against the window's 18 — a decline. */
 export const DECLINE_ENTRIES: ArchiveIndexEntry[] = [{ ...NOTELESS_ENTRY, slug: '2026-07-12', dateIso: '2026-07-12' }, NEWER_ENTRY];
 

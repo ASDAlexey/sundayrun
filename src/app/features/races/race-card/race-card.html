@@ -101,6 +101,10 @@
       <span class="race-card__pdf-error" i18n="@@races.pdfError" role="alert">Не удалось сформировать PDF</span>
     }
 
+    @if (race().weatherText; as weatherText) {
+      <span class="race-card__weather">{{ weatherText }}</span>
+    }
+
     <a aria-hidden="true" class="race-card__go" tabindex="-1" [routerLink]="race().protocolLink">→</a>
   </div>
 </mat-card>
