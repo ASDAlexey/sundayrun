@@ -1,37 +1,37 @@
 <form class="event-form" [formGroup]="form">
-  <mat-form-field appearance="outline" class="event-form__field">
-    <mat-label class="event-form__label" i18n="@@preview.event.number">Номер забега</mat-label>
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.number">Номер забега</span>
 
-    <input class="event-form__input" formControlName="number" matInput min="1" step="0.01" type="number" />
-  </mat-form-field>
+    <input class="event-form__input" formControlName="number" min="1" step="0.01" type="number" />
+  </label>
 
-  <mat-form-field appearance="outline" class="event-form__field">
-    <mat-label class="event-form__label" i18n="@@preview.event.date">Дата</mat-label>
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.date">Дата</span>
 
-    <input class="event-form__input" formControlName="dateIso" matInput type="date" />
-  </mat-form-field>
+    <input class="event-form__input" formControlName="dateIso" type="date" />
+  </label>
 
-  <mat-form-field appearance="outline" class="event-form__field">
-    <mat-label class="event-form__label" i18n="@@preview.event.city">Город</mat-label>
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.city">Город</span>
 
-    <input class="event-form__input" formControlName="city" matInput type="text" />
-  </mat-form-field>
+    <input class="event-form__input" formControlName="city" type="text" />
+  </label>
 
-  <mat-form-field appearance="outline" class="event-form__field">
-    <mat-label class="event-form__label" i18n="@@preview.event.park">Парк</mat-label>
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.park">Парк</span>
 
-    <input class="event-form__input" formControlName="park" matInput type="text" />
-  </mat-form-field>
+    <input class="event-form__input" formControlName="park" type="text" />
+  </label>
 
-  <mat-form-field appearance="outline" class="event-form__field">
-    <mat-label class="event-form__label" i18n="@@preview.event.club">Клуб</mat-label>
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.club">Клуб</span>
 
-    <input class="event-form__input" formControlName="clubName" matInput type="text" />
-  </mat-form-field>
+    <input class="event-form__input" formControlName="clubName" type="text" />
+  </label>
 
-  <mat-form-field appearance="outline" class="event-form__field">
-    <mat-label class="event-form__label" i18n="@@preview.event.chairman">Председатель клуба</mat-label>
+  <label class="event-form__field">
+    <span class="event-form__label" i18n="@@preview.event.chairman">Председатель клуба</span>
 
-    <input class="event-form__input" formControlName="chairman" matInput type="text" />
-  </mat-form-field>
+    <input class="event-form__input" formControlName="chairman" type="text" />
+  </label>
 </form>

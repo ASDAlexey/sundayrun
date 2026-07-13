@@ -28,8 +28,6 @@ export const EXPECTED_PARTICIPANT_COUNT = 3;
 
 export const EXPECTED_MALE_TOTAL_MS = 1143028;
 
-export const NOTE_TEXT = 'волонтёр';
-
 export const RACE_EVENT: RaceEvent = {
   number: 42,
   legacyNumber: null,
@@ -57,13 +55,12 @@ export const IMPORT_HISTORY: AthletesHistory = {
 
 /**
  * The auto note for beating `PREVIOUS_BEST_MS` (20:00): the run is both an all-time personal
- * record and better than the year's best male result (also 20:00), and the manual note the
- * organiser typed earlier survives after the auto part.
+ * record and better than the year's best male result (also 20:00).
  */
-export const EXPECTED_PR_NOTE = `ЛР (было 20:00); Лучший результат 2026 г.; ${NOTE_TEXT}`;
+export const EXPECTED_PR_NOTE = 'ЛР (было 20:00); Лучший результат 2026 г.';
 
-/** A back-dated import: the athlete counts as a first-timer, the manual note still survives. */
-export const EXPECTED_BACKDATED_NOTE = `Первое участие; ${NOTE_TEXT}`;
+/** A back-dated import: the athlete counts as a first-timer. */
+export const EXPECTED_BACKDATED_NOTE = 'Первое участие';
 
 /** Archive dates for the auto race number, as `setPublishedEventDates` receives them. */
 export const PUBLISHED_EVENT_DATES = ['2026-06-07', EXPECTED_SUGGESTED_DATE_ISO];

@@ -10,5 +10,6 @@ export interface ParticipantRowView {
   unverified: boolean;
   isMale: boolean;
   isFemale: boolean;
-  noteAriaLabel: string;
+  /** The auto-generated note exactly as the protocol will print it; an em dash when empty. */
+  noteText: string;
 }

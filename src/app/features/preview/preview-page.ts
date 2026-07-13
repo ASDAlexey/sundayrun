@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
@@ -14,7 +13,7 @@ import { HistoryNotesStatus, HistoryNotesStatusType } from './preview-page.enum'
 /** The /preview page: participants editing plus the race event form before PDF generation. */
 @Component({
   selector: 'app-preview-page',
-  imports: [EventForm, MatButtonModule, MatProgressSpinnerModule, ParticipantsTable],
+  imports: [EventForm, MatProgressSpinnerModule, ParticipantsTable],
   templateUrl: './preview-page.html',
   styleUrl: './preview-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

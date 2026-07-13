@@ -1,8 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTableModule } from '@angular/material/table';
 
 import { Gender, GenderConfidence } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
@@ -10,21 +6,23 @@ import { FIVE_KM_TEXT, TWO_THREE_KM_TEXT } from '../../../shared/distance-label.
 import { FormatDurationPipe } from '../../../shared/pipes/format-duration.pipe';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import {
-  DISPLAYED_COLUMNS,
   DNF_TEXT,
   FULL_DISTANCE_LAPS,
   LAP_1_INDEX,
   LAP_2_INDEX,
   NO_DISTANCE_TEXT,
   NO_LAP_TEXT,
+  NO_NOTE_TEXT,
   SHORT_DISTANCE_LAPS,
 } from './participants-table.constant';
 import { ParticipantRowView } from './participants-table.interface';
 
-/** Editable list of imported participants: gender toggles and per-athlete notes. */
+/**
+ * The imported participants list: gender is editable, the note column is a read-only
+ * preview of the auto-generated text (ЛР, первое участие…) exactly as the protocol will show it.
+ */
 @Component({
   selector: 'app-participants-table',
-  imports: [MatButtonToggleModule, MatFormFieldModule, MatInputModule, MatTableModule],
   templateUrl: './participants-table.html',
   styleUrl: './participants-table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,23 +33,12 @@ export class ParticipantsTable {
 
   readonly rows = computed(() => this.#store.participants().map((participant) => this.#toRowView(participant)));
 
-  protected readonly displayedColumns = DISPLAYED_COLUMNS;
-
   setMale(id: number): void {
     this.#store.setGender(id, Gender.male);
   }
 
   setFemale(id: number): void {
     this.#store.setGender(id, Gender.female);
-  }
-
-  onNoteChange(id: number, note: string): void {
-    this.#store.setNote(id, note);
-  }
-
-  /** Keeps mat-table rows stable across store updates, matching the previous @for track expression. */
-  protected trackById(this: void, _index: number, row: ParticipantRowView): number {
-    return row.participant.id;
   }
 
   #toRowView(participant: Participant): ParticipantRowView {
@@ -64,8 +51,7 @@ export class ParticipantsTable {
       unverified: participant.genderConfidence !== GenderConfidence.high,
       isMale: participant.gender === Gender.male,
       isFemale: participant.gender === Gender.female,
-      // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
-      noteAriaLabel: $localize`:@@preview.table.noteAriaLabel:Примечание: ${participant.fullName}:fullName:`,
+      noteText: participant.note === '' ? NO_NOTE_TEXT : participant.note,
     };
   }
 

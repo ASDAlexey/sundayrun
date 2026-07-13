@@ -50,10 +50,6 @@ export class ProtocolStateService {
     }));
   }
 
-  setNote(id: number, note: string): void {
-    this.#updateParticipant(id, (participant) => ({ ...participant, note }));
-  }
-
   setEvent(event: RaceEvent): void {
     this.#event.set(event);
   }

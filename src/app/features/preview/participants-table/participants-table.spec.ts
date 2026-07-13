@@ -11,14 +11,12 @@ import {
   EXPECTED_ROW_VIEWS,
   EXPECTED_UNVERIFIED_HINT_COUNT,
   FULL_DISTANCE_ID,
-  NOTE_TEXT,
   TABLE_PARTICIPANTS,
 } from './participants-table.mock';
 
 describe('ParticipantsTable', () => {
   const participants = signal<Participant[]>([]);
   const setGender = vi.fn();
-  const setNote = vi.fn();
 
   let fixture: ComponentFixture<ParticipantsTable>;
   let table: ParticipantsTable;
@@ -27,7 +25,7 @@ describe('ParticipantsTable', () => {
     vi.clearAllMocks();
     participants.set(TABLE_PARTICIPANTS);
     TestBed.configureTestingModule({
-      providers: [{ provide: ProtocolStateService, useValue: { participants, setGender, setNote } }],
+      providers: [{ provide: ProtocolStateService, useValue: { participants, setGender } }],
     });
     fixture = TestBed.createComponent(ParticipantsTable);
     table = fixture.componentInstance;
@@ -41,31 +39,31 @@ describe('ParticipantsTable', () => {
     expect(table.rows()).toEqual(EXPECTED_ROW_VIEWS);
   });
 
-  it('reflects gender in aria-pressed and forwards gender and note edits to the store', () => {
+  it('reflects gender in aria-pressed, forwards gender edits and renders the note as read-only text', () => {
     fixture.detectChanges();
 
-    const toggles = [...fixture.nativeElement.querySelectorAll('.participants-table__gender-toggle')];
+    const element = fixture.nativeElement;
+    const toggles = [...element.querySelectorAll('.participants-table__gender-toggle')];
 
     expect(toggles.map((toggle) => toggle.getAttribute('aria-pressed'))).toEqual(EXPECTED_ARIA_PRESSED);
 
-    const headers = [...fixture.nativeElement.querySelectorAll('.participants-table__header')];
+    const headers = [...element.querySelectorAll('.participants-table__header')];
 
     expect(headers.every((header) => header.getAttribute('scope') === COLUMN_SCOPE)).toBe(true);
+    expect(element.querySelectorAll('.visually-hidden')).toHaveLength(EXPECTED_UNVERIFIED_HINT_COUNT);
 
-    const noteInputs = [...fixture.nativeElement.querySelectorAll('.participants-table__note-input')];
+    const noteCells = [...element.querySelectorAll('.participants-table__cell_note')];
 
     expect(
-      noteInputs.map((input, index) => input.getAttribute('aria-label').includes(TABLE_PARTICIPANTS[index].fullName)),
-      'note labels are unique per athlete',
-    ).toEqual(noteInputs.map(() => true));
-    expect(fixture.nativeElement.querySelectorAll('.visually-hidden')).toHaveLength(EXPECTED_UNVERIFIED_HINT_COUNT);
+      noteCells.map((cell) => cell.textContent.trim()),
+      'the auto note is printed as plain text',
+    ).toEqual(EXPECTED_ROW_VIEWS.map((row) => row.noteText));
+    expect(element.querySelector('.participants-table__cell_note input'), 'no note editing').toBeNull();
 
     table.setMale(FULL_DISTANCE_ID);
     table.setFemale(FULL_DISTANCE_ID);
-    table.onNoteChange(FULL_DISTANCE_ID, NOTE_TEXT);
 
     expect(setGender).toHaveBeenNthCalledWith(1, FULL_DISTANCE_ID, Gender.male);
     expect(setGender).toHaveBeenNthCalledWith(2, FULL_DISTANCE_ID, Gender.female);
-    expect(setNote).toHaveBeenCalledWith(FULL_DISTANCE_ID, NOTE_TEXT);
   });
 });

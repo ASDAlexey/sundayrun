@@ -23,17 +23,15 @@
     }
   </div>
 
+  <p class="preview__notes-hint" i18n="@@preview.notesHint">
+    Примечания («ЛР», «Первое участие» и другие) рассчитываются автоматически по истории — в колонке ниже они показаны так, как попадут в
+    протокол.
+  </p>
+
   <app-participants-table />
 
   <div class="preview__actions">
-    <button
-      class="preview__generate"
-      i18n="@@preview.generate"
-      matButton="filled"
-      type="button"
-      [disabled]="!canGenerate()"
-      (click)="generate()"
-    >
+    <button class="preview__generate" i18n="@@preview.generate" type="button" [disabled]="!canGenerate()" (click)="generate()">
       Сгенерировать протокол
     </button>
   </div>

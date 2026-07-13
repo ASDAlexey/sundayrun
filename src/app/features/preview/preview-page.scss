@@ -1,3 +1,4 @@
+@use 'styles/buttons' as b;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
@@ -44,6 +45,12 @@
     @include st.error-text;
   }
 
+  &__notes-hint {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
   &__actions {
     display: flex;
     position: sticky;
@@ -51,5 +58,9 @@
     justify-content: flex-end;
     padding: 16px 0;
     background: var(--bg);
+  }
+
+  &__generate {
+    @include b.button-accent;
   }
 }

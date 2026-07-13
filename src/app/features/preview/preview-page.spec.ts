@@ -24,7 +24,6 @@ describe('PreviewPage', () => {
   const publishedEventDates = signal<string[] | null>(null);
   const setEvent = vi.fn();
   const setGender = vi.fn();
-  const setNote = vi.fn();
   const applyAutoNotes = vi.fn();
   const setPublishedEventDates = vi.fn();
   const navigate = vi.fn(() => Promise.resolve(true));
@@ -50,7 +49,6 @@ describe('PreviewPage', () => {
             publishedEventDates,
             setEvent,
             setGender,
-            setNote,
             applyAutoNotes,
             setPublishedEventDates,
           },

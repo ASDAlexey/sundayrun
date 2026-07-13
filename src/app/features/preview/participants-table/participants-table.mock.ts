@@ -1,12 +1,10 @@
 import { Gender, GenderConfidence, GenderSource } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
 import { FIVE_KM_TEXT, TWO_THREE_KM_TEXT } from '../../../shared/distance-label.constant';
-import { DNF_TEXT, NO_DISTANCE_TEXT, NO_LAP_TEXT } from './participants-table.constant';
+import { DNF_TEXT, NO_DISTANCE_TEXT, NO_LAP_TEXT, NO_NOTE_TEXT } from './participants-table.constant';
 import { ParticipantRowView } from './participants-table.interface';
 
 export const FULL_DISTANCE_ID = 1;
-
-export const NOTE_TEXT = 'волонтёр';
 
 const FULL_DISTANCE_PARTICIPANT: Participant = {
   id: FULL_DISTANCE_ID,
@@ -57,7 +55,7 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
     unverified: false,
     isMale: true,
     isFemale: false,
-    noteAriaLabel: 'Примечание: Троилин Антон',
+    noteText: NO_NOTE_TEXT,
   },
   {
     participant: SHORT_DISTANCE_PARTICIPANT,
@@ -68,7 +66,7 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
     unverified: true,
     isMale: false,
     isFemale: true,
-    noteAriaLabel: 'Примечание: Хандыга Наталья',
+    noteText: SHORT_DISTANCE_PARTICIPANT.note,
   },
   {
     participant: DNF_PARTICIPANT,
@@ -79,7 +77,7 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
     unverified: true,
     isMale: false,
     isFemale: false,
-    noteAriaLabel: 'Примечание: Инкогнито',
+    noteText: NO_NOTE_TEXT,
   },
 ];
 

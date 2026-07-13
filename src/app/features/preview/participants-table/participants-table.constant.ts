@@ -1,7 +1,7 @@
 export const DNF_TEXT = 'DNF';
 
-/** Column order of the participants mat-table. */
-export const DISPLAYED_COLUMNS: string[] = ['index', 'name', 'time', 'lap1', 'lap2', 'distance', 'gender', 'note'];
+/** Shown in the read-only note column when the history produced no auto note. */
+export const NO_NOTE_TEXT = '—';
 
 /** Shown when the timer recorded no laps at all. */
 export const NO_DISTANCE_TEXT = '—';

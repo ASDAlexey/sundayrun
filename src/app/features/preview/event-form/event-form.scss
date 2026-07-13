@@ -1,4 +1,6 @@
 @use 'styles/card' as c;
+@use 'styles/field' as f;
+@use 'styles/typography' as t;
 
 .event-form {
   @include c.card;
@@ -7,4 +9,33 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   padding: 24px;
   gap: 20px;
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__label {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__input {
+    @include f.field;
+
+    width: 100%;
+    transition: border-color var(--transition-time) var(--ease);
+
+    &:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    // Required requisites: an emptied field is flagged as soon as it loses focus.
+    &.ng-invalid.ng-touched {
+      border-color: var(--accent-warm);
+    }
+  }
 }

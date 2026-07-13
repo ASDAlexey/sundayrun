@@ -15,7 +15,6 @@ import {
   IMPORT_XLSX_BYTES,
   KNOWN_MALE_ID,
   KNOWN_MALE_NAME,
-  NOTE_TEXT,
   PUBLISHED_EVENT_DATES,
   RACE_EVENT,
   REPUBLISHED_HISTORY,
@@ -89,18 +88,15 @@ describe('ProtocolStateService', () => {
     expect(service.event()).toBe(RACE_EVENT);
     expect(service.canGenerate()).toBe(true);
 
-    service.setNote(KNOWN_MALE_ID, NOTE_TEXT);
-
-    const afterNote = service.participants();
-
-    expect(afterNote[0]).toMatchObject({ fullName: KNOWN_MALE_NAME, note: NOTE_TEXT });
-    expect(afterNote[2]).toBe(afterGender[2]);
-
     service.applyAutoNotes(IMPORT_HISTORY, EXPECTED_SUGGESTED_DATE_ISO);
 
     const afterAutoNotes = service.participants();
 
-    expect(afterAutoNotes[0], 'auto note is prepended, the manual token survives').toMatchObject({ note: EXPECTED_PR_NOTE });
+    expect(afterAutoNotes[0], 'the PR and year-best tokens land in the read-only note').toMatchObject({
+      fullName: KNOWN_MALE_NAME,
+      note: EXPECTED_PR_NOTE,
+    });
+    expect(afterAutoNotes[2]).not.toBe(afterGender[2]);
     expect(afterAutoNotes[1].note).toBe(FIRST_PARTICIPATION_NOTE);
     expect(afterAutoNotes[2].note).toBe(FIRST_PARTICIPATION_NOTE);
 
