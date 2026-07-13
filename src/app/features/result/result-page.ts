@@ -15,6 +15,7 @@ import { AdminTokenService } from '../../github/admin-token.service';
 import { ResultsService } from '../../github/results.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
+import { PendingArchiveService } from '../../github/pending-archive.service';
 import { triggerBlobDownload } from '../../pdf/blob-download';
 import { PdfService } from '../../pdf/pdf.service';
 import { PDF_FILE_EXTENSION } from '../../pdf/pdf.service.constant';
@@ -42,6 +43,7 @@ export class ResultPage implements OnDestroy {
   readonly #router = inject(Router);
   readonly #sanitizer = inject(DomSanitizer);
   readonly #github = inject(GithubStorageService);
+  readonly #pendingArchive = inject(PendingArchiveService);
   readonly #results = inject(ResultsService);
   readonly #adminToken = inject(AdminTokenService);
   readonly #protocolImage = inject(ProtocolImageService);
@@ -127,11 +129,20 @@ export class ResultPage implements OnDestroy {
       return;
     }
 
-    await this.#github.publish({
-      event,
-      rows: this.#store.protocolRows(),
-      sourceXlsxBytes: sourceFile.bytes,
-    });
+    const rows = this.#store.protocolRows();
+
+    await this.#github.publish({ event, rows, sourceXlsxBytes: sourceFile.bytes });
+
+    if (this.publishState() === PublishState.success) {
+      // The archive db rebuild lags the commit, so mark the event pending — /admin shows it as «публикуется…».
+      this.#pendingArchive.addUpload({
+        slug: event.dateIso,
+        number: event.number,
+        dateIso: event.dateIso,
+        participantCount: rows.length,
+        atIso: new Date().toISOString(),
+      });
+    }
   }
 
   /** Remembers the run photo the organizer picked from the phone, so it rides along to VK. */

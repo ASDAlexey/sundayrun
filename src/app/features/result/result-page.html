@@ -72,7 +72,7 @@
             i18n="@@result.publish"
             matButton="filled"
             type="button"
-            [disabled]="publishState() === publishStates.publishing"
+            [disabled]="publishState() === publishStates.publishing || publishState() === publishStates.success"
             (click)="publish()"
           >
             Опубликовать в архив

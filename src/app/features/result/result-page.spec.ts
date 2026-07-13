@@ -8,6 +8,8 @@ import { PDF_EVENT_MOCK, PDF_PREVIOUS_BESTS_MOCK, PDF_ROWS_MOCK } from '../../co
 import { AdminTokenService } from '../../github/admin-token.service';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
+import { PendingArchiveService } from '../../github/pending-archive.service';
+import { pendingArchiveMock } from '../../github/pending-archive.service.mock';
 import { ResultsService } from '../../github/results.service';
 import { PdfService } from '../../pdf/pdf.service';
 import { ProtocolImageService } from '../../pdf/protocol-image.service';
@@ -58,6 +60,7 @@ describe('ResultPage', () => {
   const publishState = signal<PublishStateType>(PublishState.idle);
   const publish = vi.fn((_input: PublishEventInput) => Promise.resolve());
   const reset = vi.fn();
+  const pendingArchive = pendingArchiveMock();
   const createObjectURL = vi.fn(() => OBJECT_URL_MOCK);
   const revokeObjectURL = vi.fn();
 
@@ -90,6 +93,7 @@ describe('ResultPage', () => {
           useValue: { canShareFile, canShareFiles, shareFile, shareFiles, copyToClipboard, buildVkShareUrl, openWindow },
         },
         { provide: GithubStorageService, useValue: { state: publishState, publish, reset } },
+        { provide: PendingArchiveService, useValue: pendingArchive },
         { provide: AdminTokenService, useValue: { isAdmin } },
       ],
     });
@@ -323,6 +327,7 @@ describe('ResultPage', () => {
 
     const element = fixture.nativeElement;
 
+    // A publish that never reaches success records nothing.
     element.querySelector('.result__publish-button').click();
     await settle();
 
@@ -334,6 +339,28 @@ describe('ResultPage', () => {
     expect(publishInput.rows).toBe(PDF_ROWS_MOCK);
     expect(publishInput.sourceXlsxBytes).toBe(SOURCE_FILE_MOCK.bytes);
     expect('pdfBytes' in publishInput, 'the protocol pdf is generated on the fly, never published').toBe(false);
+    expect(pendingArchive.addUpload, 'an unfinished publish is not remembered').not.toHaveBeenCalled();
+
+    // A successful publish is remembered for /admin and locks the button against a re-publish.
+    publish.mockImplementation(() => {
+      publishState.set(PublishState.success);
+
+      return Promise.resolve();
+    });
+    element.querySelector('.result__publish-button').click();
+    await settle();
+
+    expect(pendingArchive.addUpload).toHaveBeenCalledWith({
+      slug: PDF_EVENT_MOCK.dateIso,
+      number: PDF_EVENT_MOCK.number,
+      dateIso: PDF_EVENT_MOCK.dateIso,
+      participantCount: PDF_ROWS_MOCK.length,
+      atIso: expect.any(String),
+    });
+
+    fixture.detectChanges();
+
+    expect(element.querySelector('.result__publish-button').disabled, 'a published event cannot be re-published').toBe(true);
 
     publishState.set(PublishState.publishing);
     fixture.detectChanges();
