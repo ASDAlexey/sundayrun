@@ -53,9 +53,15 @@ export function yearBadgesOf(activity: YearActivity): YearBadgeType[] {
 /**
  * Per-year badges of one athlete over their finished runs (any distance — a short-course finish
  * is still a run). `firstEventDateByYear` maps a year to the archive's first race of that year;
- * a year missing from the map simply cannot award the new-year badge. Newest year first.
+ * a year missing from the map simply cannot award the new-year badge. `rankBadgesByYear` carries
+ * the ranking crowns (course record, year standings) and leads each year's row — those are the
+ * big achievements. Newest year first.
  */
-export function athleteYearBadges(runs: AthleteRun[], firstEventDateByYear: Record<string, string>): AthleteYearBadges[] {
+export function athleteYearBadges(
+  runs: AthleteRun[],
+  firstEventDateByYear: Record<string, string>,
+  rankBadgesByYear: Record<string, YearBadgeType[]> = {},
+): AthleteYearBadges[] {
   const byYear = new Map<string, AthleteRun[]>();
 
   for (const run of runs) {
@@ -70,9 +76,11 @@ export function athleteYearBadges(runs: AthleteRun[], firstEventDateByYear: Reco
   }
 
   const result: AthleteYearBadges[] = [];
+  const years = new Set([...byYear.keys(), ...Object.keys(rankBadgesByYear)]);
 
-  for (const [year, yearRuns] of byYear) {
-    const badges = yearBadgesOf(toActivity(yearRuns, firstEventDateByYear[year] ?? null));
+  for (const year of years) {
+    const activityBadges = yearBadgesOf(toActivity(byYear.get(year) ?? [], firstEventDateByYear[year] ?? null));
+    const badges = [...(rankBadgesByYear[year] ?? []), ...activityBadges];
 
     if (badges.length > 0) {
       result.push({ year, badges });
@@ -80,6 +88,17 @@ export function athleteYearBadges(runs: AthleteRun[], firstEventDateByYear: Reco
   }
 
   return result.sort((left, right) => right.year.localeCompare(left.year));
+}
+
+/**
+ * One year's runs boiled down to the badge criteria — the «Все награды» catalog shows
+ * the live progress of the current season from it.
+ */
+export function athleteYearActivity(runs: AthleteRun[], year: string, firstEventDate: string | undefined): YearActivity {
+  return toActivity(
+    runs.filter((run) => isoYear(run.dateIso) === year),
+    firstEventDate ?? null,
+  );
 }
 
 function toActivity(yearRuns: AthleteRun[], firstEventDate: string | null): YearActivity {

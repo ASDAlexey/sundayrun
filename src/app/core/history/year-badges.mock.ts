@@ -33,6 +33,30 @@ export const EXPECTED_MULTI_YEAR_BADGES: AthleteYearBadges[] = [
   { year: '2025', badges: [YearBadge.obsessiveBronze, YearBadge.allMonths, YearBadge.newYearRace] },
 ];
 
+/**
+ * The ranking crowns: a 2025 crown to lead that year's row, a 2024 cut reviving the quiet year,
+ * and a run-less 2023 cut — the standing course record can outlive the runs behind it.
+ */
+export const RANK_BADGES_BY_YEAR: Record<string, YearBadgeType[]> = {
+  '2025': [YearBadge.yearKing],
+  '2024': [YearBadge.yearTopThirty],
+  '2023': [YearBadge.courseKing],
+};
+
+/** The rank badges lead their years, and the run-less years resurface carrying their crowns alone. */
+export const EXPECTED_RANKED_MULTI_YEAR_BADGES: AthleteYearBadges[] = [
+  { year: '2026', badges: [YearBadge.obsessiveGold] },
+  { year: '2025', badges: [YearBadge.yearKing, YearBadge.obsessiveBronze, YearBadge.allMonths, YearBadge.newYearRace] },
+  { year: '2024', badges: [YearBadge.yearTopThirty] },
+  { year: '2023', badges: [YearBadge.courseKing] },
+];
+
+/** 2025 sliced out of the multi-year runs: 30 finishes over all 12 months starting at the new-year race. */
+export const EXPECTED_2025_ACTIVITY: YearActivity = { runCount: 30, monthCount: 12, ranNewYearRace: true };
+
+/** A year the athlete never ran. */
+export const EMPTY_YEAR_ACTIVITY: YearActivity = { runCount: 0, monthCount: 0, ranNewYearRace: false };
+
 /** [label, activity, expected badges] for the single-year criteria. */
 export const YEAR_ACTIVITY_CASES: readonly (readonly [string, YearActivity, YearBadgeType[]])[] = [
   ['49 runs stay silver', { runCount: 49, monthCount: 3, ranNewYearRace: false }, [YearBadge.obsessiveSilver]],
