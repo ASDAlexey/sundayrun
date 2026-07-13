@@ -13,26 +13,9 @@ import {
   SAME_DAY_ONLY_RUNS,
 } from './progress-chart.mock';
 
-// jsdom has no canvas context, so the real chart.js can never run in specs.
-vi.mock('chart.js', () => {
-  const instance = { destroy: vi.fn(), resetZoom: vi.fn() };
-
-  return {
-    // A `function` (not an arrow) so the component's `new Chart(...)` can construct it.
-    Chart: Object.assign(
-      vi.fn(function chartMock() {
-        return instance;
-      }),
-      { register: vi.fn() },
-    ),
-    Filler: {},
-    LinearScale: {},
-    LineController: {},
-    LineElement: {},
-    PointElement: {},
-    Tooltip: {},
-  };
-});
+// One shared chart.js mock across every chart-rendering spec — see `chart-js.mock.ts` for why the
+// component's bundle-wide `chartClassPromise` singleton forces all specs onto the same Chart object.
+vi.mock('chart.js', async () => (await import('./chart-js.mock')).chartJsMock);
 
 vi.mock('chartjs-plugin-zoom', () => ({ default: {} }));
 

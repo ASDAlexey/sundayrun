@@ -58,21 +58,8 @@ import {
 } from './athlete-page.mock';
 
 // jsdom has no canvas context, so the embedded progress chart's lazy chart.js import mocks away.
-vi.mock('chart.js', () => ({
-  // A `function` (not an arrow) so the chart component's `new Chart(...)` can construct it.
-  Chart: Object.assign(
-    vi.fn(function chartMock() {
-      return { destroy: vi.fn(), resetZoom: vi.fn() };
-    }),
-    { register: vi.fn() },
-  ),
-  Filler: {},
-  LinearScale: {},
-  LineController: {},
-  LineElement: {},
-  PointElement: {},
-  Tooltip: {},
-}));
+// Shares one Chart object with every chart-rendering spec — see `chart-js.mock.ts`.
+vi.mock('chart.js', async () => (await import('./chart-js.mock')).chartJsMock);
 
 vi.mock('chartjs-plugin-zoom', () => ({ default: {} }));
 
