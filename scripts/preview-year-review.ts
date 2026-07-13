@@ -23,8 +23,18 @@ console.log(
     `новичков ${review.newcomerCount}, ЛР ${review.personalRecordCount}`,
 );
 console.log(`медианы: М ${review.medianTimeMenMs}, Ж ${review.medianTimeWomenMs}`);
-console.log(`лучший М: ${review.bestMale?.displayName} ${review.bestMale?.timeMs} (${review.bestMale?.slug})`);
-console.log(`лучшая Ж: ${review.bestFemale?.displayName} ${review.bestFemale?.timeMs} (${review.bestFemale?.slug})`);
+console.log('\nЛучшие М:');
+
+for (const best of review.bestMen) {
+  console.log(`  ${best.displayName} ${best.timeMs} (${best.slug})`);
+}
+
+console.log('\nЛучшие Ж:');
+
+for (const best of review.bestWomen) {
+  console.log(`  ${best.displayName} ${best.timeMs} (${best.slug})`);
+}
+
 console.log('\nСамые активные:');
 
 for (const active of review.mostActive) {

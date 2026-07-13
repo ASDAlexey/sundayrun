@@ -6,7 +6,7 @@ coverage
 _legacy
 content
 scripts
-seo
+/seo
 eslint-local-plugin
 stylelint-rules
 *.scss
