@@ -1,0 +1,55 @@
+@if (view(); as life) {
+  <section class="lifetime">
+    <h2 class="lifetime__title" i18n="@@athlete.lifetimeTitle">Цифры за всё время</h2>
+
+    <dl class="lifetime__totals">
+      <div class="lifetime__total">
+        <dt class="lifetime__total-label" i18n="@@athlete.lifetimeTimeLabel">времени на трассе</dt>
+
+        <dd class="lifetime__total-value">{{ life.totalTimeText }}</dd>
+      </div>
+
+      <div class="lifetime__total">
+        <dt class="lifetime__total-label" i18n="@@athlete.lifetimeKmLabel">километров</dt>
+
+        <dd class="lifetime__total-value">{{ life.totalKmText }}</dd>
+      </div>
+    </dl>
+
+    @if (life.buckets.length > 0) {
+      <div class="lifetime__block">
+        <h3 class="lifetime__block-title" i18n="@@athlete.lifetimeBucketsTitle">Результаты по минутам · 5 км</h3>
+
+        <ul class="lifetime__buckets">
+          @for (bucket of life.buckets; track bucket.minute) {
+            <li class="lifetime__bucket">
+              <span class="lifetime__bucket-label">{{ bucket.label }}</span>
+
+              <span class="lifetime__bucket-track">
+                <span class="lifetime__bucket-bar" [style.width.%]="bucket.widthPercent"></span>
+              </span>
+
+              <span class="lifetime__bucket-count" [class.lifetime__bucket-count_zero]="bucket.count === 0">{{ bucket.count }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (life.yearPaces.length > 0) {
+      <div class="lifetime__block">
+        <h3 class="lifetime__block-title" i18n="@@athlete.lifetimePacesTitle">Средний темп по годам · 5 км</h3>
+
+        <ul class="lifetime__paces">
+          @for (pace of life.yearPaces; track pace.year) {
+            <li class="lifetime__pace">
+              <span class="lifetime__pace-year">{{ pace.year }}</span>
+
+              <span class="lifetime__pace-value" i18n="@@athlete.lifetimePaceValue">{{ pace.paceText }} /км</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </section>
+}

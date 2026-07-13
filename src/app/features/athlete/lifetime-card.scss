@@ -1,0 +1,136 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+.lifetime {
+  @include c.card;
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__totals {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    gap: 12px 36px;
+  }
+
+  &__total {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__total-label {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__total-value {
+    @include t.stat-value;
+
+    margin: 0;
+    color: var(--text);
+  }
+
+  &__block {
+    display: flex;
+    flex-direction: column;
+    padding-top: 14px;
+    gap: 10px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  &__block-title {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__buckets {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 6px;
+    list-style: none;
+  }
+
+  &__bucket {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__bucket-label {
+    @include t.mono-caption;
+
+    min-width: 44px;
+    color: var(--text-muted);
+  }
+
+  &__bucket-track {
+    flex: 1;
+  }
+
+  &__bucket-bar {
+    display: block;
+    height: 10px;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    transition: width var(--transition-time) var(--ease);
+  }
+
+  &__bucket-count {
+    @include t.mono-value;
+
+    min-width: 24px;
+    color: var(--text);
+    text-align: right;
+
+    // The gap minutes stay visible but never shout.
+    &_zero {
+      color: var(--text-muted);
+    }
+  }
+
+  &__paces {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+    list-style: none;
+  }
+
+  &__pace {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 14px;
+    gap: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
+  }
+
+  &__pace-year {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__pace-value {
+    @include t.mono-value;
+
+    color: var(--text);
+  }
+}
