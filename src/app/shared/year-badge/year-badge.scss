@@ -1,46 +1,190 @@
 @use 'styles/typography' as t;
 
 .year-badge {
-  @include t.text('label', 'medium');
-
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
+  padding: 8px 14px 8px 10px;
+  gap: 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  color: var(--text-secondary);
-  white-space: nowrap;
+
+  &__art {
+    flex: none;
+    width: 36px;
+    height: 45px;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__label {
+    @include t.text('label', 'medium');
+
+    color: var(--text);
+    white-space: nowrap;
+  }
 
   &__rarity {
     @include t.text('label', 'small');
 
-    margin-left: 8px;
-    opacity: 0.72;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  &__medal-ribbon {
+    fill: var(--medal-deep);
+  }
+
+  &__medal-scallop {
+    fill: none;
+    stroke: var(--medal-deep);
+    stroke-dasharray: 0.5 7.5;
+    stroke-linecap: round;
+    stroke-width: 6.5;
+  }
+
+  &__medal-disc {
+    fill: var(--medal);
+  }
+
+  &__medal-ring {
+    fill: none;
+    stroke: var(--medal-ink);
+    stroke-width: 1.2;
+    opacity: 0.4;
+  }
+
+  &__medal-number {
+    @include t.text('label', 'medium');
+    @include t.bold;
+
+    fill: var(--medal-ink);
+  }
+
+  &__wheel-track {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 5;
+  }
+
+  &__wheel-segments {
+    fill: none;
+    stroke: var(--accent);
+    stroke-dasharray: 6.2 1.8;
+    stroke-width: 5;
+  }
+
+  &__wheel-count {
+    @include t.text('label', 'medium');
+    @include t.bold;
+
+    fill: var(--text);
+  }
+
+  &__flake-plate {
+    fill: color-mix(in srgb, var(--chart-6) 10%, var(--surface));
+    stroke: color-mix(in srgb, var(--chart-6) 45%, var(--surface));
+    stroke-width: 1;
+  }
+
+  &__flake {
+    fill: none;
+    stroke: var(--chart-6);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.2;
+  }
+
+  &__crown {
+    fill: var(--crown);
+    stroke: var(--crown-deep);
+    stroke-linejoin: round;
+    stroke-width: 1;
+  }
+
+  &__crown-band {
+    fill: var(--crown-deep);
+  }
+
+  &__crown-gem {
+    fill: var(--surface);
+    opacity: 0.85;
+  }
+
+  &__podium-step {
+    fill: var(--podium);
+
+    &_first {
+      fill: var(--accent);
+    }
+
+    &_third {
+      opacity: 0.6;
+    }
+  }
+
+  &__laurel {
+    fill: none;
+    stroke: var(--laurel);
+    stroke-dasharray: 5 3.2;
+    stroke-linecap: round;
+    stroke-width: 2.6;
+  }
+
+  &__laurel-count {
+    @include t.text('label', 'medium');
+    @include t.bold;
+
+    fill: var(--text);
   }
 
   &_gold {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: var(--accent-contrast);
+    --medal: var(--accent);
+    --medal-deep: var(--accent-deep);
+    --medal-ink: var(--accent-contrast);
+
+    border-color: var(--accent-line);
+    background: var(--accent-atmosphere);
   }
 
   &_silver {
-    border-color: var(--accent);
-    background: var(--accent-atmosphere);
-    color: var(--accent);
+    --medal: var(--text-secondary);
+    --medal-deep: var(--text-muted);
+    --medal-ink: var(--bg);
   }
 
   &_bronze {
-    border-color: var(--accent);
-    color: var(--accent-deep);
+    --medal: var(--chart-12);
+    --medal-deep: color-mix(in srgb, var(--chart-12) 65%, var(--black));
+    --medal-ink: var(--bg);
   }
 
-  &_months {
-    color: var(--text);
+  &_course-king {
+    --crown: var(--accent);
+    --crown-deep: var(--accent-deep);
+
+    border-color: var(--accent-line);
+    background: var(--accent-atmosphere);
   }
 
-  &_new-year {
-    color: var(--text);
+  &_year-king {
+    --crown: var(--accent);
+    --crown-deep: var(--accent-deep);
+  }
+
+  &_year-podium {
+    --podium: var(--text-secondary);
+  }
+
+  &_year-top-ten {
+    --laurel: var(--accent);
+  }
+
+  &_year-top-thirty {
+    --laurel: var(--text-muted);
   }
 }
