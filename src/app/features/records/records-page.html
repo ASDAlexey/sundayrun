@@ -25,53 +25,81 @@
   @switch (status()) {
     @case (statuses.ready) {
       <div class="records__controls">
-        <label class="records__search">
-          <svg
-            aria-hidden="true"
-            class="records__search-icon"
-            fill="none"
-            height="13"
-            stroke="currentColor"
-            stroke-width="1.5"
-            viewBox="0 0 14 14"
-            width="13"
-          >
-            <circle cx="6" cy="6" r="4.5" />
-            <path d="M9.5 9.5L13 13" />
-          </svg>
-
-          <input
-            #searchInput
-            aria-label="Поиск по имени"
-            class="records__search-input"
-            i18n-aria-label="@@records.searchLabel"
-            i18n-placeholder="@@records.searchPlaceholder"
-            id="records-search"
-            placeholder="Поиск по имени…"
-            type="search"
-            [value]="query()"
-            (input)="onQueryChange(searchInput.value)"
-          />
-        </label>
-
-        <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
+        <div aria-label="Вид" class="records__seg" i18n-aria-label="@@records.viewLabel" role="group">
           <button
             class="records__seg-option"
-            i18n="@@records.allYears"
+            i18n="@@records.viewTable"
             type="button"
-            [attr.aria-pressed]="year() === null"
-            [class.records__seg-option_active]="year() === null"
-            (click)="onYearChange(allYearsValue)"
+            [attr.aria-pressed]="view() === views.table"
+            [class.records__seg-option_active]="view() === views.table"
+            (click)="onViewChange(views.table)"
           >
-            Все годы
+            Таблица
           </button>
+
+          <button
+            class="records__seg-option"
+            i18n="@@records.viewChart"
+            type="button"
+            [attr.aria-pressed]="view() === views.chart"
+            [class.records__seg-option_active]="view() === views.chart"
+            (click)="onViewChange(views.chart)"
+          >
+            Гонка за сезон
+          </button>
+        </div>
+
+        @if (view() === views.table) {
+          <label class="records__search">
+            <svg
+              aria-hidden="true"
+              class="records__search-icon"
+              fill="none"
+              height="13"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 14 14"
+              width="13"
+            >
+              <circle cx="6" cy="6" r="4.5" />
+              <path d="M9.5 9.5L13 13" />
+            </svg>
+
+            <input
+              #searchInput
+              aria-label="Поиск по имени"
+              class="records__search-input"
+              i18n-aria-label="@@records.searchLabel"
+              i18n-placeholder="@@records.searchPlaceholder"
+              id="records-search"
+              placeholder="Поиск по имени…"
+              type="search"
+              [value]="query()"
+              (input)="onQueryChange(searchInput.value)"
+            />
+          </label>
+        }
+
+        <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
+          @if (view() === views.table) {
+            <button
+              class="records__seg-option"
+              i18n="@@records.allYears"
+              type="button"
+              [attr.aria-pressed]="yearSegValue() === null"
+              [class.records__seg-option_active]="yearSegValue() === null"
+              (click)="onYearChange(allYearsValue)"
+            >
+              Все годы
+            </button>
+          }
 
           @for (boardYear of years(); track boardYear) {
             <button
               class="records__seg-option"
               type="button"
-              [attr.aria-pressed]="year() === boardYear"
-              [class.records__seg-option_active]="year() === boardYear"
+              [attr.aria-pressed]="yearSegValue() === boardYear"
+              [class.records__seg-option_active]="yearSegValue() === boardYear"
               (click)="onYearChange(boardYear)"
             >
               {{ boardYear }}
@@ -113,187 +141,402 @@
             Женщины
           </button>
         </div>
+
+        @if (view() === views.chart) {
+          <div aria-label="Дистанция" class="records__seg" i18n-aria-label="@@records.metricLabel" role="group">
+            <button
+              class="records__seg-option"
+              i18n="@@records.metricFiveKm"
+              type="button"
+              [attr.aria-pressed]="chartMetric() === metrics.fiveKm"
+              [class.records__seg-option_active]="chartMetric() === metrics.fiveKm"
+              (click)="onMetricChange(metrics.fiveKm)"
+            >
+              5 км
+            </button>
+
+            <button
+              class="records__seg-option"
+              i18n="@@records.metricFirstLap"
+              type="button"
+              [attr.aria-pressed]="chartMetric() === metrics.firstLap"
+              [class.records__seg-option_active]="chartMetric() === metrics.firstLap"
+              (click)="onMetricChange(metrics.firstLap)"
+            >
+              Первый круг
+            </button>
+          </div>
+        }
       </div>
 
-      <p aria-live="polite" class="records__status" role="status">
-        @if (noMatches()) {
-          <span i18n="@@records.noMatches">Ничего не нашлось — измените запрос или фильтры.</span>
-        }
-      </p>
-
-      @if (!noMatches()) {
-        <div class="records__boards">
-          @if (showMen()) {
-            <section class="records__board">
-              <div class="records__board-head">
-                <h2 class="records__board-title" i18n="@@records.men">Мужчины</h2>
-
-                <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ menCount() }}</span>
-              </div>
-
-              @if (men().length > 0) {
-                <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
-                  <ol class="records__list">
-                    <li *cdkVirtualFor="let row of men()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
-                      <span class="records__place">{{ row.place }}</span>
-
-                      <span class="records__athlete-cell" [class.records__athlete-cell_crowned]="row.crowned">
-                        <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
-
-                        @if (row.crowned) {
-                          <span class="records__crown">
-                            <svg
-                              aria-hidden="true"
-                              class="records__crown-icon"
-                              fill="currentColor"
-                              height="10"
-                              viewBox="0 0 16 12"
-                              width="13"
-                            >
-                              <path d="M1 3l3.4 3L8 1l3.6 5L15 3l-1.6 8H2.6L1 3z" />
-                            </svg>
-
-                            {{ kingText() }}
-                          </span>
-                        }
-                      </span>
-
-                      <span class="records__time">{{ row.timeText }}</span>
-
-                      <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
-                    </li>
-                  </ol>
-                </cdk-virtual-scroll-viewport>
-              } @else {
-                <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
-              }
-            </section>
+      @if (view() === views.table) {
+        <p aria-live="polite" class="records__status" role="status">
+          @if (noMatches()) {
+            <span i18n="@@records.noMatches">Ничего не нашлось — измените запрос или фильтры.</span>
           }
-
-          @if (showWomen()) {
-            <section class="records__board">
-              <div class="records__board-head">
-                <h2 class="records__board-title" i18n="@@records.women">Женщины</h2>
-
-                <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ womenCount() }}</span>
-              </div>
-
-              @if (women().length > 0) {
-                <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
-                  <ol class="records__list">
-                    <li *cdkVirtualFor="let row of women()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
-                      <span class="records__place">{{ row.place }}</span>
-
-                      <span class="records__athlete-cell" [class.records__athlete-cell_crowned]="row.crowned">
-                        <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
-
-                        @if (row.crowned) {
-                          <span class="records__crown">
-                            <svg
-                              aria-hidden="true"
-                              class="records__crown-icon"
-                              fill="currentColor"
-                              height="10"
-                              viewBox="0 0 16 12"
-                              width="13"
-                            >
-                              <path d="M1 3l3.4 3L8 1l3.6 5L15 3l-1.6 8H2.6L1 3z" />
-                            </svg>
-
-                            {{ queenText() }}
-                          </span>
-                        }
-                      </span>
-
-                      <span class="records__time">{{ row.timeText }}</span>
-
-                      <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
-                    </li>
-                  </ol>
-                </cdk-virtual-scroll-viewport>
-              } @else {
-                <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
-              }
-            </section>
-          }
-        </div>
-      }
-
-      <section class="records__history">
-        <h2 class="records__history-title" i18n="@@records.historyTitle">История рекорда трассы</h2>
-
-        <p class="records__history-tagline" i18n="@@records.historyTagline">
-          Каждый забег, после которого рекорд трассы становился быстрее. Действующий рекорд — первой строкой.
         </p>
 
-        <div class="records__boards">
-          @if (showMen()) {
-            <section class="records__board">
-              <div class="records__board-head">
-                <h3 class="records__board-title" i18n="@@records.men">Мужчины</h3>
+        @if (!noMatches()) {
+          <div class="records__boards">
+            @if (showMen()) {
+              <section class="records__board">
+                <div class="records__board-head">
+                  <h2 class="records__board-title" i18n="@@records.men">Мужчины</h2>
 
-                <span class="records__board-count" i18n="@@records.historyCount">Обновлений: {{ menRecordTimeline().length }}</span>
-              </div>
+                  <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ menCount() }}</span>
+                </div>
 
-              @if (menRecordTimeline().length > 0) {
-                <ol class="records__timeline">
-                  @for (entry of menRecordTimeline(); track $index) {
-                    <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
-                      <span class="records__time">{{ entry.timeText }}</span>
+                @if (men().length > 0) {
+                  <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
+                    <ol class="records__list">
+                      <li *cdkVirtualFor="let row of men()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
+                        <span class="records__place">{{ row.place }}</span>
 
-                      <span class="records__athlete-cell">
-                        <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
+                        <span class="records__athlete-cell" [class.records__athlete-cell_crowned]="row.crowned">
+                          <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
 
-                        @if (entry.improvementText !== null) {
-                          <span class="records__delta">{{ entry.improvementText }}</span>
-                        }
-                      </span>
+                          @if (row.crowned) {
+                            <span class="records__crown">
+                              <svg
+                                aria-hidden="true"
+                                class="records__crown-icon"
+                                fill="currentColor"
+                                height="10"
+                                viewBox="0 0 16 12"
+                                width="13"
+                              >
+                                <path d="M1 3l3.4 3L8 1l3.6 5L15 3l-1.6 8H2.6L1 3z" />
+                              </svg>
 
-                      <a class="records__date" [routerLink]="entry.raceLink">{{ entry.dateShort }}</a>
-                    </li>
-                  }
-                </ol>
-              } @else {
-                <p class="records__board-empty" i18n="@@records.historyEmpty">Рекорд ещё не установлен.</p>
-              }
-            </section>
+                              {{ kingText() }}
+                            </span>
+                          }
+                        </span>
+
+                        <span class="records__time">{{ row.timeText }}</span>
+
+                        <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+                      </li>
+                    </ol>
+                  </cdk-virtual-scroll-viewport>
+                } @else {
+                  <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+                }
+              </section>
+            }
+
+            @if (showWomen()) {
+              <section class="records__board">
+                <div class="records__board-head">
+                  <h2 class="records__board-title" i18n="@@records.women">Женщины</h2>
+
+                  <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ womenCount() }}</span>
+                </div>
+
+                @if (women().length > 0) {
+                  <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
+                    <ol class="records__list">
+                      <li *cdkVirtualFor="let row of women()" class="records__row" [class.records__row_podium]="row.place <= podiumSize">
+                        <span class="records__place">{{ row.place }}</span>
+
+                        <span class="records__athlete-cell" [class.records__athlete-cell_crowned]="row.crowned">
+                          <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                          @if (row.crowned) {
+                            <span class="records__crown">
+                              <svg
+                                aria-hidden="true"
+                                class="records__crown-icon"
+                                fill="currentColor"
+                                height="10"
+                                viewBox="0 0 16 12"
+                                width="13"
+                              >
+                                <path d="M1 3l3.4 3L8 1l3.6 5L15 3l-1.6 8H2.6L1 3z" />
+                              </svg>
+
+                              {{ queenText() }}
+                            </span>
+                          }
+                        </span>
+
+                        <span class="records__time">{{ row.timeText }}</span>
+
+                        <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+                      </li>
+                    </ol>
+                  </cdk-virtual-scroll-viewport>
+                } @else {
+                  <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+                }
+              </section>
+            }
+          </div>
+        }
+
+        <section class="records__history">
+          <h2 class="records__history-title" i18n="@@records.historyTitle">История рекорда трассы</h2>
+
+          <p class="records__history-tagline" i18n="@@records.historyTagline">
+            Каждый забег, после которого рекорд трассы становился быстрее. Действующий рекорд — первой строкой.
+          </p>
+
+          <div class="records__boards">
+            @if (showMen()) {
+              <section class="records__board">
+                <div class="records__board-head">
+                  <h3 class="records__board-title" i18n="@@records.men">Мужчины</h3>
+
+                  <span class="records__board-count" i18n="@@records.historyCount">Обновлений: {{ menRecordTimeline().length }}</span>
+                </div>
+
+                @if (menRecordTimeline().length > 0) {
+                  <ol class="records__timeline">
+                    @for (entry of menRecordTimeline(); track $index) {
+                      <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
+                        <span class="records__time">{{ entry.timeText }}</span>
+
+                        <span class="records__athlete-cell">
+                          <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
+
+                          @if (entry.improvementText !== null) {
+                            <span class="records__delta">{{ entry.improvementText }}</span>
+                          }
+                        </span>
+
+                        <a class="records__date" [routerLink]="entry.raceLink">{{ entry.dateShort }}</a>
+                      </li>
+                    }
+                  </ol>
+                } @else {
+                  <p class="records__board-empty" i18n="@@records.historyEmpty">Рекорд ещё не установлен.</p>
+                }
+              </section>
+            }
+
+            @if (showWomen()) {
+              <section class="records__board">
+                <div class="records__board-head">
+                  <h3 class="records__board-title" i18n="@@records.women">Женщины</h3>
+
+                  <span class="records__board-count" i18n="@@records.historyCount">Обновлений: {{ womenRecordTimeline().length }}</span>
+                </div>
+
+                @if (womenRecordTimeline().length > 0) {
+                  <ol class="records__timeline">
+                    @for (entry of womenRecordTimeline(); track $index) {
+                      <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
+                        <span class="records__time">{{ entry.timeText }}</span>
+
+                        <span class="records__athlete-cell">
+                          <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
+
+                          @if (entry.improvementText !== null) {
+                            <span class="records__delta">{{ entry.improvementText }}</span>
+                          }
+                        </span>
+
+                        <a class="records__date" [routerLink]="entry.raceLink">{{ entry.dateShort }}</a>
+                      </li>
+                    }
+                  </ol>
+                } @else {
+                  <p class="records__board-empty" i18n="@@records.historyEmpty">Рекорд ещё не установлен.</p>
+                }
+              </section>
+            }
+          </div>
+        </section>
+
+        <section class="records__first-lap">
+          <h2 class="records__history-title" i18n="@@records.firstLapTitle">Рекорд первого круга</h2>
+
+          <p class="records__history-tagline" i18n="@@records.firstLapTagline">
+            Самый быстрый первый круг — 2,3 км — среди финишёров полной дистанции. Учитываются забеги, где хронометраж записал время кругов.
+          </p>
+
+          <div class="records__boards">
+            @if (showMen()) {
+              <section class="records__board">
+                <div class="records__board-head">
+                  <h3 class="records__board-title" i18n="@@records.men">Мужчины</h3>
+                </div>
+
+                @if (menFirstLap(); as lap) {
+                  <div class="records__lap">
+                    <span class="records__lap-time">{{ lap.timeText }}</span>
+
+                    <span class="records__athlete-cell">
+                      <a class="records__athlete" [routerLink]="lap.athleteLink">{{ lap.displayName }}</a>
+                    </span>
+
+                    <a class="records__date" [routerLink]="lap.raceLink">{{ lap.dateShort }}</a>
+                  </div>
+                } @else {
+                  <p class="records__board-empty" i18n="@@records.firstLapEmpty">Сплиты пока не зафиксированы.</p>
+                }
+              </section>
+            }
+
+            @if (showWomen()) {
+              <section class="records__board">
+                <div class="records__board-head">
+                  <h3 class="records__board-title" i18n="@@records.women">Женщины</h3>
+                </div>
+
+                @if (womenFirstLap(); as lap) {
+                  <div class="records__lap">
+                    <span class="records__lap-time">{{ lap.timeText }}</span>
+
+                    <span class="records__athlete-cell">
+                      <a class="records__athlete" [routerLink]="lap.athleteLink">{{ lap.displayName }}</a>
+                    </span>
+
+                    <a class="records__date" [routerLink]="lap.raceLink">{{ lap.dateShort }}</a>
+                  </div>
+                } @else {
+                  <p class="records__board-empty" i18n="@@records.firstLapEmpty">Сплиты пока не зафиксированы.</p>
+                }
+              </section>
+            }
+          </div>
+        </section>
+
+        <p class="records__note" i18n="@@records.note">
+          Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.
+        </p>
+      } @else {
+        <section class="records__chart">
+          <h2 class="records__history-title" i18n="@@records.chartTitle">Гонка за сезон {{ chartYear() }}</h2>
+
+          @if (chartMetric() === metrics.fiveKm) {
+            <p class="records__history-tagline" i18n="@@records.chartTagline">
+              Позиция в таблице лучших времён сезона после каждого забега — линии всех участников. Наведите на линию или точку, чтобы
+              увидеть имя, место и время, а через поиск выделите себя и друзей.
+            </p>
+          } @else {
+            <p class="records__history-tagline" i18n="@@records.chartTaglineFirstLap">
+              Позиция в таблице лучших первых кругов — 2,3 км — сезона после каждого забега. Учитываются только забеги, где хронометраж
+              записал время кругов, поэтому участников здесь меньше, чем на дистанции 5 км.
+            </p>
           }
 
-          @if (showWomen()) {
-            <section class="records__board">
-              <div class="records__board-head">
-                <h3 class="records__board-title" i18n="@@records.women">Женщины</h3>
+          @switch (chartStatus()) {
+            @case (statuses.loading) {
+              <div class="records__status" role="status">
+                <mat-progress-spinner class="records__spinner" mode="indeterminate" [diameter]="24" />
 
-                <span class="records__board-count" i18n="@@records.historyCount">Обновлений: {{ womenRecordTimeline().length }}</span>
+                <span i18n="@@records.chartLoading">Считаем позиции сезона…</span>
+              </div>
+            }
+            @case (statuses.error) {
+              <p class="records__error" i18n="@@records.chartError" role="alert">Не удалось загрузить забеги сезона.</p>
+
+              <app-reload-button />
+            }
+            @case (statuses.ready) {
+              <div class="records__chart-picker">
+                <div class="records__chart-search-box">
+                  <label class="records__search records__chart-search">
+                    <svg
+                      aria-hidden="true"
+                      class="records__search-icon"
+                      fill="none"
+                      height="13"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      viewBox="0 0 14 14"
+                      width="13"
+                    >
+                      <circle cx="6" cy="6" r="4.5" />
+                      <path d="M9.5 9.5L13 13" />
+                    </svg>
+
+                    <input
+                      #chartSearchInput
+                      aria-label="Найти участника на графике"
+                      class="records__search-input"
+                      i18n-aria-label="@@records.chartSearchLabel"
+                      i18n-placeholder="@@records.chartSearchPlaceholder"
+                      id="records-chart-search"
+                      placeholder="Найдите себя и друзей…"
+                      type="search"
+                      [value]="chartQuery()"
+                      (input)="onChartQueryChange(chartSearchInput.value)"
+                    />
+                  </label>
+
+                  @if (chartSuggestions().length > 0) {
+                    <ul class="records__suggest">
+                      @for (pick of chartSuggestions(); track pick.key) {
+                        <li>
+                          <button class="records__suggest-option" type="button" (click)="addChartPick(pick)">
+                            {{ pick.displayName }}
+                          </button>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+
+                @if (chartPicks().length > 0) {
+                  <ul class="records__chips">
+                    @for (pick of chartPicks(); track pick.key) {
+                      <li class="records__chip">
+                        <span class="records__chip-name">{{ pick.displayName }}</span>
+
+                        <button
+                          aria-label="Убрать с графика"
+                          class="records__chip-remove"
+                          i18n-aria-label="@@records.chartPickRemove"
+                          type="button"
+                          (click)="removeChartPick(pick.key)"
+                        >
+                          ×
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                }
               </div>
 
-              @if (womenRecordTimeline().length > 0) {
-                <ol class="records__timeline">
-                  @for (entry of womenRecordTimeline(); track $index) {
-                    <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
-                      <span class="records__time">{{ entry.timeText }}</span>
+              <div class="records__charts">
+                @if (showMen()) {
+                  <section class="records__board">
+                    <div class="records__board-head">
+                      <h3 class="records__board-title" i18n="@@records.men">Мужчины</h3>
 
-                      <span class="records__athlete-cell">
-                        <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
+                      <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ menPositions().rankedCount }}</span>
+                    </div>
 
-                        @if (entry.improvementText !== null) {
-                          <span class="records__delta">{{ entry.improvementText }}</span>
-                        }
-                      </span>
+                    @if (menPositions().lines.length > 0) {
+                      <app-bump-chart [data]="menPositions()" [highlighted]="highlightedKeys()" />
+                    } @else {
+                      <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+                    }
+                  </section>
+                }
 
-                      <a class="records__date" [routerLink]="entry.raceLink">{{ entry.dateShort }}</a>
-                    </li>
-                  }
-                </ol>
-              } @else {
-                <p class="records__board-empty" i18n="@@records.historyEmpty">Рекорд ещё не установлен.</p>
-              }
-            </section>
+                @if (showWomen()) {
+                  <section class="records__board">
+                    <div class="records__board-head">
+                      <h3 class="records__board-title" i18n="@@records.women">Женщины</h3>
+
+                      <span class="records__board-count" i18n="@@records.boardCount">Участвовало: {{ womenPositions().rankedCount }}</span>
+                    </div>
+
+                    @if (womenPositions().lines.length > 0) {
+                      <app-bump-chart [data]="womenPositions()" [highlighted]="highlightedKeys()" />
+                    } @else {
+                      <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+                    }
+                  </section>
+                }
+              </div>
+            }
           }
-        </div>
-      </section>
-
-      <p class="records__note" i18n="@@records.note">Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.</p>
+        </section>
+      }
     }
     @case (statuses.error) {
       <p class="records__error" i18n="@@records.error" role="alert">Не удалось загрузить историю результатов.</p>

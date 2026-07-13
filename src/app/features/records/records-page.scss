@@ -93,7 +93,7 @@
     border-radius: var(--radius-sm);
     background: var(--bg);
     color: var(--text-muted);
-    transition: border-color 0.2s var(--ease);
+    transition: border-color var(--transition-time) var(--ease);
 
     &:focus-within {
       border-color: var(--accent);
@@ -138,8 +138,8 @@
     color: var(--text-secondary);
     cursor: pointer;
     transition:
-      color 0.2s var(--ease),
-      background 0.2s var(--ease);
+      color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease);
 
     &_active {
       background: var(--surface-hover);
@@ -245,7 +245,7 @@
     @include t.text('body', 'medium');
 
     color: var(--text);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--accent);
@@ -302,7 +302,7 @@
     @include t.text('label', 'small');
 
     color: var(--text-muted);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--accent);
@@ -364,6 +364,129 @@
     background: var(--bg-subtle);
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
+  }
+
+  &__first-lap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // The standing record split: the same tinted lane the current course record wears.
+  &__lap {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 12px 4px;
+    gap: 12px;
+    border-radius: var(--radius-xs);
+    background: linear-gradient(90deg, var(--accent-glow), transparent 55%);
+  }
+
+  &__lap-time {
+    @include t.mono-value;
+    @include t.gradient-text;
+  }
+
+  &__chart {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // The «find yourself» picker: the search box anchors its suggestion dropdown, the chips follow.
+  &__chart-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  &__chart-search-box {
+    position: relative;
+    min-width: 260px;
+  }
+
+  &__chart-search {
+    align-self: auto;
+  }
+
+  &__suggest {
+    display: flex;
+    z-index: 10;
+    position: absolute;
+    top: calc(100% + 6px);
+    flex-direction: column;
+    min-width: 260px;
+    margin: 0;
+    padding: 4px;
+    gap: 2px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    list-style: none;
+  }
+
+  &__suggest-option {
+    @include t.text('body', 'medium');
+
+    width: 100%;
+    padding: 7px 10px;
+    border: none;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--transition-time) var(--ease);
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    gap: 6px;
+    list-style: none;
+  }
+
+  &__chip {
+    @include t.text('label', 'medium');
+
+    display: flex;
+    align-items: center;
+    padding: 4px 6px 4px 12px;
+    gap: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  &__chip-remove {
+    @include t.text('label', 'medium');
+
+    padding: 0 6px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+
+  // The bump charts stack vertically: each one wants the full row for its horizontal timeline.
+  &__charts {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 
   &__note {
