@@ -53,11 +53,8 @@
 
   &__actions {
     display: flex;
-    position: sticky;
-    bottom: 0;
     justify-content: flex-end;
     padding: 16px 0;
-    background: var(--bg);
   }
 
   &__generate {
