@@ -1,0 +1,138 @@
+@use 'styles/typography' as t;
+
+.bump-chart {
+  &__scroll {
+    overflow-x: auto;
+  }
+
+  &__canvas {
+    position: relative;
+  }
+
+  &__svg {
+    display: block;
+  }
+
+  &__grid {
+    stroke: var(--border-soft);
+  }
+
+  &__rank {
+    @include t.text('label', 'small');
+
+    fill: var(--text-muted);
+    text-anchor: end;
+  }
+
+  &__tick {
+    @include t.text('label', 'small');
+
+    fill: var(--text-muted);
+    text-anchor: middle;
+  }
+
+  &__line {
+    transition: opacity var(--transition-time) var(--ease);
+
+    &_dimmed {
+      opacity: 0.15;
+    }
+  }
+
+  // The invisible twin of the stroke: a wide hover target along the whole line.
+  &__hit {
+    fill: none;
+    stroke: var(--bump-line);
+    stroke-width: 14;
+    opacity: 0;
+  }
+
+  &__stroke {
+    fill: none;
+    stroke: var(--bump-line);
+    stroke-linecap: round;
+    stroke-width: 2;
+    transition: stroke-width var(--transition-time) var(--ease);
+  }
+
+  &__line_active &__stroke {
+    stroke-width: 3.5;
+  }
+
+  &__dot {
+    fill: var(--bump-line);
+  }
+
+  // The invisible twin of the dot: a fingertip-sized tooltip trigger.
+  &__dot-hit {
+    fill: var(--bump-line);
+    opacity: 0;
+  }
+
+  &__tooltip {
+    z-index: 1;
+    position: absolute;
+    padding: 6px 10px;
+    transform: translate(-50%, -100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    white-space: nowrap;
+    pointer-events: none;
+
+    &_below {
+      transform: translateX(-50%);
+    }
+  }
+
+  &__tooltip-name {
+    @include t.text('label', 'medium');
+
+    color: var(--bump-line);
+  }
+
+  &__tooltip-label {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
+  &__name {
+    @include t.text('label', 'medium');
+
+    display: flex;
+    position: absolute;
+    align-items: baseline;
+    max-width: 176px;
+    gap: 6px;
+    transform: translateY(-50%);
+    color: var(--text);
+    transition:
+      color var(--transition-time) var(--ease),
+      opacity var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--bump-line);
+    }
+
+    &_dimmed {
+      opacity: 0.3;
+    }
+  }
+
+  &__name-place {
+    @include t.text('label', 'small');
+
+    flex: none;
+    min-width: 16px;
+    color: var(--bump-line);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  &__name-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

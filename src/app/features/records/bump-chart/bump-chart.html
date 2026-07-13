@@ -1,0 +1,78 @@
+<div class="bump-chart">
+  <div class="bump-chart__scroll">
+    <div class="bump-chart__canvas" [style.height.px]="view().height" [style.width.px]="view().width">
+      <svg aria-hidden="true" class="bump-chart__svg" [attr.height]="view().height" [attr.width]="view().width">
+        @for (row of view().rows; track $index) {
+          <line class="bump-chart__grid" [attr.x1]="view().gridX1" [attr.x2]="view().gridX2" [attr.y1]="row.y" [attr.y2]="row.y" />
+
+          <text class="bump-chart__rank" dy="0.35em" [attr.x]="view().rankX" [attr.y]="row.y">{{ row.label }}</text>
+        }
+
+        @for (tick of view().ticks; track $index) {
+          <text class="bump-chart__tick" [attr.x]="tick.x" [attr.y]="view().tickY">{{ tick.label }}</text>
+        }
+
+        @for (line of view().lines; track line.key) {
+          <g
+            class="bump-chart__line"
+            [class.bump-chart__line_active]="line.active"
+            [class.bump-chart__line_dimmed]="line.dimmed"
+            [style.--bump-line]="line.colorVar"
+            (mouseenter)="onHover(line.key)"
+            (mouseleave)="onHover(null)"
+          >
+            <path class="bump-chart__hit" [attr.d]="line.path" (mousemove)="onLineMove(line, $event)" />
+
+            <path class="bump-chart__stroke" [attr.d]="line.path" />
+
+            @for (dot of line.dots; track $index) {
+              <circle class="bump-chart__dot" [attr.cx]="dot.x" [attr.cy]="dot.y" [attr.r]="dotRadius" />
+
+              <circle
+                class="bump-chart__dot-hit"
+                [attr.cx]="dot.x"
+                [attr.cy]="dot.y"
+                [attr.r]="dotHitRadius"
+                (mouseenter)="onDotEnter(line, dot)"
+                (mouseleave)="onDotLeave()"
+              />
+            }
+          </g>
+        }
+      </svg>
+
+      @for (line of view().lines; track line.key) {
+        <a
+          class="bump-chart__name"
+          [class.bump-chart__name_dimmed]="line.dimmed"
+          [routerLink]="line.athleteLink"
+          [style.--bump-line]="line.colorVar"
+          [style.left.px]="view().nameX"
+          [style.top.px]="line.labelY"
+          (mouseenter)="onHover(line.key)"
+          (mouseleave)="onHover(null)"
+        >
+          <span class="bump-chart__name-place">{{ line.finalPlace }}</span>
+
+          <span class="bump-chart__name-text">{{ line.displayName }}</span>
+        </a>
+      }
+
+      @if (tooltip(); as tip) {
+        <div
+          class="bump-chart__tooltip"
+          [class.bump-chart__tooltip_below]="tip.below"
+          [style.--bump-line]="tip.colorVar"
+          [style.left.px]="tip.x"
+          [style.top.px]="tip.y"
+        >
+          <div class="bump-chart__tooltip-name">{{ tip.name }}</div>
+
+          @if (tip.label; as label) {
+            <div class="bump-chart__tooltip-label">{{ label }}</div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
