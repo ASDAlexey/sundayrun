@@ -89,9 +89,9 @@
 
     --tip-x: -50%;
     --tip-y: calc(-100% - 10px);
+
     display: flex;
     z-index: 1;
-
     position: absolute;
     flex-direction: column;
     padding: 8px 10px;
@@ -129,7 +129,6 @@
   @media (prefers-reduced-motion: no-preference) {
     &__line {
       stroke-dasharray: 1;
-
       animation: form-card-draw calc(var(--transition-time) * 2) ease-out both;
     }
 
