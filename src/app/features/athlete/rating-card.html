@@ -1,0 +1,45 @@
+@if (view(); as rating) {
+  <section class="rating-card">
+    <h2 class="rating-card__title" i18n="@@athlete.ratingTitle">Рейтинг</h2>
+
+    <p class="rating-card__hint" i18n="@@athlete.ratingHint">Все метрики — проценты от лучших: чем ближе к 100, тем сильнее забеги.</p>
+
+    <dl class="rating-card__metrics">
+      <div class="rating-card__metric">
+        <dt class="rating-card__metric-label" i18n="@@athlete.ratingRankLabel">Средний счёт</dt>
+
+        <dd class="rating-card__metric-value">{{ rating.rankText }}</dd>
+
+        <dd class="rating-card__metric-note" i18n="@@athlete.ratingRankNote">
+          % от времени победителя своего пола, {{ rating.rankRunsText }}
+        </dd>
+      </div>
+
+      <div class="rating-card__metric">
+        <dt class="rating-card__metric-label" i18n="@@athlete.ratingFormLabel">Индекс формы</dt>
+
+        @if (rating.formText !== null) {
+          <dd class="rating-card__metric-value rating-card__metric-value_form">{{ rating.formText }}</dd>
+
+          <dd class="rating-card__metric-note" i18n="@@athlete.ratingFormNote">5 лучших забегов за 12 месяцев, свежие — весомее</dd>
+        } @else {
+          <dd class="rating-card__metric-value rating-card__metric-value_empty">—</dd>
+
+          <dd class="rating-card__metric-note" i18n="@@athlete.ratingFormEmpty">нет свежих финишей — перерыв больше 90 дней</dd>
+        }
+      </div>
+
+      <div class="rating-card__metric">
+        <dt class="rating-card__metric-label" i18n="@@athlete.ratingGradeLabel">Локальный грейд</dt>
+
+        @if (rating.gradeText !== null) {
+          <dd class="rating-card__metric-value">{{ rating.gradeText }}</dd>
+        } @else {
+          <dd class="rating-card__metric-value rating-card__metric-value_empty">—</dd>
+        }
+
+        <dd class="rating-card__metric-note" i18n="@@athlete.ratingGradeNote">личный рекорд против рекорда трассы своего пола</dd>
+      </div>
+    </dl>
+  </section>
+}

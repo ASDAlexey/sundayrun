@@ -1,0 +1,25 @@
+@if (rows().length > 0) {
+  <section class="weather-card">
+    <h2 class="weather-card__title" i18n="@@athlete.weatherTitle">Погодные рекорды</h2>
+
+    <p class="weather-card__hint" i18n="@@athlete.weatherHint">
+      Лучшее время на 5 км по условиям на старте — температуре и осадкам в 9:00 по метеоархиву.
+    </p>
+
+    <ul class="weather-card__rows">
+      @for (row of rows(); track row.key) {
+        <li class="weather-card__row">
+          <span class="weather-card__label">{{ row.icon }} {{ row.label }}</span>
+
+          <span class="weather-card__time">{{ row.timeText }}</span>
+
+          @if (row.temperatureText) {
+            <span class="weather-card__temp">{{ row.temperatureText }}</span>
+          }
+
+          <a class="weather-card__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+        </li>
+      }
+    </ul>
+  </section>
+}
