@@ -120,6 +120,12 @@
   line-height: 1.6;
 }
 
+// Line-height-only override for cases a heading needs to breathe at a breakpoint
+// (components route every raw font prop through typography mixins).
+@mixin line-height($value) {
+  line-height: $value;
+}
+
 // Shared helpers ------------------------------------------------
 
 @mixin gradient-text {

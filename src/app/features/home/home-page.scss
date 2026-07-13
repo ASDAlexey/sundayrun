@@ -29,7 +29,7 @@
   // wraps to three on a phone the lines crowd together, so loosen it a touch.
   @media (width <= 560px) {
     &__title {
-      line-height: 1.12;
+      @include t.line-height(1.12);
     }
   }
 
