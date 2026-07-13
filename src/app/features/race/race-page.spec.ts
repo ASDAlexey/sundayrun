@@ -5,6 +5,7 @@ import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 import { buildEventResultsFile } from '../../core/github/results-file';
 import { EventResultsFile } from '../../core/github/results-file.interface';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../../core/github/spec-utils/race-fixtures';
+import { WEATHER_MOCK } from '../../core/weather/fetch-event-weather.mock';
 import { AthletesService } from '../../github/athletes.service';
 import { CdnRefService } from '../../github/cdn-ref.service';
 import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
@@ -21,14 +22,18 @@ import {
   CLUB_PARTICIPANT_RUNS,
   EXPECTED_CLUB_BADGE_CLASS,
   EXPECTED_CLUB_FINISH_COUNT_TEXT,
+  EXPECTED_GAP_F_TEXTS,
+  EXPECTED_GAP_M_TEXTS,
   EXPECTED_NOTE_BADGE_KINDS,
   EXPECTED_PR_NOTE_VIEW,
   EXPECTED_RACE_VIEW,
   EXPECTED_RANK_FINISH_CLUB_CLASSES,
   EXPECTED_RANK_FINISH_COUNT_TEXTS,
   EXPECTED_RANK_NOTABLE_TEXT,
+  EXPECTED_WINDLESS_WEATHER_TEXT,
   EXPECTED_WINDOW_NOTABLE_TEXT,
   FINAL_MONTH_CHRONOLOGY,
+  GAP_PROTOCOL_ROWS,
   MALFORMED_RACE_SLUG,
   OPEN_MONTH_CHRONOLOGY,
   PR_NOTE_PROTOCOL_ROWS,
@@ -37,13 +42,16 @@ import {
   RACE_TODAY_ISO,
   RANK_PARTICIPANT_RUNS,
   RESULTS_LOAD_ERROR_MESSAGE,
+  TEMPERATURELESS_WEATHER_MOCK,
   UNPUBLISHED_RACE_SLUG,
+  WINDLESS_WEATHER_MOCK,
   WINDOW_PARTICIPANT_RUNS,
 } from './race-page.mock';
 
 describe('RacePage', () => {
   const loadResults = vi.fn();
   const loadParticipantRuns = vi.fn();
+  const loadWeather = vi.fn();
   const loadEventSlugs = vi.fn();
   const download = vi.fn();
   const routeParams: Params = {};
@@ -60,13 +68,14 @@ describe('RacePage', () => {
     routeParams[SLUG_ROUTE_PARAM] = RACE_PAGE_SLUG;
     loadResults.mockResolvedValue(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
     loadParticipantRuns.mockResolvedValue([]);
+    loadWeather.mockResolvedValue(WEATHER_MOCK);
     loadEventSlugs.mockResolvedValue(OPEN_MONTH_CHRONOLOGY);
     routeStub = activatedRouteStub(routeParams);
     selfSignal = signal<SelfAthlete | null>(null);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: ResultsService, useValue: { loadResults, loadParticipantRuns } },
+        { provide: ResultsService, useValue: { loadResults, loadParticipantRuns, loadWeather } },
         { provide: AthletesService, useValue: { loadEventSlugs } },
         { provide: ProtocolPdfService, useValue: { download } },
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
@@ -137,6 +146,25 @@ describe('RacePage', () => {
 
     expect(selfRows.length, 'exactly the picked visitor’s row is highlighted').toBe(1);
     expect(selfRows[0].querySelector('.race__athlete').textContent.trim()).toBe(RACE_SELF_PICK.displayName);
+  });
+
+  it('shows each runner-up the gap to the place above in their own gender group', async () => {
+    loadResults.mockResolvedValue(buildEventResultsFile(RACE_EVENT, GAP_PROTOCOL_ROWS));
+    fixture = await createPage();
+
+    const rows = fixture.componentInstance.race()?.rows ?? [];
+
+    expect(rows.map((row) => row.gapMText)).toEqual(EXPECTED_GAP_M_TEXTS);
+    expect(rows.map((row) => row.gapFText)).toEqual(EXPECTED_GAP_F_TEXTS);
+
+    fixture.detectChanges();
+
+    const gaps = [...fixture.nativeElement.querySelectorAll('.race__gap')];
+
+    expect(
+      gaps.map((gap) => gap.textContent.trim()),
+      'one hint per runner-up, none for the winners',
+    ).toEqual(['+0:12', '+0:30']);
   });
 
   it('decorates finishers with on-the-fly notables and survives a failed history read', async () => {
@@ -246,6 +274,28 @@ describe('RacePage', () => {
 
     expect(page.status(), 'the mark is garnish — the protocol still renders').toBe(RaceStatus.ready);
     expect(page.race()?.isMonthFinal).toBe(false);
+  });
+
+  it('drops the weather line without a temperature and omits the wind clause without wind', async () => {
+    loadWeather.mockRejectedValueOnce(new Error(RESULTS_LOAD_ERROR_MESSAGE));
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.status(), 'the weather is garnish — the protocol still renders').toBe(RaceStatus.ready);
+    expect(page.race()?.weatherText).toBe('');
+
+    loadWeather.mockResolvedValueOnce(TEMPERATURELESS_WEATHER_MOCK);
+    routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
+    await settle();
+
+    expect(page.race()?.weatherText, 'a temperature-less reading renders no line either').toBe('');
+
+    loadWeather.mockResolvedValueOnce(WINDLESS_WEATHER_MOCK);
+    routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
+    await settle();
+
+    expect(page.race()?.weatherText, 'a windless reading keeps the temperature but drops the wind').toBe(EXPECTED_WINDLESS_WEATHER_TEXT);
   });
 
   it('shows notFound for a malformed slug without touching the CDN', async () => {

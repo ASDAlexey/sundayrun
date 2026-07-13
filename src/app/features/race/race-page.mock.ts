@@ -2,7 +2,9 @@ import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../../core/github/spec-utils/race-fixtures';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { ParticipantRun } from '../../core/history/notables.interface';
+import { Gender } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
+import { EventWeather } from '../../core/weather/event-weather.interface';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { RACE_PAGE_BASE_LINK } from './race-page.constant';
 import { RaceNoteBadgeKind } from './race-page.enum';
@@ -22,6 +24,27 @@ export const RESULTS_LOAD_ERROR_MESSAGE = 'results load failed';
 /** The frozen «today» the spec pins the clock to: July is open, the fixture's June is closed. */
 export const RACE_TODAY_ISO = '2026-07-12';
 
+/** A stored reading without the temperature — the header renders no weather line for it. */
+export const TEMPERATURELESS_WEATHER_MOCK: EventWeather = {
+  temperatureC: null,
+  apparentC: null,
+  precipitationMm: 0,
+  windKmh: 5,
+  weatherCode: 2,
+};
+
+/** A reading with a temperature but no wind — the header line drops the «ветер …» part. */
+export const WINDLESS_WEATHER_MOCK: EventWeather = {
+  temperatureC: 12.3,
+  apparentC: 11,
+  precipitationMm: 0,
+  windKmh: null,
+  weatherCode: 3,
+};
+
+/** `weatherLineText(WINDLESS_WEATHER_MOCK)` — the temperature with its sky icon, no wind clause. */
+export const EXPECTED_WINDLESS_WEATHER_TEXT = '☁️ +12°';
+
 /** A later June race follows the fixture event, so it is NOT the month's final. */
 export const OPEN_MONTH_CHRONOLOGY: string[] = [RACE_PAGE_SLUG, '2026-06-29'];
 
@@ -40,6 +63,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
   // The only male ran the 2.3 km lap, so the male average has no qualifying 5 km times.
   medianTimeM: null,
   medianTimeF: '25:00',
+  // `WEATHER_MOCK` formatted: clear-sky icon, rounded temperature with the explicit plus, rounded wind.
+  weatherText: '☀️ +26°, ветер 10 км/ч',
   // The default chronology stub has a later June race, so the fixture event does not close the month.
   isMonthFinal: false,
   pdfAriaLabel: 'Протокол пробега № 12 (PDF)',
@@ -56,6 +81,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       genderText: 'Ж',
       placeMText: '',
       placeFText: '1',
+      gapMText: '',
+      gapFText: '',
       // The default spec stub returns no participant runs, so the counter stays blank like the notable.
       finishCountText: '',
       finishClubClass: '',
@@ -75,6 +102,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       genderText: 'М',
       placeMText: '1',
       placeFText: '',
+      gapMText: '',
+      gapFText: '',
       finishCountText: '',
       finishClubClass: '',
       club: '',
@@ -93,6 +122,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       genderText: '',
       placeMText: '',
       placeFText: '',
+      gapMText: '',
+      gapFText: '',
       finishCountText: '',
       finishClubClass: '',
       club: '',
@@ -105,6 +136,33 @@ export const EXPECTED_RACE_VIEW: RaceView = {
 
 /** The header pick («Выбери себя») matching the first fixture row — exactly one row highlights. */
 export const RACE_SELF_PICK: SelfAthlete = { key: 'мария иванова', displayName: 'Мария Иванова' };
+
+const gapRow = (index: number, fullName: string, gender: ProtocolRow['gender'], place: number, totalMs: number): ProtocolRow => ({
+  index,
+  fullName,
+  time23: '',
+  time5: '25:00',
+  totalMs,
+  distanceKm: FIVE_KM_DISTANCE_KM,
+  gender,
+  placeM: gender === Gender.male ? place : null,
+  placeF: gender === Gender.female ? place : null,
+  club: '',
+  note: '',
+});
+
+/** Two finishers per gender: each runner-up learns the gap to the place above, the winners stay clean. */
+export const GAP_PROTOCOL_ROWS: ProtocolRow[] = [
+  gapRow(1, 'Первый Пётр', Gender.male, 1, 1200000),
+  gapRow(2, 'Второв Василий', Gender.male, 2, 1212000),
+  gapRow(3, 'Анина Анна', Gender.female, 1, 1500000),
+  gapRow(4, 'Близкова Белла', Gender.female, 2, 1530000),
+];
+
+/** Row-by-row `gapMText`/`gapFText` behind GAP_PROTOCOL_ROWS. */
+export const EXPECTED_GAP_M_TEXTS = ['', '+0:12', '', ''];
+
+export const EXPECTED_GAP_F_TEXTS = ['', '', '', '+0:30'];
 
 /** Мария's run at `RACE_PAGE_SLUG` (25:00 per the fixture rows), by builder-friendly key. */
 const mariaRun = (dateIso: string, timeMs: number, slug: string = dateIso): ParticipantRun => ({

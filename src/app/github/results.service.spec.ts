@@ -43,6 +43,7 @@ describe('ResultsService', () => {
     );
     expect(queryValues, 'one event select plus one results select, then the cache answers').toHaveBeenCalledTimes(2);
     await expect(service.loadParticipantRuns(EVENT_DATE_ISO), 'no seeded runs — the notables source is empty').resolves.toEqual([]);
+    await expect(service.loadWeather(EVENT_DATE_ISO), 'no seeded weather — the event predates the fetch').resolves.toBeNull();
     await expect(service.loadFinishCountsBefore(EVENT_DATE_ISO), 'no seeded runs — no stored finish counts').resolves.toEqual({});
     await expect(service.loadPreviousBestsBefore(EVENT_DATE_ISO), 'no seeded runs — no previous bests').resolves.toEqual({});
   });

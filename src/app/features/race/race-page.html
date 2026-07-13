@@ -27,6 +27,10 @@
 
             <p class="race__place">{{ view.city }}, {{ view.park }}</p>
 
+            @if (view.weatherText) {
+              <p class="race__weather">{{ view.weatherText }}</p>
+            }
+
             <p class="race__count" i18n="@@race.participantCount">Участников: {{ view.participantCount }}</p>
 
             <p class="race__summary">{{ view.summaryText }}</p>
@@ -115,7 +119,13 @@
                 Место М
               </th>
 
-              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>{{ row.placeMText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
+                {{ row.placeMText }}
+
+                @if (row.gapMText !== '') {
+                  <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{ row.gapMText }}</span>
+                }
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="placeF">
@@ -123,7 +133,13 @@
                 Место Ж
               </th>
 
-              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>{{ row.placeFText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
+                {{ row.placeFText }}
+
+                @if (row.gapFText !== '') {
+                  <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{ row.gapFText }}</span>
+                }
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="finishes">

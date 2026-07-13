@@ -14,6 +14,7 @@ import { finishCountsAt } from '../../core/history/finish-counts';
 import { medianMsOrNull } from '../../core/history/median';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { buildEventNotables } from '../../core/history/notables';
+import { placeGapsMs } from '../../core/history/place-gaps';
 import { NotableKind } from '../../core/history/notables.enum';
 import { Notable } from '../../core/history/notables.interface';
 import { splitNote } from '../../core/history/note-tokens';
@@ -33,6 +34,8 @@ import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatDuration } from '../../core/time/duration';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateLong } from '../../core/time/russian-date';
+import { EventWeather } from '../../core/weather/event-weather.interface';
+import { weatherLineText } from '../../core/weather/weather-line';
 import { AthletesService } from '../../github/athletes.service';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
@@ -43,6 +46,7 @@ import {
   EMPTY_CELL_TEXT,
   FEMALE_GENDER_TEXT,
   FINISH_CLUB_TIERS,
+  GAP_TEXT_PREFIX,
   HOME_PAGE_LINK,
   KIDS_NOTE_TOKEN_PATTERN,
   MALE_GENDER_TEXT,
@@ -135,11 +139,12 @@ export class RacePage {
     }
 
     try {
-      const [file, participantRuns, eventSlugs] = await Promise.all([
+      const [file, participantRuns, eventSlugs, weather] = await Promise.all([
         this.#results.loadResults(slug),
-        // The notables and the month-final mark are garnish: a failed read still renders the protocol.
+        // The notables, the month-final mark and the weather are garnish: a failed read still renders the protocol.
         this.#results.loadParticipantRuns(slug).catch(() => []),
         this.#athletes.loadEventSlugs().catch(() => []),
+        this.#results.loadWeather(slug).catch(() => null),
       ]);
 
       if (file === null) {
@@ -154,6 +159,7 @@ export class RacePage {
           finishCountsAt(participantRuns, file.event.dateIso),
           buildPreviousBests(participantRuns, file.event.dateIso),
           monthFinalSlugs(eventSlugs, isoToday()).has(slug),
+          weather,
         ),
       };
     } catch {
@@ -168,6 +174,7 @@ function toRaceView(
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
   isMonthFinal: boolean,
+  weather: EventWeather | null,
 ): RaceView {
   return {
     number: formatRaceNumber(file.event.number, file.event.legacyNumber),
@@ -178,11 +185,24 @@ function toRaceView(
     summaryText: summaryTextOf(file.rows),
     medianTimeM: medianTimeTextOf(file.rows, Gender.male),
     medianTimeF: medianTimeTextOf(file.rows, Gender.female),
+    weatherText: weatherLineText(weather),
     isMonthFinal,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
-    rows: file.rows.map((row) => toRowView(row, notables, finishCounts, previousBests)),
+    rows: toRowViews(file.rows, notables, finishCounts, previousBests),
   };
+}
+
+/** The Smashrun-style gaps are scanned over the whole protocol before the per-row mapping. */
+function toRowViews(
+  rows: ProtocolRow[],
+  notables: Record<string, Notable>,
+  finishCounts: Record<string, number>,
+  previousBests: Record<string, PreviousBest>,
+): RaceRowView[] {
+  const gapsMs = placeGapsMs(rows);
+
+  return rows.map((row, index) => toRowView(row, notables, finishCounts, previousBests, gapsMs[index]));
 }
 
 function toRowView(
@@ -190,9 +210,11 @@ function toRowView(
   notables: Record<string, Notable>,
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
+  gapMs: number | null,
 ): RaceRowView {
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];
+  const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatDuration(gapMs);
 
   return {
     index: row.index,
@@ -207,6 +229,8 @@ function toRowView(
     genderText: genderTextOf(row.gender),
     placeMText: placeTextOf(row.placeM),
     placeFText: placeTextOf(row.placeF),
+    gapMText: row.gender === Gender.male ? gapText : EMPTY_CELL_TEXT,
+    gapFText: row.gender === Gender.female ? gapText : EMPTY_CELL_TEXT,
     finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
     finishClubClass: finishClubClassOf(finishCount),
     club: row.club,

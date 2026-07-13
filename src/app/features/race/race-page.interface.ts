@@ -33,6 +33,10 @@ export interface RaceRowView {
   genderText: string;
   placeMText: string;
   placeFText: string;
+  /** «+0:12» до следующего места в своей группе under the male place; blank for winners, ties and the rest. */
+  gapMText: string;
+  /** The same Smashrun-style gap under the female place. */
+  gapFText: string;
   /** «Каким по счёту» — the athlete's 5 km finish count as of this race; blank for DNF and one-lap rows. */
   finishCountText: string;
   /** The finisher-club modifier for the count's badge («race__finishes_100»); empty below the first milestone. */
@@ -65,6 +69,8 @@ export interface RaceView {
   summaryText: string;
   medianTimeM: string | null;
   medianTimeF: string | null;
+  /** Preformatted 9:00 course weather («☀️ +26°, ветер 10 км/ч»); empty when the event stores none. */
+  weatherText: string;
   /** True for the month-final («итоговый») race — the header gets the accent badge. */
   isMonthFinal: boolean;
   pdfAriaLabel: string;

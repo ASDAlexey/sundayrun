@@ -4,12 +4,14 @@ import { EventResultsFile } from '../core/github/results-file.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
 import { PreviousBest } from '../core/history/previous-bests.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { EventWeather } from '../core/weather/event-weather.interface';
 import {
   selectEventParticipantRuns,
   selectEventResults,
   selectFiveKmFinishCountsBefore,
   selectPreviousBestsBefore,
 } from './protocol-db-queries';
+import { selectEventWeather } from './protocol-db-weather';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
@@ -56,6 +58,11 @@ export class ResultsService {
   /** Every 5 km run of the event's finishers, feeding the protocol page's on-the-fly notables. */
   loadParticipantRuns(slug: string): Promise<ParticipantRun[]> {
     return selectEventParticipantRuns(this.#db, slug);
+  }
+
+  /** The event's stored 9:00 course weather; null when it predates the publish-time fetch. */
+  loadWeather(slug: string): Promise<EventWeather | null> {
+    return selectEventWeather(this.#db, slug);
   }
 
   /** athleteKey → 5 km finishes strictly before `dateIso`, feeding the publish-time «Участий» column. */
