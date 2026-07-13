@@ -124,15 +124,20 @@
     // onto their own lines instead of overflowing off the right edge.
     &__nav {
       width: 100%;
+      gap: 4px;
     }
 
     &__nav-link {
       padding: 8px 10px;
     }
 
-    // Push the self-pick control to its own trailing line, right-aligned under the links.
+    // Break the self-pick onto its own full-width row under the links, set off by a
+    // hairline — reads as a deliberate «this is you» zone instead of a stray gap.
     &__self {
-      margin-left: auto;
+      width: 100%;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-soft);
     }
   }
 }
