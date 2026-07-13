@@ -14,6 +14,13 @@ export const MAX_MINUTES = 59;
 /** The run always starts on Sunday (`Date.getDay()` numbering, where Sunday is 0). */
 export const START_WEEKDAY = 0;
 
+/** Registration opens this many minutes before the start. */
+export const REGISTRATION_LEAD_MINUTES = 15;
+
+export const MINUTES_PER_HOUR = 60;
+
+export const MINUTES_PER_DAY = 1440;
+
 /** The live countdown refreshes once a second. */
 export const COUNTDOWN_TICK_MS = 1000;
 

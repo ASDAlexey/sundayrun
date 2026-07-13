@@ -6,6 +6,9 @@ import {
   DEFAULT_START_MINUTES,
   MAX_HOURS,
   MAX_MINUTES,
+  MINUTES_PER_DAY,
+  MINUTES_PER_HOUR,
+  REGISTRATION_LEAD_MINUTES,
   SECONDS_PER_DAY,
   SECONDS_PER_HOUR,
   SECONDS_PER_MINUTE,
@@ -28,6 +31,26 @@ function parseStartTime(startTime: string): [number, number] {
   }
 
   return [DEFAULT_START_HOURS, DEFAULT_START_MINUTES];
+}
+
+/** The stored `HH:MM` normalised for display — '08:00' reads as «8:00»; malformed input shows the default slot. */
+export function formatStartTimeLabel(startTime: string): string {
+  const [hours, minutes] = parseStartTime(startTime);
+
+  return formatTimeOfDay(hours, minutes);
+}
+
+/** Registration opens 15 minutes before the start — «9:00» → «8:45». */
+export function registrationTimeLabel(startTime: string): string {
+  const [hours, minutes] = parseStartTime(startTime);
+  const total = (hours * MINUTES_PER_HOUR + minutes - REGISTRATION_LEAD_MINUTES + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+
+  return formatTimeOfDay(Math.floor(total / MINUTES_PER_HOUR), total % MINUTES_PER_HOUR);
+}
+
+/** «9:05» — hours without a leading zero, minutes always two digits. */
+function formatTimeOfDay(hours: number, minutes: number): string {
+  return `${hours}:${pad(minutes)}`;
 }
 
 /** The next Sunday at `startTime` strictly after `now` — today counts only if its slot is still ahead. */

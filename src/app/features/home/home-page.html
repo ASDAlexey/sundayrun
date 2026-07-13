@@ -34,7 +34,7 @@
           >
         </p>
       } @else {
-        <p class="home__next-when" i18n="@@home.nextStartWhenPending"><b>Каждое воскресенье</b> · {{ startTime() }}</p>
+        <p class="home__next-when" i18n="@@home.nextStartWhenPending"><b>Каждое воскресенье</b> · {{ startLabel() }}</p>
 
         <p aria-hidden="true" class="home__next-timer home__next-timer_pending">—</p>
       }
@@ -48,13 +48,148 @@
 
   @if (hasAnnouncement()) {
     <section class="home__announce">
-      @if (siteMeta().startTime !== '') {
-        <p class="home__announce-time" i18n="@@races.startTime">Каждое воскресенье · старт в {{ siteMeta().startTime }}</p>
-      }
+      <p class="home__announce-text">{{ siteMeta().announcement }}</p>
+    </section>
+  }
 
-      @if (siteMeta().announcement !== '') {
-        <p class="home__announce-text">{{ siteMeta().announcement }}</p>
-      }
+  <section class="home__course">
+    <div class="home__course-info">
+      <p class="home__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
+
+      <h2 class="home__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
+
+      <p class="home__course-text" i18n="@@races.courseText">
+        Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
+      </p>
+
+      <dl class="home__course-facts">
+        <div class="home__course-fact">
+          <dt class="home__course-fact-term" i18n="@@races.courseFactMeetTerm">Сбор</dt>
+
+          <dd class="home__course-fact-value" i18n="@@races.courseFactMeetValue">возле турников со стороны пер. Гоголевского</dd>
+        </div>
+
+        <div class="home__course-fact">
+          <dt class="home__course-fact-term" i18n="@@races.courseFactStartTerm">Старт</dt>
+
+          <dd class="home__course-fact-value" i18n="@@races.courseFactStartValue">
+            в {{ startLabel() }}, регистрация с {{ registrationLabel() }}
+          </dd>
+        </div>
+      </dl>
+
+      <a class="home__course-vk" i18n="@@races.courseVk" matButton="tonal" rel="noopener" target="_blank" [href]="vkUrl"
+        >Сообщество ВКонтакте</a
+      >
+    </div>
+
+    <button
+      aria-haspopup="dialog"
+      aria-label="Открыть схему трассы в полном размере"
+      class="home__course-figure"
+      i18n-aria-label="@@races.courseZoomLabel"
+      type="button"
+      (click)="openCourseMap()"
+    >
+      <picture class="home__course-picture">
+        <source srcset="course-5k.avif" type="image/avif" />
+
+        <img
+          alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
+          class="home__course-map"
+          decoding="async"
+          height="962"
+          i18n-alt="@@races.courseAlt"
+          loading="lazy"
+          src="course-5k.webp"
+          width="962"
+        />
+      </picture>
+
+      <span aria-hidden="true" class="home__course-zoom" i18n="@@races.courseZoom">Открыть схему</span>
+    </button>
+
+    <dialog
+      #courseMapDialog
+      aria-label="Схема трассы 5 км — два круга по ПКиО им. Горького"
+      class="home__course-dialog"
+      i18n-aria-label="@@races.courseAlt"
+      (click)="onCourseMapClick($event)"
+    >
+      <div class="home__course-dialog-frame">
+        <header class="home__course-dialog-head">
+          <p class="home__course-dialog-title" i18n="@@races.courseDialogTitle">Схема трассы · 5 км</p>
+
+          <button
+            aria-label="Закрыть схему"
+            class="home__course-dialog-close"
+            i18n-aria-label="@@races.courseDialogClose"
+            type="button"
+            (click)="closeCourseMap()"
+          ></button>
+        </header>
+
+        <picture class="home__course-dialog-picture">
+          <source srcset="course-5k.avif" type="image/avif" />
+
+          <img
+            alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
+            class="home__course-dialog-map"
+            decoding="async"
+            height="962"
+            i18n-alt="@@races.courseAlt"
+            loading="lazy"
+            src="course-5k.webp"
+            width="962"
+          />
+        </picture>
+      </div>
+    </dialog>
+  </section>
+
+  @if (selfView(); as self) {
+    <section class="home__self">
+      <div class="home__self-head">
+        <p class="home__self-eyebrow" i18n="@@home.selfEyebrow">Твоя статистика</p>
+
+        <h2 class="home__self-name">
+          <a class="home__self-link" [routerLink]="self.athleteLink">{{ self.displayName }}</a>
+        </h2>
+      </div>
+
+      <dl class="home__self-grid">
+        <div class="home__self-item">
+          <dt class="home__self-label" i18n="@@home.selfFinishes">финишей · 5 км</dt>
+
+          <dd class="home__self-value">{{ self.finishesText }}</dd>
+        </div>
+
+        <div class="home__self-item">
+          <dt class="home__self-label" i18n="@@home.selfBestTime">лучшее время</dt>
+
+          <dd class="home__self-value">{{ self.bestTimeText }}</dd>
+        </div>
+
+        <div class="home__self-item">
+          <dt class="home__self-label" i18n="@@home.selfStreak">серия, недель</dt>
+
+          <dd class="home__self-value">{{ self.streakText }}</dd>
+        </div>
+
+        <div class="home__self-item">
+          <dt class="home__self-label" i18n="@@home.selfFinishesYear">финишей за этот год</dt>
+
+          <dd class="home__self-value">{{ self.finishesYearText }}</dd>
+        </div>
+
+        <div class="home__self-item">
+          <dt class="home__self-label" i18n="@@home.selfBestTimeYear">лучшее время за этот год</dt>
+
+          <dd class="home__self-value">{{ self.bestTimeYearText }}</dd>
+        </div>
+      </dl>
+
+      <a class="home__self-cta" i18n="@@home.selfProfile" matButton="outlined" [routerLink]="self.athleteLink">Мой профиль</a>
     </section>
   }
 
@@ -96,48 +231,6 @@
         <app-reload-button />
       }
     }
-  </section>
-
-  <section class="home__course">
-    <div class="home__course-info">
-      <p class="home__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
-
-      <h2 class="home__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
-
-      <p class="home__course-text" i18n="@@races.courseText">
-        Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
-      </p>
-
-      <a class="home__course-vk" i18n="@@races.courseVk" matButton="tonal" rel="noopener" target="_blank" [href]="vkUrl"
-        >Сообщество ВКонтакте</a
-      >
-    </div>
-
-    <a
-      aria-label="Открыть схему трассы в полном размере"
-      class="home__course-figure"
-      href="course-5k.webp"
-      i18n-aria-label="@@races.courseZoomLabel"
-      rel="noopener"
-      target="_blank"
-    >
-      <picture class="home__course-picture">
-        <source srcset="course-5k.avif" type="image/avif" />
-
-        <img
-          alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
-          class="home__course-map"
-          decoding="async"
-          height="962"
-          i18n-alt="@@races.courseAlt"
-          loading="lazy"
-          src="course-5k.webp"
-          width="962"
-        />
-      </picture>
-
-      <span aria-hidden="true" class="home__course-zoom" i18n="@@races.courseZoom">Открыть схему</span>
-    </a>
   </section>
 
   @if (statsView(); as stats) {

@@ -25,6 +25,19 @@ export const OUT_OF_RANGE_START_TIME = '99:99';
 /** `formatStartDate(NEXT_SUNDAY_START)` in ru-RU. */
 export const EXPECTED_START_LABEL = 'воскресенье, 19 июля';
 
+/** Display labels drop the leading hour zero: '08:00' → «8:00»; malformed input falls back to the default slot. */
+export const EXPECTED_START_TIME_LABEL = '8:00';
+
+/** Registration = start − 15 minutes: '09:30' → «9:15», the default 08:00 → «7:45». */
+export const EXPECTED_CUSTOM_REGISTRATION_LABEL = '9:15';
+
+export const EXPECTED_DEFAULT_REGISTRATION_LABEL = '7:45';
+
+/** A start just past midnight wraps the registration time to the previous day. */
+export const MIDNIGHT_START_TIME = '00:10';
+
+export const EXPECTED_MIDNIGHT_REGISTRATION_LABEL = '23:55';
+
 /** 1 day, 2 hours, 3 minutes, 4 seconds expressed in milliseconds. */
 export const SAMPLE_REMAINING_MS = (1 * 86_400 + 2 * 3_600 + 3 * 60 + 4) * 1000;
 

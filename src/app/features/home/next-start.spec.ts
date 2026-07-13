@@ -1,9 +1,14 @@
-import { formatCountdown, formatStartDate, nextStartAt } from './next-start';
+import { formatCountdown, formatStartDate, formatStartTimeLabel, nextStartAt, registrationTimeLabel } from './next-start';
 import {
   CUSTOM_START_TIME,
+  EXPECTED_CUSTOM_REGISTRATION_LABEL,
+  EXPECTED_DEFAULT_REGISTRATION_LABEL,
+  EXPECTED_MIDNIGHT_REGISTRATION_LABEL,
   EXPECTED_START_LABEL,
+  EXPECTED_START_TIME_LABEL,
   FOLLOWING_SUNDAY_START,
   MALFORMED_START_TIME,
+  MIDNIGHT_START_TIME,
   NEXT_SUNDAY_CUSTOM_START,
   NEXT_SUNDAY_START,
   OUT_OF_RANGE_START_TIME,
@@ -38,5 +43,15 @@ describe('next-start', () => {
 
   it('labels the start date in Russian', () => {
     expect(formatStartDate(NEXT_SUNDAY_START)).toBe(EXPECTED_START_LABEL);
+  });
+
+  it('formats time labels without the leading hour zero and derives registration 15 minutes earlier', () => {
+    expect(formatStartTimeLabel(START_TIME)).toBe(EXPECTED_START_TIME_LABEL);
+    expect(formatStartTimeLabel(MALFORMED_START_TIME), 'malformed input shows the default slot').toBe(EXPECTED_START_TIME_LABEL);
+    expect(registrationTimeLabel(CUSTOM_START_TIME)).toBe(EXPECTED_CUSTOM_REGISTRATION_LABEL);
+    expect(registrationTimeLabel(MALFORMED_START_TIME)).toBe(EXPECTED_DEFAULT_REGISTRATION_LABEL);
+    expect(registrationTimeLabel(MIDNIGHT_START_TIME), 'a post-midnight start wraps to the previous day').toBe(
+      EXPECTED_MIDNIGHT_REGISTRATION_LABEL,
+    );
   });
 });

@@ -141,13 +141,90 @@
     border-bottom: 1px solid var(--border);
     color: var(--text-secondary);
     transition:
-      color 0.2s var(--ease),
-      border-color 0.2s var(--ease);
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
 
     &:hover {
       border-color: var(--accent-line);
       color: var(--accent-light);
     }
+  }
+
+  // The personal card («Выбери себя» in the header) — the visitor's own numbers over the shared ones.
+  &__self {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    gap: 18px;
+    border-left: 3px solid var(--accent);
+  }
+
+  &__self-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__self-eyebrow {
+    @include t.eyebrow;
+
+    color: var(--accent);
+  }
+
+  &__self-name {
+    @include t.text('title', 'medium');
+
+    margin: 0;
+  }
+
+  &__self-link {
+    color: var(--text);
+    text-decoration: none;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--accent-light);
+    }
+  }
+
+  &__self-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin: 0;
+    gap: 18px 16px;
+
+    @media (width <= 720px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (width <= 560px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__self-item {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+  }
+
+  &__self-value {
+    @include t.stat-value;
+
+    margin: 0;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__self-label {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
   }
 
   &__announce {
@@ -158,12 +235,6 @@
     padding: 24px;
     gap: 8px;
     border-left: 3px solid var(--accent);
-  }
-
-  &__announce-time {
-    @include t.text('title', 'medium');
-
-    color: var(--accent);
   }
 
   &__announce-text {
@@ -200,7 +271,7 @@
       display: inline-block;
       margin-left: 8px;
       content: '→';
-      transition: transform 0.2s ease;
+      transition: transform var(--transition-time) ease;
     }
 
     &:hover::after {
@@ -230,7 +301,7 @@
       display: inline-block;
       margin-left: 8px;
       content: '→';
-      transition: transform 0.2s ease;
+      transition: transform var(--transition-time) ease;
     }
 
     &:hover::after {
@@ -264,7 +335,7 @@
     @include c.card;
 
     display: grid;
-    grid-template-columns: minmax(260px, 1fr) minmax(260px, 420px);
+    grid-template-columns: minmax(260px, 1fr) minmax(280px, 520px);
     overflow: hidden;
   }
 
@@ -302,13 +373,41 @@
     color: var(--text-secondary);
   }
 
+  &__course-facts {
+    display: flex;
+    flex-direction: column;
+    margin: 4px 0 8px;
+    gap: 10px;
+  }
+
+  &__course-fact {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  &__course-fact-term {
+    @include t.text('label', 'medium');
+
+    flex-shrink: 0;
+    min-width: 52px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  &__course-fact-value {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
   // Material renders the button chrome; only the arrow glyph stays ours.
   &__course-vk {
     &::after {
       display: inline-block;
       margin-left: 8px;
       content: '↗';
-      transition: transform 0.2s ease;
+      transition: transform var(--transition-time) ease;
     }
 
     &:hover::after {
@@ -318,13 +417,17 @@
 
   // The course map is a light-mode raster; a warm mute + vignette lets it
   // sit inside the dark card instead of glowing like a foreign screenshot.
+  // A <button> since the map opens the lightbox dialog, hence the resets.
   &__course-figure {
     display: block;
     position: relative;
     min-height: 360px;
+    padding: 0;
     overflow: hidden;
+    border: 0;
     border-left: 1px solid var(--border);
     background: var(--bg-subtle);
+    cursor: zoom-in;
 
     &::after {
       position: absolute;
@@ -334,7 +437,7 @@
         linear-gradient(to right, color-mix(in srgb, var(--bg) 35%, transparent), transparent 20%);
       content: '';
       pointer-events: none;
-      transition: opacity 0.4s var(--ease);
+      transition: opacity var(--transition-time) var(--ease);
     }
 
     &:hover::after,
@@ -355,8 +458,8 @@
     object-fit: cover;
     filter: saturate(0.68) brightness(0.86) contrast(1.02) sepia(0.16);
     transition:
-      filter 0.4s var(--ease),
-      transform 0.4s var(--ease);
+      filter var(--transition-time) var(--ease),
+      transform var(--transition-time) var(--ease);
   }
 
   &__course-figure:hover &__course-map,
@@ -379,8 +482,8 @@
     background: color-mix(in srgb, var(--bg) 82%, transparent);
     color: var(--text-secondary);
     transition:
-      color 0.2s var(--ease),
-      border-color 0.2s var(--ease);
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
 
     &::after {
       content: ' ↗';
@@ -406,6 +509,99 @@
           linear-gradient(to bottom, color-mix(in srgb, var(--bg) 35%, transparent), transparent 20%);
       }
     }
+  }
+
+  // The lightbox: a native <dialog>, so Esc, the focus trap and the backdrop come for free.
+  &__course-dialog {
+    // The global `* { margin: 0 }` reset wipes the UA `margin: auto`
+    // that centers a native <dialog> — restore it here.
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+
+    &::backdrop {
+      backdrop-filter: blur(8px);
+      background: color-mix(in srgb, var(--bg) 72%, transparent);
+    }
+
+    &[open] {
+      transform: scale(1);
+      opacity: 1;
+      transition:
+        opacity var(--transition-time) var(--ease),
+        transform var(--transition-time) var(--ease);
+
+      @starting-style {
+        transform: scale(0.94);
+        opacity: 0;
+      }
+    }
+  }
+
+  &__course-dialog-frame {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    max-width: min(92vw, 760px);
+    overflow: hidden;
+    box-shadow: 0 24px 80px color-mix(in srgb, var(--bg) 70%, transparent);
+  }
+
+  &__course-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 14px 24px;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  &__course-dialog-title {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  // The glyph lives in CSS so the button carries no text node of its own.
+  &__course-dialog-close {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
+
+    &::before {
+      content: '✕';
+    }
+
+    &:hover {
+      border-color: var(--accent-line);
+      color: var(--text);
+    }
+  }
+
+  &__course-dialog-picture {
+    display: contents;
+  }
+
+  &__course-dialog-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: min(80vh, 760px);
+    object-fit: contain;
+    background: var(--bg-subtle);
   }
 
   &__stats {
