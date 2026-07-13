@@ -1,0 +1,155 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+// ===========================================================
+//  «Выбери себя» — the header self-pick control: a toggle
+//  with a card dropdown, or the picked name plus a reset.
+// ===========================================================
+
+.self-picker {
+  display: flex;
+  position: relative;
+  align-items: center;
+
+  &__toggle {
+    @include t.text('label', 'medium');
+
+    padding: 9px 16px;
+    border: 1px dashed var(--border-hover);
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--accent-line);
+      color: var(--text);
+    }
+  }
+
+  &__me {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__me-link {
+    @include t.text('label', 'medium');
+
+    padding: 9px 6px 9px 16px;
+    border-radius: var(--radius-sm);
+    color: var(--accent-light);
+    text-decoration: none;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__clear {
+    @include t.text('label', 'medium');
+
+    padding: 4px 8px;
+    border: none;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+
+  &__panel {
+    @include c.card;
+
+    display: flex;
+    z-index: 60;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    flex-direction: column;
+    width: 280px;
+    padding: 14px;
+    gap: 10px;
+    box-shadow: 0 16px 40px color-mix(in srgb, var(--black) 60%, transparent);
+  }
+
+  &__hint {
+    @include t.text('label', 'small');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__input {
+    @include t.text('body', 'medium');
+
+    width: 100%;
+    padding: 9px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color var(--transition-time) var(--ease);
+
+    &:focus {
+      border-color: var(--accent);
+    }
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+
+  &__status {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__suggestions {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__suggestion-item {
+    border-bottom: 1px solid var(--border-soft);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__suggestion {
+    @include t.text('body', 'medium');
+
+    width: 100%;
+    padding: 10px 4px;
+    border: none;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--transition-time) var(--ease);
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+  }
+}

@@ -1,0 +1,66 @@
+<div class="self-picker" (keydown.escape)="close()">
+  @if (self(); as picked) {
+    <span class="self-picker__me">
+      @if (selfLink(); as link) {
+        <a aria-label="Моя страница атлета" class="self-picker__me-link" i18n-aria-label="@@selfPicker.myPageLabel" [routerLink]="link">
+          {{ picked.displayName }}
+        </a>
+      }
+
+      <button
+        aria-label="Сбросить выбор атлета"
+        class="self-picker__clear"
+        i18n-aria-label="@@selfPicker.clearLabel"
+        type="button"
+        (click)="clear()"
+      >
+        ×
+      </button>
+    </span>
+  } @else {
+    <button class="self-picker__toggle" i18n="@@selfPicker.toggle" type="button" [attr.aria-expanded]="open()" (click)="toggle()">
+      Выбери себя
+    </button>
+
+    @if (open()) {
+      <div class="self-picker__panel">
+        <p class="self-picker__hint" i18n="@@selfPicker.hint">Найди себя по имени — и сайт подсветит твои результаты.</p>
+
+        <input
+          #selfSearchInput
+          aria-label="Поиск себя по имени"
+          class="self-picker__input"
+          i18n-aria-label="@@selfPicker.searchLabel"
+          i18n-placeholder="@@selfPicker.searchPlaceholder"
+          placeholder="Имя и фамилия…"
+          type="search"
+          [value]="query()"
+          (input)="onQueryChange(selfSearchInput.value)"
+        />
+
+        <div aria-live="polite" class="self-picker__status" role="status">
+          @switch (status()) {
+            @case (statuses.loading) {
+              <span i18n="@@selfPicker.loading">Загружаем список атлетов…</span>
+            }
+            @case (statuses.error) {
+              <span i18n="@@selfPicker.error">Не удалось загрузить список атлетов.</span>
+            }
+          }
+        </div>
+
+        @if (suggestions().length > 0) {
+          <ul class="self-picker__suggestions">
+            @for (option of suggestions(); track option.key) {
+              <li class="self-picker__suggestion-item">
+                <button class="self-picker__suggestion" type="button" (click)="pick(option)">
+                  {{ option.displayName }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  }
+</div>
