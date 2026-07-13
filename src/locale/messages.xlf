@@ -235,6 +235,27 @@
           <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="error.unexpected" datatype="html">
+        <source>Что-то пошло не так. Попробуйте ещё раз.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/error/notifying-error-handler.constant.ts</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.navigation" datatype="html">
+        <source>Не удалось открыть страницу. Попробуйте ещё раз.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/error/route-error-notifier.constant.ts</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.staleChunk" datatype="html">
+        <source>Не удалось загрузить страницу. Обновите вкладку.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/error/route-error-notifier.constant.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="memes.hippoName" datatype="html">
         <source>Бегемот на рывке</source>
         <context-group purpose="location">
@@ -694,7 +715,7 @@
         <source>Удалить забег № <x id="number" equiv-text="entry.number"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.ts</context>
-          <context context-type="linenumber">264</context>
+          <context context-type="linenumber">267</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.loading" datatype="html">
@@ -3868,6 +3889,13 @@
         <source>2,3 км</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/distance-label.constant.ts</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notification.dismiss" datatype="html">
+        <source>Закрыть</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/notification/notification.constant.ts</context>
           <context context-type="linenumber">7</context>
         </context-group>
       </trans-unit>

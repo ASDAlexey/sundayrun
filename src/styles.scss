@@ -184,6 +184,19 @@ main:focus {
   clip-path: inset(50%);
 }
 
+// Error/info toasts (NotificationService) tinted to the Litely palette; MatSnackBar reads these tokens.
+.notification_error {
+  --mdc-snackbar-container-color: var(--red);
+  --mdc-snackbar-supporting-text-color: var(--accent-contrast);
+  --mat-snack-bar-button-color: var(--accent-contrast);
+}
+
+.notification_info {
+  --mdc-snackbar-container-color: var(--surface-hover);
+  --mdc-snackbar-supporting-text-color: var(--text);
+  --mat-snack-bar-button-color: var(--accent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
