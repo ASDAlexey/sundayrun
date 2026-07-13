@@ -11,7 +11,7 @@ import {
 } from './year-badges.mock';
 
 describe('yearBadgesOf', () => {
-  it('awards the highest obsessive tier, the all-months and the new-year badges by the year activity', () => {
+  it('awards the highest obsessive tier, the all-months, new-year, comeback and slow-participation badges by the year activity', () => {
     for (const [label, activity, expected] of YEAR_ACTIVITY_CASES) {
       expect(yearBadgesOf(activity), label).toEqual(expected);
     }

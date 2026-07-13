@@ -16,7 +16,7 @@ const BRONZE_2025_RUNS: AthleteRun[] = [
   ...Array.from({ length: 18 }, (_, day) => run(`2025-03-${pad(day + 1)}`)),
 ];
 
-/** 2026: 50 runs packed into May–June, skipping the year's first race → the gold tier alone. */
+/** 2026: 50 runs packed into May–June — gold, plus the 137-day winter break makes it a comeback. */
 const GOLD_2026_RUNS: AthleteRun[] = [
   ...Array.from({ length: 31 }, (_, day) => run(`2026-05-${pad(day + 1)}`)),
   ...Array.from({ length: 19 }, (_, day) => run(`2026-06-${pad(day + 1)}`)),
@@ -27,9 +27,9 @@ const QUIET_2024_RUNS: AthleteRun[] = [run('2024-10-06'), run('2024-10-13')];
 
 export const MULTI_YEAR_RUNS: AthleteRun[] = [...QUIET_2024_RUNS, ...BRONZE_2025_RUNS, ...GOLD_2026_RUNS];
 
-/** Newest year first; 2024 earned nothing and is dropped. */
+/** Newest year first; 2024 earned nothing and is dropped (its 84-day autumn-to-January break is short of a comeback). */
 export const EXPECTED_MULTI_YEAR_BADGES: AthleteYearBadges[] = [
-  { year: '2026', badges: [YearBadge.obsessiveGold] },
+  { year: '2026', badges: [YearBadge.obsessiveGold, YearBadge.comeback] },
   { year: '2025', badges: [YearBadge.obsessiveBronze, YearBadge.allMonths, YearBadge.newYearRace] },
 ];
 
@@ -45,24 +45,33 @@ export const RANK_BADGES_BY_YEAR: Record<string, YearBadgeType[]> = {
 
 /** The rank badges lead their years, and the run-less years resurface carrying their crowns alone. */
 export const EXPECTED_RANKED_MULTI_YEAR_BADGES: AthleteYearBadges[] = [
-  { year: '2026', badges: [YearBadge.obsessiveGold] },
+  { year: '2026', badges: [YearBadge.obsessiveGold, YearBadge.comeback] },
   { year: '2025', badges: [YearBadge.yearKing, YearBadge.obsessiveBronze, YearBadge.allMonths, YearBadge.newYearRace] },
   { year: '2024', badges: [YearBadge.yearTopThirty] },
   { year: '2023', badges: [YearBadge.courseKing] },
 ];
 
+const quiet = { hasComeback: false, slowFinishCount: 0 } as const;
+
 /** 2025 sliced out of the multi-year runs: 30 finishes over all 12 months starting at the new-year race. */
-export const EXPECTED_2025_ACTIVITY: YearActivity = { runCount: 30, monthCount: 12, ranNewYearRace: true };
+export const EXPECTED_2025_ACTIVITY: YearActivity = { runCount: 30, monthCount: 12, ranNewYearRace: true, ...quiet };
 
 /** A year the athlete never ran. */
-export const EMPTY_YEAR_ACTIVITY: YearActivity = { runCount: 0, monthCount: 0, ranNewYearRace: false };
+export const EMPTY_YEAR_ACTIVITY: YearActivity = { runCount: 0, monthCount: 0, ranNewYearRace: false, ...quiet };
 
 /** [label, activity, expected badges] for the single-year criteria. */
 export const YEAR_ACTIVITY_CASES: readonly (readonly [string, YearActivity, YearBadgeType[]])[] = [
-  ['49 runs stay silver', { runCount: 49, monthCount: 3, ranNewYearRace: false }, [YearBadge.obsessiveSilver]],
-  ['40 runs earn silver', { runCount: 40, monthCount: 3, ranNewYearRace: false }, [YearBadge.obsessiveSilver]],
-  ['30 runs earn bronze', { runCount: 30, monthCount: 3, ranNewYearRace: false }, [YearBadge.obsessiveBronze]],
-  ['29 runs earn no tier', { runCount: 29, monthCount: 3, ranNewYearRace: false }, []],
-  ['every month without a tier', { runCount: 12, monthCount: 12, ranNewYearRace: false }, [YearBadge.allMonths]],
-  ['the new-year race alone', { runCount: 1, monthCount: 1, ranNewYearRace: true }, [YearBadge.newYearRace]],
+  ['49 runs stay silver', { runCount: 49, monthCount: 3, ranNewYearRace: false, ...quiet }, [YearBadge.obsessiveSilver]],
+  ['40 runs earn silver', { runCount: 40, monthCount: 3, ranNewYearRace: false, ...quiet }, [YearBadge.obsessiveSilver]],
+  ['30 runs earn bronze', { runCount: 30, monthCount: 3, ranNewYearRace: false, ...quiet }, [YearBadge.obsessiveBronze]],
+  ['29 runs earn no tier', { runCount: 29, monthCount: 3, ranNewYearRace: false, ...quiet }, []],
+  ['every month without a tier', { runCount: 12, monthCount: 12, ranNewYearRace: false, ...quiet }, [YearBadge.allMonths]],
+  ['the new-year race alone', { runCount: 1, monthCount: 1, ranNewYearRace: true, ...quiet }, [YearBadge.newYearRace]],
+  ['a comeback alone', { runCount: 1, monthCount: 1, ranNewYearRace: false, hasComeback: true, slowFinishCount: 0 }, [YearBadge.comeback]],
+  [
+    '10 slow finishes earn «Главное — участие»',
+    { runCount: 15, monthCount: 4, ranNewYearRace: false, hasComeback: false, slowFinishCount: 10 },
+    [YearBadge.cameAnyway],
+  ],
+  ['9 slow finishes stay short', { runCount: 15, monthCount: 4, ranNewYearRace: false, hasComeback: false, slowFinishCount: 9 }, []],
 ];

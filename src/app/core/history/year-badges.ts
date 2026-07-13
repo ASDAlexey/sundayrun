@@ -1,6 +1,8 @@
 import { AthleteRun } from '../models/athlete-history.interface';
+import { comebackYearsOf, slowFinishCountsOf } from './badge-signals';
 import { isoYear } from './iso-year';
 import {
+  CAME_ANYWAY_SLOW_FINISH_COUNT,
   ISO_MONTH_END,
   ISO_MONTH_START,
   MONTHS_IN_YEAR,
@@ -21,12 +23,18 @@ export interface YearActivity {
   runCount: number;
   monthCount: number;
   ranNewYearRace: boolean;
+  /** The year holds a finish after a three-month break — the break may span the New Year. */
+  hasComeback: boolean;
+  /** The year's 5 km finishes slower than the athlete's all-time 5 km median. */
+  slowFinishCount: number;
 }
 
 /**
  * The badges a year's activity earns, in display order: the HIGHEST obsessive tier
  * (50/40/30 finished runs), «все 12 месяцев» (a run in every month), «новогодний забег»
- * (finished the year's first race — the one closest to the New Year holidays).
+ * (finished the year's first race — the one closest to the New Year holidays), «Возвращение»
+ * (a finish after a three-month break) and «Главное — участие» (10 finishes of the year
+ * slower than one's all-time 5 km median — the showing up matters, not the pace).
  */
 export function yearBadgesOf(activity: YearActivity): YearBadgeType[] {
   const badges: YearBadgeType[] = [];
@@ -45,6 +53,14 @@ export function yearBadgesOf(activity: YearActivity): YearBadgeType[] {
 
   if (activity.ranNewYearRace) {
     badges.push(YearBadge.newYearRace);
+  }
+
+  if (activity.hasComeback) {
+    badges.push(YearBadge.comeback);
+  }
+
+  if (activity.slowFinishCount >= CAME_ANYWAY_SLOW_FINISH_COUNT) {
+    badges.push(YearBadge.cameAnyway);
   }
 
   return badges;
@@ -77,9 +93,13 @@ export function athleteYearBadges(
 
   const result: AthleteYearBadges[] = [];
   const years = new Set([...byYear.keys(), ...Object.keys(rankBadgesByYear)]);
+  const comebackYears = comebackYearsOf(runs);
+  const slowFinishCountByYear = slowFinishCountsOf(runs);
 
   for (const year of years) {
-    const activityBadges = yearBadgesOf(toActivity(byYear.get(year) ?? [], firstEventDateByYear[year] ?? null));
+    const activityBadges = yearBadgesOf(
+      toActivity(byYear.get(year) ?? [], firstEventDateByYear[year] ?? null, comebackYears.has(year), slowFinishCountByYear[year] ?? 0),
+    );
     const badges = [...(rankBadgesByYear[year] ?? []), ...activityBadges];
 
     if (badges.length > 0) {
@@ -98,15 +118,19 @@ export function athleteYearActivity(runs: AthleteRun[], year: string, firstEvent
   return toActivity(
     runs.filter((run) => isoYear(run.dateIso) === year),
     firstEventDate ?? null,
+    comebackYearsOf(runs).has(year),
+    slowFinishCountsOf(runs)[year] ?? 0,
   );
 }
 
-function toActivity(yearRuns: AthleteRun[], firstEventDate: string | null): YearActivity {
+function toActivity(yearRuns: AthleteRun[], firstEventDate: string | null, hasComeback: boolean, slowFinishCount: number): YearActivity {
   const months = new Set(yearRuns.map((run) => run.dateIso.slice(ISO_MONTH_START, ISO_MONTH_END)));
 
   return {
     runCount: yearRuns.length,
     monthCount: months.size,
     ranNewYearRace: firstEventDate !== null && yearRuns.some((run) => run.dateIso === firstEventDate),
+    hasComeback,
+    slowFinishCount,
   };
 }
