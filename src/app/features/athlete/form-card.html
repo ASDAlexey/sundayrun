@@ -6,7 +6,11 @@
       Скользящая медиана последних {{ formWindowSize }} финишей на 5 км; 100% — лучший отрезок за всю историю.
     </p>
 
-    @if (form.isAtPeak) {
+    @if (form.isStale) {
+      <p class="form-card__now form-card__now_stale" i18n="@@athlete.formStale">Нет свежих забегов — перерыв больше 90 дней.</p>
+
+      <p class="form-card__peak" i18n="@@athlete.formPeak">Лучшая форма была в {{ form.peakMonthText }} года.</p>
+    } @else if (form.isAtPeak) {
       <p class="form-card__now form-card__now_peak" i18n="@@athlete.formAtPeak">Атлет сейчас на пике формы 🔥</p>
     } @else {
       <p class="form-card__now" i18n="@@athlete.formNow">Сейчас — {{ form.currentPercent }}% от пика.</p>
@@ -21,17 +25,32 @@
       role="img"
       [attr.viewBox]="chartViewBox"
     >
-      <polyline class="form-card__line" [attr.points]="form.linePoints" />
+      <polyline class="form-card__line" [attr.pathLength]="1" [attr.points]="form.linePoints" />
 
-      <circle class="form-card__dot form-card__dot_peak" r="5" [attr.cx]="form.peakDot.x" [attr.cy]="form.peakDot.y" />
-
-      <circle class="form-card__dot form-card__dot_current" r="5" [attr.cx]="form.currentDot.x" [attr.cy]="form.currentDot.y" />
+      @for (point of form.points; track $index) {
+        <circle
+          class="form-card__dot"
+          tabindex="0"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          [attr.r]="point.isPeak || point.isCurrent ? 5 : 3.5"
+          [class.form-card__dot_current]="point.isCurrent"
+          [class.form-card__dot_peak]="point.isPeak"
+          [style.animation-delay]="'calc(var(--transition-time) + ' + $index + ' * var(--transition-time) / 8)'"
+        >
+          <title>{{ point.tooltip }}</title>
+        </circle>
+      }
     </svg>
 
     <p class="form-card__legend-row">
       <span class="form-card__legend-item form-card__legend-item_peak" i18n="@@athlete.formLegendPeak">● пик</span>
 
-      <span class="form-card__legend-item form-card__legend-item_current" i18n="@@athlete.formLegendCurrent">● сейчас</span>
+      @if (form.isStale) {
+        <span class="form-card__legend-item form-card__legend-item_current" i18n="@@athlete.formLegendLast">● последний финиш</span>
+      } @else {
+        <span class="form-card__legend-item form-card__legend-item_current" i18n="@@athlete.formLegendCurrent">● сейчас</span>
+      }
     </p>
   </section>
 }

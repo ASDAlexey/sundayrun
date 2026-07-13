@@ -29,6 +29,10 @@
     &_peak {
       color: var(--accent);
     }
+
+    &_stale {
+      color: var(--text-muted);
+    }
   }
 
   &__peak {
@@ -50,12 +54,36 @@
   }
 
   &__dot {
+    transform-box: fill-box;
+    transform-origin: center;
+    fill: var(--text-muted);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      outline: none;
+      fill: var(--text);
+    }
+
     &_peak {
       fill: var(--green);
     }
 
     &_current {
       fill: var(--accent);
+    }
+  }
+
+  // Draw the curve in, then pop the dots on top; static for reduced-motion users (dots stay visible).
+  @media (prefers-reduced-motion: no-preference) {
+    &__line {
+      stroke-dasharray: 1;
+
+      animation: form-card-draw calc(var(--transition-time) * 2) ease-out both;
+    }
+
+    &__dot {
+      animation: form-card-pop var(--transition-time) ease-out both;
     }
   }
 
@@ -75,5 +103,27 @@
     &_current {
       color: var(--accent);
     }
+  }
+}
+
+@keyframes form-card-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes form-card-pop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }

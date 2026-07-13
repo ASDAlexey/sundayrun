@@ -16,4 +16,10 @@ export interface AthleteForm {
   peak: FormPoint;
   /** The latest window — «вы на 94% от пика». */
   current: FormPoint;
+  /**
+   * The newest finish predates the freshness window — a break past FORM_STALE_DAYS. The card then
+   * stops claiming a current form: no «на пике», just «лучшая форма была в …», the last dot labelled
+   * «последний финиш» instead of «сейчас».
+   */
+  isStale: boolean;
 }

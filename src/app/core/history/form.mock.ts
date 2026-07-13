@@ -4,6 +4,12 @@ import { AthleteForm } from './form.interface';
 const MINUTE_MS = 60_000;
 const FORM_SLUG = '2025-form';
 
+/** The archive anchor on the newest finish's day — every window is fresh, so no form is stale. */
+export const FRESH_ANCHOR_ISO = '2025-08-03';
+
+/** An anchor four months past the newest finish — the whole curve reads as a season-long break. */
+export const STALE_ANCHOR_ISO = '2025-12-15';
+
 /**
  * Eight monthly finishes: five steady 24-minute runs, then three 30-minute ones — the form fades
  * after the May peak. The newest run comes first to prove the input order never matters.
@@ -29,7 +35,11 @@ export const EXPECTED_FADING_FORM: AthleteForm = {
   ],
   peak: { dateIso: '2025-05-04', medianMs: 24 * MINUTE_MS, percent: 100 },
   current: { dateIso: '2025-08-03', medianMs: 30 * MINUTE_MS, percent: 80 },
+  isStale: false,
 };
+
+/** The same fading curve read from a far-off anchor: the season-long break flips it stale. */
+export const EXPECTED_STALE_FORM: AthleteForm = { ...EXPECTED_FADING_FORM, isStale: true };
 
 /** The mirror history: five slow runs, then three fast ones — the athlete is at the peak right now. */
 export const IMPROVING_FORM_RUNS: readonly AthleteRun[] = [
@@ -52,6 +62,7 @@ export const EXPECTED_IMPROVING_FORM: AthleteForm = {
   ],
   peak: { dateIso: '2025-08-03', medianMs: 24 * MINUTE_MS, percent: 100 },
   current: { dateIso: '2025-08-03', medianMs: 24 * MINUTE_MS, percent: 100 },
+  isStale: false,
 };
 
 /** One finish short of a full window — no form yet. */

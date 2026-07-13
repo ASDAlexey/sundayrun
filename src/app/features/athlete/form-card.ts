@@ -1,12 +1,20 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 
 import { athleteForm } from '../../core/history/form';
 import { FORM_WINDOW_SIZE, PEAK_PERCENT } from '../../core/history/form.constant';
 import { AthleteForm, FormPoint } from '../../core/history/form.interface';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { formatRussianMonthPrepositional } from '../../core/time/russian-date';
-import { COORD_TENTHS_BASE, FORM_CHART_HEIGHT, FORM_CHART_PAD, FORM_CHART_WIDTH } from './form-card.constant';
-import { FormChartDot, FormView } from './form-card.interface';
+import { formatDuration } from '../../core/time/duration';
+import { formatRussianDateLong, formatRussianMonthPrepositional } from '../../core/time/russian-date';
+import {
+  COORD_TENTHS_BASE,
+  FORM_CHART_HEIGHT,
+  FORM_CHART_PAD,
+  FORM_CHART_WIDTH,
+  TOOLTIP_BELOW_MAX_TOP_PERCENT,
+  TOOLTIP_EDGE_PERCENT,
+} from './form-card.constant';
+import { FormChartDot, FormChartPoint, FormTooltipAlign, FormView } from './form-card.interface';
 
 /**
  * The «Форма» card: the rolling median of the last five 5 km finishes against the athlete's
@@ -22,7 +30,9 @@ import { FormChartDot, FormView } from './form-card.interface';
 export class FormCard {
   /** The athlete's full 5 km history; the order never matters. */
   readonly runs = input.required<AthleteRun[]>();
-  readonly view = computed(() => toFormView(athleteForm(this.runs())));
+  /** The archive's newest event day — a newest finish older than 90 days from it goes «stale». */
+  readonly anchorIso = input.required<string>();
+  readonly view = computed(() => toFormView(athleteForm(this.runs(), this.anchorIso())));
 
   protected readonly formWindowSize = FORM_WINDOW_SIZE;
   protected readonly chartViewBox = `0 0 ${FORM_CHART_WIDTH} ${FORM_CHART_HEIGHT}`;
@@ -34,15 +44,29 @@ function toFormView(form: AthleteForm | null): FormView | null {
   }
 
   const dots = toDots(form.points);
+  const peakIndex = form.points.indexOf(form.peak);
+  const lastIndex = form.points.length - 1;
+  const points: FormChartPoint[] = dots.map((dot, index) => ({
+    ...dot,
+    tooltip: pointTooltip(form.points[index]),
+    isPeak: index === peakIndex,
+    isCurrent: index === lastIndex,
+  }));
 
   return {
     currentPercent: form.current.percent,
-    isAtPeak: form.current.percent === PEAK_PERCENT,
+    // A stale athlete never «cheers»: the break outweighs a last window that happened to top out.
+    isAtPeak: !form.isStale && form.current.percent === PEAK_PERCENT,
+    isStale: form.isStale,
     peakMonthText: formatRussianMonthPrepositional(form.peak.dateIso),
     linePoints: dots.map((dot) => `${dot.x},${dot.y}`).join(' '),
-    peakDot: dots[form.points.indexOf(form.peak)],
-    currentDot: dots[dots.length - 1],
+    points,
   };
+}
+
+/** «3 авг 2025 · 30:00 · 80%» — the window's end date, its median time and its percent of the peak. */
+function pointTooltip(point: FormPoint): string {
+  return `${formatRussianDateCompact(point.dateIso)} · ${formatDuration(point.medianMs)} · ${point.percent}%`;
 }
 
 /** Windows spread evenly along the x axis; y spans the seen percent range, so the curve always fills the box. */
