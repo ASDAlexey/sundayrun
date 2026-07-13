@@ -18,9 +18,6 @@ export const NEXT_NUMBER_SEED = FIRST_ARCHIVE_EVENT_NUMBER - 1;
 /** A blank query shows the full race list without filtering. */
 export const EMPTY_QUERY = '';
 
-/** Shown in the announcement preview until a start time is picked. */
-export const TIME_PLACEHOLDER = '—';
-
 /**
  * Fixed height of one race row; the virtual scroll strategy assumes this exact
  * value, and `.admin__race` in the stylesheet must stay in sync with it.

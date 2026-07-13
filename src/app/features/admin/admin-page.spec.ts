@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { FIRST_ARCHIVE_EVENT_NUMBER } from '../../core/github/archive-index.constant';
 import { EMPTY_INDEX, EXISTING_INDEX, NEWER_ENTRY } from '../../core/github/archive-index.mock';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
-import { BUILT_SITE_META, EXISTING_SITE_META, RAW_ANNOUNCEMENT_INPUT, RAW_START_TIME_INPUT } from '../../core/github/site-meta.mock';
+import { BUILT_SITE_META, EXISTING_SITE_META, RAW_START_TIME_INPUT } from '../../core/github/site-meta.mock';
 import { TokenCheck } from '../../core/github/token-check.enum';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ADMIN_TOKEN_MOCK } from '../../github/admin-token.service.mock';
@@ -18,7 +18,6 @@ import { ProtocolStateService } from '../../state/protocol-state.service';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { AdminPage } from './admin-page';
-import { TIME_PLACEHOLDER } from './admin-page.constant';
 import { RaceListStatus, TokenSaveStatus } from './admin-page.enum';
 import {
   ADMIN_RACES_LOAD_ERROR_MESSAGE,
@@ -164,7 +163,7 @@ describe('AdminPage', () => {
     expect(fixture.componentInstance.status()).toBe(TokenSaveStatus.idle);
   });
 
-  it('prefills the editor drafts, previews them live and publishes the trimmed form input', async () => {
+  it('prefills the editor start-time draft and publishes the trimmed form input', async () => {
     isAdmin.set(true);
     fixture = await createPage();
 
@@ -173,14 +172,8 @@ describe('AdminPage', () => {
 
     expect(loadMeta).toHaveBeenCalled();
     expect(element.querySelector('.admin__input_time').value).toBe(EXISTING_SITE_META.startTime);
-    expect(element.querySelector('.admin__textarea').value).toBe(EXISTING_SITE_META.announcement);
-    expect(element.querySelector('.admin__meta-preview-line').textContent).toContain(EXISTING_SITE_META.startTime);
-    expect(element.querySelector('.admin__meta-preview-text').textContent).toContain(EXISTING_SITE_META.announcement);
 
     page.onStartTimeInput(RAW_START_TIME_INPUT);
-    page.onAnnouncementInput(RAW_ANNOUNCEMENT_INPUT);
-
-    expect(page.previewAnnouncement(), 'the preview shows the trimmed draft').toBe(BUILT_SITE_META.announcement);
 
     saveMeta.mockImplementation(() => {
       metaState.set(PublishState.success);
@@ -207,7 +200,7 @@ describe('AdminPage', () => {
     const page = fixture.componentInstance;
 
     expect(page.meta(), 'a CDN hiccup falls back to the empty meta').toEqual(EMPTY_SITE_META);
-    expect(page.previewTime(), 'no start time yet — the preview shows a placeholder').toBe(TIME_PLACEHOLDER);
+    expect(page.draftStartTime(), 'no start time yet — the draft stays empty').toBe('');
 
     metaState.set(PublishState.publishing);
     fixture.detectChanges();

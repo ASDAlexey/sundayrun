@@ -113,8 +113,7 @@
     color: var(--text-muted);
   }
 
-  &__input,
-  &__textarea {
+  &__input {
     @include f.field;
 
     width: 100%;
@@ -133,10 +132,6 @@
     width: auto;
   }
 
-  &__textarea {
-    resize: vertical;
-  }
-
   &__upload-note {
     @include t.mono-meta;
 
@@ -145,34 +140,6 @@
 
   &__upload-number {
     color: var(--accent);
-  }
-
-  &__meta-preview {
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
-    gap: 6px;
-    border: 1px dashed var(--border-hover);
-    border-radius: var(--radius-sm);
-    background: var(--bg-subtle);
-  }
-
-  &__meta-preview-caption {
-    @include t.mono-caption;
-
-    color: var(--text-muted);
-  }
-
-  &__meta-preview-line {
-    @include t.text('body', 'medium');
-
-    color: var(--accent-light);
-  }
-
-  &__meta-preview-text {
-    @include t.text('body', 'medium');
-
-    color: var(--text-secondary);
   }
 
   &__save,

@@ -118,14 +118,13 @@ describe('HomePage', () => {
     expect(element.querySelector('.home__latest-all').getAttribute('href')).toBe(RACES_PAGE_LINK);
     expect(element.querySelector('.home__all-cta').getAttribute('href')).toBe(RACES_PAGE_LINK);
     expect(element.querySelector('.home__course'), 'the course card stays on the landing').not.toBeNull();
-    expect(element.querySelector('.home__announce'), 'no announcement block until the organiser publishes one').toBeNull();
 
     const statValues = [...element.querySelectorAll('.home__stats-value')].map((node) => node.textContent.trim());
 
     expect(statValues, 'the overall statistics render formatted totals').toEqual(EXPECTED_STATS_VALUES);
   });
 
-  it('shows the announcement text, feeds the course start fact from the meta, and stays silent on a meta failure', async () => {
+  it('feeds the course start fact from the meta and stays silent on a meta failure', async () => {
     loadMeta.mockResolvedValue(EXISTING_SITE_META);
     fixture = await createPage();
 
@@ -133,7 +132,6 @@ describe('HomePage', () => {
 
     const element = fixture.nativeElement;
 
-    expect(element.querySelector('.home__announce-text').textContent.trim()).toBe(EXISTING_SITE_META.announcement);
     expect(courseStartFactText(element)).toBe(EXPECTED_COURSE_START_DEFAULT_TEXT);
 
     loadMeta.mockResolvedValue(START_TIME_ONLY_SITE_META);
@@ -142,7 +140,6 @@ describe('HomePage', () => {
 
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.home__announce'), 'a bare start time renders no announce block').toBeNull();
     expect(courseStartFactText(fixture.nativeElement), 'registration derives as start minus 15 minutes').toBe(
       EXPECTED_COURSE_START_CUSTOM_TEXT,
     );
@@ -152,11 +149,6 @@ describe('HomePage', () => {
     fixture = await createPage();
 
     expect(fixture.componentInstance.status(), 'the race preview is unaffected by the meta failure').toBe(RacesStatus.ready);
-    expect(fixture.componentInstance.hasAnnouncement()).toBe(false);
-
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelector('.home__announce')).toBeNull();
   });
 
   it('opens the course scheme in the lightbox and closes it from the button or the backdrop', async () => {
@@ -281,7 +273,7 @@ describe('HomePage', () => {
     expect(fixture.componentInstance.status()).toBe(RacesStatus.ready);
     expect(fixture.componentInstance.latestRaces()).toEqual(EXPECTED_RACE_ITEMS);
     expect(transferState.get(RACES_KEY, null)).toEqual({ data: EXPECTED_RACE_ITEMS });
-    expect(transferState.get(META_KEY, null), 'the announcement is baked alongside the preview').toEqual({ data: EXISTING_SITE_META });
+    expect(transferState.get(META_KEY, null), 'the start time is baked alongside the preview').toEqual({ data: EXISTING_SITE_META });
     expect(transferState.get(STATS_KEY, null), 'only the computed totals are baked, never the history').toEqual({ data: EXPECTED_STATS });
   });
 

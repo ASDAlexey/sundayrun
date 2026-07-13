@@ -22,7 +22,6 @@ import {
   EMPTY_TOKEN,
   NEXT_NUMBER_SEED,
   RACE_PAGE_PREFIX,
-  TIME_PLACEHOLDER,
   TOKEN_HELP_URL,
 } from './admin-page.constant';
 import { RaceListStatus, RaceListStatusType, TokenSaveStatus, TokenSaveStatusType } from './admin-page.enum';
@@ -30,8 +29,8 @@ import { AdminRaceItem } from './admin-page.interface';
 
 /**
  * The /admin page: the organiser pastes a fine-grained GitHub PAT; a valid one unlocks the
- * organiser panel — the protocol intake zone, the home-page announcement editor with a live
- * preview and the searchable list of published races, the undo for a mistaken upload.
+ * organiser panel — the protocol intake zone, the home-page start-time editor and the searchable
+ * list of published races, the undo for a mistaken upload.
  */
 @Component({
   selector: 'app-admin-page',
@@ -51,11 +50,8 @@ export class AdminPage {
   /** null until the published meta arrives; the publish button stays disabled to avoid blind overwrites. */
   readonly meta = signal<SiteMetaFile | null>(null);
   readonly metaState = this.#siteMeta.state;
-  /** The editor drafts feed the «так увидят на главной» preview as the organiser types. */
+  /** The start-time draft the organiser edits before publishing the site meta. */
   readonly draftStartTime = signal(EMPTY_TOKEN);
-  readonly draftAnnouncement = signal(EMPTY_TOKEN);
-  readonly previewTime = computed(() => (this.draftStartTime() === EMPTY_TOKEN ? TIME_PLACEHOLDER : this.draftStartTime()));
-  readonly previewAnnouncement = computed(() => this.draftAnnouncement().trim());
   readonly races = signal<AdminRaceItem[]>([]);
   readonly racesStatus = signal<RaceListStatusType>(RaceListStatus.loading);
   readonly query = signal(EMPTY_QUERY);
@@ -123,12 +119,8 @@ export class AdminPage {
     this.draftStartTime.set(startTime);
   }
 
-  onAnnouncementInput(announcement: string): void {
-    this.draftAnnouncement.set(announcement);
-  }
-
   async saveMeta(): Promise<void> {
-    const meta = buildSiteMeta(this.draftStartTime(), this.draftAnnouncement());
+    const meta = buildSiteMeta(this.draftStartTime());
 
     await this.#siteMeta.save(meta);
 
@@ -176,7 +168,6 @@ export class AdminPage {
 
   #applyDrafts(meta: SiteMetaFile): void {
     this.draftStartTime.set(meta.startTime);
-    this.draftAnnouncement.set(meta.announcement);
   }
 
   async #loadRaces(): Promise<void> {

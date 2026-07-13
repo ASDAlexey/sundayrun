@@ -10,8 +10,8 @@ export function parseSiteMeta(text: string | null): SiteMetaFile {
 }
 
 /** Normalises the organiser's raw form input into the file that gets committed. */
-export function buildSiteMeta(startTime: string, announcement: string): SiteMetaFile {
-  return { schemaVersion: SITE_META_SCHEMA_VERSION, startTime: startTime.trim(), announcement: announcement.trim() };
+export function buildSiteMeta(startTime: string): SiteMetaFile {
+  return { schemaVersion: SITE_META_SCHEMA_VERSION, startTime: startTime.trim() };
 }
 
 function isSiteMetaFile(value: unknown): value is SiteMetaFile {
@@ -21,8 +21,6 @@ function isSiteMetaFile(value: unknown): value is SiteMetaFile {
     'schemaVersion' in value &&
     value.schemaVersion === SITE_META_SCHEMA_VERSION &&
     'startTime' in value &&
-    typeof value.startTime === 'string' &&
-    'announcement' in value &&
-    typeof value.announcement === 'string'
+    typeof value.startTime === 'string'
   );
 }

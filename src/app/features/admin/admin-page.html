@@ -46,31 +46,6 @@
             />
           </label>
 
-          <label class="admin__label">
-            <span class="admin__label-text" i18n="@@admin.announcementLabel">Сообщение о забеге</span>
-
-            <textarea
-              #announcementInput
-              class="admin__textarea"
-              i18n-placeholder="@@admin.announcementPlaceholder"
-              id="admin-announcement"
-              placeholder="Например: старт у фонтана, главная аллея на ремонте"
-              rows="4"
-              [value]="draftAnnouncement()"
-              (input)="onAnnouncementInput(announcementInput.value)"
-            ></textarea>
-          </label>
-
-          <div class="admin__meta-preview">
-            <p class="admin__meta-preview-caption" i18n="@@admin.previewCaption">Так увидят на главной</p>
-
-            <p class="admin__meta-preview-line" i18n="@@admin.previewLine">Следующий старт — воскресенье · {{ previewTime() }}</p>
-
-            @if (previewAnnouncement() !== '') {
-              <p class="admin__meta-preview-text">{{ previewAnnouncement() }}</p>
-            }
-          </div>
-
           <button
             class="admin__publish"
             i18n="@@admin.metaSave"

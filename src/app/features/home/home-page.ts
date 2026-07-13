@@ -76,7 +76,6 @@ export class HomePage {
   readonly status = signal<RacesStatusType>(RacesStatus.loading);
   readonly latestRaces = signal<RaceListItem[]>([]);
   readonly siteMeta = signal(EMPTY_SITE_META);
-  readonly hasAnnouncement = computed(() => this.siteMeta().announcement !== '');
   readonly statsView = computed(() => toStatsView(this.#stats()));
   readonly selfView = computed(() => toSelfView(this.#selfAthlete.self(), this.#selfRecord(), this.#eventSlugs()));
   readonly startTime = computed(() => this.siteMeta().startTime || DEFAULT_START_TIME);
@@ -93,7 +92,7 @@ export class HomePage {
   protected readonly vkUrl = VK_COMMUNITY_URL;
 
   constructor() {
-    // Prerender bakes the real preview and announcement into the static HTML, so hydration
+    // Prerender bakes the real preview and start time into the static HTML, so hydration
     // shifts no layout; the browser still refreshes from the CDN — data lands between deploys.
     loadWithTransfer({
       key: HOME_RACES_TRANSFER_KEY,
@@ -101,7 +100,7 @@ export class HomePage {
       apply: (races) => this.#applyLatest(races),
       onError: () => this.status.set(RacesStatus.error),
     });
-    // The announcement is optional decoration, so a CDN failure keeps the page silent instead of erroring.
+    // The start time is optional decoration, so a CDN failure falls back to the default instead of erroring.
     loadWithTransfer({
       key: HOME_META_TRANSFER_KEY,
       load: () => this.#siteMeta.load(),
@@ -167,7 +166,7 @@ export class HomePage {
     this.status.set(races.length === 0 ? RacesStatus.empty : RacesStatus.ready);
   }
 
-  /** The personal card is garnish like the announcement: a failed read keeps the page silent. */
+  /** The personal card is optional garnish: a failed read keeps the page silent. */
   async #loadSelf(key: string): Promise<void> {
     try {
       const [record, eventSlugs] = await Promise.all([this.#athletes.loadRecord(key), this.#athletes.loadEventSlugs()]);

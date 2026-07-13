@@ -4,7 +4,6 @@ import {
   BUILT_SITE_META,
   EXISTING_SITE_META,
   MALFORMED_SITE_META_TEXT,
-  RAW_ANNOUNCEMENT_INPUT,
   RAW_START_TIME_INPUT,
   VALID_SITE_META_TEXT,
   WRONG_SHAPE_SITE_META_TEXT,
@@ -20,6 +19,6 @@ describe('site-meta', () => {
   });
 
   it('builds the committed file from trimmed form input', () => {
-    expect(buildSiteMeta(RAW_START_TIME_INPUT, RAW_ANNOUNCEMENT_INPUT)).toEqual(BUILT_SITE_META);
+    expect(buildSiteMeta(RAW_START_TIME_INPUT)).toEqual(BUILT_SITE_META);
   });
 });
