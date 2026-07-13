@@ -25,6 +25,14 @@
     }
   }
 
+  // The display line-height (1.04) is tuned for one or two lines; once the title
+  // wraps to three on a phone the lines crowd together, so loosen it a touch.
+  @media (width <= 560px) {
+    &__title {
+      line-height: 1.12;
+    }
+  }
+
   &__hero-intro {
     display: flex;
     flex-direction: column;
