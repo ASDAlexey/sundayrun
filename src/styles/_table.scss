@@ -20,7 +20,7 @@
 @mixin header-cell {
   @include t.text('label', 'medium');
 
-  padding: 14px 16px;
+  padding: 14px 12px;
   color: var(--text-secondary);
   text-align: left;
   white-space: nowrap;
@@ -29,7 +29,7 @@
 @mixin cell {
   @include t.text('body', 'medium');
 
-  padding: 10px 16px;
+  padding: 10px 12px;
   border-top: 1px solid var(--border);
   color: var(--text);
   vertical-align: middle;

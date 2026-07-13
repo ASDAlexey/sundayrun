@@ -64,6 +64,8 @@
       >
         Фишки
       </a>
+
+      <app-self-picker class="shell-header__self" />
     </nav>
   </mat-toolbar>
 </header>
@@ -103,7 +105,9 @@
 
   <div class="shell-footer__bottom">
     <div class="shell-footer__bottom-inner">
-      <span class="shell-footer__copyright" i18n="@@app.footerCopyright">© Воскресный парковый пробег, Таганрог</span>
+      <span class="shell-footer__copyright" i18n="@@app.footerCopyright"
+        >© 2019–2026 Воскресный парковый пробег, Таганрог. Все права защищены.</span
+      >
 
       <a class="shell-footer__admin" i18n="@@app.forOrganizer" [routerLink]="adminLink">для организатора</a>
     </div>

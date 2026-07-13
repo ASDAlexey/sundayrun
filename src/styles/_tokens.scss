@@ -37,6 +37,23 @@
   --white: #fff;
   --black: #000;
 
+  // Categorical line palette for multi-series charts (the standings bump chart)
+  --chart-1: #f0912d;
+  --chart-2: #3ecf8e;
+  --chart-3: #6f8dff;
+  --chart-4: #e560a0;
+  --chart-5: #ffd166;
+  --chart-6: #4fd1d9;
+  --chart-7: #b07bf5;
+  --chart-8: #ff6f61;
+  --chart-9: #c9d64f;
+  --chart-10: #2fa3ff;
+  --chart-11: #ff9ecb;
+  --chart-12: #b98b5e;
+  --chart-13: #e8e8ea;
+  --chart-14: #1fbf9c;
+  --chart-15: #c14fd6;
+
   --radius: 16px;
   --radius-md: 14px;
   --radius-sm: 10px;
@@ -49,4 +66,5 @@
   --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', menlo, monospace;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-time: 0.3s;
 }

@@ -15,7 +15,7 @@
   color: var(--accent-contrast);
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.2s var(--ease);
+  transition: background var(--transition-time) var(--ease);
 
   &:hover {
     background: var(--accent-light);
@@ -38,7 +38,7 @@
   color: var(--text);
   text-decoration: none;
   cursor: pointer;
-  transition: border-color 0.2s var(--ease);
+  transition: border-color var(--transition-time) var(--ease);
 
   &:hover {
     border-color: var(--border-hover);
@@ -57,8 +57,8 @@
   color: var(--text-secondary);
   cursor: pointer;
   transition:
-    border-color 0.2s var(--ease),
-    color 0.2s var(--ease);
+    border-color var(--transition-time) var(--ease),
+    color var(--transition-time) var(--ease);
 
   &:hover {
     border-color: var(--border-hover);

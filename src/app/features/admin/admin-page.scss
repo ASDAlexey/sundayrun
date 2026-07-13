@@ -52,7 +52,7 @@
 
     align-self: flex-start;
     color: var(--accent);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &::after {
       content: ' ↗';

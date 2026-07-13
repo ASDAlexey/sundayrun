@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 
 import { App } from './app';
 import { MAIN_CONTENT_ID } from './app.constant';
+import { AthletesService } from './github/athletes.service';
 import { DbFreshnessService } from './github/db-freshness.service';
 import { dbFreshnessServiceMock } from './github/db-freshness.service.mock';
 
@@ -11,8 +12,13 @@ describe('App', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [App],
-      // The shell mounts the freshness banner, whose real service would probe the network.
-      providers: [provideRouter([]), { provide: DbFreshnessService, useValue: dbFreshnessServiceMock() }],
+      // The shell mounts the freshness banner, whose real service would probe the network,
+      // and the self picker, whose real directory service would open the protocol db.
+      providers: [
+        provideRouter([]),
+        { provide: DbFreshnessService, useValue: dbFreshnessServiceMock() },
+        { provide: AthletesService, useValue: {} },
+      ],
     });
   });
 

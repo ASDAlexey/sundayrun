@@ -99,9 +99,9 @@
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
     transition:
-      color 0.2s var(--ease),
-      background 0.2s var(--ease),
-      border-color 0.2s var(--ease);
+      color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--text);
@@ -231,7 +231,7 @@
     align-self: flex-start;
     border-bottom: 1px solid var(--accent-line);
     color: var(--accent);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &::after {
       content: ' ↗';
@@ -267,7 +267,7 @@
     @include t.text('label', 'small');
 
     color: var(--text-muted);
-    transition: color 0.2s var(--ease);
+    transition: color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--text-secondary);

@@ -42,8 +42,8 @@
     text-align: center;
     cursor: pointer;
     transition:
-      border-color 0.2s var(--ease),
-      background 0.2s var(--ease);
+      border-color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease);
 
     // Keyboard focus is handled by the global :focus-visible outline.
     &:hover {

@@ -70,6 +70,11 @@ body {
   font-family: var(--font);
 }
 
+// A modal <dialog> (the course-map lightbox) freezes the page behind it.
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
 // Atmosphere — faint dot-grid + soft top vignette, fixed behind content.
 body::before {
   z-index: 0;

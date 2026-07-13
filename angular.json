@@ -122,8 +122,10 @@
               "**/app.config.ts",
               "**/app.ts",
               "**/main.ts",
-              "**/test-providers.ts"
-            ]
+              "**/test-providers.ts",
+              "**/test-setup.ts"
+            ],
+            "setupFiles": ["src/test-setup.ts"]
           }
         }
       }
