@@ -10,8 +10,38 @@ export const WHITESPACE_TOKEN_INPUT = '   ';
 
 export const ADMIN_RACES_LOAD_ERROR_MESSAGE = 'index cdn unreachable';
 
-/** `EXISTING_INDEX` reshaped for the deletion list; the served newest-first order is preserved. */
+/** `EXISTING_INDEX` reshaped for the races list; the served newest-first order is preserved. */
 export const EXPECTED_ADMIN_RACES: AdminRaceItem[] = [
-  { slug: NEWER_ENTRY.slug, number: NEWER_ENTRY.number, dateLong: '5 июля 2026 г.', participantCount: NEWER_ENTRY.participantCount },
-  { slug: OLDER_ENTRY.slug, number: OLDER_ENTRY.number, dateLong: '21 июня 2026 г.', participantCount: OLDER_ENTRY.participantCount },
+  {
+    slug: NEWER_ENTRY.slug,
+    number: NEWER_ENTRY.number,
+    dateLong: '5 июля 2026 г.',
+    participantCount: NEWER_ENTRY.participantCount,
+    raceLink: `/races/${NEWER_ENTRY.slug}`,
+    searchText: `№ ${NEWER_ENTRY.number} 5 июля 2026 г. ${NEWER_ENTRY.dateIso}`.toLowerCase(),
+    deleteLabel: `Удалить забег № ${NEWER_ENTRY.number}`,
+  },
+  {
+    slug: OLDER_ENTRY.slug,
+    number: OLDER_ENTRY.number,
+    dateLong: '21 июня 2026 г.',
+    participantCount: OLDER_ENTRY.participantCount,
+    raceLink: `/races/${OLDER_ENTRY.slug}`,
+    searchText: `№ ${OLDER_ENTRY.number} 21 июня 2026 г. ${OLDER_ENTRY.dateIso}`.toLowerCase(),
+    deleteLabel: `Удалить забег № ${OLDER_ENTRY.number}`,
+  },
 ];
+
+/** `EXISTING_INDEX` holds №13 and №11, so a new upload gets №14. */
+export const EXPECTED_NEXT_NUMBER = 14;
+
+/** Matches only the newer race by its number. */
+export const NUMBER_QUERY = '13';
+
+/** Matches only the older race by the month of its long date («июня»). */
+export const MONTH_QUERY = 'июн';
+
+/** Matches both races through the ISO year in the haystack. */
+export const YEAR_QUERY = ' 2026';
+
+export const NO_MATCH_QUERY = 'марафон';

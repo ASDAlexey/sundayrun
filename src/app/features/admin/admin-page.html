@@ -1,139 +1,122 @@
 <main class="admin" id="main" tabindex="-1">
-  <mat-card appearance="outlined" class="admin__card">
-    <mat-card-content class="admin__card-content">
-      <h1 class="admin__title" i18n="@@admin.title">Вход для организатора</h1>
-
-      @if (isAdmin()) {
-        <p class="admin__saved" i18n="@@admin.tokenSaved">Токен сохранён — режим организатора включён.</p>
-
-        <div class="admin__actions">
-          <a class="admin__upload" i18n="@@admin.upload" matButton="filled" [routerLink]="uploadLink">Загрузить забег</a>
-
-          <button class="admin__clear" i18n="@@admin.clear" matButton="outlined" type="button" (click)="clear()">Удалить токен</button>
-        </div>
-      } @else {
-        <p class="admin__hint" i18n="@@admin.hint">
-          Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий sundayrun.
-        </p>
-
-        <a class="admin__help" i18n="@@admin.tokenHelp" rel="noopener" target="_blank" [href]="tokenHelpUrl">
-          Как создать токен — пошаговая инструкция
-        </a>
-
-        <mat-form-field appearance="outline" class="admin__field">
-          <mat-label i18n="@@admin.tokenLabel">GitHub-токен</mat-label>
-
-          <input #tokenInput autocomplete="off" class="admin__input" id="admin-token" matInput type="password" />
-        </mat-form-field>
-
-        <button
-          class="admin__save"
-          i18n="@@admin.save"
-          matButton="filled"
-          type="button"
-          [disabled]="status() === statuses.checking"
-          (click)="save(tokenInput.value)"
-        >
-          Сохранить
-        </button>
-
-        <div aria-live="polite" class="admin__feedback">
-          @switch (status()) {
-            @case (statuses.empty) {
-              <p class="admin__error" i18n="@@admin.emptyToken" role="alert">Введите токен.</p>
-            }
-            @case (statuses.checking) {
-              <div class="admin__progress">
-                <mat-progress-spinner mode="indeterminate" [diameter]="24" />
-
-                <p class="admin__status" i18n="@@admin.checking">Проверяем токен…</p>
-              </div>
-            }
-            @case (statuses.unauthorized) {
-              <p class="admin__error" i18n="@@admin.unauthorized" role="alert">Токен не подходит: нет доступа к репозиторию sundayrun.</p>
-            }
-            @case (statuses.error) {
-              <p class="admin__error" i18n="@@admin.error" role="alert">Не удалось проверить токен. Попробуйте ещё раз.</p>
-            }
-          }
-        </div>
-      }
-    </mat-card-content>
-  </mat-card>
-
   @if (isAdmin()) {
-    <mat-card appearance="outlined" class="admin__card">
-      <mat-card-content class="admin__card-content">
-        <h2 class="admin__subtitle" i18n="@@admin.metaTitle">Объявление на главной</h2>
+    <header class="admin__head">
+      <div class="admin__head-info">
+        <h1 class="admin__title" i18n="@@admin.panelTitle">Панель организатора</h1>
 
-        <p class="admin__hint" i18n="@@admin.metaHint">Время старта и сообщение о забеге показываются всем на главной странице.</p>
+        <p class="admin__saved" i18n="@@admin.tokenSaved">Токен сохранён — режим организатора включён.</p>
+      </div>
 
-        <mat-form-field appearance="outline" class="admin__field admin__field_time">
-          <mat-label i18n="@@admin.startTimeLabel">Время старта</mat-label>
+      <button class="admin__clear" i18n="@@admin.clear" type="button" (click)="clear()">Удалить токен</button>
+    </header>
 
-          <input
-            #startTimeInput
-            class="admin__input admin__input_time"
-            id="admin-start-time"
-            matInput
-            type="time"
-            [value]="meta()?.startTime ?? ''"
-          />
-        </mat-form-field>
+    <div class="admin__grid">
+      <div class="admin__column">
+        <section class="admin__card">
+          <h2 class="admin__subtitle" i18n="@@admin.uploadTitle">Загрузить забег</h2>
 
-        <mat-form-field appearance="outline" class="admin__field">
-          <mat-label i18n="@@admin.announcementLabel">Сообщение о забеге</mat-label>
+          <p class="admin__hint" i18n="@@admin.uploadHint">Протокол нового забега — результаты и рекорды пересчитаются автоматически.</p>
 
-          <textarea
-            #announcementInput
-            class="admin__textarea"
-            id="admin-announcement"
-            matInput
-            rows="4"
-            [value]="meta()?.announcement ?? ''"
-          ></textarea>
-        </mat-form-field>
+          <app-protocol-dropzone />
 
-        <button
-          class="admin__save"
-          i18n="@@admin.metaSave"
-          matButton="filled"
-          type="button"
-          [disabled]="meta() === null || metaState() === publishStates.publishing"
-          (click)="saveMeta(startTimeInput.value, announcementInput.value)"
-        >
-          Опубликовать объявление
-        </button>
+          @if (racesStatus() === raceStatuses.ready) {
+            <p class="admin__upload-note" i18n="@@admin.nextNumber">
+              Следующий номер: <span class="admin__upload-number">№ {{ nextNumber() }}</span>
+            </p>
+          }
 
-        <div aria-live="polite" class="admin__feedback admin__feedback_meta">
-          @switch (metaState()) {
-            @case (publishStates.publishing) {
-              <div class="admin__progress">
-                <mat-progress-spinner mode="indeterminate" [diameter]="24" />
+          <p class="admin__upload-note" i18n="@@admin.publishDelay">Забег появится на сайте не сразу — публикация занимает ~2–3 минуты.</p>
+        </section>
 
-                <p class="admin__status" i18n="@@admin.metaSaving">Публикуем объявление…</p>
-              </div>
+        <section class="admin__card">
+          <h2 class="admin__subtitle" i18n="@@admin.metaTitle">Объявление на главной</h2>
+
+          <p class="admin__hint" i18n="@@admin.metaHint">Показывается всем в блоке «Следующий старт». Публикация занимает ~2–3 минуты.</p>
+
+          <label class="admin__label admin__label_time">
+            <span class="admin__label-text" i18n="@@admin.startTimeLabel">Время старта</span>
+
+            <input
+              #startTimeInput
+              class="admin__input admin__input_time"
+              id="admin-start-time"
+              type="time"
+              [value]="draftStartTime()"
+              (input)="onStartTimeInput(startTimeInput.value)"
+            />
+          </label>
+
+          <label class="admin__label">
+            <span class="admin__label-text" i18n="@@admin.announcementLabel">Сообщение о забеге</span>
+
+            <textarea
+              #announcementInput
+              class="admin__textarea"
+              i18n-placeholder="@@admin.announcementPlaceholder"
+              id="admin-announcement"
+              placeholder="Например: старт у фонтана, главная аллея на ремонте"
+              rows="4"
+              [value]="draftAnnouncement()"
+              (input)="onAnnouncementInput(announcementInput.value)"
+            ></textarea>
+          </label>
+
+          <div class="admin__meta-preview">
+            <p class="admin__meta-preview-caption" i18n="@@admin.previewCaption">Так увидят на главной</p>
+
+            <p class="admin__meta-preview-line" i18n="@@admin.previewLine">Следующий старт — воскресенье · {{ previewTime() }}</p>
+
+            @if (previewAnnouncement() !== '') {
+              <p class="admin__meta-preview-text">{{ previewAnnouncement() }}</p>
             }
-            @case (publishStates.success) {
-              <p class="admin__saved" i18n="@@admin.metaSaved">Объявление опубликовано.</p>
+          </div>
+
+          <button
+            class="admin__publish"
+            i18n="@@admin.metaSave"
+            type="button"
+            [disabled]="meta() === null || metaState() === publishStates.publishing"
+            (click)="saveMeta()"
+          >
+            Опубликовать объявление
+          </button>
+
+          <div aria-live="polite" class="admin__feedback admin__feedback_meta">
+            @switch (metaState()) {
+              @case (publishStates.publishing) {
+                <div class="admin__progress">
+                  <mat-progress-spinner mode="indeterminate" [diameter]="24" />
+
+                  <p class="admin__status" i18n="@@admin.metaSaving">Публикуем объявление…</p>
+                </div>
+              }
+              @case (publishStates.success) {
+                <p class="admin__saved" i18n="@@admin.metaSaved">Объявление опубликовано — на главной появится через ~2–3 минуты.</p>
+              }
+              @case (publishStates.authError) {
+                <p class="admin__error" i18n="@@admin.metaAuthError" role="alert">
+                  Токен не подходит: нет доступа к репозиторию sundayrun.
+                </p>
+              }
+              @case (publishStates.error) {
+                <p class="admin__error" i18n="@@admin.metaError" role="alert">Не удалось опубликовать объявление. Попробуйте ещё раз.</p>
+              }
             }
-            @case (publishStates.authError) {
-              <p class="admin__error" i18n="@@admin.metaAuthError" role="alert">Токен не подходит: нет доступа к репозиторию sundayrun.</p>
-            }
-            @case (publishStates.error) {
-              <p class="admin__error" i18n="@@admin.metaError" role="alert">Не удалось опубликовать объявление. Попробуйте ещё раз.</p>
-            }
+          </div>
+        </section>
+      </div>
+
+      <section class="admin__card admin__card_races">
+        <div class="admin__races-head">
+          <h2 class="admin__subtitle" i18n="@@admin.racesTitle">Загруженные забеги</h2>
+
+          @if (racesStatus() === raceStatuses.ready) {
+            <span class="admin__races-total" i18n="@@admin.racesTotal">Всего: {{ races().length }}</span>
           }
         </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card appearance="outlined" class="admin__card">
-      <mat-card-content class="admin__card-content">
-        <h2 class="admin__subtitle" i18n="@@admin.deleteTitle">Удаление забега</h2>
 
         <p class="admin__hint" i18n="@@admin.deleteHint">
-          Если забег загружен по ошибке, удалите его — протокол, результаты и рекорды пересчитаются без него.
+          Если забег загружен по ошибке — удалите его: протокол, результаты и рекорды пересчитаются без него.
         </p>
 
         @switch (racesStatus()) {
@@ -151,45 +134,104 @@
             <p class="admin__error" i18n="@@admin.racesError" role="alert">Не удалось загрузить список забегов.</p>
           }
           @case (raceStatuses.ready) {
-            <ul class="admin__races">
-              @for (race of races(); track race.slug) {
-                <li class="admin__race">
-                  <span class="admin__race-info" i18n="@@admin.raceInfo">
-                    Пробег № {{ race.number }} — {{ race.dateLong }}, участников: {{ race.participantCount }}
-                  </span>
+            <label class="admin__search">
+              <svg
+                aria-hidden="true"
+                class="admin__search-icon"
+                fill="none"
+                height="13"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 14 14"
+                width="13"
+              >
+                <circle cx="6" cy="6" r="4.5" />
 
-                  @if (pendingSlug() === race.slug) {
-                    <span class="admin__race-actions">
-                      <button
-                        class="admin__race-confirm"
-                        i18n="@@admin.raceConfirm"
-                        matButton="filled"
-                        type="button"
-                        [disabled]="deleteState() === publishStates.publishing"
-                        (click)="confirmDelete()"
-                      >
-                        Точно удалить
-                      </button>
+                <path d="M9.5 9.5L13 13" />
+              </svg>
 
-                      <button class="admin__race-cancel" i18n="@@admin.raceCancel" matButton type="button" (click)="cancelDelete()">
-                        Отмена
-                      </button>
+              <input
+                #searchInput
+                aria-label="Поиск по номеру или дате"
+                class="admin__search-input"
+                i18n-aria-label="@@admin.searchLabel"
+                i18n-placeholder="@@admin.searchPlaceholder"
+                id="admin-races-search"
+                placeholder="Номер или дата…"
+                type="search"
+                [value]="query()"
+                (input)="onQueryChange(searchInput.value)"
+              />
+            </label>
+
+            @if (filteredRaces().length === 0) {
+              <p class="admin__hint" i18n="@@admin.noMatches">Ничего не нашлось — измените запрос.</p>
+            } @else {
+              <cdk-virtual-scroll-viewport class="admin__viewport" [itemSize]="rowHeightPx">
+                <ul class="admin__races">
+                  <li *cdkVirtualFor="let race of filteredRaces()" class="admin__race">
+                    <span class="admin__race-number">№ {{ race.number }}</span>
+
+                    <span class="admin__race-main">
+                      <span class="admin__race-date">{{ race.dateLong }}</span>
+
+                      <span class="admin__race-count" i18n="@@admin.raceParticipants">участников: {{ race.participantCount }}</span>
                     </span>
-                  } @else {
-                    <button
-                      class="admin__race-delete"
-                      i18n="@@admin.raceDelete"
-                      matButton="outlined"
-                      type="button"
-                      [disabled]="deleteState() === publishStates.publishing"
-                      (click)="askDelete(race.slug)"
-                    >
-                      Удалить
-                    </button>
-                  }
-                </li>
-              }
-            </ul>
+
+                    @if (pendingSlug() === race.slug) {
+                      <span class="admin__race-actions">
+                        <span class="admin__race-question" i18n="@@admin.raceQuestion">Удалить забег?</span>
+
+                        <button
+                          class="admin__race-confirm"
+                          i18n="@@admin.raceConfirm"
+                          type="button"
+                          [disabled]="deleteState() === publishStates.publishing"
+                          (click)="confirmDelete()"
+                        >
+                          Точно удалить
+                        </button>
+
+                        <button class="admin__race-cancel" i18n="@@admin.raceCancel" type="button" (click)="cancelDelete()">Отмена</button>
+                      </span>
+                    } @else {
+                      <span class="admin__race-actions">
+                        <a class="admin__race-protocol" i18n="@@admin.raceProtocol" [routerLink]="race.raceLink">протокол</a>
+
+                        <button
+                          class="admin__race-delete"
+                          type="button"
+                          [attr.aria-label]="race.deleteLabel"
+                          [disabled]="deleteState() === publishStates.publishing"
+                          (click)="askDelete(race.slug)"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="admin__race-delete-icon"
+                            fill="none"
+                            height="15"
+                            stroke="currentColor"
+                            stroke-width="1.4"
+                            viewBox="0 0 15 16"
+                            width="14"
+                          >
+                            <path d="M1.5 4h12" />
+
+                            <path d="M5 4V2.5h5V4" />
+
+                            <path d="M3 4l1 10.5h7L12 4" />
+                          </svg>
+                        </button>
+                      </span>
+                    }
+                  </li>
+                </ul>
+              </cdk-virtual-scroll-viewport>
+            }
+
+            <p class="admin__races-note" i18n="@@admin.racesNote">
+              Удаление в один клик не выполняется — сначала подтверждение. После удаления пересборка сайта займёт ~2–3 минуты.
+            </p>
           }
         }
 
@@ -203,7 +245,7 @@
               </div>
             }
             @case (publishStates.success) {
-              <p class="admin__saved" i18n="@@admin.deleteSuccess">Забег удалён.</p>
+              <p class="admin__saved" i18n="@@admin.deleteSuccess">Забег удалён — сайт пересоберётся через ~2–3 минуты.</p>
             }
             @case (publishStates.authError) {
               <p class="admin__error" i18n="@@admin.deleteAuthError" role="alert">
@@ -215,7 +257,54 @@
             }
           }
         </div>
-      </mat-card-content>
-    </mat-card>
+      </section>
+    </div>
+  } @else {
+    <section class="admin__card admin__card_auth">
+      <h1 class="admin__title" i18n="@@admin.title">Вход для организатора</h1>
+
+      <p class="admin__hint" i18n="@@admin.hint">Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий sundayrun.</p>
+
+      <a class="admin__help" i18n="@@admin.tokenHelp" rel="noopener" target="_blank" [href]="tokenHelpUrl">
+        Как создать токен — пошаговая инструкция
+      </a>
+
+      <label class="admin__label">
+        <span class="admin__label-text" i18n="@@admin.tokenLabel">GitHub-токен</span>
+
+        <input #tokenInput autocomplete="off" class="admin__input" id="admin-token" type="password" />
+      </label>
+
+      <button
+        class="admin__save"
+        i18n="@@admin.save"
+        type="button"
+        [disabled]="status() === statuses.checking"
+        (click)="save(tokenInput.value)"
+      >
+        Сохранить
+      </button>
+
+      <div aria-live="polite" class="admin__feedback">
+        @switch (status()) {
+          @case (statuses.empty) {
+            <p class="admin__error" i18n="@@admin.emptyToken" role="alert">Введите токен.</p>
+          }
+          @case (statuses.checking) {
+            <div class="admin__progress">
+              <mat-progress-spinner mode="indeterminate" [diameter]="24" />
+
+              <p class="admin__status" i18n="@@admin.checking">Проверяем токен…</p>
+            </div>
+          }
+          @case (statuses.unauthorized) {
+            <p class="admin__error" i18n="@@admin.unauthorized" role="alert">Токен не подходит: нет доступа к репозиторию sundayrun.</p>
+          }
+          @case (statuses.error) {
+            <p class="admin__error" i18n="@@admin.error" role="alert">Не удалось проверить токен. Попробуйте ещё раз.</p>
+          }
+        }
+      </div>
+    </section>
   }
 </main>

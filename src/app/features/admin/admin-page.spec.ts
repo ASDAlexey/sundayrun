@@ -2,9 +2,10 @@ import { PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
+import { FIRST_ARCHIVE_EVENT_NUMBER } from '../../core/github/archive-index.constant';
 import { EMPTY_INDEX, EXISTING_INDEX, NEWER_ENTRY } from '../../core/github/archive-index.mock';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
-import { BUILT_SITE_META, EXISTING_SITE_META, RAW_ANNOUNCEMENT_INPUT } from '../../core/github/site-meta.mock';
+import { BUILT_SITE_META, EXISTING_SITE_META, RAW_ANNOUNCEMENT_INPUT, RAW_START_TIME_INPUT } from '../../core/github/site-meta.mock';
 import { TokenCheck } from '../../core/github/token-check.enum';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ADMIN_TOKEN_MOCK } from '../../github/admin-token.service.mock';
@@ -13,12 +14,23 @@ import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock';
+import { ProtocolStateService } from '../../state/protocol-state.service';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { AdminPage } from './admin-page';
-import { UPLOAD_PAGE_LINK } from './admin-page.constant';
+import { TIME_PLACEHOLDER } from './admin-page.constant';
 import { RaceListStatus, TokenSaveStatus } from './admin-page.enum';
-import { ADMIN_RACES_LOAD_ERROR_MESSAGE, EXPECTED_ADMIN_RACES, PADDED_TOKEN_INPUT, WHITESPACE_TOKEN_INPUT } from './admin-page.mock';
+import {
+  ADMIN_RACES_LOAD_ERROR_MESSAGE,
+  EXPECTED_ADMIN_RACES,
+  EXPECTED_NEXT_NUMBER,
+  MONTH_QUERY,
+  NO_MATCH_QUERY,
+  NUMBER_QUERY,
+  PADDED_TOKEN_INPUT,
+  WHITESPACE_TOKEN_INPUT,
+  YEAR_QUERY,
+} from './admin-page.mock';
 
 describe('AdminPage', () => {
   const isAdmin = signal(false);
@@ -53,6 +65,7 @@ describe('AdminPage', () => {
         { provide: SiteMetaService, useValue: { state: metaState, load: loadMeta, save: saveMeta } },
         { provide: ArchiveService, useValue: { loadIndex } },
         { provide: EventDeleteService, useValue: { state: deleteState, delete: deleteRace } },
+        { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
     });
@@ -92,7 +105,7 @@ describe('AdminPage', () => {
     expect(validate).toHaveBeenCalledWith(ADMIN_TOKEN_MOCK);
     expect(save).toHaveBeenCalledWith(ADMIN_TOKEN_MOCK);
     expect(fixture.componentInstance.status()).toBe(TokenSaveStatus.valid);
-    expect(loadMeta, 'the page stays open, so the editor prefill loads right after saving').toHaveBeenCalled();
+    expect(loadMeta, 'the panel opens right away, so the editor prefill loads after saving').toHaveBeenCalled();
   });
 
   it('shows empty, unauthorized and generic error messages without saving the token', async () => {
@@ -130,15 +143,20 @@ describe('AdminPage', () => {
     expect(loadMeta).not.toHaveBeenCalled();
   });
 
-  it('shows the saved state with the upload entry and a clear button in admin mode', async () => {
+  it('renders the organiser panel with the dropzone, next number, races total and a clear button', async () => {
     isAdmin.set(true);
     fixture = await createPage();
 
     const element = fixture.nativeElement;
 
     expect(element.querySelector('.admin__saved')).not.toBeNull();
-    expect(element.querySelector('.admin__upload').getAttribute('href')).toBe(UPLOAD_PAGE_LINK);
-    expect(element.querySelector('.admin__input:not(.admin__input_time)')).toBeNull();
+    expect(element.querySelector('app-protocol-dropzone .dropzone__zone')).not.toBeNull();
+    expect(element.querySelector('.admin__input:not(.admin__input_time)'), 'no token input in admin mode').toBeNull();
+    expect(fixture.componentInstance.nextNumber()).toBe(EXPECTED_NEXT_NUMBER);
+    expect(element.querySelector('.admin__upload-number').textContent).toContain(String(EXPECTED_NEXT_NUMBER));
+    expect(element.querySelector('.admin__races-total').textContent).toContain(String(EXPECTED_ADMIN_RACES.length));
+    expect(element.querySelector('.admin__viewport'), 'the races list virtualizes its rows').not.toBeNull();
+    expect(element.querySelector('.admin__races-note')).not.toBeNull();
 
     element.querySelector('.admin__clear').click();
 
@@ -146,35 +164,39 @@ describe('AdminPage', () => {
     expect(fixture.componentInstance.status()).toBe(TokenSaveStatus.idle);
   });
 
-  it('prefills the announcement editor from the published meta and publishes the trimmed form input', async () => {
+  it('prefills the editor drafts, previews them live and publishes the trimmed form input', async () => {
     isAdmin.set(true);
     fixture = await createPage();
 
+    const page = fixture.componentInstance;
     const element = fixture.nativeElement;
-    const timeInput = element.querySelector('.admin__input_time');
-    const textarea = element.querySelector('.admin__textarea');
 
     expect(loadMeta).toHaveBeenCalled();
-    expect(timeInput.value).toBe(EXISTING_SITE_META.startTime);
-    expect(textarea.value).toBe(EXISTING_SITE_META.announcement);
+    expect(element.querySelector('.admin__input_time').value).toBe(EXISTING_SITE_META.startTime);
+    expect(element.querySelector('.admin__textarea').value).toBe(EXISTING_SITE_META.announcement);
+    expect(element.querySelector('.admin__meta-preview-line').textContent).toContain(EXISTING_SITE_META.startTime);
+    expect(element.querySelector('.admin__meta-preview-text').textContent).toContain(EXISTING_SITE_META.announcement);
 
-    // A time input rejects padded values at the DOM level, so only the textarea exercises trimming.
-    timeInput.value = BUILT_SITE_META.startTime;
-    textarea.value = RAW_ANNOUNCEMENT_INPUT;
+    page.onStartTimeInput(RAW_START_TIME_INPUT);
+    page.onAnnouncementInput(RAW_ANNOUNCEMENT_INPUT);
+
+    expect(page.previewAnnouncement(), 'the preview shows the trimmed draft').toBe(BUILT_SITE_META.announcement);
+
     saveMeta.mockImplementation(() => {
       metaState.set(PublishState.success);
 
       return Promise.resolve();
     });
-    element.querySelectorAll('.admin__save')[0].click();
+    element.querySelector('.admin__publish').click();
     await settle();
 
     expect(saveMeta).toHaveBeenCalledWith(BUILT_SITE_META);
-    expect(fixture.componentInstance.meta(), 'the prefill follows the published value').toEqual(BUILT_SITE_META);
+    expect(page.meta(), 'the prefill follows the published value').toEqual(BUILT_SITE_META);
+    expect(page.draftStartTime(), 'the drafts re-sync to the published file').toBe(BUILT_SITE_META.startTime);
 
     fixture.detectChanges();
 
-    expect(element.querySelector('.admin__actions .admin__clear'), 'the token card is still there').not.toBeNull();
+    expect(element.querySelector('.admin__feedback_meta .admin__saved')).not.toBeNull();
   });
 
   it('keeps the editor usable on a CDN failure and disables publishing until the prefill settles', async () => {
@@ -182,14 +204,17 @@ describe('AdminPage', () => {
     loadMeta.mockRejectedValueOnce(new Error(SITE_META_CDN_ERROR_MESSAGE));
     fixture = await createPage();
 
-    expect(fixture.componentInstance.meta(), 'a CDN hiccup falls back to the empty meta').toEqual(EMPTY_SITE_META);
+    const page = fixture.componentInstance;
+
+    expect(page.meta(), 'a CDN hiccup falls back to the empty meta').toEqual(EMPTY_SITE_META);
+    expect(page.previewTime(), 'no start time yet — the preview shows a placeholder').toBe(TIME_PLACEHOLDER);
 
     metaState.set(PublishState.publishing);
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
 
-    expect(element.querySelectorAll('.admin__save')[0].disabled, 'no double publish while one is in flight').toBe(true);
+    expect(element.querySelector('.admin__publish').disabled, 'no double publish while one is in flight').toBe(true);
     expect(element.querySelector('.admin__status')).not.toBeNull();
 
     metaState.set(PublishState.error);
@@ -197,14 +222,14 @@ describe('AdminPage', () => {
 
     expect(element.querySelector('.admin__error').getAttribute('role')).toBe('alert');
 
-    element.querySelectorAll('.admin__save')[0].click();
+    element.querySelector('.admin__publish').click();
     await settle();
 
     expect(saveMeta).toHaveBeenCalled();
-    expect(fixture.componentInstance.meta(), 'a failed publish never becomes the prefill').toEqual(EMPTY_SITE_META);
+    expect(page.meta(), 'a failed publish never becomes the prefill').toEqual(EMPTY_SITE_META);
   });
 
-  it('loads the race list in admin mode and deletes a race only after an explicit confirmation', async () => {
+  it('loads the race list with links and search fields and deletes a race only after an explicit confirmation', async () => {
     isAdmin.set(true);
     deleteRace.mockImplementation(() => {
       deleteState.set(PublishState.success);
@@ -214,17 +239,15 @@ describe('AdminPage', () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
-    const element = fixture.nativeElement;
 
     expect(page.races()).toEqual(EXPECTED_ADMIN_RACES);
-    expect(element.querySelectorAll('.admin__race')).toHaveLength(EXPECTED_ADMIN_RACES.length);
+    expect(page.filteredRaces(), 'a blank query keeps the full list').toEqual(EXPECTED_ADMIN_RACES);
 
-    element.querySelector('.admin__race-delete').click();
+    page.askDelete(NEWER_ENTRY.slug);
 
     expect(page.pendingSlug()).toBe(NEWER_ENTRY.slug);
 
-    fixture.detectChanges();
-    element.querySelector('.admin__race-cancel').click();
+    page.cancelDelete();
 
     expect(page.pendingSlug(), 'cancel backs out without deleting').toBeNull();
     expect(deleteRace).not.toHaveBeenCalled();
@@ -233,11 +256,8 @@ describe('AdminPage', () => {
 
     expect(deleteRace, 'no pending race — nothing to confirm').not.toHaveBeenCalled();
 
-    fixture.detectChanges();
-    element.querySelector('.admin__race-delete').click();
-    fixture.detectChanges();
-    element.querySelector('.admin__race-confirm').click();
-    await settle();
+    page.askDelete(NEWER_ENTRY.slug);
+    await page.confirmDelete();
 
     expect(deleteRace).toHaveBeenCalledWith(NEWER_ENTRY.slug);
     expect(page.pendingSlug()).toBeNull();
@@ -245,10 +265,37 @@ describe('AdminPage', () => {
 
     fixture.detectChanges();
 
-    expect(element.querySelector('.admin__feedback_delete .admin__saved')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.admin__feedback_delete .admin__saved')).not.toBeNull();
   });
 
-  it('keeps the race in the list when the deletion fails and disables the buttons while one is in flight', async () => {
+  it('filters the list by number, month and year and reports when nothing matches', async () => {
+    isAdmin.set(true);
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    page.onQueryChange(NUMBER_QUERY);
+
+    expect(page.filteredRaces()).toEqual([EXPECTED_ADMIN_RACES[0]]);
+
+    page.onQueryChange(MONTH_QUERY);
+
+    expect(page.filteredRaces(), 'the long russian date is searchable').toEqual([EXPECTED_ADMIN_RACES[1]]);
+
+    page.onQueryChange(YEAR_QUERY);
+
+    expect(page.filteredRaces(), 'the ISO date is searchable and the query is trimmed').toEqual(EXPECTED_ADMIN_RACES);
+
+    page.onQueryChange(NO_MATCH_QUERY);
+
+    expect(page.filteredRaces()).toEqual([]);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.admin__viewport'), 'no rows to virtualize').toBeNull();
+  });
+
+  it('keeps the race in the list when the deletion fails', async () => {
     isAdmin.set(true);
     deleteRace.mockImplementation(() => {
       deleteState.set(PublishState.error);
@@ -258,31 +305,24 @@ describe('AdminPage', () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
-    const element = fixture.nativeElement;
 
-    element.querySelector('.admin__race-delete').click();
-    fixture.detectChanges();
-    element.querySelector('.admin__race-confirm').click();
-    await settle();
+    page.askDelete(NEWER_ENTRY.slug);
+    await page.confirmDelete();
 
     expect(page.races(), 'a failed deletion removes nothing').toEqual(EXPECTED_ADMIN_RACES);
 
     fixture.detectChanges();
 
-    expect(element.querySelector('.admin__feedback_delete .admin__error').getAttribute('role')).toBe('alert');
-
-    deleteState.set(PublishState.publishing);
-    fixture.detectChanges();
-
-    expect(element.querySelector('.admin__race-delete').disabled, 'no second deletion while one is in flight').toBe(true);
+    expect(fixture.nativeElement.querySelector('.admin__feedback_delete .admin__error').getAttribute('role')).toBe('alert');
   });
 
-  it('shows the empty race list state and the load error', async () => {
+  it('shows the empty race list state with the first number and the load error', async () => {
     isAdmin.set(true);
     loadIndex.mockResolvedValueOnce(EMPTY_INDEX);
     fixture = await createPage();
 
     expect(fixture.componentInstance.racesStatus()).toBe(RaceListStatus.empty);
+    expect(fixture.componentInstance.nextNumber(), 'an empty archive suggests the first number').toBe(FIRST_ARCHIVE_EVENT_NUMBER);
 
     fixture.destroy();
     loadIndex.mockRejectedValueOnce(new Error(ADMIN_RACES_LOAD_ERROR_MESSAGE));

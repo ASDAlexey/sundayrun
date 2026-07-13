@@ -1,9 +1,6 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject, signal } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 
@@ -18,18 +15,27 @@ import { ArchiveService } from '../../github/archive.service';
 import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { SiteMetaService } from '../../github/site-meta.service';
-import { EMPTY_TOKEN, TOKEN_HELP_URL, UPLOAD_PAGE_LINK } from './admin-page.constant';
+import { ProtocolDropzone } from '../upload/protocol-dropzone/protocol-dropzone';
+import {
+  ADMIN_RACE_ROW_HEIGHT_PX,
+  EMPTY_QUERY,
+  EMPTY_TOKEN,
+  NEXT_NUMBER_SEED,
+  RACE_PAGE_PREFIX,
+  TIME_PLACEHOLDER,
+  TOKEN_HELP_URL,
+} from './admin-page.constant';
 import { RaceListStatus, RaceListStatusType, TokenSaveStatus, TokenSaveStatusType } from './admin-page.enum';
 import { AdminRaceItem } from './admin-page.interface';
 
 /**
  * The /admin page: the organiser pastes a fine-grained GitHub PAT; a valid one unlocks the
- * publish wizard, the home-page announcement editor (start time + message) and the race
- * deletion list — the undo for a mistaken upload.
+ * organiser panel — the protocol intake zone, the home-page announcement editor with a live
+ * preview and the searchable list of published races, the undo for a mistaken upload.
  */
 @Component({
   selector: 'app-admin-page',
-  imports: [MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, RouterLink],
+  imports: [MatProgressSpinnerModule, ProtocolDropzone, RouterLink, ScrollingModule],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,11 +48,25 @@ export class AdminPage {
 
   readonly status = signal<TokenSaveStatusType>(TokenSaveStatus.idle);
   readonly isAdmin = this.#adminToken.isAdmin;
-  /** null until the published meta arrives; the save button stays disabled to avoid blind overwrites. */
+  /** null until the published meta arrives; the publish button stays disabled to avoid blind overwrites. */
   readonly meta = signal<SiteMetaFile | null>(null);
   readonly metaState = this.#siteMeta.state;
+  /** The editor drafts feed the «так увидят на главной» preview as the organiser types. */
+  readonly draftStartTime = signal(EMPTY_TOKEN);
+  readonly draftAnnouncement = signal(EMPTY_TOKEN);
+  readonly previewTime = computed(() => (this.draftStartTime() === EMPTY_TOKEN ? TIME_PLACEHOLDER : this.draftStartTime()));
+  readonly previewAnnouncement = computed(() => this.draftAnnouncement().trim());
   readonly races = signal<AdminRaceItem[]>([]);
   readonly racesStatus = signal<RaceListStatusType>(RaceListStatus.loading);
+  readonly query = signal(EMPTY_QUERY);
+  readonly filteredRaces = computed(() => {
+    const query = this.query().trim().toLowerCase();
+
+    return query === EMPTY_QUERY ? this.races() : this.races().filter((race) => race.searchText.includes(query));
+  });
+
+  /** The number the publish wizard will assign to a new upload — one past the archive maximum. */
+  readonly nextNumber = computed(() => this.races().reduce((max, race) => Math.max(max, race.number), NEXT_NUMBER_SEED) + 1);
   /** The race awaiting the second, confirming click; deletion never fires from a single click. */
   readonly pendingSlug = signal<string | null>(null);
   readonly deleteState = this.#eventDelete.state;
@@ -55,7 +75,7 @@ export class AdminPage {
   protected readonly publishStates = PublishState;
   protected readonly raceStatuses = RaceListStatus;
   protected readonly tokenHelpUrl = TOKEN_HELP_URL;
-  protected readonly uploadLink = UPLOAD_PAGE_LINK;
+  protected readonly rowHeightPx = ADMIN_RACE_ROW_HEIGHT_PX;
 
   constructor() {
     // Prerender ships the page without data; the editor prefill and the race list arrive after hydration.
@@ -81,7 +101,7 @@ export class AdminPage {
     if (check === TokenCheck.valid) {
       this.status.set(TokenSaveStatus.valid);
       this.#adminToken.save(token);
-      // The page stays open: the saved card offers «Загрузить забег», the editor needs its prefill.
+      // The page swaps to the panel right away, so the editor prefill and the race list load now.
       await Promise.all([this.#loadMeta(), this.#loadRaces()]);
 
       return;
@@ -95,13 +115,26 @@ export class AdminPage {
     this.status.set(TokenSaveStatus.idle);
   }
 
-  async saveMeta(startTime: string, announcement: string): Promise<void> {
-    const meta = buildSiteMeta(startTime, announcement);
+  onQueryChange(query: string): void {
+    this.query.set(query);
+  }
+
+  onStartTimeInput(startTime: string): void {
+    this.draftStartTime.set(startTime);
+  }
+
+  onAnnouncementInput(announcement: string): void {
+    this.draftAnnouncement.set(announcement);
+  }
+
+  async saveMeta(): Promise<void> {
+    const meta = buildSiteMeta(this.draftStartTime(), this.draftAnnouncement());
 
     await this.#siteMeta.save(meta);
 
     if (this.metaState() === PublishState.success) {
       this.meta.set(meta);
+      this.#applyDrafts(meta);
     }
   }
 
@@ -130,11 +163,20 @@ export class AdminPage {
 
   async #loadMeta(): Promise<void> {
     try {
-      this.meta.set(await this.#siteMeta.load());
+      const meta = await this.#siteMeta.load();
+
+      this.meta.set(meta);
+      this.#applyDrafts(meta);
     } catch {
       // The editor still opens on a CDN hiccup; saving publishes a fresh file anyway.
       this.meta.set({ ...EMPTY_SITE_META });
+      this.#applyDrafts(EMPTY_SITE_META);
     }
+  }
+
+  #applyDrafts(meta: SiteMetaFile): void {
+    this.draftStartTime.set(meta.startTime);
+    this.draftAnnouncement.set(meta.announcement);
   }
 
   async #loadRaces(): Promise<void> {
@@ -156,10 +198,16 @@ export class AdminPage {
 }
 
 function toAdminRaceItem(entry: ArchiveIndexEntry): AdminRaceItem {
+  const dateLong = formatRussianDateLong(entry.dateIso);
+
   return {
     slug: entry.slug,
     number: entry.number,
-    dateLong: formatRussianDateLong(entry.dateIso),
+    dateLong,
     participantCount: entry.participantCount,
+    raceLink: `${RACE_PAGE_PREFIX}${entry.slug}`,
+    searchText: `№ ${entry.number} ${dateLong} ${entry.dateIso}`.toLowerCase(),
+    // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
+    deleteLabel: $localize`:@@admin.raceDeleteLabel:Удалить забег № ${entry.number}:number:`,
   };
 }
