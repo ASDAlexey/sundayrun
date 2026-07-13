@@ -83,6 +83,7 @@ describe('SelfPicker', () => {
 
     expect(element.querySelector('.self-picker__toggle')).not.toBeNull();
     expect(element.querySelector('.self-picker__me')).toBeNull();
+    expect(fixture.componentInstance.selfLink(), 'no pick, no profile link').toBeNull();
 
     selfSignal.set(PICKED_SELF);
     fixture.detectChanges();
