@@ -1,0 +1,46 @@
+<dialog #dialog class="badge-catalog" (click)="onDialogClick($event)">
+  <div class="badge-catalog__content">
+    <header class="badge-catalog__head">
+      <h2 class="badge-catalog__title" i18n="@@badgeCatalog.title">Все награды</h2>
+
+      <button aria-label="Закрыть" class="badge-catalog__close" i18n-aria-label="@@badgeCatalog.close" type="button" (click)="close()">
+        ×
+      </button>
+    </header>
+
+    <ul class="badge-catalog__list">
+      @for (row of rows(); track row.badge) {
+        <li class="badge-catalog__row" [class.badge-catalog__row_locked]="!row.isEarned">
+          <app-year-badge
+            class="badge-catalog__chip"
+            [badge]="row.badge"
+            [gender]="gender()"
+            [rarityPercent]="rarity()[row.badge] ?? null"
+          />
+
+          <div class="badge-catalog__info">
+            <p class="badge-catalog__description">{{ row.description }}</p>
+
+            @if (row.earnedYearsText; as earnedText) {
+              <p class="badge-catalog__status badge-catalog__status_earned">{{ earnedText }}</p>
+            }
+
+            @if (row.progressText; as progressText) {
+              <div class="badge-catalog__progress">
+                <p class="badge-catalog__status">{{ progressText }}</p>
+
+                <span class="badge-catalog__bar">
+                  <span class="badge-catalog__bar-fill" [style.width.%]="row.progressPercent"></span>
+                </span>
+              </div>
+            }
+
+            @if (row.earnedYearsText === null && row.progressText === null) {
+              <p class="badge-catalog__status" i18n="@@badgeCatalog.notEarned">Ещё не получена</p>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</dialog>

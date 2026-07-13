@@ -1,0 +1,144 @@
+@use 'styles/typography' as t;
+
+.badge-catalog {
+  width: min(560px, calc(100vw - 32px));
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--black) 65%, transparent);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 20px;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    margin: 0;
+    color: var(--text);
+  }
+
+  &__close {
+    @include t.text('title', 'medium');
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      border-color var(--transition-time) var(--ease),
+      color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 12px;
+    list-style: none;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 14px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
+
+    &_locked .badge-catalog__chip {
+      filter: grayscale(1);
+      opacity: 0.45;
+    }
+  }
+
+  &__chip {
+    flex: none;
+  }
+
+  &__info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__description {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__status {
+    @include t.text('label', 'small');
+
+    margin: 0;
+    color: var(--text-muted);
+
+    &_earned {
+      color: var(--green);
+    }
+  }
+
+  &__progress {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__bar {
+    display: block;
+    max-width: 220px;
+    height: 4px;
+    overflow: hidden;
+    border-radius: var(--radius-xs);
+    background: var(--border-soft);
+  }
+
+  &__bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--radius-xs);
+    background: var(--accent);
+  }
+}
+
+@media (width <= 520px) {
+  .badge-catalog {
+    &__row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
