@@ -9,7 +9,11 @@ import { weatherIconOf } from './weather-icon';
  * missing reading, the line is empty and the caller simply renders no weather at all.
  */
 export function weatherLineText(weather: EventWeather | null): string {
-  if (weather === null || weather.temperatureC === null) {
+  if (weather === null) {
+    return '';
+  }
+
+  if (weather.temperatureC === null) {
     return '';
   }
 

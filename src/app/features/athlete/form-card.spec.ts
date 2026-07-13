@@ -46,7 +46,13 @@ describe('FormCard', () => {
     );
     expect(element.querySelector('.form-card__tooltip'), 'the tooltip stays hidden until a dot is hovered').toBeNull();
 
-    card.hoveredPoint.set(card.view()!.points[3]);
+    const view = card.view();
+
+    if (view === null) {
+      throw new Error('the form view is present once there are enough finishes');
+    }
+
+    card.hoveredPoint.set(view.points[3]);
     fixture.detectChanges();
 
     const tooltip = element.querySelector('.form-card__tooltip');

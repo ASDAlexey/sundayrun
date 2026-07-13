@@ -5,7 +5,7 @@ export interface FormChartDot {
 }
 
 /** Where the hover tooltip anchors horizontally, so an edge dot keeps its box in view. */
-export type FormTooltipAlign = 'start' | 'center' | 'end';
+export type FormTooltipAlign = 'center' | 'end' | 'start';
 
 /** One hoverable window on the form sparkline: its dot, marker role and styled hover-tooltip data. */
 export interface FormChartPoint extends FormChartDot {

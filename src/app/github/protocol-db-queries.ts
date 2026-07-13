@@ -29,6 +29,7 @@ import { Gender, GenderType } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
 import { athletes, eventWeather, events, participations, results, runs } from '../core/sqlite/protocol-db.schema';
 import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { ArchiveEntryRow } from './archive-entry-row.type';
 import { asGender, asNumber, asString } from './protocol-db-row';
 
 /**
@@ -559,29 +560,7 @@ function toLeaderboardRecord(
 }
 
 // File paths are not stored in the db — they follow from the date, see `eventFilePaths`.
-function toArchiveEntry(row: {
-  slug: string;
-  dateIso: string;
-  number: number;
-  legacyNumber: string | null;
-  city: string;
-  park: string;
-  participantCount: number;
-  finisherCount: number | null;
-  medianTimeMs: number | null;
-  medianMaleMs: number | null;
-  medianFemaleMs: number | null;
-  bestMaleMs: number | null;
-  bestFemaleMs: number | null;
-  newcomerCount: number | null;
-  personalRecordCount: number | null;
-  weatherSlug: string | null;
-  temperatureC: number | null;
-  apparentC: number | null;
-  precipitationMm: number | null;
-  windKmh: number | null;
-  weatherCode: number | null;
-}): ArchiveIndexEntry {
+function toArchiveEntry(row: ArchiveEntryRow): ArchiveIndexEntry {
   return {
     slug: row.slug,
     dateIso: row.dateIso,
