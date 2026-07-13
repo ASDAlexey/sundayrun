@@ -27,6 +27,11 @@ export const EXPECTED_RECORDLESS_HERO: RaceCardHero = {
   ],
 };
 
+/** NEWER_ENTRY under the organisers' old numbering — the card number grows the «new vs old» tooltip. */
+export const LEGACY_NUMBERED_ENTRY: ArchiveIndexEntry = { ...NEWER_ENTRY, legacyNumber: '2.72' };
+
+export const EXPECTED_LEGACY_NUMBER_TOOLTIP = 'Новая нумерация — № 13, старая — 2.72';
+
 /** NOTELESS_ENTRY a week after NEWER_ENTRY, newest first: two finishers against the window's 18 — a decline. */
 export const DECLINE_ENTRIES: ArchiveIndexEntry[] = [{ ...NOTELESS_ENTRY, slug: '2026-07-12', dateIso: '2026-07-12' }, NEWER_ENTRY];
 

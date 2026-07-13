@@ -14,7 +14,7 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     slug: '2026-07-05',
     protocolLink: [RACE_PAGE_BASE_LINK, '2026-07-05'],
     number: '13',
-    legacyNumber: null,
+    numberTooltip: null,
     dateText: 'вс · 5 июл 2026',
     // The latest race of the still-open month is not the final yet.
     isMonthFinal: false,
@@ -44,7 +44,7 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
     slug: '2026-06-21',
     protocolLink: [RACE_PAGE_BASE_LINK, '2026-06-21'],
     number: '11',
-    legacyNumber: null,
+    numberTooltip: null,
     dateText: 'вс · 21 июн 2026',
     // The last June race against the frozen July «today» — the month's final.
     isMonthFinal: true,

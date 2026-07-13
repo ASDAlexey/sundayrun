@@ -50,12 +50,6 @@
     color: var(--text);
   }
 
-  &__legacy {
-    @include t.mono-meta;
-
-    color: var(--text-muted);
-  }
-
   &__date {
     @include t.mono-meta;
 

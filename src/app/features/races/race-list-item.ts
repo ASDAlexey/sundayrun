@@ -34,7 +34,10 @@ export function toRaceListItem(entry: ArchiveIndexEntry, isMonthFinal: boolean, 
     slug: entry.slug,
     protocolLink: [RACE_PAGE_BASE_LINK, entry.slug],
     number: String(entry.number),
-    legacyNumber: entry.legacyNumber,
+    numberTooltip:
+      entry.legacyNumber === null
+        ? null
+        : $localize`:@@races.numberTooltip:Новая нумерация — № ${entry.number}:number:, старая — ${entry.legacyNumber}:legacyNumber:`,
     dateText: formatRussianDateChip(entry.dateIso),
     isMonthFinal,
     hero: toCardHero(entry, trend),

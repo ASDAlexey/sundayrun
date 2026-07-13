@@ -1,11 +1,7 @@
 <mat-card appearance="outlined" class="race-card" [class.race-card_final]="race().isMonthFinal">
   <header class="race-card__head">
     <h3 class="race-card__title">
-      <span i18n="@@races.raceTitle">№ {{ race().number }}</span>
-
-      @if (race().legacyNumber; as legacy) {
-        <span class="race-card__legacy">· {{ legacy }}</span>
-      }
+      <span i18n="@@races.raceTitle" [matTooltip]="race().numberTooltip ?? ''">№ {{ race().number }}</span>
     </h3>
 
     @if (race().isMonthFinal) {

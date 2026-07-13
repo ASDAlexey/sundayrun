@@ -49,10 +49,10 @@ export interface RaceCardGenderBlock {
 export interface RaceListItem {
   slug: string;
   protocolLink: string[];
-  /** The positional number for the card title; the organisers' legacy number renders beside it. */
+  /** The positional number for the card title. */
   number: string;
-  /** The number the organisers used before the positional numbering ('2.72'); null for new events. */
-  legacyNumber: string | null;
+  /** «New vs old numbering» tooltip on the number; null when the race predates no legacy number. */
+  numberTooltip: string | null;
   /** Preformatted date chip: 'вс · 5 июл 2026'. */
   dateText: string;
   /** True for the month-final («итоговый») race — the card gets the accent badge and outline. */

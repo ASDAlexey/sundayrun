@@ -5,8 +5,10 @@ import {
   EDGE_CASES_TODAY_ISO,
   EXPECTED_DECLINE_TREND,
   EXPECTED_FEMALE_ONLY_GENDERS,
+  EXPECTED_LEGACY_NUMBER_TOOLTIP,
   EXPECTED_NOTELESS_HERO,
   EXPECTED_RECORDLESS_HERO,
+  LEGACY_NUMBERED_ENTRY,
   NOTELESS_ENTRY,
 } from './race-list-item.mock';
 
@@ -28,5 +30,9 @@ describe('race-list-item', () => {
     const [femaleOnly] = toRaceListItems([EXPECTED_NEW_ENTRY], EDGE_CASES_TODAY_ISO);
 
     expect(femaleOnly.genders, 'a gender with no qualifying finisher drops its column entirely').toEqual(EXPECTED_FEMALE_ONLY_GENDERS);
+
+    const [legacyNumbered] = toRaceListItems([LEGACY_NUMBERED_ENTRY], EDGE_CASES_TODAY_ISO);
+
+    expect(legacyNumbered.numberTooltip, 'a legacy number grows the «new vs old» tooltip').toBe(EXPECTED_LEGACY_NUMBER_TOOLTIP);
   });
 });
