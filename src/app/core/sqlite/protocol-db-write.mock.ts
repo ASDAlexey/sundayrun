@@ -57,6 +57,7 @@ function eventInsert(entry: ArchiveIndexEntry, clubName: string, chairman: strin
   return (
     `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${legacy(entry.legacyNumber)}, ${q(entry.city)}, ${q(entry.park)}, ` +
     `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
+    `${num(entry.medianMaleMs)}, ${num(entry.medianFemaleMs)}, ` +
     `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)}, ${num(entry.newcomerCount)}, ${num(entry.personalRecordCount)})`
   );
 }
@@ -166,6 +167,8 @@ export const PRE_BASELINE_ENTRY: ArchiveIndexEntry = {
   participantCount: 1,
   finisherCount: 1,
   medianTimeMs: 1560000,
+  medianMaleMs: 1560000,
+  medianFemaleMs: null,
   bestMaleMs: 1560000,
   bestFemaleMs: null,
   newcomerCount: null,

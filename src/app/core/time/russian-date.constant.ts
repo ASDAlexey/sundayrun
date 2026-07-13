@@ -14,6 +14,12 @@ export const RUSSIAN_MONTHS_GENITIVE: readonly string[] = [
   'декабря',
 ];
 
+/** Three-letter month abbreviations for the race-card date chip, indexed by `month - 1`. */
+export const RUSSIAN_MONTHS_SHORT: readonly string[] = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+
+/** Two-letter weekday abbreviations indexed by `Date#getUTCDay()` (Sunday first). */
+export const RUSSIAN_WEEKDAYS_SHORT: readonly string[] = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+
 /** Strict 'YYYY-MM-DD' with capture groups for year, month and day. */
 export const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 

@@ -14,6 +14,8 @@ export const events = sqliteTable('events', {
   participantCount: integer('participant_count').notNull(),
   finisherCount: integer('finisher_count'),
   medianTimeMs: integer('median_time_ms'),
+  medianMaleMs: integer('median_male_ms'),
+  medianFemaleMs: integer('median_female_ms'),
   bestMaleMs: integer('best_male_ms'),
   bestFemaleMs: integer('best_female_ms'),
   newcomerCount: integer('newcomer_count'),

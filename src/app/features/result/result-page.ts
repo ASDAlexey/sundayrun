@@ -7,6 +7,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 
 import { eventFinishCounts } from '../../core/history/finish-counts';
+import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { composeRaceAnnouncement } from '../../core/share/race-announcement';
 import { LINE_SEPARATOR } from '../../core/share/race-announcement.constant';
 import { formatRussianDateLong } from '../../core/time/russian-date';
@@ -213,7 +214,12 @@ export class ResultPage implements OnDestroy {
     this.description.set(composeRaceAnnouncement(event, rows));
 
     try {
-      const blob = await this.#pdf.generateProtocolBlob(event, rows, await this.#finishCounts(event.dateIso));
+      const blob = await this.#pdf.generateProtocolBlob(
+        event,
+        rows,
+        await this.#finishCounts(event.dateIso),
+        await this.#previousBests(event.dateIso),
+      );
 
       this.#blob.set(blob);
       this.objectUrl.set(URL.createObjectURL(blob));
@@ -230,6 +236,15 @@ export class ResultPage implements OnDestroy {
   async #finishCounts(dateIso: string): Promise<Record<string, number>> {
     try {
       return eventFinishCounts(this.#store.protocolRows(), await this.#results.loadFinishCountsBefore(dateIso));
+    } catch {
+      return {};
+    }
+  }
+
+  /** Dates the «ЛР (было X)» notes; an undated note beats a missing PDF, so a failed db read drops the map. */
+  async #previousBests(dateIso: string): Promise<Record<string, PreviousBest>> {
+    try {
+      return await this.#results.loadPreviousBestsBefore(dateIso);
     } catch {
       return {};
     }

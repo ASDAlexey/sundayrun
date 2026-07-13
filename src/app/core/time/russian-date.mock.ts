@@ -13,6 +13,21 @@ export const FORMAT_RUSSIAN_DATE_SHORT_CASES: readonly (readonly [string, string
   ['2026-01-05', '05.01.2026 г.'],
 ];
 
+/** [ISO input, expected compact form '28 дек 2025']. */
+export const FORMAT_RUSSIAN_DATE_COMPACT_CASES: readonly (readonly [string, string])[] = [
+  ['2025-12-28', '28 дек 2025'],
+  // day is printed without the leading zero
+  ['2026-01-05', '5 янв 2026'],
+];
+
+/** [ISO input, expected date chip 'вс · 28 дек 2025']. */
+export const FORMAT_RUSSIAN_DATE_CHIP_CASES: readonly (readonly [string, string])[] = [
+  ['2025-12-28', 'вс · 28 дек 2025'],
+  // day is printed without the leading zero; a weekday other than Sunday still resolves
+  ['2026-01-05', 'пн · 5 янв 2026'],
+  ['2026-07-05', 'вс · 5 июл 2026'],
+];
+
 /** Malformed or out-of-range ISO strings that must throw. */
 export const INVALID_ISO_DATE_CASES: readonly string[] = [
   '',

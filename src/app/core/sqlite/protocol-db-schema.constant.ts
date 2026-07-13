@@ -7,7 +7,7 @@
  * over `runs`) and file paths (reconstructed from `slug`, see `github/event-paths.ts`).
  */
 
-export const PROTOCOL_DB_SCHEMA_VERSION = '3';
+export const PROTOCOL_DB_SCHEMA_VERSION = '4';
 
 export const PROTOCOL_DB_META_SCHEMA_VERSION_KEY = 'schemaVersion';
 
@@ -25,6 +25,8 @@ CREATE TABLE events (
   participant_count INTEGER NOT NULL,
   finisher_count INTEGER,
   median_time_ms INTEGER,
+  median_male_ms INTEGER,
+  median_female_ms INTEGER,
   best_male_ms INTEGER,
   best_female_ms INTEGER,
   newcomer_count INTEGER,
@@ -35,6 +37,12 @@ CREATE TABLE events (
 export const PROTOCOL_DB_V3_MIGRATION_STATEMENTS: readonly string[] = [
   'ALTER TABLE events ADD COLUMN newcomer_count INTEGER',
   'ALTER TABLE events ADD COLUMN personal_record_count INTEGER',
+];
+
+/** v3 → v4: the per-gender 5 km medians; applied to the local db by `scripts/backfill-gender-medians.ts`. */
+export const PROTOCOL_DB_V4_MIGRATION_STATEMENTS: readonly string[] = [
+  'ALTER TABLE events ADD COLUMN median_male_ms INTEGER',
+  'ALTER TABLE events ADD COLUMN median_female_ms INTEGER',
 ];
 
 /** Mirrors `ProtocolRow`; `idx` is the row's `index` (a reserved word in SQL). */
