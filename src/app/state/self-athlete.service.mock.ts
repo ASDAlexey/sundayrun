@@ -10,3 +10,9 @@ export const MALFORMED_SELF_ATHLETE_JSON = '{not json';
 
 /** Valid JSON of the wrong shape: an empty key must not count as a pick. */
 export const WRONG_SHAPE_SELF_ATHLETE_JSON = JSON.stringify({ key: '', displayName: 'Иванова Мария' });
+
+/** Valid JSON that is not an object at all — degrades like any other bad shape. */
+export const NON_OBJECT_SELF_ATHLETE_JSON = '42';
+
+/** An object with both pick fields missing entirely. */
+export const FIELDLESS_SELF_ATHLETE_JSON = '{}';

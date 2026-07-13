@@ -3,7 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { SELF_ATHLETE_STORAGE_KEY } from './self-athlete.constant';
 import { SelfAthleteService } from './self-athlete.service';
 import {
+  FIELDLESS_SELF_ATHLETE_JSON,
   MALFORMED_SELF_ATHLETE_JSON,
+  NON_OBJECT_SELF_ATHLETE_JSON,
   SAVED_SELF_ATHLETE,
   STORED_SELF_ATHLETE,
   STORED_SELF_ATHLETE_JSON,
@@ -52,6 +54,18 @@ describe('SelfAthleteService', () => {
 
   it('rejects valid JSON of the wrong shape', () => {
     getItem.mockReturnValue(WRONG_SHAPE_SELF_ATHLETE_JSON);
+
+    expect(TestBed.inject(SelfAthleteService).self()).toBeNull();
+  });
+
+  it('rejects a stored value that is not an object at all', () => {
+    getItem.mockReturnValue(NON_OBJECT_SELF_ATHLETE_JSON);
+
+    expect(TestBed.inject(SelfAthleteService).self()).toBeNull();
+  });
+
+  it('rejects an object with both pick fields missing', () => {
+    getItem.mockReturnValue(FIELDLESS_SELF_ATHLETE_JSON);
 
     expect(TestBed.inject(SelfAthleteService).self()).toBeNull();
   });
