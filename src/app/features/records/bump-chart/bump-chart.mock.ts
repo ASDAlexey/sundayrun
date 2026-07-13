@@ -108,6 +108,18 @@ export const EXPECTED_LINE_TOOLTIP: BumpTooltipView = {
   colorVar: 'var(--chart-1)',
 };
 
+/** A hover past the flip line (y ≥ 60) keeps the tooltip above the cursor instead. */
+export const LINE_MOVE_BOTTOM_CLIENT_Y = 70;
+
+export const EXPECTED_BOTTOM_LINE_TOOLTIP: BumpTooltipView = {
+  x: 130,
+  y: 58,
+  below: false,
+  name: 'Волков Виктор',
+  label: null,
+  colorVar: 'var(--chart-1)',
+};
+
 /** A one-line season over a two-athlete field: the gutter still ranks everyone. */
 export const BUMP_SMALL_DATA: SeasonPositions = {
   eventDates: ['2025-04-06'],

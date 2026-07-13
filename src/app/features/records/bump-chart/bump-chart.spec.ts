@@ -5,12 +5,14 @@ import { BumpChart } from './bump-chart';
 import {
   BUMP_DATA,
   BUMP_SMALL_DATA,
+  EXPECTED_BOTTOM_LINE_TOOLTIP,
   EXPECTED_BUMP_VIEW,
   EXPECTED_LINE_TOOLTIP,
   EXPECTED_SMALL_PATH,
   EXPECTED_TOP_TOOLTIP,
   HIGHLIGHTED_KEYS,
   HOVERED_KEY,
+  LINE_MOVE_BOTTOM_CLIENT_Y,
   LINE_MOVE_CLIENT_X,
   LINE_MOVE_CLIENT_Y,
 } from './bump-chart.mock';
@@ -103,6 +105,16 @@ describe('BumpChart', () => {
     fixture.detectChanges();
 
     expect(element.querySelector('.bump-chart__tooltip-label'), 'the name-only tooltip has no date row').toBeNull();
+
+    element
+      .querySelector('.bump-chart__hit')
+      ?.dispatchEvent(new MouseEvent('mousemove', { clientX: LINE_MOVE_CLIENT_X, clientY: LINE_MOVE_BOTTOM_CLIENT_Y }));
+
+    expect(page.tooltip(), 'past the flip line the tooltip stays above the cursor').toEqual(EXPECTED_BOTTOM_LINE_TOOLTIP);
+
+    page.onLineMove(page.view().lines[0], new MouseEvent('mousemove'));
+
+    expect(page.tooltip(), 'a synthetic event without a target leaves the tooltip alone').toEqual(EXPECTED_BOTTOM_LINE_TOOLTIP);
 
     page.onHover(null);
     fixture.detectChanges();
