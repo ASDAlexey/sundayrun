@@ -17,8 +17,14 @@ export const CATALOG_YEAR_BADGES: AthleteYearBadges[] = [
   { year: '2024', badges: [YearBadge.obsessiveBronze] },
 ];
 
-/** 33 runs across 7 months without the new-year race: bronze met, silver and the months in progress. */
-export const CATALOG_ACTIVITY: YearActivity = { runCount: 33, monthCount: 7, ranNewYearRace: false };
+/** 33 runs across 7 months, no new-year race, no comeback, 4 slow finishes: bronze met, four progress lines. */
+export const CATALOG_ACTIVITY: YearActivity = {
+  runCount: 33,
+  monthCount: 7,
+  ranNewYearRace: false,
+  hasComeback: false,
+  slowFinishCount: 4,
+};
 
 export const CATALOG_RARITY: YearBadgeRarity = { [YearBadge.obsessiveBronze]: 2 };
 
@@ -64,6 +70,22 @@ export const EXPECTED_CATALOG_ROWS: BadgeCatalogRow[] = [
     progressPercent: null,
     isEarned: true,
   },
+  {
+    badge: YearBadge.comeback,
+    description: descriptionOf(YearBadge.comeback),
+    earnedYearsText: null,
+    progressText: null,
+    progressPercent: null,
+    isEarned: false,
+  },
+  {
+    badge: YearBadge.cameAnyway,
+    description: descriptionOf(YearBadge.cameAnyway),
+    earnedYearsText: null,
+    progressText: 'В 2026: 4 из 10 неспешных финишей',
+    progressPercent: 40,
+    isEarned: false,
+  },
   ...([YearBadge.yearTopThirty, YearBadge.yearTopTen, YearBadge.yearPodium, YearBadge.yearKing, YearBadge.courseKing] as const).map(
     (badge) => ({
       badge,
@@ -77,4 +99,10 @@ export const EXPECTED_CATALOG_ROWS: BadgeCatalogRow[] = [
 ];
 
 /** Every criteria met this year: no progress lines anywhere. */
-export const FULL_YEAR_ACTIVITY: YearActivity = { runCount: 50, monthCount: 12, ranNewYearRace: true };
+export const FULL_YEAR_ACTIVITY: YearActivity = {
+  runCount: 50,
+  monthCount: 12,
+  ranNewYearRace: true,
+  hasComeback: true,
+  slowFinishCount: 10,
+};

@@ -1,5 +1,6 @@
 import { AthleteYearBadges, YearActivity } from '../../../core/history/year-badges';
 import {
+  CAME_ANYWAY_SLOW_FINISH_COUNT,
   MONTHS_IN_YEAR,
   OBSESSIVE_BRONZE_RUN_COUNT,
   OBSESSIVE_GOLD_RUN_COUNT,
@@ -52,6 +53,13 @@ function toProgress(badge: YearBadgeType, activity: YearActivity, year: string):
     return {
       text: $localize`:@@badgeCatalog.monthsProgress:В ${year}:year:: ${activity.monthCount}:count: из ${MONTHS_IN_YEAR}:target: месяцев`,
       percent: toPercent(activity.monthCount, MONTHS_IN_YEAR),
+    };
+  }
+
+  if (badge === YearBadge.cameAnyway && activity.slowFinishCount < CAME_ANYWAY_SLOW_FINISH_COUNT) {
+    return {
+      text: $localize`:@@badgeCatalog.slowFinishesProgress:В ${year}:year:: ${activity.slowFinishCount}:count: из ${CAME_ANYWAY_SLOW_FINISH_COUNT}:target: неспешных финишей`,
+      percent: toPercent(activity.slowFinishCount, CAME_ANYWAY_SLOW_FINISH_COUNT),
     };
   }
 

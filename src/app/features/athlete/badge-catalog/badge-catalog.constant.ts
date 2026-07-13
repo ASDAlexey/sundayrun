@@ -29,6 +29,14 @@ export const BADGE_CATALOG: readonly BadgeCatalogEntry[] = [
     description: $localize`:@@badgeCatalog.newYearRace:Финишировать в первом забеге года`,
   },
   {
+    badge: YearBadge.comeback,
+    description: $localize`:@@badgeCatalog.comeback:Финишировать после перерыва в три месяца и больше`,
+  },
+  {
+    badge: YearBadge.cameAnyway,
+    description: $localize`:@@badgeCatalog.cameAnyway:10 финишей на 5 км за год медленнее своей медианы за всё время — главное не темп, а участие`,
+  },
+  {
     badge: YearBadge.yearTopThirty,
     description: $localize`:@@badgeCatalog.yearTopThirty:Войти в 30 лучших результатов года — у мужчин и женщин свой зачёт; в текущем году место ещё можно потерять`,
   },
