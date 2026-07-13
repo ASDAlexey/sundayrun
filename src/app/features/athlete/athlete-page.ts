@@ -8,22 +8,34 @@ import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
+import { currentCourseRecordEntries } from '../../core/history/course-records';
+import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
 import { legendBoard, legendProgress } from '../../core/history/legend';
 import { LEGEND_WINDOW_DAYS } from '../../core/history/legend.constant';
 import { LegendProgress } from '../../core/history/legend.interface';
+import { isoYear } from '../../core/history/iso-year';
 import { athleteStreaks } from '../../core/history/streaks';
 import { AthleteStreaks } from '../../core/history/streaks.interface';
-import { athleteYearBadges } from '../../core/history/year-badges';
+import { athleteYearActivity, athleteYearBadges } from '../../core/history/year-badges';
+import { YearBadge, YearBadgeType } from '../../core/history/year-badges.enum';
+import { athleteYearRankBadges } from '../../core/history/year-ranks';
 import { distinctRunYears, filterRuns, sortRuns, yearBestEntries } from '../../core/history/athlete-runs';
 import { RunsSort, RunsSortType } from '../../core/history/athlete-runs.enum';
 import { YearBestEntry } from '../../core/history/athlete-runs.interface';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
+import { memeStandings } from '../../core/history/meme-thresholds';
+import { MEME_THRESHOLDS } from '../../core/history/meme-thresholds.constant';
+import { MemeStanding } from '../../core/history/meme-thresholds.interface';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { athletePlacements } from '../../core/history/placements';
 import { AthletePlacements } from '../../core/history/placements.interface';
+import { closeRivals } from '../../core/history/rivals';
+import { CLOSE_FINISH_GAP_MS } from '../../core/history/rivals.constant';
+import { Rival } from '../../core/history/rivals.interface';
 import { pluralText } from '../../core/i18n/plural-text';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
+import { MS_IN_SECOND } from '../../core/time/duration.constant';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
@@ -32,15 +44,27 @@ import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
-import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT, NO_PLACE_TEXT, RUNS_TABLE_COLUMNS } from './athlete-page.constant';
+import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT, NO_PLACE_TEXT, RUNS_TABLE_COLUMNS, SELF_MEME_KEY } from './athlete-page.constant';
 import { AthleteStatus, AthleteStatusType } from './athlete-page.enum';
-import { AthletePageState, AthleteRunView, LegendView, PlacementsView, StreaksView, YearBestView } from './athlete-page.interface';
+import {
+  AthletePageState,
+  AthleteRunView,
+  FirstLapView,
+  LegendView,
+  MemeRowView,
+  PlacementsView,
+  RivalView,
+  StreaksView,
+  YearBestView,
+} from './athlete-page.interface';
+import { BadgeCatalog } from './badge-catalog/badge-catalog';
 import { ProgressChart } from './progress-chart';
 
 /** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
 @Component({
   selector: 'app-athlete-page',
   imports: [
+    BadgeCatalog,
     MatButtonModule,
     MatButtonToggleModule,
     MatProgressBarModule,
@@ -63,26 +87,83 @@ export class AthletePage {
   readonly #badgeRarity = signal<AthletePageState['badgeRarity']>({});
   readonly #legendFinishes = signal<AthletePageState['legendFinishes']>([]);
   readonly #runPlaces = signal<AthletePageState['runPlaces']>({});
+  readonly #rivalRuns = signal<AthletePageState['rivalRuns']>([]);
+  readonly #bestFirstLap = signal<AthletePageState['bestFirstLap']>(null);
+  readonly #yearBests = signal<AthletePageState['yearBests']>([]);
+  readonly #courseRecords = signal<AthletePageState['courseRecords']>(EMPTY_COURSE_RECORD_HISTORY);
   readonly #todayIso = isoToday();
   /** The month-final events («итоговые») of the archive; the still-open current month marks none. */
   readonly #monthFinals = computed(() => monthFinalSlugs(this.#eventSlugs(), this.#todayIso));
   // The whole page is about the full distance: one-lap runs never reach the table or the filters.
   readonly #fiveKmRuns = computed(() => filterRuns(this.#record()?.runs ?? [], null, FIVE_KM_DISTANCE_KM));
+  /**
+   * The ranking crowns per year, merged in front of the activity badges: the standing course
+   * record and the athlete's cut in the year's best-times table. The current season recomputes
+   * on every visit, so its badge can still slip away; finished years never change.
+   */
+  readonly #rankBadgesByYear = computed(() => {
+    const record = this.#record();
+
+    if (record === null) {
+      return {};
+    }
+
+    const byYear: Record<string, YearBadgeType[]> = {};
+    const courseCrown = currentCourseRecordEntries(this.#courseRecords()).find((entry) => entry.key === record.key);
+
+    if (courseCrown !== undefined) {
+      byYear[isoYear(courseCrown.dateIso)] = [YearBadge.courseKing];
+    }
+
+    for (const [year, badge] of Object.entries(athleteYearRankBadges(this.#yearBests(), record.key))) {
+      (byYear[year] ??= []).push(badge);
+    }
+
+    return byYear;
+  });
 
   readonly status = signal<AthleteStatusType>(AthleteStatus.loading);
   readonly year = signal<string | null>(null);
+  readonly rivalsYear = signal<string | null>(null);
   readonly sort = signal<RunsSortType>(RunsSort.byTime);
 
   readonly displayName = computed(() => this.#record()?.displayName ?? '');
   readonly participationCount = computed(() => this.#record()?.participationSlugs.length ?? 0);
   readonly finishCount = computed(() => this.#fiveKmRuns().length);
+  /** «23/45» — the finals the athlete showed up at (a DNF counts, as in «участий») over every final ever held. */
+  readonly finalsAttendanceText = computed(() => {
+    const finals = this.#monthFinals();
+
+    if (finals.size === 0) {
+      return null;
+    }
+
+    const attended = (this.#record()?.participationSlugs ?? []).filter((slug) => finals.has(slug)).length;
+
+    return `${attended}/${finals.size}`;
+  });
+
   /** The chart gets the full 5 km history plus the year filter, so the all-time record stays known in a year view. */
   readonly progressRuns = this.#fiveKmRuns;
   readonly bestTimeText = computed(() => toTimeText(this.#record()?.bestMs ?? null));
+  /** The «Лучший первый круг · 2,3 км» profile value; hidden while no run carries a recorded split. */
+  readonly firstLap = computed(() => toFirstLapView(this.#bestFirstLap()));
   /** Badges count every finished run (the short course included); badge-less years are omitted. */
-  readonly yearBadges = computed(() => athleteYearBadges(this.#record()?.runs ?? [], this.#firstEventDateByYear()));
+  readonly yearBadges = computed(() =>
+    athleteYearBadges(this.#record()?.runs ?? [], this.#firstEventDateByYear(), this.#rankBadgesByYear()),
+  );
+
   /** Badge → the share of participants owning it — «есть у 12% участников» on the chips. */
   readonly badgeRarity = this.#badgeRarity.asReadonly();
+  /** «Король» chips read as «Королева» on a woman's page. */
+  readonly gender = computed(() => this.#record()?.gender ?? null);
+  /** The running calendar year of the badge-progress lines. */
+  readonly currentYear = isoYear(this.#todayIso);
+  /** The running year's activity — the «Все награды» catalog teases the next badge with it. */
+  readonly currentActivity = computed(() =>
+    athleteYearActivity(this.#record()?.runs ?? [], this.currentYear, this.#firstEventDateByYear()[this.currentYear]),
+  );
+
   /** Streaks count participations (a DNF still extends one) over the full event chronology. */
   readonly streaks = computed(() =>
     toStreaksView(athleteStreaks(this.#record()?.participationSlugs ?? [], this.#record()?.runs ?? [], this.#eventSlugs())),
@@ -94,12 +175,34 @@ export class AthletePage {
   /** The «Итоговые забеги» card: the best place at finals vs regular races and the finals podium tally. */
   readonly placements = computed(() => toPlacementsView(athletePlacements(this.#runPlaces(), this.#monthFinals())));
 
+  /** The «Соперники» card: who finished next to the athlete most often; its own year filter rescans the season. */
+  readonly rivals = computed(() => {
+    const key = this.#record()?.key ?? '';
+
+    return closeRivals(this.#rivalRuns(), key, this.rivalsYear()).map((rival) => toRivalView(rival, key));
+  });
+
+  /** The card (with its year chips) stays while the all-time list is non-empty; a dry season only empties the list. */
+  readonly hasRivals = computed(() => closeRivals(this.#rivalRuns(), this.#record()?.key ?? '', null).length > 0);
+
+  /** The «Мем-пороги» ladder with the athlete's best slotted in; no best hides the card. */
+  readonly memes = computed(() => {
+    const bestMs = this.#record()?.bestMs ?? null;
+
+    if (bestMs === null) {
+      return [];
+    }
+
+    return toMemeRows(memeStandings(MEME_THRESHOLDS, bestMs), bestMs, this.displayName());
+  });
+
   readonly yearBests = computed(() => {
     const bestMs = this.#record()?.bestMs ?? null;
     const runs = this.#record()?.runs ?? [];
 
     return yearBestEntries(this.#record()?.bestMsByYear ?? {}, runs).map((entry) => toYearBestView(entry, bestMs));
   });
+
   readonly years = computed(() => distinctRunYears(this.#fiveKmRuns()));
   readonly runs = computed(() =>
     sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), this.sort()).map((run) =>
@@ -116,6 +219,7 @@ export class AthletePage {
   protected readonly allYearsValue = ALL_YEARS_VALUE;
   protected readonly runsTableColumns = RUNS_TABLE_COLUMNS;
   protected readonly legendWindowDays = LEGEND_WINDOW_DAYS;
+  protected readonly closeGapSeconds = CLOSE_FINISH_GAP_MS / MS_IN_SECOND;
 
   #key = '';
 
@@ -138,6 +242,10 @@ export class AthletePage {
     this.setYear(value === ALL_YEARS_VALUE ? null : value);
   }
 
+  onRivalsYearChange(value: string): void {
+    this.rivalsYear.set(value === ALL_YEARS_VALUE ? null : value);
+  }
+
   setSort(sort: RunsSortType): void {
     this.sort.set(sort);
   }
@@ -146,6 +254,7 @@ export class AthletePage {
     this.status.set(AthleteStatus.loading);
     this.#record.set(null);
     this.year.set(null);
+    this.rivalsYear.set(null);
     this.sort.set(RunsSort.byTime);
 
     const next = await this.#resolveState(key);
@@ -161,45 +270,77 @@ export class AthletePage {
     this.#badgeRarity.set(next.badgeRarity);
     this.#legendFinishes.set(next.legendFinishes);
     this.#runPlaces.set(next.runPlaces);
+    this.#rivalRuns.set(next.rivalRuns);
+    this.#bestFirstLap.set(next.bestFirstLap);
+    this.#yearBests.set(next.yearBests);
+    this.#courseRecords.set(next.courseRecords);
     this.status.set(next.status);
   }
 
   async #resolveState(key: string): Promise<AthletePageState> {
     try {
-      const [record, firstEventDateByYear, eventSlugs, badgeRarity, legendFinishes, runPlaces] = await Promise.all([
+      const [
+        record,
+        firstEventDateByYear,
+        eventSlugs,
+        badgeRarity,
+        legendFinishes,
+        runPlaces,
+        rivalRuns,
+        bestFirstLap,
+        yearBests,
+        courseRecords,
+      ] = await Promise.all([
         this.#athletes.loadRecord(key),
         this.#athletes.loadFirstEventDateByYear(),
         this.#athletes.loadEventSlugs(),
         this.#athletes.loadYearBadgeRarity(),
         this.#athletes.loadLegendFinishes(),
         this.#athletes.loadRunPlaces(key),
+        this.#athletes.loadRivalRuns(key),
+        this.#athletes.loadBestFirstLap(key),
+        this.#athletes.loadYearBests(),
+        this.#athletes.loadCourseRecords(),
       ]);
 
       if (record === null) {
-        return {
-          status: AthleteStatus.notFound,
-          record: null,
-          firstEventDateByYear: {},
-          eventSlugs: [],
-          badgeRarity: {},
-          legendFinishes: [],
-          runPlaces: {},
-        };
+        return emptyAthleteState(AthleteStatus.notFound);
       }
 
-      return { status: AthleteStatus.ready, record, firstEventDateByYear, eventSlugs, badgeRarity, legendFinishes, runPlaces };
-    } catch {
       return {
-        status: AthleteStatus.error,
-        record: null,
-        firstEventDateByYear: {},
-        eventSlugs: [],
-        badgeRarity: {},
-        legendFinishes: [],
-        runPlaces: {},
+        status: AthleteStatus.ready,
+        record,
+        firstEventDateByYear,
+        eventSlugs,
+        badgeRarity,
+        legendFinishes,
+        runPlaces,
+        rivalRuns,
+        bestFirstLap,
+        yearBests,
+        courseRecords,
       };
+    } catch {
+      return emptyAthleteState(AthleteStatus.error);
     }
   }
+}
+
+/** The record-less page state of the notFound and error outcomes. */
+function emptyAthleteState(status: AthleteStatusType): AthletePageState {
+  return {
+    status,
+    record: null,
+    firstEventDateByYear: {},
+    eventSlugs: [],
+    badgeRarity: {},
+    legendFinishes: [],
+    runPlaces: {},
+    rivalRuns: [],
+    bestFirstLap: null,
+    yearBests: [],
+    courseRecords: EMPTY_COURSE_RECORD_HISTORY,
+  };
 }
 
 function toRunView(run: AthleteRun, places: Record<string, number>, monthFinals: Set<string>): AthleteRunView {
@@ -227,6 +368,14 @@ function toYearBestView(entry: YearBestEntry, bestMs: number | null): YearBestVi
 
 function toTimeText(bestMs: number | null): string {
   return bestMs === null ? NO_BEST_TIME_TEXT : formatDuration(bestMs);
+}
+
+function toFirstLapView(lap: AthletePageState['bestFirstLap']): FirstLapView | null {
+  if (lap === null) {
+    return null;
+  }
+
+  return { timeText: formatDuration(lap.lapMs), raceLink: [RACE_PAGE_BASE_LINK, lap.slug] };
 }
 
 function toPlacementsView(placements: AthletePlacements): PlacementsView {
@@ -271,6 +420,55 @@ function toLegendView(progress: LegendProgress): LegendView {
     toCrownText: finishesText(progress.finishesToCrown),
     progressPercent: progress.isLegend ? 100 : Math.round((100 * progress.finishCount) / (progress.finishCount + progress.finishesToCrown)),
   };
+}
+
+/** The athlete's own rung slots in right after the unbeaten benchmarks — the ladder stays time-sorted. */
+function toMemeRows(standings: MemeStanding[], bestMs: number, displayName: string): MemeRowView[] {
+  const rows = standings.map(toMemeRow);
+  const selfIndex = standings.filter((standing) => !standing.isBeaten).length;
+
+  rows.splice(selfIndex, 0, {
+    key: SELF_MEME_KEY,
+    name: displayName,
+    note: null,
+    timeText: formatDuration(bestMs),
+    isBeaten: false,
+    isSelf: true,
+    gapText: null,
+  });
+
+  return rows;
+}
+
+function toMemeRow(standing: MemeStanding): MemeRowView {
+  return {
+    key: standing.key,
+    name: standing.name,
+    note: standing.note,
+    timeText: formatDuration(standing.timeMs),
+    isBeaten: standing.isBeaten,
+    isSelf: false,
+    gapText: standing.isNext ? formatDuration(standing.gapMs) : null,
+  };
+}
+
+function toRivalView(rival: Rival, athleteKey: string): RivalView {
+  return {
+    key: rival.key,
+    displayName: rival.displayName,
+    versusLink: [VERSUS_PAGE_LINK, athleteKey, rival.key],
+    closeText: closeTimesText(rival.closeCount),
+    score: `${rival.wins}:${rival.losses}`,
+  };
+}
+
+/** «1 раз / 2 раза / 5 раз рядом» — each plural form is a separate translatable message. */
+function closeTimesText(count: number): string {
+  return pluralText(count, {
+    one: $localize`:@@athlete.rivalTimesOne:${count}:count: раз рядом`,
+    few: $localize`:@@athlete.rivalTimesFew:${count}:count: раза рядом`,
+    many: $localize`:@@athlete.rivalTimesMany:${count}:count: раз рядом`,
+  });
 }
 
 /** «1 финиш / 2 финиша / 5 финишей» — each plural form is a separate translatable message. */

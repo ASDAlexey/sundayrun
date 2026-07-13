@@ -3,17 +3,23 @@ import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
 import { RunsSort } from '../../core/history/athlete-runs.enum';
 import { EXPECTED_ROLLUP_HISTORY, DNF_ONLY_KEY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
+import { EMPTY_YEAR_ACTIVITY } from '../../core/history/year-badges.mock';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
+import { polyfillDialogModal } from '../spec-utils/dialog-polyfill';
 import { settle } from '../spec-utils/settle';
 import { AthletePage } from './athlete-page';
 import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT } from './athlete-page.constant';
 import { AthleteStatus } from './athlete-page.enum';
 import {
+  ATHLETE_BEST_FIRST_LAP,
+  ATHLETE_COURSE_RECORDS,
   ATHLETE_LOAD_ERROR_MESSAGE,
+  ATHLETE_RIVAL_RUNS,
+  ATHLETE_YEAR_BESTS,
   ATHLETE_YEAR_FILTER,
   DENORMALIZED_KEY_PARAM,
   EMPTY_LEGEND_VIEW,
@@ -22,24 +28,35 @@ import {
   EVENT_SLUG_CHRONOLOGY,
   EXPECTED_PLACEMENTS_VIEW,
   EXPECTED_BEST_TIME_TEXT,
+  EXPECTED_EMPTY_FINALS_ATTENDANCE_TEXT,
+  EXPECTED_FINALS_ATTENDANCE_TEXT,
   EXPECTED_BY_DATE_VIEWS,
   EXPECTED_BY_TIME_VIEWS,
   EXPECTED_CHASER_LEGEND_VIEW,
   EXPECTED_DNF_STREAKS_VIEW,
+  EXPECTED_FIRST_LAP_VIEW,
   EXPECTED_LEGEND_VIEW,
+  EXPECTED_MEME_ROWS,
+  EXPECTED_RANK_YEAR_BADGES,
+  EXPECTED_RIVAL_VIEWS,
   EXPECTED_RUN_YEAR_OPTIONS,
+  EXPECTED_SEASON_RIVAL_VIEWS,
   EXPECTED_SHORT_RUNNER_VIEWS,
   EXPECTED_STREAKS_VIEW,
   EXPECTED_YEAR_BEST_VIEWS,
   EXPECTED_YEAR_FILTERED_VIEWS,
   LEGEND_FINISHES,
   PLACEMENTS_EVENT_CHRONOLOGY,
+  PLACEMENTS_RECORD,
   PLACEMENTS_RUN_PLACES,
+  RIVAL_SEASON_FILTER,
   SHORT_RUNNER_KEY_PARAM,
   STUB_BADGE_RARITY,
   STUB_RUN_PLACES,
   UNKNOWN_KEY_PARAM,
 } from './athlete-page.mock';
+
+polyfillDialogModal();
 
 describe('AthletePage', () => {
   const loadRecord = vi.fn();
@@ -48,6 +65,10 @@ describe('AthletePage', () => {
   const loadYearBadgeRarity = vi.fn(() => Promise.resolve(STUB_BADGE_RARITY));
   const loadLegendFinishes = vi.fn(() => Promise.resolve([...LEGEND_FINISHES]));
   const loadRunPlaces = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? STUB_RUN_PLACES : {}));
+  const loadRivalRuns = vi.fn(() => Promise.resolve([...ATHLETE_RIVAL_RUNS]));
+  const loadBestFirstLap = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? ATHLETE_BEST_FIRST_LAP : null));
+  const loadYearBests = vi.fn(() => Promise.resolve([...ATHLETE_YEAR_BESTS]));
+  const loadCourseRecords = vi.fn(() => Promise.resolve(ATHLETE_COURSE_RECORDS));
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -63,7 +84,18 @@ describe('AthletePage', () => {
         provideRouter([]),
         {
           provide: AthletesService,
-          useValue: { loadRecord, loadFirstEventDateByYear, loadEventSlugs, loadYearBadgeRarity, loadLegendFinishes, loadRunPlaces },
+          useValue: {
+            loadRecord,
+            loadFirstEventDateByYear,
+            loadEventSlugs,
+            loadYearBadgeRarity,
+            loadLegendFinishes,
+            loadRunPlaces,
+            loadRivalRuns,
+            loadBestFirstLap,
+            loadYearBests,
+            loadCourseRecords,
+          },
         },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
@@ -92,14 +124,20 @@ describe('AthletePage', () => {
     expect(page.displayName()).toBe(expectedRecord.displayName);
     expect(page.participationCount()).toBe(expectedRecord.participationSlugs.length);
     expect(page.finishCount()).toBe(expectedRecord.runs.length);
+    expect(page.finalsAttendanceText(), 'no finals in the archive — the stat is hidden').toBeNull();
     expect(page.progressRuns(), 'the sparkline receives the unfiltered 5 km history').toEqual(expectedRecord.runs);
     expect(page.bestTimeText()).toBe(EXPECTED_BEST_TIME_TEXT);
+    expect(page.firstLap(), 'the best recorded split links to its protocol').toEqual(EXPECTED_FIRST_LAP_VIEW);
     expect(page.yearBests()).toEqual(EXPECTED_YEAR_BEST_VIEWS);
     expect(page.years()).toEqual(EXPECTED_RUN_YEAR_OPTIONS);
     expect(page.runs(), 'runs are sorted by time by default').toEqual(EXPECTED_BY_TIME_VIEWS);
     expect(page.streaks(), 'all three races form one running streak').toEqual(EXPECTED_STREAKS_VIEW);
     expect(page.badgeRarity(), 'the chips receive the loaded rarity shares').toEqual(STUB_BADGE_RARITY);
+    expect(page.yearBadges(), 'the course crown and the year crown lead the 2026 row').toEqual(EXPECTED_RANK_YEAR_BADGES);
+    expect(page.gender(), 'the chips receive the athlete’s gender for the crown labels').toBe(expectedRecord.gender);
     expect(page.legend(), 'three windowed finishes keep the crown here').toEqual(EXPECTED_LEGEND_VIEW);
+    expect(page.rivals(), 'the close finishers rank by the count; the lone one stays out').toEqual(EXPECTED_RIVAL_VIEWS);
+    expect(page.memes(), 'the 24:00 best slots in under Киптум’s pace with the celebrities beaten').toEqual(EXPECTED_MEME_ROWS);
 
     fixture.detectChanges();
 
@@ -131,8 +169,35 @@ describe('AthletePage', () => {
       filterChips.map((chip) => chip.classList.contains('mat-button-toggle-checked')),
       'all years by default',
     ).toEqual([true, false, false]);
+    const catalogDialog = element.querySelector('.badge-catalog');
+
+    expect(catalogDialog.open, 'the badge catalog waits closed').toBe(false);
+
+    element.querySelector('.athlete__badges-all').click();
+
+    expect(catalogDialog.open, 'the «Все награды» button opens the catalog').toBe(true);
+
+    catalogDialog.close();
+
     expect(element.querySelector('.athlete__legend-crown'), 'the holder sees the crown line').not.toBeNull();
     expect(element.querySelector('.athlete__legend-bar'), 'the holder needs no progress bar').toBeNull();
+    expect([...element.querySelectorAll('.athlete__rival-name')].map((link) => link.textContent.trim())).toEqual(
+      EXPECTED_RIVAL_VIEWS.map((view) => view.displayName),
+    );
+    expect(
+      [...element.querySelectorAll('.athlete__rival-score')].map((chip) => chip.textContent.trim()),
+      'the score reads the athlete’s wins first',
+    ).toEqual(EXPECTED_RIVAL_VIEWS.map((view) => `счёт ${view.score}`));
+    expect([...element.querySelectorAll('.athlete__meme')].length, 'the ladder renders every benchmark plus the own rung').toBe(
+      EXPECTED_MEME_ROWS.length,
+    );
+    expect(element.querySelector('.athlete__meme_self').textContent, 'the own rung carries the name and the best').toContain(
+      expectedRecord.displayName,
+    );
+    expect([...element.querySelectorAll('.athlete__meme-mark')].length, 'a check mark per beaten benchmark').toBe(
+      EXPECTED_MEME_ROWS.filter((row) => row.isBeaten).length,
+    );
+    expect(element.querySelector('.athlete__meme-gap').textContent, 'the next target shows the remaining gap').toContain('9:43');
   });
 
   it('filters by year, re-sorts by date and reports when no runs match', async () => {
@@ -147,6 +212,21 @@ describe('AthletePage', () => {
     page.onYearChange(ATHLETE_YEAR_FILTER);
 
     expect(page.runs()).toEqual(EXPECTED_YEAR_FILTERED_VIEWS);
+    expect(page.rivals(), 'the runs year filter no longer touches the rivals list').toEqual(EXPECTED_RIVAL_VIEWS);
+
+    page.onRivalsYearChange(ATHLETE_YEAR_FILTER);
+
+    expect(page.rivals(), 'one close finish that season — the list empties').toEqual([]);
+    expect(page.hasRivals(), 'the all-time rivals keep the card with its chips on screen').toBe(true);
+
+    page.onRivalsYearChange(RIVAL_SEASON_FILTER);
+
+    expect(page.rivals(), 'the season rescan breaks the tie by the smaller gap total').toEqual(EXPECTED_SEASON_RIVAL_VIEWS);
+
+    page.onRivalsYearChange(ALL_YEARS_VALUE);
+
+    expect(page.rivals(), 'the "all years" chip restores the all-time list').toEqual(EXPECTED_RIVAL_VIEWS);
+    expect(page.rivalsYear(), 'the "all" toggle maps the sentinel back to null').toBeNull();
 
     page.onYearChange(ALL_YEARS_VALUE);
 
@@ -154,6 +234,7 @@ describe('AthletePage', () => {
     expect(page.year(), 'the "all" toggle maps the sentinel back to null').toBeNull();
 
     page.setYear(UNKNOWN_KEY_PARAM);
+    page.onRivalsYearChange(UNKNOWN_KEY_PARAM);
 
     expect(page.runs(), 'a year without runs empties the table').toEqual([]);
 
@@ -161,9 +242,16 @@ describe('AthletePage', () => {
 
     const element = fixture.nativeElement;
     const sortChips = [...element.querySelectorAll('.athlete__filter')[1].querySelectorAll('.athlete__chip')];
+    const rivalsChips = [...element.querySelectorAll('.athlete__rivals-years .athlete__chip')];
     const statusRegions = [...element.querySelectorAll('.athlete__status')];
 
     expect(element.querySelector('.athlete__table-wrap')).toBeNull();
+    expect(
+      rivalsChips.map((chip) => chip.textContent.trim()),
+      'the rivals card carries its own "all years" chip plus one per run year',
+    ).toEqual(['Все годы', ...EXPECTED_RUN_YEAR_OPTIONS]);
+    expect(element.querySelector('.athlete__rivals-list'), 'no close finishes that season — the list gives way').toBeNull();
+    expect(element.querySelector('.athlete__rivals-empty'), 'the dry season shows the empty note instead').not.toBeNull();
     expect(statusRegions.at(-1).getAttribute('role')).toBe('status');
     expect(statusRegions.at(-1).textContent.trim(), 'the "no filtered runs" note lives in the persistent live region').not.toBe('');
     expect(
@@ -195,11 +283,15 @@ describe('AthletePage', () => {
   });
 
   it('splits the best places by race kind and renders the finals card with podium chips', async () => {
+    loadRecord.mockResolvedValueOnce({ ...PLACEMENTS_RECORD });
     loadEventSlugs.mockResolvedValueOnce([...PLACEMENTS_EVENT_CHRONOLOGY]);
     loadRunPlaces.mockResolvedValueOnce({ ...PLACEMENTS_RUN_PLACES });
     fixture = await createPage();
 
     expect(fixture.componentInstance.placements()).toEqual(EXPECTED_PLACEMENTS_VIEW);
+    expect(fixture.componentInstance.finalsAttendanceText(), 'the regular race participation stays out of the finals tally').toBe(
+      EXPECTED_FINALS_ATTENDANCE_TEXT,
+    );
 
     fixture.detectChanges();
 
@@ -208,6 +300,15 @@ describe('AthletePage', () => {
 
     expect(element.querySelector('.athlete__finals-title'), 'places are known — the finals card is shown').not.toBeNull();
     expect(chips.map((chip) => chip.textContent.trim())).toEqual(EXPECTED_PLACEMENTS_VIEW.podiumTexts);
+
+    routeStub.setParams({ [KEY_ROUTE_PARAM]: UNKNOWN_KEY_PARAM });
+
+    expect(
+      fixture.componentInstance.finalsAttendanceText(),
+      'while the next load runs, the record is gone but the finals chronology still stands',
+    ).toBe(EXPECTED_EMPTY_FINALS_ATTENDANCE_TEXT);
+
+    await settle();
   });
 
   it('shows the DNF-only athlete without records or a runs table', async () => {
@@ -220,10 +321,13 @@ describe('AthletePage', () => {
     expect(page.status()).toBe(AthleteStatus.ready);
     expect(page.finishCount()).toBe(0);
     expect(page.bestTimeText()).toBe(NO_BEST_TIME_TEXT);
+    expect(page.firstLap(), 'no recorded split hides the first-lap value').toBeNull();
     expect(page.yearBests()).toEqual([]);
     expect(page.streaks(), 'a DNF still counted as showing up, the later misses ended the streak').toEqual(EXPECTED_DNF_STREAKS_VIEW);
     expect(page.legend(), 'an empty board keeps the title vacant').toEqual(EMPTY_LEGEND_VIEW);
     expect(page.placements(), 'a DNF carries no place').toEqual(EMPTY_PLACEMENTS_VIEW);
+    expect(page.rivals(), 'no own 5 km finishes — nobody to be close to').toEqual([]);
+    expect(page.memes(), 'no best time — no meme ladder').toEqual([]);
 
     fixture.detectChanges();
 
@@ -231,6 +335,7 @@ describe('AthletePage', () => {
     const statusRegions = [...element.querySelectorAll('.athlete__status')];
 
     expect(element.querySelector('.athlete__finals'), 'no known places — no finals card').toBeNull();
+    expect(element.querySelector('.athlete__memes'), 'no best time hides the meme card').toBeNull();
 
     expect(element.querySelector('.athlete__legend-holder').textContent, 'the vacant title is announced').not.toBe('');
 
@@ -286,12 +391,18 @@ describe('AthletePage', () => {
     expect(page.displayName()).toBe('');
     expect(page.participationCount()).toBe(0);
     expect(page.finishCount()).toBe(0);
+    expect(page.finalsAttendanceText()).toBeNull();
+    expect(page.gender(), 'no record — the chips keep the neutral labels').toBeNull();
+    expect(page.hasRivals(), 'no record — no rivals card').toBe(false);
     expect(page.bestTimeText()).toBe(NO_BEST_TIME_TEXT);
     expect(page.yearBests()).toEqual([]);
     expect(page.years()).toEqual([]);
     expect(page.runs()).toEqual([]);
     expect(page.streaks()).toEqual(EMPTY_STREAKS_VIEW);
+    expect(page.currentActivity(), 'no record — an idle running year').toEqual(EMPTY_YEAR_ACTIVITY);
     expect(page.legend(), 'a notFound load discards the board').toEqual(EMPTY_LEGEND_VIEW);
+    expect(page.rivals(), 'a notFound load discards the rival runs').toEqual([]);
+    expect(page.memes(), 'no record — no meme ladder').toEqual([]);
     expect(page.yearBadges(), 'no record — no badges').toEqual([]);
     expect(page.versusLink(), 'the duel link degrades to an empty preselection').toEqual([VERSUS_PAGE_LINK, '']);
 

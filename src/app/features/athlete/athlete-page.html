@@ -28,6 +28,14 @@
             <span class="athlete__pb-value">{{ bestTimeText() }}</span>
           </p>
 
+          @if (firstLap(); as lap) {
+            <p class="athlete__pb">
+              <span class="athlete__pb-caption" i18n="@@athlete.firstLapCaption">Лучший первый круг · 2,3 км</span>
+
+              <a class="athlete__lap-value" [routerLink]="lap.raceLink">{{ lap.timeText }}</a>
+            </p>
+          }
+
           <dl class="athlete__stats">
             <div class="athlete__stat">
               <dt class="athlete__stat-label" i18n="@@athlete.statParticipations">участий</dt>
@@ -36,10 +44,18 @@
             </div>
 
             <div class="athlete__stat">
-              <dt class="athlete__stat-label" i18n="@@athlete.statFinishes">финишей на 5 км</dt>
+              <dt class="athlete__stat-label" i18n="@@athlete.statFinishes">финишей</dt>
 
               <dd class="athlete__stat-value">{{ finishCount() }}</dd>
             </div>
+
+            @if (finalsAttendanceText(); as finalsAttendance) {
+              <div class="athlete__stat">
+                <dt class="athlete__stat-label" i18n="@@athlete.statFinals">итоговых забегов</dt>
+
+                <dd class="athlete__stat-value">{{ finalsAttendance }}</dd>
+              </div>
+            }
           </dl>
         </div>
 
@@ -67,10 +83,16 @@
           </div>
         }
 
-        @if (yearBadges().length > 0) {
-          <div class="athlete__profile-block">
+        <div class="athlete__profile-block">
+          <div class="athlete__badges-head">
             <h2 class="athlete__profile-block-title" i18n="@@athlete.badgesTitle">Награды</h2>
 
+            <button class="athlete__badges-all" i18n="@@athlete.badgesAll" type="button" (click)="badgeCatalog.open()">
+              Все награды →
+            </button>
+          </div>
+
+          @if (yearBadges().length > 0) {
             <ul class="athlete__badges-years">
               @for (yearEntry of yearBadges(); track yearEntry.year) {
                 <li class="athlete__badges-year">
@@ -78,14 +100,23 @@
 
                   <span class="athlete__badges-list">
                     @for (badge of yearEntry.badges; track badge) {
-                      <app-year-badge [badge]="badge" [rarityPercent]="badgeRarity()[badge] ?? null" />
+                      <app-year-badge [badge]="badge" [gender]="gender()" [rarityPercent]="badgeRarity()[badge] ?? null" />
                     }
                   </span>
                 </li>
               }
             </ul>
-          </div>
-        }
+          }
+
+          <app-badge-catalog
+            #badgeCatalog
+            [activity]="currentActivity()"
+            [gender]="gender()"
+            [rarity]="badgeRarity()"
+            [year]="currentYear"
+            [yearBadges]="yearBadges()"
+          />
+        </div>
       </section>
 
       <section class="athlete__streaks">
@@ -159,6 +190,77 @@
           />
         }
       </section>
+
+      @if (hasRivals()) {
+        <section class="athlete__rivals">
+          <h2 class="athlete__rivals-title" i18n="@@athlete.rivalsTitle">Соперники</h2>
+
+          <p class="athlete__rivals-hint" i18n="@@athlete.rivalsHint">
+            Кто чаще всего финишировал рядом — в пределах {{ closeGapSeconds }} секунд; счёт — кто был впереди в этих финишах.
+          </p>
+
+          <mat-button-toggle-group
+            class="athlete__rivals-years"
+            hideSingleSelectionIndicator
+            [value]="rivalsYear() ?? allYearsValue"
+            (change)="onRivalsYearChange($event.value)"
+          >
+            <mat-button-toggle class="athlete__chip" i18n="@@athlete.rivalsAllYears" [value]="allYearsValue">Все годы</mat-button-toggle>
+
+            @for (runYear of years(); track runYear) {
+              <mat-button-toggle class="athlete__chip" [value]="runYear">{{ runYear }}</mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+
+          @if (rivals().length > 0) {
+            <ol class="athlete__rivals-list">
+              @for (rival of rivals(); track rival.key) {
+                <li class="athlete__rival">
+                  <a class="athlete__rival-name" [routerLink]="rival.versusLink">{{ rival.displayName }}</a>
+
+                  <span class="athlete__rival-tally">{{ rival.closeText }}</span>
+
+                  <span class="athlete__rival-score" i18n="@@athlete.rivalScore">счёт {{ rival.score }}</span>
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="athlete__rivals-empty" i18n="@@athlete.rivalsEmpty">В этом сезоне близких финишей не было.</p>
+          }
+        </section>
+      }
+
+      @if (memes().length > 0) {
+        <section class="athlete__memes">
+          <h2 class="athlete__memes-title" i18n="@@athlete.memesTitle">Мем-пороги</h2>
+
+          <p class="athlete__memes-hint" i18n="@@athlete.memesHint">
+            Личный рекорд в лестнице знаменитых времён — все пороги пересчитаны в эквивалент на 5 км. Галочка — атлет уже быстрее.
+          </p>
+
+          <ol class="athlete__memes-list">
+            @for (meme of memes(); track meme.key) {
+              <li class="athlete__meme" [class.athlete__meme_self]="meme.isSelf">
+                <span class="athlete__meme-time">{{ meme.timeText }}</span>
+
+                <span class="athlete__meme-name" [class.athlete__meme-name_self]="meme.isSelf">{{ meme.name }}</span>
+
+                @if (meme.note !== null) {
+                  <span class="athlete__meme-note">{{ meme.note }}</span>
+                }
+
+                @if (meme.isBeaten) {
+                  <span class="athlete__meme-mark" i18n="@@athlete.memeBeaten">✓ быстрее</span>
+                }
+
+                @if (meme.gapText !== null) {
+                  <span class="athlete__meme-gap" i18n="@@athlete.memeGap">осталось {{ meme.gapText }}</span>
+                }
+              </li>
+            }
+          </ol>
+        </section>
+      }
 
       <app-progress-chart [runs]="progressRuns()" [year]="year()" />
 
