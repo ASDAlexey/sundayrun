@@ -47,21 +47,51 @@
       </dl>
     </section>
 
-    @if (review.bests.length > 0) {
+    @if (review.bestMen.length > 0 || review.bestWomen.length > 0) {
       <section class="year__bests">
         <h2 class="year__section-title" i18n="@@year.bestsTitle">Лучшие результаты года</h2>
 
-        <ul class="year__bests-list">
-          @for (best of review.bests; track best.label) {
-            <li class="year__best">
-              <span class="year__best-label">{{ best.label }}</span>
+        <div class="year__boards">
+          @if (review.bestMen.length > 0) {
+            <section class="year__board">
+              <h3 class="year__board-title" i18n="@@year.men">Мужчины</h3>
 
-              <a class="year__best-name" [routerLink]="best.athleteLink">{{ best.displayName }}</a>
+              <ol class="year__list">
+                @for (row of review.bestMen; track row.place) {
+                  <li class="year__row" [class.year__row_podium]="row.place <= podiumSize">
+                    <span class="year__place">{{ row.place }}</span>
 
-              <a class="year__best-time" [routerLink]="best.raceLink">{{ best.timeText }}</a>
-            </li>
+                    <a class="year__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                    <span class="year__time">{{ row.timeText }}</span>
+
+                    <a class="year__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+                  </li>
+                }
+              </ol>
+            </section>
           }
-        </ul>
+
+          @if (review.bestWomen.length > 0) {
+            <section class="year__board">
+              <h3 class="year__board-title" i18n="@@year.women">Женщины</h3>
+
+              <ol class="year__list">
+                @for (row of review.bestWomen; track row.place) {
+                  <li class="year__row" [class.year__row_podium]="row.place <= podiumSize">
+                    <span class="year__place">{{ row.place }}</span>
+
+                    <a class="year__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                    <span class="year__time">{{ row.timeText }}</span>
+
+                    <a class="year__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+                  </li>
+                }
+              </ol>
+            </section>
+          }
+        </div>
       </section>
     }
 
@@ -69,12 +99,14 @@
       <section class="year__active">
         <h2 class="year__section-title" i18n="@@year.mostActiveTitle">Самые активные</h2>
 
-        <ol class="year__active-list">
-          @for (active of review.mostActive; track active.displayName) {
-            <li class="year__active-item">
-              <a class="year__active-name" [routerLink]="active.athleteLink">{{ active.displayName }}</a>
+        <ol class="year__list">
+          @for (active of review.mostActive; track active.place) {
+            <li class="year__row year__row_active" [class.year__row_podium]="active.place <= podiumSize">
+              <span class="year__place">{{ active.place }}</span>
 
-              <span class="year__active-count">{{ active.countText }}</span>
+              <a class="year__athlete" [routerLink]="active.athleteLink">{{ active.displayName }}</a>
+
+              <span class="year__count">{{ active.countText }}</span>
             </li>
           }
         </ol>

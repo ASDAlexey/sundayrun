@@ -28,9 +28,8 @@ const runRow = (
 
 /**
  * Two events; Иванов and Петрова ran both (the new-year one included), Смирнова, Кузнецова and
- * the genderless Сидоров ran one each, Сидоров on the short course only. Смирнова ties Петрова's
- * best time on the EARLIER date (listed after her, so the tie-break replaces the leader), while
- * Кузнецова ties it again on the later date and must NOT take the best over.
+ * the genderless Сидоров ran one each, Сидоров on the short course only. The three women tie at
+ * 27:00 season bests, so the best-results board ranks them alphabetically.
  */
 export const YEAR_REVIEW_SOURCE: YearReviewSource = {
   year: '2026',
@@ -59,9 +58,13 @@ export const EXPECTED_YEAR_REVIEW: YearReview = {
   medianTimeMenMs: 1470000,
   // The women's sample [1680000, 1620000, 1620000, 1620000] averages its middle pair.
   medianTimeWomenMs: 1620000,
-  bestMale: { key: IVAN.key, displayName: IVAN.displayName, timeMs: 1440000, slug: '2026-01-11' },
-  // The three-way 27:00 tie goes to the earliest run — Смирнова's new-year race.
-  bestFemale: { key: ZOYA.key, displayName: ZOYA.displayName, timeMs: 1620000, slug: '2026-01-04' },
+  bestMen: [{ key: IVAN.key, displayName: IVAN.displayName, timeMs: 1440000, dateIso: '2026-01-11', slug: '2026-01-11' }],
+  // The three-way 27:00 tie of season bests ranks by name; each row keeps its own run date.
+  bestWomen: [
+    { key: VERA.key, displayName: VERA.displayName, timeMs: 1620000, dateIso: '2026-01-11', slug: '2026-01-11' },
+    { key: ANNA.key, displayName: ANNA.displayName, timeMs: 1620000, dateIso: '2026-01-11', slug: '2026-01-11' },
+    { key: ZOYA.key, displayName: ZOYA.displayName, timeMs: 1620000, dateIso: '2026-01-04', slug: '2026-01-04' },
+  ],
   mostActive: [
     { key: IVAN.key, displayName: IVAN.displayName, finishCount: 2 },
     { key: ANNA.key, displayName: ANNA.displayName, finishCount: 2 },
@@ -100,8 +103,8 @@ export const EXPECTED_EMPTY_YEAR_REVIEW: YearReview = {
   personalRecordCount: 0,
   medianTimeMenMs: null,
   medianTimeWomenMs: null,
-  bestMale: null,
-  bestFemale: null,
+  bestMen: [],
+  bestWomen: [],
   mostActive: [],
   badgeHolders: [],
   firstEventSlug: null,

@@ -6,17 +6,19 @@ export interface YearStatView {
   value: string;
 }
 
-/** A year's best result prepared for the template: the athlete and the race it was set at. */
-export interface YearBestResultView {
-  label: string;
+/** One row of a «лучшие результаты года» board: place, athlete, time and the race it was run at. */
+export interface YearBestRowView {
+  place: number;
   displayName: string;
   athleteLink: string[];
   timeText: string;
+  dateShort: string;
   raceLink: string[];
 }
 
-/** One row of the «самые активные» list. */
+/** One row of the «самые активные» board. */
 export interface YearActiveView {
+  place: number;
   displayName: string;
   athleteLink: string[];
   countText: string;
@@ -37,7 +39,8 @@ export interface YearBadgeGroupView {
 export interface YearReviewView {
   year: string;
   stats: YearStatView[];
-  bests: YearBestResultView[];
+  bestMen: YearBestRowView[];
+  bestWomen: YearBestRowView[];
   mostActive: YearActiveView[];
   badgeGroups: YearBadgeGroupView[];
 }

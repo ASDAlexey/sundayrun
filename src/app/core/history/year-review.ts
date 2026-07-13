@@ -5,7 +5,7 @@ import { ISO_MONTH_END, ISO_MONTH_START } from './year-badges.constant';
 import { medianMsOrNull } from './median';
 import { yearBadgesOf } from './year-badges';
 import { YearBadge, YearBadgeType } from './year-badges.enum';
-import { MOST_ACTIVE_LIMIT } from './year-review.constant';
+import { MOST_ACTIVE_LIMIT, YEAR_BESTS_LIMIT } from './year-review.constant';
 import { YearActiveAthlete, YearBadgeHolders, YearBestResult, YearReview, YearReviewSource, YearRunRow } from './year-review.interface';
 
 /** Display order of the badge holder lists on the year review page. */
@@ -19,8 +19,8 @@ const BADGE_DISPLAY_ORDER: readonly YearBadgeType[] = [
 
 /**
  * Boils one year of the archive down to the «Итоги года» page: totals, per-gender medians and
- * bests over the 5 km runs, the most active finishers and every badge holder of the year.
- * All ties break by name in Russian collation, so the lists are stable between loads.
+ * best-results boards over the 5 km runs, the most active finishers and every badge holder of
+ * the year. All ties break by name in Russian collation, so the lists are stable between loads.
  */
 export function buildYearReview(source: YearReviewSource): YearReview {
   const byAthlete = groupByAthlete(source.runRows);
@@ -35,8 +35,8 @@ export function buildYearReview(source: YearReviewSource): YearReview {
     personalRecordCount: source.personalRecordCount,
     medianTimeMenMs: medianOf(fiveKm, Gender.male),
     medianTimeWomenMs: medianOf(fiveKm, Gender.female),
-    bestMale: bestOf(fiveKm, Gender.male),
-    bestFemale: bestOf(fiveKm, Gender.female),
+    bestMen: bestsOf(fiveKm, Gender.male),
+    bestWomen: bestsOf(fiveKm, Gender.female),
     mostActive: mostActiveOf(byAthlete),
     badgeHolders: badgeHoldersOf(byAthlete, source.eventDates[0] ?? null),
     firstEventSlug: source.eventDates[0] ?? null,
@@ -71,21 +71,30 @@ function medianOf(fiveKm: YearRunRow[], gender: GenderType): number | null {
   );
 }
 
-/** The year's fastest 5 km of one gender; ties go to the earliest run, so the record date is stable. */
-function bestOf(fiveKm: YearRunRow[], gender: GenderType): YearBestResult | null {
-  let best: YearRunRow | null = null;
+/**
+ * The year's top-10 season bests of one gender, one row per athlete (their fastest run; a time
+ * tie goes to the earlier run, so the date is stable), ranked by time with the name tie-break —
+ * the same order the records boards use.
+ */
+function bestsOf(fiveKm: YearRunRow[], gender: GenderType): YearBestResult[] {
+  const bestByAthlete = new Map<string, YearRunRow>();
 
   for (const row of fiveKm) {
     if (row.gender !== gender) {
       continue;
     }
 
-    if (best === null || row.timeMs < best.timeMs || (row.timeMs === best.timeMs && row.dateIso < best.dateIso)) {
-      best = row;
+    const best = bestByAthlete.get(row.key);
+
+    if (best === undefined || row.timeMs < best.timeMs || (row.timeMs === best.timeMs && row.dateIso < best.dateIso)) {
+      bestByAthlete.set(row.key, row);
     }
   }
 
-  return best === null ? null : { key: best.key, displayName: best.displayName, timeMs: best.timeMs, slug: best.slug };
+  return [...bestByAthlete.values()]
+    .sort((left, right) => left.timeMs - right.timeMs || left.displayName.localeCompare(right.displayName, NAME_COLLATION_LOCALE))
+    .slice(0, YEAR_BESTS_LIMIT)
+    .map((row) => ({ key: row.key, displayName: row.displayName, timeMs: row.timeMs, dateIso: row.dateIso, slug: row.slug }));
 }
 
 function mostActiveOf(byAthlete: Map<string, YearRunRow[]>): YearActiveAthlete[] {

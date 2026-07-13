@@ -22,10 +22,12 @@ export interface YearReviewSource {
   personalRecordCount: number;
 }
 
+/** One row of the year's best-results board: an athlete's fastest 5 km of the season. */
 export interface YearBestResult {
   key: string;
   displayName: string;
   timeMs: number;
+  dateIso: string;
   slug: string;
 }
 
@@ -55,8 +57,9 @@ export interface YearReview {
   personalRecordCount: number;
   medianTimeMenMs: number | null;
   medianTimeWomenMs: number | null;
-  bestMale: YearBestResult | null;
-  bestFemale: YearBestResult | null;
+  /** Top-10 season bests per gender, one row per athlete, ranked like the records boards. */
+  bestMen: YearBestResult[];
+  bestWomen: YearBestResult[];
   mostActive: YearActiveAthlete[];
   /** Badge → athletes, display order; badges nobody earned are omitted. */
   badgeHolders: YearBadgeHolders[];

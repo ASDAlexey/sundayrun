@@ -61,6 +61,15 @@ describe('YearPage', () => {
     expect(fixture.componentInstance.view()?.year).toBe(YEAR_REVIEW.year);
     expect(fixture.componentInstance.view()?.stats.length).toBeGreaterThan(0);
     expect(fixture.componentInstance.view()?.badgeGroups.length).toBe(YEAR_REVIEW.badgeHolders.length);
+    expect(
+      fixture.componentInstance.view()?.bestMen.map((row) => row.place),
+      'the men’s best-results board ranks like the records page',
+    ).toEqual(YEAR_REVIEW.bestMen.map((_, index) => index + 1));
+    expect(fixture.componentInstance.view()?.bestWomen.length).toBe(YEAR_REVIEW.bestWomen.length);
+    expect(
+      fixture.componentInstance.view()?.mostActive.map((row) => row.place),
+      'the activity board carries places too',
+    ).toEqual(YEAR_REVIEW.mostActive.map((_, index) => index + 1));
 
     routeStub.setParams({ [YEAR_ROUTE_PARAM]: REQUESTED_YEAR });
     await settle();
@@ -89,7 +98,8 @@ describe('YearPage', () => {
     await settle();
 
     expect(page.status()).toBe(YearStatus.ready);
-    expect(page.view()?.bests, 'unknown bests render no cards').toEqual([]);
+    expect(page.view()?.bestMen, 'an empty year renders no best-results boards').toEqual([]);
+    expect(page.view()?.bestWomen).toEqual([]);
     expect(page.view()?.stats.length, 'unknown medians never become stat tiles').toBe(BESTLESS_STAT_COUNT);
 
     let resolveStale: (review: YearReview) => void = vi.fn();

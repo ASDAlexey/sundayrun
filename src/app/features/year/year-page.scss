@@ -110,46 +110,114 @@
   }
 
   &__bests {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // The two gendered best-results boards sit side by side, exactly like the records leaderboards.
+  &__boards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  &__board {
     @include c.card;
 
     display: flex;
     flex-direction: column;
     padding: 24px;
-    gap: 12px;
+    gap: 16px;
   }
 
-  &__bests-list {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-    gap: 8px;
-    list-style: none;
-  }
-
-  &__best {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 12px;
-  }
-
-  &__best-label {
-    @include t.text('label', 'medium');
-
-    color: var(--text-secondary);
-  }
-
-  &__best-name {
-    @include t.text('body', 'medium');
+  &__board-title {
+    @include t.text('title', 'large');
 
     color: var(--text);
   }
 
-  &__best-time {
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto;
+    align-items: center;
+    height: 52px;
+    padding: 0 4px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-soft);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    // Top-3: the same tinted podium lane the records boards wear.
+    &_podium {
+      border-radius: var(--radius-xs);
+      background: linear-gradient(90deg, var(--accent-glow), transparent 55%);
+    }
+
+    // The activity board has no date column: place, name, finish count.
+    &_active {
+      grid-template-columns: 40px 1fr auto;
+    }
+  }
+
+  &__place {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  &__row_podium &__place {
+    @include t.podium-rank;
+    @include t.gradient-text;
+  }
+
+  &__athlete {
     @include t.text('body', 'medium');
 
-    color: var(--accent);
+    overflow: hidden;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__time {
+    @include t.mono-value;
+
+    color: var(--accent-light);
+  }
+
+  &__date {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__count {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
   }
 
   &__active {
@@ -158,29 +226,7 @@
     display: flex;
     flex-direction: column;
     padding: 24px;
-    gap: 12px;
-  }
-
-  &__active-list {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding-left: 20px;
-    gap: 6px;
-  }
-
-  &__active-item {
-    @include t.text('body', 'medium');
-
-    color: var(--text-secondary);
-  }
-
-  &__active-name {
-    color: var(--text);
-  }
-
-  &__active-count {
-    margin-left: 8px;
+    gap: 16px;
   }
 
   &__badges {

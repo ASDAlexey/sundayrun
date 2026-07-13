@@ -6,14 +6,15 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { pluralText } from '../../core/i18n/plural-text';
 import { YearBestResult, YearReview } from '../../core/history/year-review.interface';
 import { formatDuration } from '../../core/time/duration';
+import { formatRussianDateShort } from '../../core/time/russian-date';
 import { YearReviewService } from '../../github/year-review.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { YEAR_PAGE_BASE_LINK, YEAR_ROUTE_PARAM } from './year-page.constant';
+import { YEAR_PAGE_BASE_LINK, YEAR_PODIUM_SIZE, YEAR_ROUTE_PARAM } from './year-page.constant';
 import { YearStatus, YearStatusType } from './year-page.enum';
-import { YearActiveView, YearBadgeGroupView, YearBestResultView, YearReviewView, YearStatView } from './year-page.interface';
+import { YearActiveView, YearBadgeGroupView, YearBestRowView, YearReviewView, YearStatView } from './year-page.interface';
 
 /** «Итоги года»: the year's totals, best results, most active finishers and badge holders. */
 @Component({
@@ -32,6 +33,7 @@ export class YearPage {
 
   protected readonly statuses = YearStatus;
   protected readonly yearBaseLink = YEAR_PAGE_BASE_LINK;
+  protected readonly podiumSize = YEAR_PODIUM_SIZE;
 
   #requestedYear: string | null = null;
 
@@ -84,10 +86,8 @@ function toReviewView(review: YearReview): YearReviewView {
   return {
     year: review.year,
     stats: toStats(review),
-    bests: [
-      ...toBestView($localize`:@@year.bestMale:Лучший результат года · М`, review.bestMale),
-      ...toBestView($localize`:@@year.bestFemale:Лучший результат года · Ж`, review.bestFemale),
-    ],
+    bestMen: review.bestMen.map(toBestRow),
+    bestWomen: review.bestWomen.map(toBestRow),
     mostActive: review.mostActive.map(toActiveView),
     badgeGroups: toBadgeGroups(review),
   };
@@ -113,24 +113,20 @@ function toStats(review: YearReview): YearStatView[] {
   return stats;
 }
 
-function toBestView(label: string, best: YearBestResult | null): YearBestResultView[] {
-  if (best === null) {
-    return [];
-  }
-
-  return [
-    {
-      label,
-      displayName: best.displayName,
-      athleteLink: [ATHLETES_PAGE_LINK, best.key],
-      timeText: formatDuration(best.timeMs),
-      raceLink: [RACE_PAGE_BASE_LINK, best.slug],
-    },
-  ];
+function toBestRow(best: YearBestResult, index: number): YearBestRowView {
+  return {
+    place: index + 1,
+    displayName: best.displayName,
+    athleteLink: [ATHLETES_PAGE_LINK, best.key],
+    timeText: formatDuration(best.timeMs),
+    dateShort: formatRussianDateShort(best.dateIso),
+    raceLink: [RACE_PAGE_BASE_LINK, best.slug],
+  };
 }
 
-function toActiveView(active: YearReview['mostActive'][number]): YearActiveView {
+function toActiveView(active: YearReview['mostActive'][number], index: number): YearActiveView {
   return {
+    place: index + 1,
     displayName: active.displayName,
     athleteLink: [ATHLETES_PAGE_LINK, active.key],
     countText: pluralText(active.finishCount, {
