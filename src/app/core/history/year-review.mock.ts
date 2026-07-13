@@ -1,4 +1,5 @@
 import { Gender } from '../models/gender.enum';
+import { HistoryRunRow } from './badge-signals.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 import { YearBadge } from './year-badges.enum';
 import { YearReview, YearReviewSource, YearRunRow } from './year-review.interface';
@@ -26,24 +27,39 @@ const runRow = (
   distanceKm,
 });
 
+const YEAR_RUN_ROWS: YearRunRow[] = [
+  // Иванов's runs arrive newest-first: the slower January opener must not displace his 24:00 best.
+  runRow(IVAN, '2026-01-11', 1440000, FIVE_KM_DISTANCE_KM),
+  runRow(IVAN, '2026-01-04', 1500000, FIVE_KM_DISTANCE_KM),
+  // Петрова's equal 27:00s arrive newest-first, so the best-of-year tie-break must keep the earlier run.
+  runRow(ANNA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
+  runRow(ANNA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
+  runRow(ZOYA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
+  runRow(VERA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
+  runRow(OLEG, '2026-01-11', 900000, TWO_THREE_KM_DISTANCE_KM),
+];
+
+const historyRow = (row: YearRunRow): HistoryRunRow => ({
+  athleteKey: row.key,
+  dateIso: row.dateIso,
+  timeMs: row.timeMs,
+  distanceKm: row.distanceKm,
+});
+
 /**
  * Two events; Иванов and Петрова ran both (the new-year one included), Смирнова, Кузнецова and
  * the genderless Сидоров ran one each, Сидоров on the short course only. The three women tie at
- * 27:00 season bests, so the best-results board ranks them alphabetically.
+ * 27:00 season bests, so the best-results board ranks them alphabetically. The history carries
+ * one extra pre-season run: Кузнецова's September opener puts a 126-day break before her 2026
+ * finish — a comeback.
  */
 export const YEAR_REVIEW_SOURCE: YearReviewSource = {
   year: '2026',
   eventDates: ['2026-01-04', '2026-01-11'],
-  runRows: [
-    // Иванов's runs arrive newest-first: the slower January opener must not displace his 24:00 best.
-    runRow(IVAN, '2026-01-11', 1440000, FIVE_KM_DISTANCE_KM),
-    runRow(IVAN, '2026-01-04', 1500000, FIVE_KM_DISTANCE_KM),
-    // Петрова's equal 27:00s arrive newest-first, so the best-of-year tie-break must keep the earlier run.
-    runRow(ANNA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
-    runRow(ANNA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
-    runRow(ZOYA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
-    runRow(VERA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
-    runRow(OLEG, '2026-01-11', 900000, TWO_THREE_KM_DISTANCE_KM),
+  runRows: YEAR_RUN_ROWS,
+  historyRows: [
+    { athleteKey: VERA.key, dateIso: '2025-09-07', timeMs: 1620000, distanceKm: FIVE_KM_DISTANCE_KM },
+    ...YEAR_RUN_ROWS.map(historyRow),
   ],
   newcomerCount: 2,
   personalRecordCount: 1,
@@ -83,6 +99,10 @@ export const EXPECTED_YEAR_REVIEW: YearReview = {
         { key: ZOYA.key, displayName: ZOYA.displayName },
       ],
     },
+    {
+      badge: YearBadge.comeback,
+      holders: [{ key: VERA.key, displayName: VERA.displayName }],
+    },
   ],
   firstEventSlug: '2026-01-04',
 };
@@ -92,6 +112,7 @@ export const EMPTY_YEAR_REVIEW_SOURCE: YearReviewSource = {
   year: '2027',
   eventDates: [],
   runRows: [],
+  historyRows: [],
   newcomerCount: 0,
   personalRecordCount: 0,
 };

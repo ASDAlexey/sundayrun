@@ -1,5 +1,7 @@
 import { Gender, GenderType } from '../models/gender.enum';
 import { NAME_COLLATION_LOCALE } from './athletes-list.constant';
+import { athleteSignalsOf, badgeSignalsByAthlete } from './badge-signals';
+import { AthleteBadgeSignals } from './badge-signals.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { ISO_MONTH_END, ISO_MONTH_START } from './year-badges.constant';
 import { medianMsOrNull } from './median';
@@ -15,6 +17,8 @@ const BADGE_DISPLAY_ORDER: readonly YearBadgeType[] = [
   YearBadge.obsessiveBronze,
   YearBadge.allMonths,
   YearBadge.newYearRace,
+  YearBadge.comeback,
+  YearBadge.cameAnyway,
 ];
 
 /**
@@ -38,7 +42,7 @@ export function buildYearReview(source: YearReviewSource): YearReview {
     bestMen: bestsOf(fiveKm, Gender.male),
     bestWomen: bestsOf(fiveKm, Gender.female),
     mostActive: mostActiveOf(byAthlete),
-    badgeHolders: badgeHoldersOf(byAthlete, source.eventDates[0] ?? null),
+    badgeHolders: badgeHoldersOf(byAthlete, source.eventDates[0] ?? null, badgeSignalsByAthlete(source.historyRows), source.year),
     firstEventSlug: source.eventDates[0] ?? null,
   };
 }
@@ -104,15 +108,23 @@ function mostActiveOf(byAthlete: Map<string, YearRunRow[]>): YearActiveAthlete[]
     .slice(0, MOST_ACTIVE_LIMIT);
 }
 
-function badgeHoldersOf(byAthlete: Map<string, YearRunRow[]>, firstEventDate: string | null): YearBadgeHolders[] {
+function badgeHoldersOf(
+  byAthlete: Map<string, YearRunRow[]>,
+  firstEventDate: string | null,
+  signalsByAthlete: Map<string, AthleteBadgeSignals>,
+  year: string,
+): YearBadgeHolders[] {
   const holdersByBadge = new Map<YearBadgeType, YearBadgeHolders['holders']>();
 
   for (const rows of byAthlete.values()) {
     const months = new Set(rows.map((row) => row.dateIso.slice(ISO_MONTH_START, ISO_MONTH_END)));
+    const signals = athleteSignalsOf(signalsByAthlete, rows[0].key);
     const badges = yearBadgesOf({
       runCount: rows.length,
       monthCount: months.size,
       ranNewYearRace: firstEventDate !== null && rows.some((row) => row.dateIso === firstEventDate),
+      hasComeback: signals.comebackYears.has(year),
+      slowFinishCount: signals.slowFinishCountByYear[year] ?? 0,
     });
 
     for (const badge of badges) {

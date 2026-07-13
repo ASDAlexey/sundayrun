@@ -1,4 +1,5 @@
 import { GenderType } from '../models/gender.enum';
+import { HistoryRunRow } from './badge-signals.interface';
 import { YearBadgeType } from './year-badges.enum';
 
 /** One finished run of the year joined with its athlete, the raw material of the review. */
@@ -18,6 +19,8 @@ export interface YearReviewSource {
   /** The year's event dates (slugs), ascending — the first one is the new-year race. */
   eventDates: string[];
   runRows: YearRunRow[];
+  /** Every finished run of the whole archive — the comeback and slow-finish signals source. */
+  historyRows: HistoryRunRow[];
   newcomerCount: number;
   personalRecordCount: number;
 }

@@ -31,6 +31,8 @@ export function yearBadgeRarity(
       runCount: row.runCount,
       monthCount: row.monthCount,
       ranNewYearRace: row.firstRunDateIso === firstEventDateByYear[row.year],
+      hasComeback: row.hasComeback,
+      slowFinishCount: row.slowFinishCount,
     });
 
     for (const badge of badges) {
