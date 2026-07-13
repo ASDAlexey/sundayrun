@@ -99,6 +99,18 @@
     &__rating-row {
       grid-template-columns: 28px 1fr 56px 56px 56px;
     }
+
+    // Even three-up columns so «Рейтинг» never drops onto a lonely second row;
+    // the grid keeps all options the same height even when «Гонка за сезон» wraps.
+    &__seg {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    &__seg-option {
+      padding-inline: 6px;
+      text-align: center;
+    }
   }
 
   &__search {
