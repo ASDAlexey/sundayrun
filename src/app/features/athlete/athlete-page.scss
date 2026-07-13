@@ -55,9 +55,12 @@
     gap: 20px 40px;
   }
 
+  // Caption and value share a centre axis; the value shrinks to its content,
+  // which also keeps the gradient text from stretching across the column.
   &__pb {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 8px;
   }
 
@@ -70,15 +73,12 @@
   &__pb-value {
     @include t.mono-value-large;
     @include t.gradient-text;
-
-    align-self: flex-start;
   }
 
   // The best first-lap split: the record's quieter sibling, linked to its protocol.
   &__lap-value {
     @include t.mono-value-large;
 
-    align-self: flex-start;
     color: var(--text);
     text-decoration: none;
     transition: color var(--transition-time) var(--ease);
@@ -100,6 +100,7 @@
   &__stat {
     display: flex;
     flex-direction: column-reverse;
+    align-items: center;
     gap: 4px;
   }
 

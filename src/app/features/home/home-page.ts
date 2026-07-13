@@ -35,6 +35,7 @@ import { RaceCard } from '../races/race-card/race-card';
 import { RacesStatus, RacesStatusType } from '../races/races-page.enum';
 import { TREND_WINDOW_SIZE } from '../races/races-page.constant';
 import { RaceListItem } from '../races/races-page.interface';
+import { YEAR_PAGE_BASE_LINK } from '../year/year-page.constant';
 import {
   HOME_META_TRANSFER_KEY,
   HOME_RACES_TRANSFER_KEY,
@@ -88,6 +89,7 @@ export class HomePage {
 
   protected readonly statuses = RacesStatus;
   protected readonly racesLink = RACES_PAGE_LINK;
+  protected readonly yearLink = YEAR_PAGE_BASE_LINK;
   protected readonly vkUrl = VK_COMMUNITY_URL;
 
   constructor() {

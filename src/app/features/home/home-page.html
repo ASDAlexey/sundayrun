@@ -235,7 +235,11 @@
 
   @if (statsView(); as stats) {
     <section class="home__stats">
-      <h2 class="home__stats-title" i18n="@@home.statsTitle">За всю историю</h2>
+      <div class="home__stats-head">
+        <h2 class="home__stats-title" i18n="@@home.statsTitle">За всю историю</h2>
+
+        <a class="home__stats-year" i18n="@@home.yearReviewLink" matButton="outlined" [routerLink]="yearLink">Итоги года</a>
+      </div>
 
       <dl class="home__stats-grid">
         <div class="home__stats-item">

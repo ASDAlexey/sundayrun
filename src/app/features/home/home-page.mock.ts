@@ -4,6 +4,7 @@ import { STATS_HISTORY } from '../../core/history/overall-stats.mock';
 import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
+import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
 import { HomeSelfView } from './home-page.interface';
 
 export { BAKED_RACE_ITEMS, EXPECTED_RACE_ITEMS, EXPECTED_RACE_TITLES, INDEX_LOAD_ERROR_MESSAGE } from '../races/races-page.mock';
@@ -54,3 +55,24 @@ export const EXPECTED_HOME_SELF_VIEW: HomeSelfView = {
 
 /** The personal card values in template order: finishes, best time, streak weeks, year finishes, year best. */
 export const EXPECTED_HOME_SELF_VALUES: string[] = ['4', '24:40', '2', '3', '25:00'];
+
+/** Мария came to the newest event but has never finished 5 km — both best times degrade to the dash. */
+export const HOME_SELF_DNF_RECORD: AthleteRecord = {
+  key: 'иванова мария',
+  displayName: 'Иванова Мария',
+  gender: null,
+  participationSlugs: ['2026-07-05'],
+  runs: [],
+  bestMs: null,
+  bestMsByYear: {},
+};
+
+export const EXPECTED_HOME_SELF_DNF_VIEW: HomeSelfView = {
+  displayName: 'Иванова Мария',
+  athleteLink: [ATHLETES_PAGE_LINK, 'иванова мария'],
+  finishesText: '0',
+  bestTimeText: NO_BEST_TIME_TEXT,
+  streakText: '1',
+  finishesYearText: '0',
+  bestTimeYearText: NO_BEST_TIME_TEXT,
+};

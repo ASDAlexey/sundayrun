@@ -613,6 +613,28 @@
     gap: 24px;
   }
 
+  &__stats-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  // Material renders the button chrome; only the arrow glyph stays ours.
+  &__stats-year {
+    &::after {
+      display: inline-block;
+      margin-left: 8px;
+      content: '→';
+      transition: transform var(--transition-time) ease;
+    }
+
+    &:hover::after {
+      transform: translateX(3px);
+    }
+  }
+
   // The mockup heads this card with an eyebrow, not a title — the numbers carry the weight.
   &__stats-title {
     @include t.eyebrow;

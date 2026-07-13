@@ -27,12 +27,14 @@ import {
   BAKED_RACE_ITEMS,
   EXPECTED_COURSE_START_CUSTOM_TEXT,
   EXPECTED_COURSE_START_DEFAULT_TEXT,
+  EXPECTED_HOME_SELF_DNF_VIEW,
   EXPECTED_HOME_SELF_VALUES,
   EXPECTED_HOME_SELF_VIEW,
   EXPECTED_MEN_ONLY_STATS_VALUES,
   EXPECTED_RACE_ITEMS,
   EXPECTED_RACE_TITLES,
   EXPECTED_STATS_VALUES,
+  HOME_SELF_DNF_RECORD,
   HOME_SELF_EVENT_SLUGS,
   HOME_SELF_PICK,
   HOME_SELF_RECORD,
@@ -245,6 +247,15 @@ describe('HomePage', () => {
     selfSignal.set(null);
 
     expect(page.selfView(), 'resetting the pick hides the card without a reload').toBeNull();
+
+    loadRecord.mockResolvedValue(HOME_SELF_DNF_RECORD);
+    fixture.destroy();
+    selfSignal.set(HOME_SELF_PICK);
+    fixture = TestBed.createComponent(HomePage);
+    fixture.detectChanges();
+    await settle();
+
+    expect(fixture.componentInstance.selfView(), 'a DNF-only pick keeps the card, dashing both bests').toEqual(EXPECTED_HOME_SELF_DNF_VIEW);
 
     loadRecord.mockRejectedValue(new Error(ATHLETES_LOAD_ERROR_MESSAGE));
     fixture.destroy();
