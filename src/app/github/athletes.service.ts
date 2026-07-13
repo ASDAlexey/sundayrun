@@ -2,21 +2,30 @@ import { Injectable, inject } from '@angular/core';
 
 import { YearBadgeRarity } from '../core/history/badge-rarity.type';
 import { CourseRecordHistory } from '../core/history/course-records.type';
+import { AthleteFirstLap } from '../core/history/first-lap.interface';
+import { FirstLapRecords } from '../core/history/first-lap.type';
 import { LegendFinish } from '../core/history/legend.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
+import { RivalRun } from '../core/history/rivals.interface';
+import { SeasonRun } from '../core/history/season-positions.interface';
+import { YearBestRow } from '../core/history/year-ranks.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { selectYearBadgeRarity, selectYearBestRows } from './protocol-db-badges';
 import {
+  selectAthleteBestFirstLap,
   selectAthleteRecord,
   selectAthleteRecords,
   selectAthleteRunPlaces,
   selectCourseRecords,
   selectEventSlugs,
   selectFirstEventDateByYear,
+  selectFirstLapRecords,
   selectLegendFinishes,
   selectOverallStats,
-  selectYearBadgeRarity,
+  selectRivalRuns,
 } from './protocol-db-queries';
+import { selectSeasonLapRuns, selectSeasonRuns } from './protocol-db-season';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
@@ -50,6 +59,26 @@ export class AthletesService {
     return selectCourseRecords(this.#db);
   }
 
+  /** Every 5 km finish of one season; feeds the standings bump chart on the records page. */
+  loadSeasonRuns(year: string): Promise<SeasonRun[]> {
+    return selectSeasonRuns(this.#db, year);
+  }
+
+  /** The recorded first-lap splits of one season; the chart's «Первый круг» mode ranks these. */
+  loadSeasonLapRuns(year: string): Promise<SeasonRun[]> {
+    return selectSeasonLapRuns(this.#db, year);
+  }
+
+  /** The first-lap (2.3 km) record per gender for the records page. */
+  loadFirstLapRecords(): Promise<FirstLapRecords> {
+    return selectFirstLapRecords(this.#db);
+  }
+
+  /** The athlete's fastest recorded first lap; null while none of their runs carries a split. */
+  loadBestFirstLap(key: string): Promise<AthleteFirstLap | null> {
+    return selectAthleteBestFirstLap(this.#db, key);
+  }
+
   /** The home page totals as SQL aggregates. */
   loadOverallStats(): Promise<OverallStats> {
     return selectOverallStats(this.#db);
@@ -70,8 +99,18 @@ export class AthletesService {
     return selectYearBadgeRarity(this.#db);
   }
 
+  /** Every athlete-year's best 5 km time; feeds the year-ranking badges on the athlete page. */
+  loadYearBests(): Promise<YearBestRow[]> {
+    return selectYearBestRows(this.#db);
+  }
+
   /** Every finished run of the archive; feeds the «Легенда трассы» window tally on the athlete page. */
   loadLegendFinishes(): Promise<LegendFinish[]> {
     return selectLegendFinishes(this.#db);
+  }
+
+  /** Every 5 km finish at the athlete's events (own rows included); feeds the «Соперники» card. */
+  loadRivalRuns(key: string): Promise<RivalRun[]> {
+    return selectRivalRuns(this.#db, key);
   }
 }

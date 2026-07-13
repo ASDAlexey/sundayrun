@@ -16,6 +16,9 @@ export interface ArchiveIndexEntry {
   participantCount: number;
   finisherCount: number | null;
   medianTimeMs: number | null;
+  /** Per-gender 5 km medians for the card's М/Ж blocks; null before the v4 backfill or with no qualifying finisher. */
+  medianMaleMs: number | null;
+  medianFemaleMs: number | null;
   bestMaleMs: number | null;
   bestFemaleMs: number | null;
   /** Rows noted 'Первое участие'; kept converged with the archive-wide note recompute on every db write. */

@@ -2,7 +2,7 @@ import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 
 /** A seed row so the exported real db answers a keyed lookup with a known value array. */
 export const NODE_SEED_SQL: readonly string[] = [
-  "INSERT INTO events VALUES ('2026-06-21', '2026-06-21', 12, NULL, 'Москва', 'Парк', 'Клуб', 'Иванов', 3, 3, 100, 90, 95, NULL, NULL)",
+  "INSERT INTO events VALUES ('2026-06-21', '2026-06-21', 12, NULL, 'Москва', 'Парк', 'Клуб', 'Иванов', 3, 3, 100, 98, 102, 90, 95, NULL, NULL)",
 ];
 
 export const NODE_QUERY_SQL = 'SELECT slug, number FROM events WHERE slug = ?';

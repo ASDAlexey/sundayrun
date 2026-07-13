@@ -7,8 +7,10 @@ import { Gender } from '../core/models/gender.enum';
 import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { createProtocolDrizzle, ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../core/history/course-records.constant';
+import { EMPTY_FIRST_LAP_RECORDS } from '../core/history/first-lap.constant';
 import {
   selectArchiveEvents,
+  selectAthleteBestFirstLap,
   selectAthleteRecord,
   selectAthleteRecords,
   selectAthleteRunPlaces,
@@ -16,10 +18,12 @@ import {
   selectEventParticipantRuns,
   selectEventResults,
   selectEventSlugs,
+  selectFirstLapRecords,
   selectFiveKmFinishCountsBefore,
+  selectPreviousBestsBefore,
   selectLegendFinishes,
   selectOverallStats,
-  selectYearBadgeRarity,
+  selectRivalRuns,
   selectYearReview,
 } from './protocol-db-queries';
 import {
@@ -27,13 +31,19 @@ import {
   EXPECTED_ARCHIVE_EVENTS,
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
+  EXPECTED_DB_BEST_FIRST_LAP,
+  EXPECTED_DB_FIRST_LAP_RECORDS,
   EXPECTED_DB_YEAR_REVIEW,
   EXPECTED_EMPTY_SQL_STATS,
   EXPECTED_EVENT_SLUGS,
+  EXPECTED_EDGE_FIRST_LAP_RECORDS,
   EXPECTED_FINISH_COUNTS_BEFORE,
+  EXPECTED_PREVIOUS_BESTS_BEFORE,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_LEGEND_FINISHES,
+  EXPECTED_LONE_RIVAL_RUNS,
   EXPECTED_PARTICIPANT_RUNS,
+  EXPECTED_RIVAL_RUNS,
   EXPECTED_RUN_PLACES,
   EXPECTED_SQL_STATS,
   EXPECTED_WOMAN_RUN_PLACES,
@@ -43,6 +53,8 @@ import {
   POPULATED_SEED,
   REVIEW_YEAR,
   RUNLESS_ATHLETE_KEY,
+  SEED_ATHLETES,
+  SEED_SEASON_LAP_EDGE_RESULTS,
   UNKNOWN_ATHLETE_KEY,
   UNKNOWN_EVENT_SLUG,
   YEAR_REVIEW_SEED,
@@ -124,18 +136,34 @@ describe('protocol-db-queries', () => {
     await expect(selectEventResults(db, UNKNOWN_EVENT_SLUG), 'an unknown slug resolves null').resolves.toBeNull();
     await expect(selectEventParticipantRuns(db, PARTICIPANT_RUNS_SLUG)).resolves.toEqual(EXPECTED_PARTICIPANT_RUNS);
     await expect(selectEventParticipantRuns(db, UNKNOWN_EVENT_SLUG), 'an unknown slug has no participants').resolves.toEqual([]);
+    await expect(selectRivalRuns(db, ATHLETE_KEY), 'nobody shares his events — only the own rows').resolves.toEqual(
+      EXPECTED_LONE_RIVAL_RUNS,
+    );
+    await expect(selectRivalRuns(db, UNKNOWN_ATHLETE_KEY), 'an unknown key has no rival runs').resolves.toEqual([]);
     await expect(
       selectFiveKmFinishCountsBefore(db, FINISH_COUNTS_BEFORE_DATE),
       'the strict cut drops the same-date run; the 2.3 km run never counts',
     ).resolves.toEqual(EXPECTED_FINISH_COUNTS_BEFORE);
-    await expect(selectYearBadgeRarity(db), 'no seeded year reaches a badge — an empty rarity map').resolves.toEqual({});
+    await expect(
+      selectPreviousBestsBefore(db, FINISH_COUNTS_BEFORE_DATE),
+      'the earlier all-time best per athlete, same strict cut',
+    ).resolves.toEqual(EXPECTED_PREVIOUS_BESTS_BEFORE);
     await expect(selectLegendFinishes(db)).resolves.toEqual(EXPECTED_LEGEND_FINISHES);
+    await expect(
+      selectFirstLapRecords(db),
+      'the women’s tie stays with the earlier run; the caps spelling resolves through the athletes table',
+    ).resolves.toEqual(EXPECTED_DB_FIRST_LAP_RECORDS);
+    await expect(selectAthleteBestFirstLap(db, ATHLETE_KEY)).resolves.toEqual(EXPECTED_DB_BEST_FIRST_LAP);
+    await expect(selectAthleteBestFirstLap(db, UNKNOWN_ATHLETE_KEY), 'an unknown key has no splits').resolves.toBeNull();
   });
 
   it('boils one year of the archive down to its review and drops corrupt gender codes from the record scan', async () => {
     const db = await drizzleFor(YEAR_REVIEW_SEED);
 
     await expect(selectYearReview(db, REVIEW_YEAR)).resolves.toEqual(EXPECTED_DB_YEAR_REVIEW);
+    await expect(selectRivalRuns(db, ATHLETE_KEY), 'the shared-event finisher joins the athlete’s own rows').resolves.toEqual(
+      EXPECTED_RIVAL_RUNS,
+    );
     await expect(selectCourseRecords(db), 'the corrupt gender code never enters the record scan').resolves.toEqual(EXPECTED_COURSE_RECORDS);
   });
 
@@ -145,8 +173,19 @@ describe('protocol-db-queries', () => {
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_EMPTY_SQL_STATS);
     await expect(selectCourseRecords(db), 'no runs mean no record history for either gender').resolves.toEqual(EMPTY_COURSE_RECORD_HISTORY);
     await expect(selectEventSlugs(db), 'an empty archive has no chronology').resolves.toEqual([]);
-    await expect(selectYearBadgeRarity(db), 'no participants — no rarity').resolves.toEqual({});
     await expect(selectLegendFinishes(db), 'an empty archive has no legend finishes').resolves.toEqual([]);
     await expect(selectFiveKmFinishCountsBefore(db, FINISH_COUNTS_BEFORE_DATE), 'no runs mean no counts').resolves.toEqual({});
+    await expect(selectPreviousBestsBefore(db, FINISH_COUNTS_BEFORE_DATE), 'no runs mean no previous bests').resolves.toEqual({});
+    await expect(selectFirstLapRecords(db), 'no splits leave both boards vacant').resolves.toEqual(EMPTY_FIRST_LAP_RECORDS);
+    await expect(selectAthleteBestFirstLap(db, ATHLETE_KEY), 'no rows mean no best lap').resolves.toBeNull();
+
+    close?.();
+
+    const edges = await drizzleFor([...SEED_ATHLETES, ...SEED_SEASON_LAP_EDGE_RESULTS]);
+
+    await expect(
+      selectFirstLapRecords(edges),
+      'the corrupt gender code and the unparseable split never enter the lap scan',
+    ).resolves.toEqual(EXPECTED_EDGE_FIRST_LAP_RECORDS);
   });
 });

@@ -1,23 +1,28 @@
-import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, like, lt, min, sql } from 'drizzle-orm';
+import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, like, lt, min, ne, sql } from 'drizzle-orm';
 
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
-import { yearBadgeRarity } from '../core/history/badge-rarity';
-import { YearBadgeRarity } from '../core/history/badge-rarity.type';
 import { eventFilePaths } from '../core/github/event-paths';
 import { buildEventResultsFile } from '../core/github/results-file';
 import { EventResultsFile } from '../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../core/history/athlete-key';
 import { courseRecordHistory } from '../core/history/course-records';
 import { CourseRecordHistory } from '../core/history/course-records.type';
+import { bestFirstLap, firstLapRecords } from '../core/history/first-lap';
+import { AthleteFirstLap } from '../core/history/first-lap.interface';
+import { FirstLapRecords } from '../core/history/first-lap.type';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { isoYear } from '../core/history/iso-year';
 import { LegendFinish } from '../core/history/legend.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
+import { buildPreviousBests } from '../core/history/previous-bests';
+import { PreviousBest } from '../core/history/previous-bests.interface';
+import { RivalRun } from '../core/history/rivals.interface';
 import { PERSONAL_RECORD_NOTE_PREFIX } from '../core/history/notes-builder.constant';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { buildYearReview } from '../core/history/year-review';
 import { YearReview } from '../core/history/year-review.interface';
 import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interface';
+import { parseDuration } from '../core/time/duration';
 import { Gender, GenderType } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
 import { athletes, events, participations, results, runs } from '../core/sqlite/protocol-db.schema';
@@ -170,6 +175,60 @@ export async function selectCourseRecords(db: ProtocolDrizzle): Promise<CourseRe
 }
 
 /**
+ * The first-lap (2.3 km) record per gender — the fastest recorded split among 5 km finishers.
+ * Splits live only in the protocol rows under the organisers' spellings, so the display name is
+ * resolved through the athletes table by the normalized key (the protocol spelling is the fallback
+ * for a finisher the rollup has not ranked). Old protocols without splits contribute no rows.
+ */
+export async function selectFirstLapRecords(db: ProtocolDrizzle): Promise<FirstLapRecords> {
+  const [rows, athleteRows] = await Promise.all([
+    db
+      .select({ fullName: results.fullName, time23: results.time23, gender: results.gender, slug: results.slug })
+      .from(results)
+      .where(and(ne(results.time23, ''), ne(results.time5, ''), isNotNull(results.gender))),
+    db.select({ key: athletes.key, displayName: athletes.displayName }).from(athletes),
+  ]);
+  const displayNames = new Map(athleteRows.map((row) => [row.key, row.displayName]));
+
+  return firstLapRecords(
+    rows.flatMap((row) => {
+      const gender = asGender(row.gender);
+      const lapMs = parseDuration(row.time23);
+
+      if (gender === null || lapMs === null) {
+        return [];
+      }
+
+      const key = normalizeAthleteKey(row.fullName);
+
+      // The slug doubles as the ISO event date (see `selectEventSlugs`), saving the events join.
+      return [{ key, displayName: displayNames.get(key) ?? row.fullName, gender, dateIso: row.slug, slug: row.slug, lapMs }];
+    }),
+  );
+}
+
+/**
+ * The athlete's fastest first-lap (2.3 km) split over their 5 km finishes, or null when no run of
+ * theirs carries a recorded split. The rows arrive like in `selectAthleteRunPlaces`: joined by the
+ * athlete's runs and matched back by the normalized name against the organisers' spelling.
+ */
+export async function selectAthleteBestFirstLap(db: ProtocolDrizzle, key: string): Promise<AthleteFirstLap | null> {
+  const rows = await db
+    .select({ slug: results.slug, fullName: results.fullName, time23: results.time23, dateIso: runs.dateIso })
+    .from(results)
+    .innerJoin(runs, and(eq(runs.slug, results.slug), eq(runs.athleteKey, key)))
+    .where(and(ne(results.time23, ''), ne(results.time5, '')));
+
+  return bestFirstLap(
+    rows.flatMap((row) => {
+      const lapMs = parseDuration(row.time23);
+
+      return lapMs === null || normalizeAthleteKey(row.fullName) !== key ? [] : [{ dateIso: row.dateIso, slug: row.slug, lapMs }];
+    }),
+  );
+}
+
+/**
  * Every finished run (any distance) with the finisher's display name, oldest first — the
  * «Легенда трассы» tally source. The window cut happens in `legendBoard`: the whole run history
  * is a few thousand short rows, so no date filter is worth a second query for the anchor.
@@ -202,39 +261,6 @@ export async function selectFirstEventDateByYear(db: ProtocolDrizzle): Promise<R
   }
 
   return firstDateByYear;
-}
-
-/**
- * Badge → the share of participants who ever earned it — the «есть у 12% участников» hint on badge
- * chips. Activity aggregates per athlete-year feed the same `yearBadgesOf` rule the chips are
- * awarded by; an athlete's earliest run of a year equals the year's first race date iff they
- * finished that race, so no per-run scan is needed.
- */
-export async function selectYearBadgeRarity(db: ProtocolDrizzle): Promise<YearBadgeRarity> {
-  const [activityRows, participantRows, firstEventDateByYear] = await Promise.all([
-    db
-      .select({
-        athleteKey: runs.athleteKey,
-        year: sql<string>`substr(${runs.dateIso}, 1, 4)`,
-        runCount: count(),
-        monthCount: countDistinct(sql`substr(${runs.dateIso}, 6, 2)`),
-        firstRunDateIso: min(runs.dateIso),
-      })
-      .from(runs)
-      .groupBy(runs.athleteKey, sql`substr(${runs.dateIso}, 1, 4)`),
-    db.select({ participantCount: countDistinct(participations.athleteKey) }).from(participations),
-    selectFirstEventDateByYear(db),
-  ]);
-  const [{ participantCount }] = participantRows;
-  const activities = activityRows.map((row) => ({
-    athleteKey: row.athleteKey,
-    year: asString(row.year),
-    runCount: row.runCount,
-    monthCount: row.monthCount,
-    firstRunDateIso: asString(row.firstRunDateIso),
-  }));
-
-  return yearBadgeRarity(activities, firstEventDateByYear, participantCount);
 }
 
 /** The «Итоги года» page payload: a handful of year-scoped selects boiled down by `buildYearReview`. */
@@ -322,6 +348,8 @@ export async function selectArchiveEvents(db: ProtocolDrizzle, limit?: number): 
       participantCount: events.participantCount,
       finisherCount: events.finisherCount,
       medianTimeMs: events.medianTimeMs,
+      medianMaleMs: events.medianMaleMs,
+      medianFemaleMs: events.medianFemaleMs,
       bestMaleMs: events.bestMaleMs,
       bestFemaleMs: events.bestFemaleMs,
       newcomerCount: events.newcomerCount,
@@ -398,6 +426,29 @@ export async function selectEventParticipantRuns(db: ProtocolDrizzle, slug: stri
 }
 
 /**
+ * Every 5 km finish (with the finisher's display name) at the events `key` finished the 5 km at,
+ * the athlete's own rows included — the «Соперники» card source. The close-gap cut and the year
+ * filter happen in `closeRivals`, so one read serves every year the page can switch to.
+ */
+export async function selectRivalRuns(db: ProtocolDrizzle, key: string): Promise<RivalRun[]> {
+  const athleteEvents = db.$with('athlete_events').as(
+    db
+      .select({ slug: runs.slug })
+      .from(runs)
+      .where(and(eq(runs.athleteKey, key), eq(runs.distanceKm, FIVE_KM_DISTANCE_KM))),
+  );
+
+  return db
+    .with(athleteEvents)
+    .select({ key: runs.athleteKey, displayName: athletes.displayName, dateIso: runs.dateIso, slug: runs.slug, timeMs: runs.timeMs })
+    .from(runs)
+    .innerJoin(athleteEvents, eq(athleteEvents.slug, runs.slug))
+    .innerJoin(athletes, eq(athletes.key, runs.athleteKey))
+    .where(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM))
+    .orderBy(asc(runs.dateIso), asc(runs.athleteKey));
+}
+
+/**
  * athleteKey → 5 km finishes strictly before `dateIso` — the publish-time «Финишей» column source.
  * Strictly before, because the event being published is not stored yet (or, on a republish, must
  * not count twice): `eventFinishCounts` adds the event's own finish itself.
@@ -415,6 +466,23 @@ export async function selectFiveKmFinishCountsBefore(db: ProtocolDrizzle, dateIs
   }
 
   return counts;
+}
+
+/**
+ * athleteKey → the all-time 5 km best run strictly before `dateIso` — the publish-time source of
+ * the dated «ЛР (было X)» note. Strictly before, because the event being published is not stored
+ * yet and its own finishes must not shadow the record they beat.
+ */
+export async function selectPreviousBestsBefore(db: ProtocolDrizzle, dateIso: string): Promise<Record<string, PreviousBest>> {
+  const rows = await db
+    .select({ athleteKey: runs.athleteKey, dateIso: runs.dateIso, slug: runs.slug, timeMs: runs.timeMs })
+    .from(runs)
+    .where(and(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM), lt(runs.dateIso, dateIso)));
+
+  return buildPreviousBests(
+    rows.map((row) => ({ ...row, distanceKm: FIVE_KM_DISTANCE_KM })),
+    dateIso,
+  );
 }
 
 function toProtocolRow(row: {
@@ -473,6 +541,8 @@ function toArchiveEntry(row: {
   participantCount: number;
   finisherCount: number | null;
   medianTimeMs: number | null;
+  medianMaleMs: number | null;
+  medianFemaleMs: number | null;
   bestMaleMs: number | null;
   bestFemaleMs: number | null;
   newcomerCount: number | null;
@@ -488,6 +558,8 @@ function toArchiveEntry(row: {
     participantCount: row.participantCount,
     finisherCount: row.finisherCount,
     medianTimeMs: row.medianTimeMs,
+    medianMaleMs: row.medianMaleMs,
+    medianFemaleMs: row.medianFemaleMs,
     bestMaleMs: row.bestMaleMs,
     bestFemaleMs: row.bestFemaleMs,
     newcomerCount: row.newcomerCount,

@@ -2,8 +2,14 @@ import { Injectable, inject } from '@angular/core';
 
 import { EventResultsFile } from '../core/github/results-file.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
+import { PreviousBest } from '../core/history/previous-bests.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { selectEventParticipantRuns, selectEventResults, selectFiveKmFinishCountsBefore } from './protocol-db-queries';
+import {
+  selectEventParticipantRuns,
+  selectEventResults,
+  selectFiveKmFinishCountsBefore,
+  selectPreviousBestsBefore,
+} from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /**
@@ -52,8 +58,13 @@ export class ResultsService {
     return selectEventParticipantRuns(this.#db, slug);
   }
 
-  /** athleteKey → 5 km finishes strictly before `dateIso`, feeding the publish-time «Финишей» column. */
+  /** athleteKey → 5 km finishes strictly before `dateIso`, feeding the publish-time «Участий» column. */
   loadFinishCountsBefore(dateIso: string): Promise<Record<string, number>> {
     return selectFiveKmFinishCountsBefore(this.#db, dateIso);
+  }
+
+  /** athleteKey → the all-time 5 km best strictly before `dateIso`, dating the «ЛР (было X)» note in the publish-time PDF. */
+  loadPreviousBestsBefore(dateIso: string): Promise<Record<string, PreviousBest>> {
+    return selectPreviousBestsBefore(this.#db, dateIso);
   }
 }

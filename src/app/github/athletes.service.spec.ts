@@ -3,17 +3,24 @@ import { TestBed } from '@angular/core/testing';
 import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
 import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { AthletesService } from './athletes.service';
+import { EXPECTED_DB_BADGE_RARITY, EXPECTED_DB_YEAR_BEST_ROWS } from './protocol-db-badges.mock';
 import {
   ATHLETE_KEY,
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
+  EXPECTED_DB_BEST_FIRST_LAP,
+  EXPECTED_DB_FIRST_LAP_RECORDS,
   EXPECTED_EVENT_SLUGS,
   EXPECTED_FIRST_EVENT_DATE_BY_YEAR,
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_LEGEND_FINISHES,
+  EXPECTED_LONE_RIVAL_RUNS,
   EXPECTED_RUN_PLACES,
+  EXPECTED_SEASON_RUNS,
   EXPECTED_SQL_STATS,
+  EXPECTED_SEASON_LAP_RUNS,
   POPULATED_SEED,
+  SEASON_RUNS_YEAR,
   UNKNOWN_ATHLETE_KEY,
 } from './protocol-db-queries.mock';
 import { PROTOCOL_DB_ERROR_MESSAGE } from './protocol-db.service.mock';
@@ -48,8 +55,14 @@ describe('AthletesService', () => {
     await expect(service.loadOverallStats()).resolves.toEqual(EXPECTED_SQL_STATS);
     await expect(service.loadEventSlugs()).resolves.toEqual(EXPECTED_EVENT_SLUGS);
     await expect(service.loadFirstEventDateByYear()).resolves.toEqual(EXPECTED_FIRST_EVENT_DATE_BY_YEAR);
-    await expect(service.loadYearBadgeRarity(), 'no seeded year reaches a badge — an empty rarity map').resolves.toEqual({});
+    await expect(service.loadYearBadgeRarity(), 'the ranking crowns reach the rarity map').resolves.toEqual(EXPECTED_DB_BADGE_RARITY);
+    await expect(service.loadYearBests()).resolves.toEqual(EXPECTED_DB_YEAR_BEST_ROWS);
     await expect(service.loadLegendFinishes()).resolves.toEqual(EXPECTED_LEGEND_FINISHES);
+    await expect(service.loadRivalRuns(ATHLETE_KEY)).resolves.toEqual(EXPECTED_LONE_RIVAL_RUNS);
+    await expect(service.loadFirstLapRecords()).resolves.toEqual(EXPECTED_DB_FIRST_LAP_RECORDS);
+    await expect(service.loadBestFirstLap(ATHLETE_KEY)).resolves.toEqual(EXPECTED_DB_BEST_FIRST_LAP);
+    await expect(service.loadSeasonRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_RUNS);
+    await expect(service.loadSeasonLapRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_LAP_RUNS);
   });
 
   it('propagates a db failure from every read so the page can show a distinct error state', async () => {
@@ -62,5 +75,9 @@ describe('AthletesService', () => {
     await expect(service.loadOverallStats()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadEventSlugs()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
     await expect(service.loadLegendFinishes()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadRivalRuns(ATHLETE_KEY)).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadFirstLapRecords()).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadBestFirstLap(ATHLETE_KEY)).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
+    await expect(service.loadSeasonRuns(SEASON_RUNS_YEAR)).rejects.toMatchObject({ cause: { message: PROTOCOL_DB_ERROR_MESSAGE } });
   });
 });

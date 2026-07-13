@@ -27,6 +27,8 @@ export function buildIndexEntry(event: RaceEvent, rows: ProtocolRow[]): ArchiveI
     participantCount: rows.length,
     finisherCount: finisherTimesMs.length,
     medianTimeMs: medianMsOrNull(finisherTimesMs),
+    medianMaleMs: medianMsOrNull(fiveKmTimesMs(rows, Gender.male)),
+    medianFemaleMs: medianMsOrNull(fiveKmTimesMs(rows, Gender.female)),
     bestMaleMs: bestOf(rows, Gender.male),
     bestFemaleMs: bestOf(rows, Gender.female),
     newcomerCount,
