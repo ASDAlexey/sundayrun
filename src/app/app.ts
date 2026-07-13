@@ -43,4 +43,12 @@ export class App {
     event.preventDefault();
     this.#document.getElementById(MAIN_CONTENT_ID)?.focus();
   }
+
+  /**
+   * The organizer link lives in the footer, so tapping it would otherwise open
+   * `/admin` still scrolled to the very bottom (the router keeps the position).
+   */
+  scrollToTop(): void {
+    this.#document.defaultView?.scrollTo({ top: 0, behavior: 'instant' });
+  }
 }
