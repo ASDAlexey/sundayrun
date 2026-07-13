@@ -1,6 +1,7 @@
 import { DOCUMENT, Injectable, inject } from '@angular/core';
 
 import { finishCountsAt } from '../core/history/finish-counts';
+import { buildPreviousBests } from '../core/history/previous-bests';
 import { ResultsService } from '../github/results.service';
 import { triggerBlobDownload } from './blob-download';
 import { PdfService } from './pdf.service';
@@ -21,7 +22,7 @@ export class ProtocolPdfService {
   async download(slug: string): Promise<void> {
     const [file, participantRuns] = await Promise.all([
       this.#results.loadResults(slug),
-      // The finish counts are garnish: a failed read blanks the «Финишей» column, never the PDF.
+      // The runs are garnish: a failed read blanks the «Участий» column and the «ЛР» dates, never the PDF.
       this.#results.loadParticipantRuns(slug).catch(() => []),
     ]);
 
@@ -29,7 +30,12 @@ export class ProtocolPdfService {
       throw new Error(PROTOCOL_PDF_NOT_FOUND_ERROR);
     }
 
-    const blob = await this.#pdf.generateProtocolBlob(file.event, file.rows, finishCountsAt(participantRuns, file.event.dateIso));
+    const blob = await this.#pdf.generateProtocolBlob(
+      file.event,
+      file.rows,
+      finishCountsAt(participantRuns, file.event.dateIso),
+      buildPreviousBests(participantRuns, file.event.dateIso),
+    );
 
     triggerBlobDownload(this.#document, blob, this.#pdf.suggestedFileName(file.event));
   }

@@ -23,7 +23,10 @@ export const FLEX_COLUMN_WIDTH: Size = '*';
 
 export const LINE_BREAK = '\n';
 
-export const EVENT_TITLE_PREFIX = 'Воскресный парковый пробег № ';
+/** The header column is a third of the page, so «№ 105 (221)» is glued with non-breaking spaces — a wrap falls before the number, never inside it. */
+export const NON_BREAKING_SPACE = '\u00a0';
+
+export const EVENT_TITLE_PREFIX = `Воскресный парковый пробег №${NON_BREAKING_SPACE}`;
 
 export const PROTOCOL_TITLE = 'ПРОТОКОЛ';
 
@@ -63,7 +66,7 @@ export const HEADER_PLACE_M = 'М';
 
 export const HEADER_PLACE_F = 'Ж';
 
-export const HEADER_FINISHES = 'Финишей';
+export const HEADER_FINISHES = 'Участий за всё время';
 
 export const HEADER_CLUB = 'Клуб';
 

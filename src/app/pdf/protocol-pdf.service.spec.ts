@@ -54,7 +54,7 @@ describe('ProtocolPdfService', () => {
 
     expect(loadResults).toHaveBeenCalledExactlyOnceWith(PROTOCOL_PDF_SLUG);
     expect(loadParticipantRuns).toHaveBeenCalledExactlyOnceWith(PROTOCOL_PDF_SLUG);
-    expect(generateProtocolBlob).toHaveBeenCalledExactlyOnceWith(file.event, file.rows, {});
+    expect(generateProtocolBlob).toHaveBeenCalledExactlyOnceWith(file.event, file.rows, {}, {});
     expect(suggestedFileName).toHaveBeenCalledExactlyOnceWith(file.event);
     expect(URL.createObjectURL).toHaveBeenCalledExactlyOnceWith(PROTOCOL_PDF_BLOB_MOCK);
     expect(downloadName, 'the saved file carries the suggested name').toBe(PROTOCOL_PDF_FILE_NAME);
@@ -63,11 +63,10 @@ describe('ProtocolPdfService', () => {
 
     await service.download(PROTOCOL_PDF_SLUG);
 
-    expect(generateProtocolBlob, 'the counts are garnish — a failed history read only blanks the column').toHaveBeenLastCalledWith(
-      file.event,
-      file.rows,
-      {},
-    );
+    expect(
+      generateProtocolBlob,
+      'the runs are garnish — a failed history read only blanks the column and the dates',
+    ).toHaveBeenLastCalledWith(file.event, file.rows, {}, {});
   });
 
   it('rejects without generating anything when the event was never published', async () => {

@@ -1,6 +1,8 @@
 import type { ContentColumns, ContentTable, ContentText, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { formatRaceNumber } from '../github/race-number';
 import { normalizeAthleteKey } from '../history/athlete-key';
+import { prNoteWithDate } from '../history/pr-note';
+import { PreviousBest } from '../history/previous-bests.interface';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
 import { EMPTY_TIME } from '../protocol/protocol-builder.constant';
@@ -35,6 +37,7 @@ import {
   INTRO_MARGIN,
   INTRO_PART_SEPARATOR,
   LINE_BREAK,
+  NON_BREAKING_SPACE,
   PARTICIPANTS_TITLE,
   PARTICIPANTS_TITLE_MARGIN,
   PDF_ALIGN_CENTER,
@@ -58,12 +61,15 @@ import {
  * (mirrors the reference TCPDF sample): page header, 'ПРОТОКОЛ' title,
  * justified intro, participants table, abbreviations and signature.
  * `finishCounts` (athleteKey → 5 km finishes as of the event, this one included)
- * feeds the «Финишей» column; athletes outside the map get a blank cell.
+ * feeds the «Участий» column; athletes outside the map get a blank cell.
+ * `previousBests` (athleteKey → the best run before the event) dates the «ЛР (было X)»
+ * note; athletes outside the map keep the note as stored.
  */
 export function buildProtocolDocDefinition(
   event: RaceEvent,
   rows: ProtocolRow[],
   finishCounts: Record<string, number>,
+  previousBests: Record<string, PreviousBest>,
 ): TDocumentDefinitions {
   return {
     pageSize: PDF_PAGE_SIZE,
@@ -75,7 +81,7 @@ export function buildProtocolDocDefinition(
       buildTitle(),
       buildIntro(event),
       buildParticipantsTitle(),
-      buildParticipantsTable(rows, finishCounts),
+      buildParticipantsTable(rows, finishCounts, previousBests),
       ...buildAbbreviations(),
       buildSignature(event),
     ],
@@ -89,12 +95,17 @@ function buildPageHeader(event: RaceEvent): ContentColumns {
       { width: FLEX_COLUMN_WIDTH, text: formatRussianDateLong(event.dateIso) },
       {
         width: FLEX_COLUMN_WIDTH,
-        text: `${EVENT_TITLE_PREFIX}${formatRaceNumber(event.number, event.legacyNumber)}${LINE_BREAK}${event.city}`,
+        text: `${EVENT_TITLE_PREFIX}${raceNumberNoWrap(event)}${LINE_BREAK}${event.city}`,
         alignment: PDF_ALIGN_CENTER,
       },
       { width: FLEX_COLUMN_WIDTH, text: `${event.park}${LINE_BREAK}${event.clubName}`, alignment: PDF_ALIGN_RIGHT },
     ],
   };
+}
+
+/** «105 (221)» glued with non-breaking spaces, so a narrow header wraps before the number — never inside it. */
+function raceNumberNoWrap(event: RaceEvent): string {
+  return formatRaceNumber(event.number, event.legacyNumber).replaceAll(' ', NON_BREAKING_SPACE);
 }
 
 function buildTitle(): ContentText {
@@ -114,12 +125,16 @@ function buildParticipantsTitle(): ContentText {
   return { text: PARTICIPANTS_TITLE, bold: true, alignment: PDF_ALIGN_CENTER, margin: PARTICIPANTS_TITLE_MARGIN };
 }
 
-function buildParticipantsTable(rows: ProtocolRow[], finishCounts: Record<string, number>): ContentTable {
+function buildParticipantsTable(
+  rows: ProtocolRow[],
+  finishCounts: Record<string, number>,
+  previousBests: Record<string, PreviousBest>,
+): ContentTable {
   return {
     table: {
       headerRows: TABLE_HEADER_ROWS,
       widths: [...TABLE_WIDTHS],
-      body: [...buildTableHeaderRows(), ...rows.map((row) => buildTableBodyRow(row, finishCounts))],
+      body: [...buildTableHeaderRows(), ...rows.map((row) => buildTableBodyRow(row, finishCounts, previousBests))],
     },
   };
 }
@@ -148,8 +163,13 @@ function headerCell(text: string, spans: { rowSpan?: number; colSpan?: number } 
 }
 
 /** Name, club and note are left-aligned; every numeric cell is centered. */
-function buildTableBodyRow(row: ProtocolRow, finishCounts: Record<string, number>): TableCell[] {
-  const finishCount = finishCounts[normalizeAthleteKey(row.fullName)];
+function buildTableBodyRow(
+  row: ProtocolRow,
+  finishCounts: Record<string, number>,
+  previousBests: Record<string, PreviousBest>,
+): TableCell[] {
+  const athleteKey = normalizeAthleteKey(row.fullName);
+  const finishCount = finishCounts[athleteKey];
 
   return [
     { text: String(row.index), alignment: PDF_ALIGN_CENTER },
@@ -161,7 +181,7 @@ function buildTableBodyRow(row: ProtocolRow, finishCounts: Record<string, number
     { text: row.placeF === null ? EMPTY_CELL : String(row.placeF), alignment: PDF_ALIGN_CENTER },
     { text: finishCount === undefined ? EMPTY_CELL : String(finishCount), alignment: PDF_ALIGN_CENTER },
     { text: row.club },
-    { text: row.note },
+    { text: prNoteWithDate(row.note, previousBests[athleteKey]) },
   ];
 }
 

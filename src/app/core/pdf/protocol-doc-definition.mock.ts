@@ -1,5 +1,6 @@
 import type { Content, TableCell } from 'pdfmake/interfaces';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
+import { PreviousBest } from '../history/previous-bests.interface';
 import { Gender } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
@@ -61,7 +62,7 @@ export const MALE_WINNER_ROW_MOCK: ProtocolRow = {
   placeM: 1,
   placeF: null,
   club: 'КЛБ «Легенда»',
-  note: 'Лучший результат 2020 г.',
+  note: 'ЛР (было 17:55); Лучший результат 2020 г.',
 };
 
 export const FEMALE_WINNER_ROW_MOCK: ProtocolRow = {
@@ -116,9 +117,18 @@ export const PDF_FINISH_COUNTS_MOCK: Record<string, number> = {
   'фарафонова екатерина': 1,
 };
 
+/** Only the male winner set a record; the map dates his «ЛР» note, everyone else keeps the stored text. */
+export const PDF_PREVIOUS_BESTS_MOCK: Record<string, PreviousBest> = {
+  'хахуцкий виктор': { slug: '2020-03-15', dateIso: '2020-03-15', timeMs: 1075000 },
+};
+
+/** The previous 17:55 gains the date of the run it fell at. */
+export const EXPECTED_MALE_NOTE = 'ЛР (было 17:55 · 15 мар 2020); Лучший результат 2020 г.';
+
 export const EXPECTED_LONG_DATE = '20 сентября 2020 г.';
 
-export const EXPECTED_CENTER_HEADER = 'Воскресный парковый пробег № 160 (2.16)\nг. Таганрог';
+/** The race number is glued with non-breaking spaces (u00a0), so the narrow header never wraps inside it. */
+export const EXPECTED_CENTER_HEADER = 'Воскресный парковый пробег № 160 (2.16)\nг. Таганрог';
 
 export const EXPECTED_RIGHT_HEADER = 'ПКиО им. Горького\nКЛБ «Легенда»';
 
@@ -166,7 +176,7 @@ export const EXPECTED_MALE_ROW_CELLS: TableCell[] = [
   { text: EMPTY_CELL, alignment: PDF_ALIGN_CENTER },
   { text: '42', alignment: PDF_ALIGN_CENTER },
   { text: MALE_WINNER_ROW_MOCK.club },
-  { text: MALE_WINNER_ROW_MOCK.note },
+  { text: EXPECTED_MALE_NOTE },
 ];
 
 export const EXPECTED_FEMALE_ROW_CELLS: TableCell[] = [
