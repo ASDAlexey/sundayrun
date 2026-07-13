@@ -34,6 +34,9 @@ export class FormCard {
   readonly anchorIso = input.required<string>();
   readonly view = computed(() => toFormView(athleteForm(this.runs(), this.anchorIso())));
 
+  /** The window under the cursor/focus — its styled tooltip floats over the sparkline; null hides it. */
+  readonly hoveredPoint = signal<FormChartPoint | null>(null);
+
   protected readonly formWindowSize = FORM_WINDOW_SIZE;
   protected readonly chartViewBox = `0 0 ${FORM_CHART_WIDTH} ${FORM_CHART_HEIGHT}`;
 }
@@ -46,12 +49,9 @@ function toFormView(form: AthleteForm | null): FormView | null {
   const dots = toDots(form.points);
   const peakIndex = form.points.indexOf(form.peak);
   const lastIndex = form.points.length - 1;
-  const points: FormChartPoint[] = dots.map((dot, index) => ({
-    ...dot,
-    tooltip: pointTooltip(form.points[index]),
-    isPeak: index === peakIndex,
-    isCurrent: index === lastIndex,
-  }));
+  const points: FormChartPoint[] = dots.map((dot, index) =>
+    toChartPoint(dot, form.points[index], index === peakIndex, index === lastIndex),
+  );
 
   return {
     currentPercent: form.current.percent,
@@ -64,9 +64,35 @@ function toFormView(form: AthleteForm | null): FormView | null {
   };
 }
 
-/** «3 авг 2025 · 30:00 · 80%» — the window's end date, its median time and its percent of the peak. */
-function pointTooltip(point: FormPoint): string {
-  return `${formatRussianDateCompact(point.dateIso)} · ${formatDuration(point.medianMs)} · ${point.percent}%`;
+/** A dot enriched with its styled-tooltip text and the percent position that floats the tooltip. */
+function toChartPoint(dot: FormChartDot, point: FormPoint, isPeak: boolean, isCurrent: boolean): FormChartPoint {
+  const dateText = formatRussianDateLong(point.dateIso);
+  const medianText = formatDuration(point.medianMs);
+  const leftPercent = roundCoord((dot.x / FORM_CHART_WIDTH) * 100);
+  const topPercent = roundCoord((dot.y / FORM_CHART_HEIGHT) * 100);
+
+  return {
+    ...dot,
+    dateText,
+    medianText,
+    percent: point.percent,
+    ariaText: `${dateText}: ${medianText}, ${point.percent}% от пика`,
+    leftPercent,
+    topPercent,
+    tipBelow: topPercent < TOOLTIP_BELOW_MAX_TOP_PERCENT,
+    tipAlign: tooltipAlign(leftPercent),
+    isPeak,
+    isCurrent,
+  };
+}
+
+/** Anchor the tooltip by an edge near the sides, by its centre in the middle — it never spills out. */
+function tooltipAlign(leftPercent: number): FormTooltipAlign {
+  if (leftPercent < TOOLTIP_EDGE_PERCENT) {
+    return 'start';
+  }
+
+  return leftPercent > 100 - TOOLTIP_EDGE_PERCENT ? 'end' : 'center';
 }
 
 /** Windows spread evenly along the x axis; y spans the seen percent range, so the curve always fills the box. */

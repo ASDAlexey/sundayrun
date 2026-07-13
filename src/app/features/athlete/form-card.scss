@@ -41,10 +41,15 @@
     color: var(--text);
   }
 
+  &__chart-wrap {
+    position: relative;
+    margin-top: 4px;
+  }
+
   &__chart {
+    display: block;
     width: 100%;
     height: auto;
-    margin-top: 4px;
   }
 
   &__line {
@@ -72,6 +77,52 @@
     &_current {
       fill: var(--accent);
     }
+
+    &_active {
+      stroke: var(--text);
+      stroke-width: 2;
+    }
+  }
+
+  &__tooltip {
+    @include t.text('label', 'small');
+
+    --tip-x: -50%;
+    --tip-y: calc(-100% - 10px);
+    display: flex;
+    z-index: 1;
+
+    position: absolute;
+    flex-direction: column;
+    padding: 8px 10px;
+    gap: 2px;
+    transform: translate(var(--tip-x), var(--tip-y));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    white-space: nowrap;
+    pointer-events: none;
+
+    &_start {
+      --tip-x: -14px;
+    }
+
+    &_end {
+      --tip-x: calc(-100% + 14px);
+    }
+
+    &_below {
+      --tip-y: 14px;
+    }
+  }
+
+  &__tooltip-title {
+    color: var(--text);
+  }
+
+  &__tooltip-line {
+    color: var(--text-muted);
   }
 
   // Draw the curve in, then pop the dots on top; static for reduced-motion users (dots stay visible).

@@ -18,30 +18,53 @@
       <p class="form-card__peak" i18n="@@athlete.formPeak">Лучшая форма была в {{ form.peakMonthText }} года.</p>
     }
 
-    <svg
-      aria-label="График формы по забегам"
-      class="form-card__chart"
-      i18n-aria-label="@@athlete.formChartLabel"
-      role="img"
-      [attr.viewBox]="chartViewBox"
-    >
-      <polyline class="form-card__line" [attr.pathLength]="1" [attr.points]="form.linePoints" />
+    <div class="form-card__chart-wrap">
+      <svg
+        aria-label="График формы по забегам"
+        class="form-card__chart"
+        i18n-aria-label="@@athlete.formChartLabel"
+        role="img"
+        [attr.viewBox]="chartViewBox"
+      >
+        <polyline class="form-card__line" [attr.pathLength]="1" [attr.points]="form.linePoints" />
 
-      @for (point of form.points; track $index) {
-        <circle
-          class="form-card__dot"
-          tabindex="0"
-          [attr.cx]="point.x"
-          [attr.cy]="point.y"
-          [attr.r]="point.isPeak || point.isCurrent ? 5 : 3.5"
-          [class.form-card__dot_current]="point.isCurrent"
-          [class.form-card__dot_peak]="point.isPeak"
-          [style.animation-delay]="'calc(var(--transition-time) + ' + $index + ' * var(--transition-time) / 8)'"
+        @for (point of form.points; track $index) {
+          <circle
+            class="form-card__dot"
+            tabindex="0"
+            [attr.aria-label]="point.ariaText"
+            [attr.cx]="point.x"
+            [attr.cy]="point.y"
+            [attr.r]="point.isPeak || point.isCurrent ? 5 : 3.5"
+            [class.form-card__dot_active]="point === hoveredPoint()"
+            [class.form-card__dot_current]="point.isCurrent"
+            [class.form-card__dot_peak]="point.isPeak"
+            [style.animation-delay]="'calc(var(--transition-time) + ' + $index + ' * var(--transition-time) / 8)'"
+            (blur)="hoveredPoint.set(null)"
+            (focus)="hoveredPoint.set(point)"
+            (mouseenter)="hoveredPoint.set(point)"
+            (mouseleave)="hoveredPoint.set(null)"
+          ></circle>
+        }
+      </svg>
+
+      @if (hoveredPoint(); as tip) {
+        <div
+          class="form-card__tooltip"
+          [class.form-card__tooltip_below]="tip.tipBelow"
+          [class.form-card__tooltip_end]="tip.tipAlign === 'end'"
+          [class.form-card__tooltip_start]="tip.tipAlign === 'start'"
+          [style.left.%]="tip.leftPercent"
+          [style.top.%]="tip.topPercent"
         >
-          <title>{{ point.tooltip }}</title>
-        </circle>
+          <span class="form-card__tooltip-title">{{ tip.dateText }}</span>
+
+          <span class="form-card__tooltip-line" i18n="@@athlete.formTooltipMedian">Медиана: {{ tip.medianText }}</span>
+
+          <span class="form-card__tooltip-line" i18n="@@athlete.formTooltipPercent">{{ tip.percent }}% от пика</span>
+        </div>
       }
-    </svg>
+    </div>
 
     <p class="form-card__legend-row">
       <span class="form-card__legend-item form-card__legend-item_peak" i18n="@@athlete.formLegendPeak">● пик</span>

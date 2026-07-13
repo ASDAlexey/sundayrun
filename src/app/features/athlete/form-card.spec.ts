@@ -40,12 +40,20 @@ describe('FormCard', () => {
     expect(element.querySelector('.form-card__now').textContent).toContain('80% от пика');
     expect(element.querySelector('.form-card__peak').textContent).toContain('мае 2025');
     expect(element.querySelector('.form-card__line').getAttribute('points')).toBe(EXPECTED_FADING_FORM_VIEW.linePoints);
-
-    const titles = [...element.querySelectorAll('.form-card__dot title')].map((node: Element) => node.textContent);
-
-    expect(titles, 'every window is a hoverable dot captioned with its date, median and percent').toEqual(
-      EXPECTED_FADING_FORM_VIEW.points.map((point) => point.tooltip),
+    expect(element.querySelectorAll('.form-card__dot').length, 'every window is a hoverable dot').toBe(4);
+    expect(element.querySelector('.form-card__dot').getAttribute('aria-label'), 'the dot labels its window for a screen reader').toContain(
+      'от пика',
     );
+    expect(element.querySelector('.form-card__tooltip'), 'the tooltip stays hidden until a dot is hovered').toBeNull();
+
+    card.hoveredPoint.set(card.view()!.points[3]);
+    fixture.detectChanges();
+
+    const tooltip = element.querySelector('.form-card__tooltip');
+
+    expect(tooltip.querySelector('.form-card__tooltip-title').textContent).toContain('3 августа 2025 г.');
+    expect(tooltip.textContent, 'the styled box shows the window median and its percent of the peak').toContain('30:00');
+    expect(tooltip.textContent).toContain('80% от пика');
   });
 
   it('centres the lone all-peak window and cheers instead of quoting the percent', () => {
