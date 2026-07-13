@@ -35,10 +35,12 @@ export const YEAR_REVIEW_SOURCE: YearReviewSource = {
   year: '2026',
   eventDates: ['2026-01-04', '2026-01-11'],
   runRows: [
-    runRow(IVAN, '2026-01-04', 1500000, FIVE_KM_DISTANCE_KM),
+    // Иванов's runs arrive newest-first: the slower January opener must not displace his 24:00 best.
     runRow(IVAN, '2026-01-11', 1440000, FIVE_KM_DISTANCE_KM),
-    runRow(ANNA, '2026-01-04', 1680000, FIVE_KM_DISTANCE_KM),
+    runRow(IVAN, '2026-01-04', 1500000, FIVE_KM_DISTANCE_KM),
+    // Петрова's equal 27:00s arrive newest-first, so the best-of-year tie-break must keep the earlier run.
     runRow(ANNA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
+    runRow(ANNA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
     runRow(ZOYA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
     runRow(VERA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
     runRow(OLEG, '2026-01-11', 900000, TWO_THREE_KM_DISTANCE_KM),
@@ -56,13 +58,13 @@ export const EXPECTED_YEAR_REVIEW: YearReview = {
   personalRecordCount: 1,
   // Median of Иванов's two 5 km runs; the short-course run never reaches the medians.
   medianTimeMenMs: 1470000,
-  // The women's sample [1680000, 1620000, 1620000, 1620000] averages its middle pair.
+  // The women's sample is four equal 27:00s, so the median is 27:00.
   medianTimeWomenMs: 1620000,
   bestMen: [{ key: IVAN.key, displayName: IVAN.displayName, timeMs: 1440000, dateIso: '2026-01-11', slug: '2026-01-11' }],
-  // The three-way 27:00 tie of season bests ranks by name; each row keeps its own run date.
+  // The three-way 27:00 tie of season bests ranks by name; Петрова's own tie resolves to her earlier run.
   bestWomen: [
     { key: VERA.key, displayName: VERA.displayName, timeMs: 1620000, dateIso: '2026-01-11', slug: '2026-01-11' },
-    { key: ANNA.key, displayName: ANNA.displayName, timeMs: 1620000, dateIso: '2026-01-11', slug: '2026-01-11' },
+    { key: ANNA.key, displayName: ANNA.displayName, timeMs: 1620000, dateIso: '2026-01-04', slug: '2026-01-04' },
     { key: ZOYA.key, displayName: ZOYA.displayName, timeMs: 1620000, dateIso: '2026-01-04', slug: '2026-01-04' },
   ],
   mostActive: [
