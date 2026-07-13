@@ -1,4 +1,4 @@
-import { PLATFORM_ID, signal } from '@angular/core';
+import { DOCUMENT, PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
@@ -232,6 +232,7 @@ describe('AdminPage', () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
+    const doc = TestBed.inject(DOCUMENT);
 
     expect(page.races()).toEqual(EXPECTED_ADMIN_RACES);
     expect(page.filteredRaces(), 'a blank query keeps the full list').toEqual(EXPECTED_ADMIN_RACES);
@@ -241,13 +242,13 @@ describe('AdminPage', () => {
     expect(page.pendingSlug()).toBe(NEWER_ENTRY.slug);
     expect(page.pendingRace(), 'the modal resolves the pending race for its message').toEqual(EXPECTED_ADMIN_RACES[0]);
 
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    doc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
     expect(page.pendingSlug(), 'escape backs out of the modal').toBeNull();
     expect(page.pendingRace()).toBeNull();
 
     // Escape with nothing pending is a harmless no-op.
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    doc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     page.askDelete(NEWER_ENTRY.slug);
     page.cancelDelete();
 
