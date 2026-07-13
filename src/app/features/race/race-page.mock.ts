@@ -5,6 +5,7 @@ import { ParticipantRun } from '../../core/history/notables.interface';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { RACE_PAGE_BASE_LINK } from './race-page.constant';
+import { RaceNoteBadgeKind } from './race-page.enum';
 import { RacePrNoteView, RaceView } from './race-page.interface';
 
 /** The published slug equals the event `dateIso`. */
@@ -59,8 +60,7 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       finishCountText: '',
       finishClubClass: '',
       club: 'Курск бегущий',
-      note: '',
-      prNote: null,
+      noteBadges: [],
       notableText: '',
     },
     {
@@ -78,8 +78,7 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       finishCountText: '',
       finishClubClass: '',
       club: '',
-      note: '',
-      prNote: null,
+      noteBadges: [],
       notableText: '',
     },
     {
@@ -97,8 +96,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       finishCountText: '',
       finishClubClass: '',
       club: '',
-      note: 'сход',
-      prNote: null,
+      // An unrecognized organiser note stays running text — no chip, no icon.
+      noteBadges: [{ kind: RaceNoteBadgeKind.plain, className: '', text: 'сход', prNote: null }],
       notableText: '',
     },
   ],
@@ -164,10 +163,28 @@ export const WINDOW_PARTICIPANT_RUNS: ParticipantRun[] = [
 
 export const EXPECTED_WINDOW_NOTABLE_TEXT = 'Лучший результат за 6 месяцев';
 
-/** The fixture rows with a stored record note on Мария, so the previous best can date and link it. */
-export const PR_NOTE_PROTOCOL_ROWS: ProtocolRow[] = PROTOCOL_ROWS.map((row) =>
-  row.index === 1 ? { ...row, note: 'ЛР (было 26:00)' } : row,
-);
+/**
+ * The fixture rows re-noted to cover every badge kind: the record on Мария (so the previous best
+ * can date and link it) plus the year best, the newcomer, the kids run, DNF and the legacy record.
+ */
+export const PR_NOTE_PROTOCOL_ROWS: ProtocolRow[] = PROTOCOL_ROWS.map((row) => {
+  if (row.index === 1) {
+    return { ...row, note: 'ЛР (было 26:00); Лучший результат 2026 г.' };
+  }
+
+  if (row.index === 2) {
+    return { ...row, note: 'Первое участие; Дети' };
+  }
+
+  return { ...row, note: 'DNF; Личный рекорд' };
+});
+
+/** How `toNoteBadges` classifies `PR_NOTE_PROTOCOL_ROWS`, row by row. */
+export const EXPECTED_NOTE_BADGE_KINDS: string[][] = [
+  [RaceNoteBadgeKind.record, RaceNoteBadgeKind.yearBest],
+  [RaceNoteBadgeKind.debut, RaceNoteBadgeKind.kids],
+  [RaceNoteBadgeKind.status, RaceNoteBadgeKind.record],
+];
 
 /** Against `RANK_PARTICIPANT_RUNS`: the earlier best is the 24:00 of 2025-08-03 — its date and race join the note. */
 export const EXPECTED_PR_NOTE_VIEW: RacePrNoteView = {

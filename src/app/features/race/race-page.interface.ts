@@ -1,4 +1,4 @@
-import { RaceStatusType } from './race-page.enum';
+import { RaceNoteBadgeKindType, RaceStatusType } from './race-page.enum';
 
 /** The «ЛР (было X)» note split around the previous record, which links to the race where it was set. */
 export interface RacePrNoteView {
@@ -7,6 +7,16 @@ export interface RacePrNoteView {
   label: string;
   link: string[];
   after: string;
+}
+
+/** One note token prepared for the template: an icon chip for the known kinds, running text for `plain`. */
+export interface RaceNoteBadgeView {
+  kind: RaceNoteBadgeKindType;
+  /** The precomputed BEM modifier («race__note-badge_record»); empty for `plain`. */
+  className: string;
+  text: string;
+  /** The record token with its previous best linked and dated; null renders the plain `text` instead. */
+  prNote: RacePrNoteView | null;
 }
 
 /** One protocol row prepared for the template: preformatted cells and a resolved athlete link. */
@@ -28,9 +38,8 @@ export interface RaceRowView {
   /** The finisher-club modifier for the count's badge («race__finishes_100»); empty below the first milestone. */
   finishClubClass: string;
   club: string;
-  note: string;
-  /** The note with its previous record linked and dated; null renders the plain `note` instead. */
-  prNote: RacePrNoteView | null;
+  /** The stored note split into tokens, each classified into an icon badge or running text. */
+  noteBadges: RaceNoteBadgeView[];
   /** Preformatted on-the-fly notable («2-й результат за всё время»); empty when nothing stands out. */
   notableText: string;
 }

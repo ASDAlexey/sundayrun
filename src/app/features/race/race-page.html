@@ -148,18 +148,59 @@
               <th *matHeaderCellDef class="race__th" i18n="@@race.table.note" mat-header-cell scope="col">Примечание</th>
 
               <td *matCellDef="let row" class="race__td" mat-cell>
-                @if (row.prNote !== null) {
-                  <span
-                    >{{ row.prNote.before }}<a class="race__pr-link" [routerLink]="row.prNote.link">{{ row.prNote.label }}</a
-                    >{{ row.prNote.after }}</span
-                  >
-                } @else {
-                  {{ row.note }}
-                }
+                <span class="race__notes">
+                  @for (badge of row.noteBadges; track $index) {
+                    @if (badge.kind === noteKinds.plain) {
+                      <span class="race__note-text">{{ badge.text }}</span>
+                    } @else {
+                      <span class="race__note-badge {{ badge.className }}">
+                        <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
+                          @switch (badge.kind) {
+                            @case (noteKinds.record) {
+                              <path d="M6 10.5 V1.5 M2.5 5 L6 1.5 L9.5 5" />
+                            }
+                            @case (noteKinds.yearBest) {
+                              <path
+                                class="race__note-icon-fill"
+                                d="M6 1 L7.5 4.2 L11 4.6 L8.4 7 L9.1 10.5 L6 8.7 L2.9 10.5 L3.6 7 L1 4.6 L4.5 4.2 Z"
+                              />
+                            }
+                            @case (noteKinds.debut) {
+                              <path d="M3 11 V1.5 M3 1.8 H9.5 L8 4 L9.5 6.2 H3" />
+                            }
+                            @case (noteKinds.kids) {
+                              <circle cx="6" cy="4.5" r="3.2" />
+                              <path d="M6 7.7 C6.6 8.6, 5.4 9.4, 6 10.5" />
+                            }
+                            @case (noteKinds.status) {
+                              <circle cx="6" cy="6" r="4.6" />
+                              <path d="M2.8 2.8 L9.2 9.2" />
+                            }
+                          }
+                        </svg>
 
-                @if (row.notableText !== '') {
-                  <span class="race__notable">{{ row.notableText }}</span>
-                }
+                        @if (badge.prNote; as pr) {
+                          <span
+                            >{{ pr.before }}<a class="race__pr-link" [routerLink]="pr.link">{{ pr.label }}</a
+                            >{{ pr.after }}</span
+                          >
+                        } @else {
+                          <span>{{ badge.text }}</span>
+                        }
+                      </span>
+                    }
+                  }
+
+                  @if (row.notableText !== '') {
+                    <span class="race__notable">
+                      <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
+                        <path class="race__note-icon-fill" d="M6 0.8 L7.2 4.8 L11.2 6 L7.2 7.2 L6 11.2 L4.8 7.2 L0.8 6 L4.8 4.8 Z" />
+                      </svg>
+
+                      <span>{{ row.notableText }}</span>
+                    </span>
+                  }
+                </span>
               </td>
             </ng-container>
 

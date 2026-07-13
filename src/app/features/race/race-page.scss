@@ -212,13 +212,87 @@
     }
   }
 
+  // The note cell content: badges and running text flow in one wrapping row.
+  &__notes {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+  }
+
+  &__note-text {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  // One chip per recognized note token; the modifiers grade the palette by the event's weight.
+  &__note-badge {
+    @include t.text('label', 'small');
+
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    gap: 5px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+
+    &_record {
+      border-color: var(--accent-line);
+      background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    &_year-best {
+      border-color: var(--accent);
+      background: var(--accent-atmosphere);
+      color: var(--accent);
+    }
+
+    &_debut {
+      .race__note-icon {
+        color: var(--accent);
+      }
+    }
+
+    &_kids {
+      border-color: var(--border-soft);
+    }
+
+    &_status {
+      border-color: var(--border-soft);
+      color: var(--text-muted);
+    }
+  }
+
+  &__note-icon {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.4;
+  }
+
+  // The star and spark glyphs read better solid at 12px than as hairline outlines.
+  &__note-icon-fill {
+    fill: currentcolor;
+    stroke: none;
+  }
+
   &__notable {
     @include t.text('label', 'small');
 
     display: inline-flex;
-    padding: 1px 8px;
+    align-items: center;
+    padding: 2px 9px;
+    gap: 5px;
     border: 1px solid var(--accent-line);
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     background: var(--accent-glow);
     color: var(--accent-light);
     white-space: nowrap;

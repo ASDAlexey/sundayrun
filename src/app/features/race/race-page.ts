@@ -16,6 +16,13 @@ import { monthFinalSlugs } from '../../core/history/month-finals';
 import { buildEventNotables } from '../../core/history/notables';
 import { NotableKind } from '../../core/history/notables.enum';
 import { Notable } from '../../core/history/notables.interface';
+import { splitNote } from '../../core/history/note-tokens';
+import {
+  FIRST_PARTICIPATION_TOKEN_PATTERN,
+  LEGACY_PERSONAL_RECORD_TOKEN_PATTERN,
+  PERSONAL_RECORD_TOKEN_PATTERN,
+  YEAR_BEST_TOKEN_PATTERN,
+} from '../../core/history/notes-builder.constant';
 import { prNoteTimeWithDate, splitPrNote } from '../../core/history/pr-note';
 import { buildPreviousBests } from '../../core/history/previous-bests';
 import { PreviousBest } from '../../core/history/previous-bests.interface';
@@ -37,14 +44,17 @@ import {
   FEMALE_GENDER_TEXT,
   FINISH_CLUB_TIERS,
   HOME_PAGE_LINK,
+  KIDS_NOTE_TOKEN_PATTERN,
   MALE_GENDER_TEXT,
+  NOTE_BADGE_CLASSES,
   RACE_PAGE_BASE_LINK,
   RACE_TABLE_COLUMNS,
   SLUG_ROUTE_PARAM,
+  STATUS_NOTE_TOKEN_PATTERN,
   SUMMARY_PART_SEPARATOR,
 } from './race-page.constant';
-import { RaceStatus, RaceStatusType } from './race-page.enum';
-import { RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
+import { RaceNoteBadgeKind, RaceNoteBadgeKindType, RaceStatus, RaceStatusType } from './race-page.enum';
+import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
 
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
 @Component({
@@ -69,6 +79,7 @@ export class RacePage {
   readonly pdfFailed = signal(false);
 
   protected readonly statuses = RaceStatus;
+  protected readonly noteKinds = RaceNoteBadgeKind;
   protected readonly homeLink = HOME_PAGE_LINK;
   protected readonly tableColumns = RACE_TABLE_COLUMNS;
 
@@ -199,10 +210,48 @@ function toRowView(
     finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
     finishClubClass: finishClubClassOf(finishCount),
     club: row.club,
-    note: row.note,
-    prNote: toPrNoteView(row.note, previousBests[athleteKey]),
+    noteBadges: toNoteBadges(row.note, previousBests[athleteKey]),
     notableText: toNotableText(notables[athleteKey]),
   };
+}
+
+/** Splits the stored note into tokens and classifies each into an icon badge (or running text). */
+function toNoteBadges(note: string, previousBest: PreviousBest | undefined): RaceNoteBadgeView[] {
+  return splitNote(note).map((token) => {
+    const kind = noteBadgeKindOf(token);
+
+    return {
+      kind,
+      className: NOTE_BADGE_CLASSES[kind],
+      text: token,
+      prNote: kind === RaceNoteBadgeKind.record ? toPrNoteView(token, previousBest) : null,
+    };
+  });
+}
+
+/** Recognizes the auto-note tokens plus the organiser-written kids and DNF/DSQ marks. */
+function noteBadgeKindOf(token: string): RaceNoteBadgeKindType {
+  if (PERSONAL_RECORD_TOKEN_PATTERN.test(token) || LEGACY_PERSONAL_RECORD_TOKEN_PATTERN.test(token)) {
+    return RaceNoteBadgeKind.record;
+  }
+
+  if (YEAR_BEST_TOKEN_PATTERN.test(token)) {
+    return RaceNoteBadgeKind.yearBest;
+  }
+
+  if (FIRST_PARTICIPATION_TOKEN_PATTERN.test(token)) {
+    return RaceNoteBadgeKind.debut;
+  }
+
+  if (KIDS_NOTE_TOKEN_PATTERN.test(token)) {
+    return RaceNoteBadgeKind.kids;
+  }
+
+  if (STATUS_NOTE_TOKEN_PATTERN.test(token)) {
+    return RaceNoteBadgeKind.status;
+  }
+
+  return RaceNoteBadgeKind.plain;
 }
 
 /**

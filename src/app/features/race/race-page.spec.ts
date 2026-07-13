@@ -21,6 +21,7 @@ import {
   CLUB_PARTICIPANT_RUNS,
   EXPECTED_CLUB_BADGE_CLASS,
   EXPECTED_CLUB_FINISH_COUNT_TEXT,
+  EXPECTED_NOTE_BADGE_KINDS,
   EXPECTED_PR_NOTE_VIEW,
   EXPECTED_RACE_VIEW,
   EXPECTED_RANK_FINISH_CLUB_CLASSES,
@@ -199,7 +200,15 @@ describe('RacePage', () => {
 
     const page = fixture.componentInstance;
 
-    expect(page.race()?.rows[0].prNote).toEqual(EXPECTED_PR_NOTE_VIEW);
+    expect(page.race()?.rows[0].noteBadges[0].prNote).toEqual(EXPECTED_PR_NOTE_VIEW);
+    expect(
+      page.race()?.rows.map((row) => row.noteBadges.map((badge) => badge.kind)),
+      'every stored token lands in its badge kind: record, year best, debut, kids, DNF, legacy record',
+    ).toEqual(EXPECTED_NOTE_BADGE_KINDS);
+    expect(
+      page.race()?.rows[2].noteBadges[1].prNote,
+      'the legacy «Личный рекорд» spelling has no time to split, so it renders as badge text',
+    ).toBeNull();
 
     fixture.detectChanges();
 
@@ -214,7 +223,7 @@ describe('RacePage', () => {
     routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
     await settle();
 
-    expect(page.race()?.rows[0].prNote, 'no known previous run — the stored note renders as plain text').toBeNull();
+    expect(page.race()?.rows[0].noteBadges[0].prNote, 'no known previous run — the stored note renders as plain text').toBeNull();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.race__pr-link')).toBeNull();
   });
