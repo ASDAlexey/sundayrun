@@ -58,6 +58,8 @@ import {
   YearBestView,
 } from './athlete-page.interface';
 import { BadgeCatalog } from './badge-catalog/badge-catalog';
+import { FormCard } from './form-card';
+import { LifetimeCard } from './lifetime-card';
 import { ProgressChart } from './progress-chart';
 
 /** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
@@ -65,6 +67,8 @@ import { ProgressChart } from './progress-chart';
   selector: 'app-athlete-page',
   imports: [
     BadgeCatalog,
+    FormCard,
+    LifetimeCard,
     MatButtonModule,
     MatButtonToggleModule,
     MatProgressBarModule,
@@ -145,6 +149,8 @@ export class AthletePage {
 
   /** The chart gets the full 5 km history plus the year filter, so the all-time record stays known in a year view. */
   readonly progressRuns = this.#fiveKmRuns;
+  /** The «Цифры за всё время» card counts every finish, the short course included. */
+  readonly allRuns = computed(() => this.#record()?.runs ?? []);
   readonly bestTimeText = computed(() => toTimeText(this.#record()?.bestMs ?? null));
   /** The «Лучший первый круг · 2,3 км» profile value; hidden while no run carries a recorded split. */
   readonly firstLap = computed(() => toFirstLapView(this.#bestFirstLap()));

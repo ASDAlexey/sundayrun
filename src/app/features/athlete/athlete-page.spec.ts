@@ -145,6 +145,7 @@ describe('AthletePage', () => {
     expect(page.finishCount()).toBe(expectedRecord.runs.length);
     expect(page.finalsAttendanceText(), 'no finals in the archive — the stat is hidden').toBeNull();
     expect(page.progressRuns(), 'the sparkline receives the unfiltered 5 km history').toEqual(expectedRecord.runs);
+    expect(page.allRuns(), 'the lifetime card receives every finish of both distances').toEqual(expectedRecord.runs);
     expect(page.bestTimeText()).toBe(EXPECTED_BEST_TIME_TEXT);
     expect(page.firstLap(), 'the best recorded split links to its protocol').toEqual(EXPECTED_FIRST_LAP_VIEW);
     expect(page.yearBests()).toEqual(EXPECTED_YEAR_BEST_VIEWS);
@@ -417,6 +418,7 @@ describe('AthletePage', () => {
     expect(page.yearBests()).toEqual([]);
     expect(page.years()).toEqual([]);
     expect(page.runs()).toEqual([]);
+    expect(page.allRuns(), 'no record — the lifetime card gets nothing').toEqual([]);
     expect(page.streaks()).toEqual(EMPTY_STREAKS_VIEW);
     expect(page.currentActivity(), 'no record — an idle running year').toEqual(EMPTY_YEAR_ACTIVITY);
     expect(page.legend(), 'a notFound load discards the board').toEqual(EMPTY_LEGEND_VIEW);

@@ -262,7 +262,11 @@
         </section>
       }
 
+      <app-form-card [runs]="progressRuns()" />
+
       <app-progress-chart [runs]="progressRuns()" [year]="year()" />
+
+      <app-lifetime-card [runs]="allRuns()" />
 
       <p aria-live="polite" class="athlete__status" role="status">
         @if (finishCount() === 0) {
