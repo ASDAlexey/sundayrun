@@ -38,6 +38,7 @@ import { AdminRaceItem } from './admin-page.interface';
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown.escape)': 'onEscapeKey()' },
 })
 export class AdminPage {
   readonly #adminToken = inject(AdminTokenService);
@@ -65,6 +66,9 @@ export class AdminPage {
   readonly nextNumber = computed(() => this.races().reduce((max, race) => Math.max(max, race.number), NEXT_NUMBER_SEED) + 1);
   /** The race awaiting the second, confirming click; deletion never fires from a single click. */
   readonly pendingSlug = signal<string | null>(null);
+  /** The race the confirm modal is asking about; null (no matching slug) keeps the modal closed. */
+  readonly pendingRace = computed(() => this.races().find((race) => race.slug === this.pendingSlug()) ?? null);
+
   readonly deleteState = this.#eventDelete.state;
 
   protected readonly statuses = TokenSaveStatus;
@@ -138,6 +142,13 @@ export class AdminPage {
     this.pendingSlug.set(null);
   }
 
+  /** Escape backs out of the confirm modal, matching the backdrop click and the Отмена button. */
+  onEscapeKey(): void {
+    if (this.pendingSlug() !== null) {
+      this.cancelDelete();
+    }
+  }
+
   async confirmDelete(): Promise<void> {
     const slug = this.pendingSlug();
 
@@ -145,8 +156,9 @@ export class AdminPage {
       return;
     }
 
-    await this.#eventDelete.delete(slug);
+    // Close the modal at once; the feedback strip below then reports the delete progress.
     this.pendingSlug.set(null);
+    await this.#eventDelete.delete(slug);
 
     if (this.deleteState() === PublishState.success) {
       this.#applyRaces(this.races().filter((race) => race.slug !== slug));

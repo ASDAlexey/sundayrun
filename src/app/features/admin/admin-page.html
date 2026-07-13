@@ -153,52 +153,34 @@
                       <span class="admin__race-count" i18n="@@admin.raceParticipants">участников: {{ race.participantCount }}</span>
                     </span>
 
-                    @if (pendingSlug() === race.slug) {
-                      <span class="admin__race-actions">
-                        <span class="admin__race-question" i18n="@@admin.raceQuestion">Удалить забег?</span>
+                    <span class="admin__race-actions">
+                      <a class="admin__race-protocol" i18n="@@admin.raceProtocol" [routerLink]="race.raceLink">протокол</a>
 
-                        <button
-                          class="admin__race-confirm"
-                          i18n="@@admin.raceConfirm"
-                          type="button"
-                          [disabled]="deleteState() === publishStates.publishing"
-                          (click)="confirmDelete()"
+                      <button
+                        class="admin__race-delete"
+                        type="button"
+                        [attr.aria-label]="race.deleteLabel"
+                        [disabled]="deleteState() === publishStates.publishing"
+                        (click)="askDelete(race.slug)"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="admin__race-delete-icon"
+                          fill="none"
+                          height="15"
+                          stroke="currentColor"
+                          stroke-width="1.4"
+                          viewBox="0 0 15 16"
+                          width="14"
                         >
-                          Точно удалить
-                        </button>
+                          <path d="M1.5 4h12" />
 
-                        <button class="admin__race-cancel" i18n="@@admin.raceCancel" type="button" (click)="cancelDelete()">Отмена</button>
-                      </span>
-                    } @else {
-                      <span class="admin__race-actions">
-                        <a class="admin__race-protocol" i18n="@@admin.raceProtocol" [routerLink]="race.raceLink">протокол</a>
+                          <path d="M5 4V2.5h5V4" />
 
-                        <button
-                          class="admin__race-delete"
-                          type="button"
-                          [attr.aria-label]="race.deleteLabel"
-                          [disabled]="deleteState() === publishStates.publishing"
-                          (click)="askDelete(race.slug)"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="admin__race-delete-icon"
-                            fill="none"
-                            height="15"
-                            stroke="currentColor"
-                            stroke-width="1.4"
-                            viewBox="0 0 15 16"
-                            width="14"
-                          >
-                            <path d="M1.5 4h12" />
-
-                            <path d="M5 4V2.5h5V4" />
-
-                            <path d="M3 4l1 10.5h7L12 4" />
-                          </svg>
-                        </button>
-                      </span>
-                    }
+                          <path d="M3 4l1 10.5h7L12 4" />
+                        </svg>
+                      </button>
+                    </span>
                   </li>
                 </ul>
               </cdk-virtual-scroll-viewport>
@@ -232,6 +214,32 @@
             }
           }
         </div>
+
+        @if (pendingRace(); as race) {
+          <div class="admin__modal-backdrop" (click)="cancelDelete()">
+            <div
+              aria-labelledby="admin-delete-title"
+              aria-modal="true"
+              class="admin__modal"
+              role="dialog"
+              (click)="$event.stopPropagation()"
+            >
+              <h2 class="admin__modal-title" i18n="@@admin.deleteModalTitle" id="admin-delete-title">Вы уверены?</h2>
+
+              <p class="admin__modal-text" i18n="@@admin.deleteModalText">
+                Забег № {{ race.number }} ({{ race.dateLong }}) будет удалён. Протокол, результаты и рекорды пересчитаются без него.
+              </p>
+
+              <div class="admin__modal-actions">
+                <button class="admin__race-cancel" i18n="@@admin.raceCancel" type="button" (click)="cancelDelete()">Отмена</button>
+
+                <button class="admin__race-confirm" i18n="@@admin.raceConfirm" type="button" (click)="confirmDelete()">
+                  Точно удалить
+                </button>
+              </div>
+            </div>
+          </div>
+        }
       </section>
     </div>
   } @else {

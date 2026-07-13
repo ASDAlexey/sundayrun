@@ -29,7 +29,9 @@
   &__grid {
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    align-items: start;
+    // Stretch both columns to the same height so the race list (capped below) ends level with the
+    // shorter left column instead of running past it.
+    align-items: stretch;
     gap: 16px;
 
     @media (width <= 900px) {
@@ -222,8 +224,17 @@
   }
 
   &__viewport {
-    height: 480px;
+    // Fill the stretched card so the list's bottom lands at the left column's; the list scrolls
+    // internally. Below the 2-column breakpoint the card is content-sized, so a fixed height stands in.
+    flex: 1;
+    min-height: 240px;
     overflow-x: hidden;
+
+    @media (width <= 900px) {
+      flex: none;
+      height: 480px;
+      min-height: 0;
+    }
   }
 
   &__races {
@@ -351,5 +362,45 @@
     @include t.mono-meta;
 
     color: var(--text-muted);
+  }
+
+  &__modal-backdrop {
+    display: flex;
+    z-index: 100;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    inset: 0;
+    padding: 24px;
+    background: color-mix(in srgb, var(--black) 65%, transparent);
+  }
+
+  &__modal {
+    display: flex;
+    flex-direction: column;
+    width: min(440px, 100%);
+    padding: 24px;
+    gap: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  &__modal-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__modal-text {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
   }
 }

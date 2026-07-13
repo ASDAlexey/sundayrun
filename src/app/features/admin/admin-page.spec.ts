@@ -239,7 +239,16 @@ describe('AdminPage', () => {
     page.askDelete(NEWER_ENTRY.slug);
 
     expect(page.pendingSlug()).toBe(NEWER_ENTRY.slug);
+    expect(page.pendingRace(), 'the modal resolves the pending race for its message').toEqual(EXPECTED_ADMIN_RACES[0]);
 
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+    expect(page.pendingSlug(), 'escape backs out of the modal').toBeNull();
+    expect(page.pendingRace()).toBeNull();
+
+    // Escape with nothing pending is a harmless no-op.
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    page.askDelete(NEWER_ENTRY.slug);
     page.cancelDelete();
 
     expect(page.pendingSlug(), 'cancel backs out without deleting').toBeNull();
