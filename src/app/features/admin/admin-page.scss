@@ -255,6 +255,14 @@
     border-bottom: 1px solid var(--border-soft);
   }
 
+  &__race_pending {
+    opacity: 0.6;
+  }
+
+  &__race_deleting {
+    opacity: 0.45;
+  }
+
   &__race-number {
     @include t.mono-value;
 
@@ -291,6 +299,14 @@
     flex: none;
     align-items: center;
     gap: 10px;
+  }
+
+  &__race-badge {
+    @include t.mono-meta;
+
+    flex: none;
+    color: var(--text-muted);
+    white-space: nowrap;
   }
 
   &__race-question {

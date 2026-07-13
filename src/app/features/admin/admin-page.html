@@ -19,7 +19,7 @@
 
           <app-protocol-dropzone />
 
-          @if (racesStatus() === raceStatuses.ready) {
+          @if (displayStatus() === raceStatuses.ready) {
             <p class="admin__upload-note" i18n="@@admin.nextNumber">
               Следующий номер: <span class="admin__upload-number">№ {{ nextNumber() }}</span>
             </p>
@@ -85,8 +85,8 @@
         <div class="admin__races-head">
           <h2 class="admin__subtitle" i18n="@@admin.racesTitle">Загруженные забеги</h2>
 
-          @if (racesStatus() === raceStatuses.ready) {
-            <span class="admin__races-total" i18n="@@admin.racesTotal">Всего: {{ races().length }}</span>
+          @if (displayStatus() === raceStatuses.ready) {
+            <span class="admin__races-total" i18n="@@admin.racesTotal">Всего: {{ allRaces().length }}</span>
           }
         </div>
 
@@ -94,7 +94,7 @@
           Если забег загружен по ошибке — удалите его: протокол, результаты и рекорды пересчитаются без него.
         </p>
 
-        @switch (racesStatus()) {
+        @switch (displayStatus()) {
           @case (raceStatuses.loading) {
             <div class="admin__progress">
               <mat-progress-spinner mode="indeterminate" [diameter]="24" />
@@ -144,7 +144,12 @@
             } @else {
               <cdk-virtual-scroll-viewport class="admin__viewport" [itemSize]="rowHeightPx">
                 <ul class="admin__races">
-                  <li *cdkVirtualFor="let race of filteredRaces()" class="admin__race">
+                  <li
+                    *cdkVirtualFor="let race of filteredRaces()"
+                    class="admin__race"
+                    [class.admin__race_deleting]="race.slug === deletingSlug()"
+                    [class.admin__race_pending]="race.pending"
+                  >
                     <span class="admin__race-number">№ {{ race.number }}</span>
 
                     <span class="admin__race-main">
@@ -153,34 +158,40 @@
                       <span class="admin__race-count" i18n="@@admin.raceParticipants">участников: {{ race.participantCount }}</span>
                     </span>
 
-                    <span class="admin__race-actions">
-                      <a class="admin__race-protocol" i18n="@@admin.raceProtocol" [routerLink]="race.raceLink">протокол</a>
+                    @if (race.pending) {
+                      <span class="admin__race-badge" i18n="@@admin.racePublishing">публикуется…</span>
+                    } @else if (race.slug === deletingSlug()) {
+                      <span class="admin__race-badge" i18n="@@admin.raceDeleting">удаляется…</span>
+                    } @else {
+                      <span class="admin__race-actions">
+                        <a class="admin__race-protocol" i18n="@@admin.raceProtocol" [routerLink]="race.raceLink">протокол</a>
 
-                      <button
-                        class="admin__race-delete"
-                        type="button"
-                        [attr.aria-label]="race.deleteLabel"
-                        [disabled]="deleteState() === publishStates.publishing"
-                        (click)="askDelete(race.slug)"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="admin__race-delete-icon"
-                          fill="none"
-                          height="15"
-                          stroke="currentColor"
-                          stroke-width="1.4"
-                          viewBox="0 0 15 16"
-                          width="14"
+                        <button
+                          class="admin__race-delete"
+                          type="button"
+                          [attr.aria-label]="race.deleteLabel"
+                          [disabled]="deleteState() === publishStates.publishing"
+                          (click)="askDelete(race.slug)"
                         >
-                          <path d="M1.5 4h12" />
+                          <svg
+                            aria-hidden="true"
+                            class="admin__race-delete-icon"
+                            fill="none"
+                            height="15"
+                            stroke="currentColor"
+                            stroke-width="1.4"
+                            viewBox="0 0 15 16"
+                            width="14"
+                          >
+                            <path d="M1.5 4h12" />
 
-                          <path d="M5 4V2.5h5V4" />
+                            <path d="M5 4V2.5h5V4" />
 
-                          <path d="M3 4l1 10.5h7L12 4" />
-                        </svg>
-                      </button>
-                    </span>
+                            <path d="M3 4l1 10.5h7L12 4" />
+                          </svg>
+                        </button>
+                      </span>
+                    }
                   </li>
                 </ul>
               </cdk-virtual-scroll-viewport>

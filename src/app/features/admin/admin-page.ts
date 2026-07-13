@@ -14,6 +14,8 @@ import { AdminTokenService } from '../../github/admin-token.service';
 import { ArchiveService } from '../../github/archive.service';
 import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState } from '../../github/github-storage.enum';
+import { PendingArchiveService } from '../../github/pending-archive.service';
+import { PendingUpload } from '../../github/pending-archive.interface';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { ProtocolDropzone } from '../upload/protocol-dropzone/protocol-dropzone';
 import {
@@ -45,6 +47,20 @@ export class AdminPage {
   readonly #siteMeta = inject(SiteMetaService);
   readonly #archive = inject(ArchiveService);
   readonly #eventDelete = inject(EventDeleteService);
+  readonly #pendingArchive = inject(PendingArchiveService);
+
+  /** Just-published events the archive db has not caught up to yet, shown as «публикуется…» placeholders. */
+  readonly #pendingRows = computed<AdminRaceItem[]>(() => {
+    const archived = new Set(this.races().map((race) => race.slug));
+
+    return this.#pendingArchive.uploads().reduce<AdminRaceItem[]>((rows, upload) => {
+      if (!archived.has(upload.slug)) {
+        rows.push(toPendingRaceItem(upload));
+      }
+
+      return rows;
+    }, []);
+  });
 
   readonly status = signal<TokenSaveStatusType>(TokenSaveStatus.idle);
   readonly isAdmin = this.#adminToken.isAdmin;
@@ -53,19 +69,46 @@ export class AdminPage {
   readonly metaState = this.#siteMeta.state;
   /** The start-time draft the organiser edits before publishing the site meta. */
   readonly draftStartTime = signal(EMPTY_TOKEN);
+  /** The archive as the pinned session db serves it; the pending changes below correct it for display. */
   readonly races = signal<AdminRaceItem[]>([]);
   readonly racesStatus = signal<RaceListStatusType>(RaceListStatus.loading);
   readonly query = signal(EMPTY_QUERY);
+
+  /** The list as the organiser should see it: pending uploads on top, just-deleted events hidden. */
+  readonly allRaces = computed(() => {
+    const hidden = new Set(this.#pendingArchive.deletions().map((deletion) => deletion.slug));
+
+    return [...this.#pendingRows(), ...this.races().filter((race) => !hidden.has(race.slug))];
+  });
+
+  /** The load status corrected by the pending changes — an empty archive with a placeholder still shows a list. */
+  readonly displayStatus = computed<RaceListStatusType>(() => {
+    const status = this.racesStatus();
+
+    if (status === RaceListStatus.loading) {
+      return status;
+    }
+
+    // A failed archive read still surfaces a fresh placeholder; otherwise the pending set flips empty↔ready.
+    if (status === RaceListStatus.error) {
+      return this.allRaces().length === 0 ? RaceListStatus.error : RaceListStatus.ready;
+    }
+
+    return this.allRaces().length === 0 ? RaceListStatus.empty : RaceListStatus.ready;
+  });
+
   readonly filteredRaces = computed(() => {
     const query = this.query().trim().toLowerCase();
 
-    return query === EMPTY_QUERY ? this.races() : this.races().filter((race) => race.searchText.includes(query));
+    return query === EMPTY_QUERY ? this.allRaces() : this.allRaces().filter((race) => race.searchText.includes(query));
   });
 
-  /** The number the publish wizard will assign to a new upload — one past the archive maximum. */
-  readonly nextNumber = computed(() => this.races().reduce((max, race) => Math.max(max, race.number), NEXT_NUMBER_SEED) + 1);
+  /** The number the publish wizard will assign to a new upload — one past the maximum, pending uploads included. */
+  readonly nextNumber = computed(() => this.allRaces().reduce((max, race) => Math.max(max, race.number), NEXT_NUMBER_SEED) + 1);
   /** The race awaiting the second, confirming click; deletion never fires from a single click. */
   readonly pendingSlug = signal<string | null>(null);
+  /** The race whose deletion commit is in flight; its row dims to «удаляется…» and cannot be re-deleted. */
+  readonly deletingSlug = signal<string | null>(null);
   /** The race the confirm modal is asking about; null (no matching slug) keeps the modal closed. */
   readonly pendingRace = computed(() => this.races().find((race) => race.slug === this.pendingSlug()) ?? null);
 
@@ -156,13 +199,18 @@ export class AdminPage {
       return;
     }
 
-    // Close the modal at once; the feedback strip below then reports the delete progress.
+    // Close the modal at once; the row dims to «удаляется…» while the feedback strip reports progress.
     this.pendingSlug.set(null);
+    this.deletingSlug.set(slug);
     await this.#eventDelete.delete(slug);
 
     if (this.deleteState() === PublishState.success) {
+      // The pinned session db still serves the event, so remember the deletion to keep the row hidden.
+      this.#pendingArchive.addDeletion({ slug, atIso: new Date().toISOString() });
       this.#applyRaces(this.races().filter((race) => race.slug !== slug));
     }
+
+    this.deletingSlug.set(null);
   }
 
   async #loadMeta(): Promise<void> {
@@ -188,6 +236,11 @@ export class AdminPage {
     try {
       const index = await this.#archive.loadIndex();
 
+      // A reloaded archive that reflects a pending change lets it retire; the rest keep correcting the view.
+      this.#pendingArchive.reconcile(
+        index.events.map((entry) => entry.slug),
+        Date.now(),
+      );
       this.#applyRaces(index.events.map(toAdminRaceItem));
     } catch {
       this.racesStatus.set(RaceListStatus.error);
@@ -212,5 +265,21 @@ function toAdminRaceItem(entry: ArchiveIndexEntry): AdminRaceItem {
     searchText: `№ ${entry.number} ${dateLong} ${entry.dateIso}`.toLowerCase(),
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     deleteLabel: $localize`:@@admin.raceDeleteLabel:Удалить забег № ${entry.number}:number:`,
+  };
+}
+
+/** A just-published event as a placeholder row: no protocol link or delete yet — the archive is still building it. */
+function toPendingRaceItem(upload: PendingUpload): AdminRaceItem {
+  const dateLong = formatRussianDateLong(upload.dateIso);
+
+  return {
+    slug: upload.slug,
+    number: upload.number,
+    dateLong,
+    participantCount: upload.participantCount,
+    raceLink: `${RACE_PAGE_PREFIX}${upload.slug}`,
+    searchText: `№ ${upload.number} ${dateLong} ${upload.dateIso}`.toLowerCase(),
+    deleteLabel: EMPTY_TOKEN,
+    pending: true,
   };
 }

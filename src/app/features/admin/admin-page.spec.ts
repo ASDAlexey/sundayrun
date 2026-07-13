@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { FIRST_ARCHIVE_EVENT_NUMBER } from '../../core/github/archive-index.constant';
-import { EMPTY_INDEX, EXISTING_INDEX, NEWER_ENTRY } from '../../core/github/archive-index.mock';
+import { EMPTY_INDEX, EXISTING_INDEX, NEWER_ENTRY, OLDER_ENTRY } from '../../core/github/archive-index.mock';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
 import { BUILT_SITE_META, EXISTING_SITE_META, RAW_START_TIME_INPUT } from '../../core/github/site-meta.mock';
 import { TokenCheck } from '../../core/github/token-check.enum';
@@ -12,6 +12,8 @@ import { ADMIN_TOKEN_MOCK } from '../../github/admin-token.service.mock';
 import { ArchiveService } from '../../github/archive.service';
 import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
+import { PendingArchiveService } from '../../github/pending-archive.service';
+import { PENDING_UPLOAD_MOCK, pendingArchiveMock } from '../../github/pending-archive.service.mock';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock';
 import { ProtocolStateService } from '../../state/protocol-state.service';
@@ -42,6 +44,7 @@ describe('AdminPage', () => {
   const loadIndex = vi.fn();
   const deleteState = signal<PublishStateType>(PublishState.idle);
   const deleteRace = vi.fn();
+  const pendingArchive = pendingArchiveMock();
 
   let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<AdminPage>;
@@ -52,6 +55,8 @@ describe('AdminPage', () => {
     platformId = BROWSER_PLATFORM_ID;
     metaState.set(PublishState.idle);
     deleteState.set(PublishState.idle);
+    pendingArchive.uploads.set([]);
+    pendingArchive.deletions.set([]);
     validate.mockResolvedValue(TokenCheck.valid);
     loadMeta.mockResolvedValue(EXISTING_SITE_META);
     saveMeta.mockResolvedValue(undefined);
@@ -64,6 +69,7 @@ describe('AdminPage', () => {
         { provide: SiteMetaService, useValue: { state: metaState, load: loadMeta, save: saveMeta } },
         { provide: ArchiveService, useValue: { loadIndex } },
         { provide: EventDeleteService, useValue: { state: deleteState, delete: deleteRace } },
+        { provide: PendingArchiveService, useValue: pendingArchive },
         { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
@@ -225,6 +231,7 @@ describe('AdminPage', () => {
   it('loads the race list with links and search fields and deletes a race only after an explicit confirmation', async () => {
     isAdmin.set(true);
     deleteRace.mockImplementation(() => {
+      expect(fixture.componentInstance.deletingSlug(), 'the row dims while its deletion is in flight').toBe(NEWER_ENTRY.slug);
       deleteState.set(PublishState.success);
 
       return Promise.resolve();
@@ -234,6 +241,10 @@ describe('AdminPage', () => {
     const page = fixture.componentInstance;
     const doc = TestBed.inject(DOCUMENT);
 
+    expect(pendingArchive.reconcile, 'a reload retires the pending changes the archive now reflects').toHaveBeenCalledWith(
+      [NEWER_ENTRY.slug, OLDER_ENTRY.slug],
+      expect.any(Number),
+    );
     expect(page.races()).toEqual(EXPECTED_ADMIN_RACES);
     expect(page.filteredRaces(), 'a blank query keeps the full list').toEqual(EXPECTED_ADMIN_RACES);
 
@@ -264,6 +275,11 @@ describe('AdminPage', () => {
 
     expect(deleteRace).toHaveBeenCalledWith(NEWER_ENTRY.slug);
     expect(page.pendingSlug()).toBeNull();
+    expect(page.deletingSlug(), 'the badge clears once the deletion lands').toBeNull();
+    expect(pendingArchive.addDeletion, 'the pinned db still serves the event, so the deletion is remembered').toHaveBeenCalledWith({
+      slug: NEWER_ENTRY.slug,
+      atIso: expect.any(String),
+    });
     expect(page.races(), 'the deleted race leaves the list').toEqual(EXPECTED_ADMIN_RACES.slice(1));
 
     fixture.detectChanges();
@@ -296,6 +312,31 @@ describe('AdminPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.admin__viewport'), 'no rows to virtualize').toBeNull();
+  });
+
+  it('lists a pending upload on top, drops it once served, hides a just-deleted race and lifts the next number', async () => {
+    isAdmin.set(true);
+    pendingArchive.uploads.set([PENDING_UPLOAD_MOCK]);
+    pendingArchive.deletions.set([{ slug: NEWER_ENTRY.slug, atIso: PENDING_UPLOAD_MOCK.atIso }]);
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(
+      page.allRaces().map((race) => race.slug),
+      'placeholder on top, the deleted race hidden',
+    ).toEqual([PENDING_UPLOAD_MOCK.slug, OLDER_ENTRY.slug]);
+    expect(page.allRaces()[0].pending, 'the fresh upload is a placeholder row').toBe(true);
+    expect(page.displayStatus()).toBe(RaceListStatus.ready);
+    expect(page.nextNumber(), 'a pending upload raises the next number').toBe(PENDING_UPLOAD_MOCK.number + 1);
+
+    // A pending upload the reloaded archive already serves is not duplicated as a placeholder.
+    pendingArchive.uploads.set([{ ...PENDING_UPLOAD_MOCK, slug: OLDER_ENTRY.slug }]);
+
+    expect(
+      page.allRaces().filter((race) => race.pending),
+      'an already-served upload drops its placeholder',
+    ).toEqual([]);
   });
 
   it('keeps the race in the list when the deletion fails', async () => {
@@ -334,6 +375,12 @@ describe('AdminPage', () => {
     expect(fixture.componentInstance.racesStatus()).toBe(RaceListStatus.error);
 
     expect(fixture.nativeElement.querySelector('.admin__error').getAttribute('role')).toBe('alert');
+
+    pendingArchive.uploads.set([PENDING_UPLOAD_MOCK]);
+
+    expect(fixture.componentInstance.displayStatus(), 'a fresh upload still surfaces even when the archive read failed').toBe(
+      RaceListStatus.ready,
+    );
   });
 
   it('does not read the meta or the race list during prerender', async () => {
@@ -344,5 +391,6 @@ describe('AdminPage', () => {
     expect(loadMeta).not.toHaveBeenCalled();
     expect(loadIndex).not.toHaveBeenCalled();
     expect(fixture.componentInstance.meta()).toBeNull();
+    expect(fixture.componentInstance.displayStatus(), 'the list stays in its loading state until hydration').toBe(RaceListStatus.loading);
   });
 });

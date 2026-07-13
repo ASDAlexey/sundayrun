@@ -10,4 +10,6 @@ export interface AdminRaceItem {
   searchText: string;
   /** Localized aria-label of the trash button (attribute i18n drops interpolations). */
   deleteLabel: string;
+  /** A just-published event the archive is still building — rendered as a «публикуется…» row, no actions. */
+  pending?: boolean;
 }
