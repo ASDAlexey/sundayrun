@@ -1,9 +1,20 @@
 import { RaceStatusType } from './race-page.enum';
 
+/** The «ЛР (было X)» note split around the previous record, which links to the race where it was set. */
+export interface RacePrNoteView {
+  before: string;
+  /** The link text: the previous best plus its date — '20:52 · 12 янв 2025'. */
+  label: string;
+  link: string[];
+  after: string;
+}
+
 /** One protocol row prepared for the template: preformatted cells and a resolved athlete link. */
 export interface RaceRowView {
   index: number;
   fullName: string;
+  /** Normalized name key — the template matches it against the visitor's own pick to highlight the row. */
+  athleteKey: string;
   athleteLink: string[];
   athleteAriaLabel: string;
   time23: string;
@@ -14,8 +25,12 @@ export interface RaceRowView {
   placeFText: string;
   /** «Каким по счёту» — the athlete's 5 km finish count as of this race; blank for DNF and one-lap rows. */
   finishCountText: string;
+  /** The finisher-club modifier for the count's badge («race__finishes_100»); empty below the first milestone. */
+  finishClubClass: string;
   club: string;
   note: string;
+  /** The note with its previous record linked and dated; null renders the plain `note` instead. */
+  prNote: RacePrNoteView | null;
   /** Preformatted on-the-fly notable («2-й результат за всё время»); empty when nothing stands out. */
   notableText: string;
 }

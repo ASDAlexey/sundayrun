@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -16,6 +16,9 @@ import { monthFinalSlugs } from '../../core/history/month-finals';
 import { buildEventNotables } from '../../core/history/notables';
 import { NotableKind } from '../../core/history/notables.enum';
 import { Notable } from '../../core/history/notables.interface';
+import { prNoteTimeWithDate, splitPrNote } from '../../core/history/pr-note';
+import { buildPreviousBests } from '../../core/history/previous-bests';
+import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { summarizeRace } from '../../core/history/race-summary';
 import { pluralText } from '../../core/i18n/plural-text';
 import { Gender, GenderType } from '../../core/models/gender.enum';
@@ -26,19 +29,22 @@ import { formatRussianDateLong } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
+import { SelfAthleteService } from '../../state/self-athlete.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import {
   EMPTY_CELL_TEXT,
   FEMALE_GENDER_TEXT,
+  FINISH_CLUB_TIERS,
   HOME_PAGE_LINK,
   MALE_GENDER_TEXT,
+  RACE_PAGE_BASE_LINK,
   RACE_TABLE_COLUMNS,
   SLUG_ROUTE_PARAM,
   SUMMARY_PART_SEPARATOR,
 } from './race-page.constant';
 import { RaceStatus, RaceStatusType } from './race-page.enum';
-import { RacePageState, RaceRowView, RaceView } from './race-page.interface';
+import { RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
 
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
 @Component({
@@ -52,6 +58,10 @@ export class RacePage {
   readonly #results = inject(ResultsService);
   readonly #athletes = inject(AthletesService);
   readonly #protocolPdf = inject(ProtocolPdfService);
+  readonly #selfAthlete = inject(SelfAthleteService);
+
+  /** The visitor's own row gets the highlight; empty when nobody is picked, so no row matches. */
+  readonly selfKey = computed(() => this.#selfAthlete.self()?.key ?? '');
 
   readonly status = signal<RaceStatusType>(RaceStatus.loading);
   readonly race = signal<RaceView | null>(null);
@@ -131,6 +141,7 @@ export class RacePage {
           file,
           buildEventNotables(participantRuns, slug, file.event.dateIso),
           finishCountsAt(participantRuns, file.event.dateIso),
+          buildPreviousBests(participantRuns, file.event.dateIso),
           monthFinalSlugs(eventSlugs, isoToday()).has(slug),
         ),
       };
@@ -144,6 +155,7 @@ function toRaceView(
   file: EventResultsFile,
   notables: Record<string, Notable>,
   finishCounts: Record<string, number>,
+  previousBests: Record<string, PreviousBest>,
   isMonthFinal: boolean,
 ): RaceView {
   return {
@@ -158,17 +170,23 @@ function toRaceView(
     isMonthFinal,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
-    rows: file.rows.map((row) => toRowView(row, notables, finishCounts)),
+    rows: file.rows.map((row) => toRowView(row, notables, finishCounts, previousBests)),
   };
 }
 
-function toRowView(row: ProtocolRow, notables: Record<string, Notable>, finishCounts: Record<string, number>): RaceRowView {
+function toRowView(
+  row: ProtocolRow,
+  notables: Record<string, Notable>,
+  finishCounts: Record<string, number>,
+  previousBests: Record<string, PreviousBest>,
+): RaceRowView {
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];
 
   return {
     index: row.index,
     fullName: row.fullName,
+    athleteKey,
     athleteLink: [ATHLETES_PAGE_LINK, athleteKey],
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     athleteAriaLabel: $localize`:@@race.athleteAriaLabel:История атлета ${row.fullName}:fullName:`,
@@ -179,10 +197,40 @@ function toRowView(row: ProtocolRow, notables: Record<string, Notable>, finishCo
     placeMText: placeTextOf(row.placeM),
     placeFText: placeTextOf(row.placeF),
     finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
+    finishClubClass: finishClubClassOf(finishCount),
     club: row.club,
     note: row.note,
+    prNote: toPrNoteView(row.note, previousBests[athleteKey]),
     notableText: toNotableText(notables[athleteKey]),
   };
+}
+
+/**
+ * The «ЛР (было X)» note with the previous record dated and linked to the race where it was set;
+ * null (no record token, or no known previous run) renders the stored note as plain text.
+ */
+function toPrNoteView(note: string, previousBest: PreviousBest | undefined): RacePrNoteView | null {
+  const parts = splitPrNote(note);
+
+  if (parts === null || previousBest === undefined) {
+    return null;
+  }
+
+  return {
+    before: parts.before,
+    label: prNoteTimeWithDate(parts.time, previousBest),
+    link: [RACE_PAGE_BASE_LINK, previousBest.slug],
+    after: parts.after,
+  };
+}
+
+/** The 5-вёрст-style finisher club of the count; below the first milestone the badge stays neutral. */
+function finishClubClassOf(finishCount: number | undefined): string {
+  if (finishCount === undefined) {
+    return '';
+  }
+
+  return FINISH_CLUB_TIERS.find((tier) => finishCount >= tier.min)?.className ?? '';
 }
 
 /**

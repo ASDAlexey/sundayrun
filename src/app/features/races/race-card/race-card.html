@@ -1,52 +1,110 @@
 <mat-card appearance="outlined" class="race-card" [class.race-card_final]="race().isMonthFinal">
-  <mat-card-header class="race-card__info">
-    <h3 class="race-card__title" i18n="@@races.raceTitle" matCardTitle>Пробег № {{ race().number }}</h3>
+  <header class="race-card__head">
+    <h3 class="race-card__title">
+      <span i18n="@@races.raceTitle">№ {{ race().number }}</span>
 
-    @if (race().isMonthFinal) {
-      <span class="race-card__final-badge" i18n="@@races.monthFinalBadge">Итоговый забег месяца</span>
-    }
+      @if (race().legacyNumber; as legacy) {
+        <span class="race-card__legacy">· {{ legacy }}</span>
+      }
+    </h3>
 
-    <p class="race-card__date">{{ race().dateLong }}</p>
+    <span class="race-card__date">{{ race().dateText }}</span>
+  </header>
 
-    <p class="race-card__place">{{ race().city }}, {{ race().park }}</p>
+  @if (race().isMonthFinal) {
+    <span class="race-card__final-badge">
+      <span aria-hidden="true">★</span>
 
-    <p class="race-card__count" i18n="@@races.participantCount">Участников: {{ race().participantCount }}</p>
-  </mat-card-header>
+      <ng-container i18n="@@races.monthFinalBadge">Итоговый забег месяца</ng-container>
+    </span>
+  }
 
-  @if (race().stats.length > 0) {
-    <mat-card-content>
+  <div class="race-card__hero">
+    <span class="race-card__hero-value">{{ race().hero.value }}</span>
+
+    <div class="race-card__hero-main">
+      <span class="race-card__hero-label">{{ race().hero.label }}</span>
+
+      @if (race().hero.trend; as trend) {
+        <div aria-hidden="true" class="race-card__trend">
+          @for (bar of trend.bars; track $index) {
+            <span
+              class="race-card__trend-bar"
+              [attr.data-count]="bar.count"
+              [class.race-card__trend-bar_current]="bar.isCurrent"
+              [style.height.%]="bar.heightPercent"
+            ></span>
+          }
+        </div>
+
+        <span class="race-card__trend-caption">
+          <ng-container i18n="@@races.trendCaption">динамика 8 недель</ng-container>
+
+          <span class="race-card__trend-highlight">· {{ trend.highlightText }}</span>
+        </span>
+      }
+    </div>
+
+    @if (race().hero.stats.length > 0) {
       <ul class="race-card__stats">
-        @for (stat of race().stats; track stat.label) {
-          <li class="race-card__stat">
+        @for (stat of race().hero.stats; track stat.label) {
+          <li class="race-card__stat" [class.race-card__stat_zero]="stat.isZero">
+            @if (stat.hasArrow) {
+              <span aria-hidden="true" class="race-card__stat-arrow">↑</span>
+            }
+
             <span class="race-card__stat-value">{{ stat.value }}</span>
 
             <span class="race-card__stat-label">{{ stat.label }}</span>
           </li>
         }
       </ul>
-    </mat-card-content>
+    }
+  </div>
+
+  @if (race().genders.length > 0) {
+    <div class="race-card__genders">
+      @for (block of race().genders; track block.title) {
+        <section class="race-card__gender">
+          <h4 class="race-card__gender-title">{{ block.title }}</h4>
+
+          @if (block.best; as best) {
+            <div class="race-card__gender-row">
+              <span class="race-card__gender-value race-card__gender-value_best">{{ best }}</span>
+
+              <span class="race-card__gender-label" i18n="@@races.genderBest">лучшее</span>
+            </div>
+          }
+
+          @if (block.median; as median) {
+            <div class="race-card__gender-row">
+              <span class="race-card__gender-value">{{ median }}</span>
+
+              <span class="race-card__gender-label" i18n="@@races.genderMedian">медиана</span>
+            </div>
+          }
+        </section>
+      }
+    </div>
   }
 
-  <mat-card-actions class="race-card__actions">
-    <a class="race-card__protocol" i18n="@@races.protocolOnline" matButton="outlined" [routerLink]="race().protocolLink">Протокол онлайн</a>
+  <div class="race-card__actions">
+    <a class="race-card__protocol" i18n="@@races.protocolOnline" [routerLink]="race().protocolLink">Протокол</a>
 
-    <button
-      class="race-card__pdf"
-      matButton
-      type="button"
-      [attr.aria-label]="race().pdfAriaLabel"
-      [disabled]="pdfLoading()"
-      (click)="downloadPdf()"
-    >
+    <button class="race-card__pdf" type="button" [attr.aria-label]="race().pdfAriaLabel" [disabled]="pdfLoading()" (click)="downloadPdf()">
       @if (pdfLoading()) {
         <mat-progress-spinner class="race-card__pdf-spinner" mode="indeterminate" [diameter]="18" />
       }
 
       <span i18n="@@races.pdf">PDF</span>
+
+      <span aria-hidden="true" class="race-card__pdf-arrow">↓</span>
     </button>
 
     @if (pdfFailed()) {
       <span class="race-card__pdf-error" i18n="@@races.pdfError" role="alert">Не удалось сформировать PDF</span>
     }
-  </mat-card-actions>
+
+    <a aria-hidden="true" class="race-card__go" tabindex="-1" [routerLink]="race().protocolLink">→</a>
+  </div>
 </mat-card>

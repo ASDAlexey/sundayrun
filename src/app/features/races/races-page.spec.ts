@@ -75,10 +75,12 @@ describe('RacesPage', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
-    const titles = [...element.querySelectorAll('.race-card__title')].map((node) => node.textContent.trim());
+    const titles = [...element.querySelectorAll('.race-card__title')].map((node) => node.textContent.replace(/\s+/g, ' ').trim());
     const pdfButtons = [...element.querySelectorAll('.race-card__pdf')];
     const protocolLinks = [...element.querySelectorAll('.race-card__protocol')];
-    const statValues = [...element.querySelectorAll('.race-card__stat-value')].map((node) => node.textContent.trim());
+    const heroValues = [...element.querySelectorAll('.race-card__hero-value')].map((node) => node.textContent.trim());
+    const barHeights = [...element.querySelectorAll('.race-card__trend-bar')].map((node) => node.style.height);
+    const genderValues = [...element.querySelectorAll('.race-card__gender-value')].map((node) => node.textContent.trim());
 
     expect(titles).toEqual(EXPECTED_RACE_TITLES);
     expect(
@@ -86,8 +88,28 @@ describe('RacesPage', () => {
       'only the closed month’s last race carries the «итоговый» accent',
     ).toEqual(EXPECTED_RACE_ITEMS.map((item) => item.isMonthFinal));
     expect(element.querySelectorAll('.race-card__final-badge').length, 'the month-final card shows its badge').toBe(1);
-    expect(statValues, 'every stat chip renders its preformatted value').toEqual(
-      EXPECTED_RACE_ITEMS.flatMap((item) => item.stats.map((stat) => stat.value)),
+    expect(heroValues, 'the hero shows the finisher count').toEqual(EXPECTED_RACE_ITEMS.map((item) => item.hero.value));
+    expect(barHeights, 'the dynamics bars scale against the window maximum').toEqual(
+      EXPECTED_RACE_ITEMS.flatMap((item) => (item.hero.trend?.bars ?? []).map((bar) => `${bar.heightPercent}%`)),
+    );
+    expect(
+      [...element.querySelectorAll('.race-card__trend-bar')].map((node) => node.classList.contains('race-card__trend-bar_current')),
+      'only the card’s own race lights its bar',
+    ).toEqual(EXPECTED_RACE_ITEMS.flatMap((item) => (item.hero.trend?.bars ?? []).map((bar) => bar.isCurrent)));
+    expect(
+      [...element.querySelectorAll('.race-card__trend-bar')].map((node) => node.getAttribute('data-count')),
+      'each bar carries its count for the hover bubble',
+    ).toEqual(EXPECTED_RACE_ITEMS.flatMap((item) => (item.hero.trend?.bars ?? []).map((bar) => String(bar.count))));
+    expect(
+      [...element.querySelectorAll('.race-card__trend-highlight')].map((node) => node.textContent.replace(/\s+/g, ' ').trim()),
+      'the caption tail names the series maximum or the race itself',
+    ).toEqual(EXPECTED_RACE_ITEMS.map((item) => `· ${item.hero.trend?.highlightText}`));
+    expect(
+      [...element.querySelectorAll('.race-card__stat')].map((node) => node.classList.contains('race-card__stat_zero')),
+      'zero side stats stay on the card, dimmed',
+    ).toEqual(EXPECTED_RACE_ITEMS.flatMap((item) => item.hero.stats.map((stat) => stat.isZero)));
+    expect(genderValues, 'every М/Ж cell renders its preformatted value').toEqual(
+      EXPECTED_RACE_ITEMS.flatMap((item) => item.genders.flatMap((block) => [block.best, block.median])),
     );
     expect(
       protocolLinks.map((link) => link.getAttribute('href')),
@@ -116,7 +138,8 @@ describe('RacesPage', () => {
 
     expect(page.years()).toEqual(EXPECTED_YEARS);
     expect(page.visibleRaces().length, 'no filter by default').toBe(2);
-    expect(page.visibleRaces()[1].stats, 'a pre-stats index entry renders without chips').toEqual([]);
+    expect(page.visibleRaces()[1].genders, 'a pre-stats index entry renders without the М/Ж block').toEqual([]);
+    expect(page.visibleRaces()[1].hero.trend, 'a pre-stats index entry falls back to a chart-less participants hero').toBeNull();
     expect(
       page.yearGroups().map((group) => [group.year, group.countText, group.races.length]),
       'one season section per year, newest first, with a pluralized count',

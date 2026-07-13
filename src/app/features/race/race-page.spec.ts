@@ -1,3 +1,4 @@
+import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
@@ -9,20 +10,29 @@ import { CdnRefService } from '../../github/cdn-ref.service';
 import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
+import { SelfAthlete } from '../../state/self-athlete.interface';
+import { SelfAthleteService } from '../../state/self-athlete.service';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
 import { RacePage } from './race-page';
 import { SLUG_ROUTE_PARAM } from './race-page.constant';
 import { RaceStatus } from './race-page.enum';
 import {
+  CLUB_PARTICIPANT_RUNS,
+  EXPECTED_CLUB_BADGE_CLASS,
+  EXPECTED_CLUB_FINISH_COUNT_TEXT,
+  EXPECTED_PR_NOTE_VIEW,
   EXPECTED_RACE_VIEW,
+  EXPECTED_RANK_FINISH_CLUB_CLASSES,
   EXPECTED_RANK_FINISH_COUNT_TEXTS,
   EXPECTED_RANK_NOTABLE_TEXT,
   EXPECTED_WINDOW_NOTABLE_TEXT,
   FINAL_MONTH_CHRONOLOGY,
   MALFORMED_RACE_SLUG,
   OPEN_MONTH_CHRONOLOGY,
+  PR_NOTE_PROTOCOL_ROWS,
   RACE_PAGE_SLUG,
+  RACE_SELF_PICK,
   RACE_TODAY_ISO,
   RANK_PARTICIPANT_RUNS,
   RESULTS_LOAD_ERROR_MESSAGE,
@@ -38,6 +48,7 @@ describe('RacePage', () => {
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
+  let selfSignal: WritableSignal<SelfAthlete | null>;
   let fixture: ComponentFixture<RacePage>;
 
   beforeEach(() => {
@@ -50,6 +61,7 @@ describe('RacePage', () => {
     loadParticipantRuns.mockResolvedValue([]);
     loadEventSlugs.mockResolvedValue(OPEN_MONTH_CHRONOLOGY);
     routeStub = activatedRouteStub(routeParams);
+    selfSignal = signal<SelfAthlete | null>(null);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -57,6 +69,7 @@ describe('RacePage', () => {
         { provide: AthletesService, useValue: { loadEventSlugs } },
         { provide: ProtocolPdfService, useValue: { download } },
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
+        { provide: SelfAthleteService, useValue: { self: selfSignal } },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });
@@ -76,6 +89,7 @@ describe('RacePage', () => {
   }
 
   it('renders the protocol header and the PDF-shaped table with athlete links', async () => {
+    selfSignal.set(RACE_SELF_PICK);
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -117,6 +131,11 @@ describe('RacePage', () => {
     expect(athleteLinks[0].getAttribute('href'), 'the athlete link targets the personal page by key').toBe(
       `${EXPECTED_RACE_VIEW.rows[0].athleteLink[0]}/${encodeURIComponent(EXPECTED_RACE_VIEW.rows[0].athleteLink[1])}`,
     );
+
+    const selfRows = [...element.querySelectorAll('.race__row_self')];
+
+    expect(selfRows.length, 'exactly the picked visitor’s row is highlighted').toBe(1);
+    expect(selfRows[0].querySelector('.race__athlete').textContent.trim()).toBe(RACE_SELF_PICK.displayName);
   });
 
   it('decorates finishers with on-the-fly notables and survives a failed history read', async () => {
@@ -134,12 +153,30 @@ describe('RacePage', () => {
       page.race()?.rows.map((row) => row.finishCountText),
       'the «Финишей» counter tallies the same runs the notables rank',
     ).toEqual(EXPECTED_RANK_FINISH_COUNT_TEXTS);
+    expect(
+      page.race()?.rows.map((row) => row.finishClubClass),
+      'six finishes cross no milestone — the badges stay neutral',
+    ).toEqual(EXPECTED_RANK_FINISH_CLUB_CLASSES);
 
     fixture.detectChanges();
 
     const chips = [...fixture.nativeElement.querySelectorAll('.race__notable')];
 
     expect(chips.map((chip: Element) => chip.textContent?.trim())).toEqual([EXPECTED_RANK_NOTABLE_TEXT]);
+
+    loadParticipantRuns.mockResolvedValueOnce(CLUB_PARTICIPANT_RUNS);
+    routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
+    await settle();
+
+    expect(page.race()?.rows[0].finishCountText).toBe(EXPECTED_CLUB_FINISH_COUNT_TEXT);
+    expect(page.race()?.rows[0].finishClubClass, 'a century of finishes joins the 100 club').toBe(EXPECTED_CLUB_BADGE_CLASS);
+
+    fixture.detectChanges();
+
+    const badges = [...fixture.nativeElement.querySelectorAll('.race__finishes')];
+
+    expect(badges.length, 'only Мария has a counter, so only her cell wears the badge').toBe(1);
+    expect(badges[0].classList.contains(EXPECTED_CLUB_BADGE_CLASS)).toBe(true);
 
     loadParticipantRuns.mockResolvedValueOnce(WINDOW_PARTICIPANT_RUNS);
     routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
@@ -153,6 +190,33 @@ describe('RacePage', () => {
 
     expect(page.status(), 'the notables are garnish — the protocol still renders').toBe(RaceStatus.ready);
     expect(page.race()?.rows[0].notableText).toBe('');
+  });
+
+  it('links and dates the previous record inside the «ЛР» note, falling back to the stored text without history', async () => {
+    loadResults.mockResolvedValue(buildEventResultsFile(RACE_EVENT, PR_NOTE_PROTOCOL_ROWS));
+    loadParticipantRuns.mockResolvedValueOnce(RANK_PARTICIPANT_RUNS);
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.race()?.rows[0].prNote).toEqual(EXPECTED_PR_NOTE_VIEW);
+
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('.race__pr-link');
+
+    expect(link.textContent.trim()).toBe(EXPECTED_PR_NOTE_VIEW.label);
+    expect(link.getAttribute('href'), 'the previous time links to the race where it was set').toBe(
+      `${EXPECTED_PR_NOTE_VIEW.link[0]}/${EXPECTED_PR_NOTE_VIEW.link[1]}`,
+    );
+
+    loadParticipantRuns.mockResolvedValueOnce([]);
+    routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
+    await settle();
+
+    expect(page.race()?.rows[0].prNote, 'no known previous run — the stored note renders as plain text').toBeNull();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.race__pr-link')).toBeNull();
   });
 
   it('marks the month-final protocol with the «итоговый» badge and shrugs off a failed chronology read', async () => {

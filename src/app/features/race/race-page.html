@@ -79,45 +79,63 @@
             </ng-container>
 
             <ng-container matColumnDef="time23">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.time23" mat-header-cell scope="col">Время 2,3 км</th>
+              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.time23" mat-header-cell scope="col">
+                Время 2,3 км
+              </th>
 
-              <td *matCellDef="let row" class="race__td race__td_mono" mat-cell>{{ row.time23 }}</td>
+              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell>{{ row.time23 }}</td>
             </ng-container>
 
             <ng-container matColumnDef="time5">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.time5" mat-header-cell scope="col">Время 5 км</th>
+              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.time5" mat-header-cell scope="col">
+                Время 5 км
+              </th>
 
-              <td *matCellDef="let row" class="race__td race__td_mono" mat-cell>{{ row.time5 }}</td>
+              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell>{{ row.time5 }}</td>
             </ng-container>
 
             <ng-container matColumnDef="pace">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.pace" mat-header-cell scope="col">Ср. темп</th>
+              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.pace" mat-header-cell scope="col">
+                Ср. темп
+              </th>
 
-              <td *matCellDef="let row" class="race__td race__td_mono" mat-cell>{{ row.paceText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell>{{ row.paceText }}</td>
             </ng-container>
 
             <ng-container matColumnDef="gender">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.gender" mat-header-cell scope="col">Пол</th>
+              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.gender" mat-header-cell scope="col">
+                Пол
+              </th>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.genderText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>{{ row.genderText }}</td>
             </ng-container>
 
             <ng-container matColumnDef="placeM">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.placeM" mat-header-cell scope="col">Место М</th>
+              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.placeM" mat-header-cell scope="col">
+                Место М
+              </th>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.placeMText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>{{ row.placeMText }}</td>
             </ng-container>
 
             <ng-container matColumnDef="placeF">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.placeF" mat-header-cell scope="col">Место Ж</th>
+              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.placeF" mat-header-cell scope="col">
+                Место Ж
+              </th>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.placeFText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>{{ row.placeFText }}</td>
             </ng-container>
 
             <ng-container matColumnDef="finishes">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.finishes" mat-header-cell scope="col">Финишей</th>
+              <th *matHeaderCellDef class="race__th race__th_center race__th_wrap" i18n="@@race.table.finishes" mat-header-cell scope="col">
+                Участий за всё время
+              </th>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.finishCountText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
+                @if (row.finishCountText !== '') {
+                  <span class="race__finishes {{ row.finishClubClass }}">{{ row.finishCountText }}</span>
+                }
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="club">
@@ -130,7 +148,14 @@
               <th *matHeaderCellDef class="race__th" i18n="@@race.table.note" mat-header-cell scope="col">Примечание</th>
 
               <td *matCellDef="let row" class="race__td" mat-cell>
-                {{ row.note }}
+                @if (row.prNote !== null) {
+                  <span
+                    >{{ row.prNote.before }}<a class="race__pr-link" [routerLink]="row.prNote.link">{{ row.prNote.label }}</a
+                    >{{ row.prNote.after }}</span
+                  >
+                } @else {
+                  {{ row.note }}
+                }
 
                 @if (row.notableText !== '') {
                   <span class="race__notable">{{ row.notableText }}</span>
@@ -140,7 +165,12 @@
 
             <tr *matHeaderRowDef="tableColumns" mat-header-row></tr>
 
-            <tr *matRowDef="let row; columns: tableColumns" class="race__row" mat-row></tr>
+            <tr
+              *matRowDef="let row; columns: tableColumns"
+              class="race__row"
+              mat-row
+              [class.race__row_self]="row.athleteKey !== '' && row.athleteKey === selfKey()"
+            ></tr>
           </table>
         </div>
       }

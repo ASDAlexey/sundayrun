@@ -20,3 +20,14 @@ export const SUMMARY_PART_SEPARATOR = ', ';
 
 /** mat-table column order, mirroring the ten PDF columns plus the average pace. */
 export const RACE_TABLE_COLUMNS = ['index', 'athlete', 'time23', 'time5', 'pace', 'gender', 'placeM', 'placeF', 'finishes', 'club', 'note'];
+
+/**
+ * The finisher clubs, 5-вёрст style: the badge of the «Финишей» cell warms up at each milestone.
+ * Ordered highest first — the first tier the count reaches names the BEM modifier.
+ */
+export const FINISH_CLUB_TIERS: readonly { min: number; className: string }[] = [
+  { min: 250, className: 'race__finishes_250' },
+  { min: 100, className: 'race__finishes_100' },
+  { min: 50, className: 'race__finishes_50' },
+  { min: 25, className: 'race__finishes_25' },
+];

@@ -118,6 +118,30 @@
     @include tbl.header-cell;
 
     border-bottom: 0;
+
+    &_center {
+      text-align: center;
+    }
+
+    // The nowrap header keeps the column exactly as wide as its own text, killing the idle gaps.
+    &_shrink {
+      width: 1%;
+    }
+
+    // Wide enough for «за всё время» on the second line, so the header breaks into exactly two.
+    &_wrap {
+      width: 10em;
+      white-space: normal;
+    }
+  }
+
+  // The visitor's own row («Выбери себя» in the header) — a calm accent wash over the cells.
+  &__row_self {
+    // mat-row paints `background: inherit`, so the override targets both the token and the row itself.
+    --mat-table-background-color: var(--accent-glow);
+
+    background: var(--accent-glow);
+    box-shadow: inset 2px 0 0 var(--accent);
   }
 
   &__td {
@@ -129,10 +153,63 @@
     &_mono {
       font-family: var(--mono);
     }
+
+    &_center {
+      text-align: center;
+    }
   }
 
   &__athlete {
     @include tbl.link;
+  }
+
+  &__pr-link {
+    @include tbl.link;
+
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+
+    &:hover {
+      color: var(--accent-light);
+      text-decoration-style: solid;
+    }
+  }
+
+  // The finish counter as a 5-вёрст-style club badge; the milestones reuse the year-badge medal scale.
+  &__finishes {
+    @include t.text('label', 'medium');
+
+    display: inline-flex;
+    justify-content: center;
+    min-width: 44px;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    font-family: var(--mono);
+
+    &_25 {
+      border-color: var(--accent-line);
+      color: var(--text);
+    }
+
+    &_50 {
+      border-color: var(--accent);
+      color: var(--accent-deep);
+    }
+
+    &_100 {
+      border-color: var(--accent);
+      background: var(--accent-atmosphere);
+      color: var(--accent);
+    }
+
+    &_250 {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--accent-contrast);
+    }
   }
 
   &__notable {

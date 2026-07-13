@@ -96,9 +96,9 @@
     color: var(--text-secondary);
     cursor: pointer;
     transition:
-      color 0.2s var(--ease),
-      border-color 0.2s var(--ease),
-      background 0.2s var(--ease);
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--text);
@@ -158,6 +158,11 @@
   &__race {
     contain-intrinsic-size: auto 280px;
     content-visibility: auto;
+    // Paint containment (implied by content-visibility) clips to the padding
+    // edge, so reserve 2px of headroom for the card's hover lift — otherwise
+    // translateY(-2px) cuts off the card's top border.
+    margin-top: -2px;
+    padding-top: 2px;
   }
 
   @media (width <= 860px) {
