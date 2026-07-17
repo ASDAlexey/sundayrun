@@ -1,0 +1,30 @@
+// Scroll-reveal — hidden state + transition live here; the ScrollReveal directive
+// adds `.reveal` on the host and toggles `.is-visible` as the element enters and
+// leaves the viewport. Because it's a transition (not a re-triggered keyframe),
+// it interpolates smoothly in both directions and reverses naturally on scroll-up.
+//
+// Applied only to non-hover elements (section text and card containers) so it
+// never replaces a card's own hover transition.
+
+.reveal {
+  transform: translateY(30px);
+  opacity: 0;
+  transition:
+    opacity 0.8s var(--ease),
+    transform 0.8s var(--ease);
+  will-change: opacity, transform;
+
+  &.is-visible {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+// Respect reduced-motion: show everything immediately, no slide, no reliance on JS.
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+}

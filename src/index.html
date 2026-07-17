@@ -120,6 +120,16 @@
       }
     </style>
 
+    <!-- Without JS the scroll-reveal directive never runs — keep all content visible. -->
+    <noscript>
+      <style>
+        .reveal {
+          transform: none !important;
+          opacity: 1 !important;
+        }
+      </style>
+    </noscript>
+
     <link href="favicon.ico" rel="icon" sizes="32x32" type="image/x-icon" />
     <link href="logo-mark.webp" rel="icon" sizes="160x160" type="image/webp" />
     <link href="apple-touch-icon.png" rel="apple-touch-icon" />
