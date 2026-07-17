@@ -24,12 +24,17 @@ export class PendingArchiveService {
   readonly uploads = computed(() => this.#changes().uploads);
   readonly deletions = computed(() => this.#changes().deletions);
 
-  /** Records a just-published event; a re-publish of the same slug refreshes its single entry and unhides it. */
+  /**
+   * Records a just-published event; a re-publish refreshes its single entry and unhides it. Prior
+   * entries for the same date OR the same race number are dropped: re-publishing a race under a
+   * corrected date would otherwise leave the old date's placeholder stranded (the number, not the
+   * date, identifies the race).
+   */
   addUpload(upload: PendingUpload): void {
     const changes = this.#changes();
 
     this.#write({
-      uploads: [upload, ...changes.uploads.filter((entry) => entry.slug !== upload.slug)],
+      uploads: [upload, ...changes.uploads.filter((entry) => entry.slug !== upload.slug && entry.number !== upload.number)],
       deletions: changes.deletions.filter((entry) => entry.slug !== upload.slug),
     });
   }
@@ -46,15 +51,17 @@ export class PendingArchiveService {
 
   /**
    * Drops the changes a reloaded archive already reflects, plus any that outlived the window: an upload
-   * lands once the archive serves its slug, a deletion once the archive drops it.
+   * lands once the archive serves its slug OR its race number (a date-corrected re-publish lands under a
+   * new slug but the same number), a deletion once the archive drops its slug.
    */
-  reconcile(archivedSlugs: readonly string[], nowMs: number): void {
-    const archived = new Set(archivedSlugs);
+  reconcile(archivedSlugs: readonly string[], archivedNumbers: readonly number[], nowMs: number): void {
+    const slugs = new Set(archivedSlugs);
+    const numbers = new Set(archivedNumbers);
     const changes = this.#changes();
 
     this.#write({
-      uploads: changes.uploads.filter((entry) => !archived.has(entry.slug) && !isExpired(entry, nowMs)),
-      deletions: changes.deletions.filter((entry) => archived.has(entry.slug) && !isExpired(entry, nowMs)),
+      uploads: changes.uploads.filter((entry) => !slugs.has(entry.slug) && !numbers.has(entry.number) && !isExpired(entry, nowMs)),
+      deletions: changes.deletions.filter((entry) => slugs.has(entry.slug) && !isExpired(entry, nowMs)),
     });
   }
 

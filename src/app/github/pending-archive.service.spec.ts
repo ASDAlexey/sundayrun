@@ -28,7 +28,7 @@ describe('PendingArchiveService', () => {
     vi.unstubAllGlobals();
   });
 
-  it('records an upload and a deletion, persisting and deduping each by slug', () => {
+  it('records an upload and a deletion, persisting and deduping uploads by slug and number', () => {
     const service = TestBed.inject(PendingArchiveService);
 
     expect(getItem).toHaveBeenCalledWith(PENDING_ARCHIVE_STORAGE_KEY);
@@ -46,10 +46,16 @@ describe('PendingArchiveService', () => {
 
     expect(service.uploads()).toEqual([rePublished]);
 
+    // Re-publishing the same number under a corrected date drops the stale entry, never strands it.
+    const reDated = { ...PENDING_UPLOAD_MOCK, slug: '2026-07-19', dateIso: '2026-07-19', number: 100 };
+    service.addUpload(reDated);
+
+    expect(service.uploads(), 'a date-corrected re-publish replaces the entry with the same number').toEqual([reDated]);
+
     service.addDeletion(PENDING_DELETION_MOCK);
 
     expect(service.deletions(), 'a deletion of a different slug leaves the upload alone').toEqual([PENDING_DELETION_MOCK]);
-    expect(service.uploads()).toEqual([rePublished]);
+    expect(service.uploads()).toEqual([reDated]);
 
     // A second deletion of another slug stacks newest-first alongside the first.
     const olderDeletion = { slug: OLDER_ENTRY.slug, atIso: PENDING_DELETION_MOCK.atIso };
@@ -87,16 +93,28 @@ describe('PendingArchiveService', () => {
     expect(service.uploads()).toEqual([PENDING_UPLOAD_MOCK, EXPIRED_UPLOAD_MOCK]);
 
     // The archive now serves the upload's slug (it lands) but still serves the deletion's slug (stays hidden).
-    service.reconcile([PENDING_UPLOAD_MOCK.slug, PENDING_DELETION_MOCK.slug], PENDING_NOW_MS);
+    service.reconcile([PENDING_UPLOAD_MOCK.slug, PENDING_DELETION_MOCK.slug], [], PENDING_NOW_MS);
 
     expect(service.uploads(), 'the served upload and the aged one both drop').toEqual([]);
     expect(service.deletions(), 'the still-served deletion stays, the aged one drops').toEqual([PENDING_DELETION_MOCK]);
 
     // Reconciling against an archive that has dropped the slug lands the deletion and empties the store.
-    service.reconcile([OLDER_ENTRY.slug], PENDING_NOW_MS);
+    service.reconcile([OLDER_ENTRY.slug], [], PENDING_NOW_MS);
 
     expect(service.deletions()).toEqual([]);
     expect(removeItem).toHaveBeenCalledWith(PENDING_ARCHIVE_STORAGE_KEY);
+  });
+
+  it('retires a pending upload once the archive serves its number, even under a different slug', () => {
+    getItem.mockReturnValue(JSON.stringify({ uploads: [PENDING_UPLOAD_MOCK], deletions: [] }));
+
+    const service = TestBed.inject(PendingArchiveService);
+
+    // A date-corrected re-publish lands under a new slug but keeps the number; matching the slug alone
+    // would strand this placeholder next to the real row, so the number retires it.
+    service.reconcile([OLDER_ENTRY.slug], [PENDING_UPLOAD_MOCK.number], PENDING_NOW_MS);
+
+    expect(service.uploads(), 'the upload lands by number despite its slug being absent').toEqual([]);
   });
 
   it('degrades a malformed or non-object stored value to nothing pending', () => {
