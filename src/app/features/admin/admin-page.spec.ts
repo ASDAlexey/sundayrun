@@ -370,6 +370,32 @@ describe('AdminPage', () => {
     expect(fixture.nativeElement.querySelector('.admin__feedback_delete .admin__error').getAttribute('role')).toBe('alert');
   });
 
+  it('hides the race and reports softly when the deletion is pending the version pointer', async () => {
+    isAdmin.set(true);
+    deleteRace.mockImplementation(() => {
+      deleteState.set(PublishState.pending);
+
+      return Promise.resolve();
+    });
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    page.askDelete(NEWER_ENTRY.slug);
+    await page.confirmDelete();
+
+    expect(pendingArchive.addDeletion, 'a pending pointer still means the event is gone').toHaveBeenCalledWith({
+      slug: NEWER_ENTRY.slug,
+      atIso: expect.any(String),
+    });
+    expect(page.races(), 'the deleted race leaves the list even before the pointer lands').toEqual(EXPECTED_ADMIN_RACES.slice(1));
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.admin__feedback_delete .admin__error'), 'a pending deletion is never an error').toBeNull();
+    expect(fixture.nativeElement.querySelector('.admin__feedback_delete .admin__saved')).not.toBeNull();
+  });
+
   it('shows the empty race list state with the first number and the load error', async () => {
     isAdmin.set(true);
     loadIndex.mockResolvedValueOnce(EMPTY_INDEX);
