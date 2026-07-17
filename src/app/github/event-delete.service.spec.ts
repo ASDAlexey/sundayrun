@@ -1,9 +1,9 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { DELETE_SLUG } from '../core/github/delete-event.mock';
-import { HTTP_UNAUTHORIZED } from '../core/github/github-api.constant';
-import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
+import { DELETE_SHAS, DELETE_SLUG } from '../core/github/delete-event.mock';
+import { GIT_REF_UPDATE_URL, HTTP_UNAUTHORIZED, HTTP_UNPROCESSABLE } from '../core/github/github-api.constant';
+import { jsonResponse, statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { resetFakeSqlite3 } from '../core/sqlite/spec-utils/fake-sqlite3';
 import { AdminTokenService } from './admin-token.service';
 import { EventDeleteService } from './event-delete.service';
@@ -52,6 +52,28 @@ describe('EventDeleteService', () => {
     await deleting;
 
     expect(service.state()).toBe(PublishState.success);
+  });
+
+  it('reports pending, not error, when the data commit lands but the pointer keeps failing', async () => {
+    vi.useFakeTimers();
+
+    let refCalls = 0;
+    const fetchMock = createEventDeleteFetch({
+      // The data commit's ref update lands; every later attempt (the pointer's) 422s for good.
+      [`PATCH ${GIT_REF_UPDATE_URL}`]: () =>
+        refCalls++ === 0 ? jsonResponse({ object: { sha: DELETE_SHAS.newCommitSha } }) : statusResponse(HTTP_UNPROCESSABLE),
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const deleting = service.delete(DELETE_SLUG);
+
+    await vi.runAllTimersAsync();
+    await deleting;
+
+    expect(service.state(), 'the event is gone, only the pointer lags').toBe(PublishState.pending);
+
+    vi.useRealTimers();
   });
 
   it('reports authError without a token or on 401 and error on any other failure', async () => {
