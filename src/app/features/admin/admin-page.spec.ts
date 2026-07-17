@@ -243,6 +243,7 @@ describe('AdminPage', () => {
 
     expect(pendingArchive.reconcile, 'a reload retires the pending changes the archive now reflects').toHaveBeenCalledWith(
       [NEWER_ENTRY.slug, OLDER_ENTRY.slug],
+      [NEWER_ENTRY.number, OLDER_ENTRY.number],
       expect.any(Number),
     );
     expect(page.races()).toEqual(EXPECTED_ADMIN_RACES);
@@ -336,6 +337,15 @@ describe('AdminPage', () => {
     expect(
       page.allRaces().filter((race) => race.pending),
       'an already-served upload drops its placeholder',
+    ).toEqual([]);
+
+    // A date-corrected re-publish lands under a new slug but the same number — the stale placeholder
+    // must still drop, matched by number, so the archived row is not shadowed by a «публикуется…» twin.
+    pendingArchive.uploads.set([{ ...PENDING_UPLOAD_MOCK, slug: '2099-01-01', number: OLDER_ENTRY.number }]);
+
+    expect(
+      page.allRaces().filter((race) => race.pending),
+      'a placeholder whose number already landed drops even under a different slug',
     ).toEqual([]);
   });
 

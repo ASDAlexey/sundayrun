@@ -51,10 +51,13 @@ export class AdminPage {
 
   /** Just-published events the archive db has not caught up to yet, shown as «публикуется…» placeholders. */
   readonly #pendingRows = computed<AdminRaceItem[]>(() => {
-    const archived = new Set(this.races().map((race) => race.slug));
+    const archivedSlugs = new Set(this.races().map((race) => race.slug));
+    // A date-corrected re-publish lands under a new slug but keeps the number, so match on both:
+    // otherwise the old date's placeholder lingers next to the real, already-served row.
+    const archivedNumbers = new Set(this.races().map((race) => race.number));
 
     return this.#pendingArchive.uploads().reduce<AdminRaceItem[]>((rows, upload) => {
-      if (!archived.has(upload.slug)) {
+      if (!archivedSlugs.has(upload.slug) && !archivedNumbers.has(upload.number)) {
         rows.push(toPendingRaceItem(upload));
       }
 
@@ -239,6 +242,7 @@ export class AdminPage {
       // A reloaded archive that reflects a pending change lets it retire; the rest keep correcting the view.
       this.#pendingArchive.reconcile(
         index.events.map((entry) => entry.slug),
+        index.events.map((entry) => entry.number),
         Date.now(),
       );
       this.#applyRaces(index.events.map(toAdminRaceItem));
