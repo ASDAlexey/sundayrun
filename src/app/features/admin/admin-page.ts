@@ -207,8 +207,11 @@ export class AdminPage {
     this.deletingSlug.set(slug);
     await this.#eventDelete.delete(slug);
 
-    if (this.deleteState() === PublishState.success) {
-      // The pinned session db still serves the event, so remember the deletion to keep the row hidden.
+    // Both success (pointer published) and pending (pointer still catching up) mean the event is gone:
+    // the pinned session db still serves it, so remember the deletion to keep the row hidden.
+    const state = this.deleteState();
+
+    if (state === PublishState.success || state === PublishState.pending) {
       this.#pendingArchive.addDeletion({ slug, atIso: new Date().toISOString() });
       this.#applyRaces(this.races().filter((race) => race.slug !== slug));
     }

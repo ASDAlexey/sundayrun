@@ -215,6 +215,9 @@
             @case (publishStates.success) {
               <p class="admin__saved" i18n="@@admin.deleteSuccess">Забег удалён — сайт пересоберётся через ~2–3 минуты.</p>
             }
+            @case (publishStates.pending) {
+              <p class="admin__saved" i18n="@@admin.deletePending">Забег удаляется — изменения появятся через пару минут.</p>
+            }
             @case (publishStates.authError) {
               <p class="admin__error" i18n="@@admin.deleteAuthError" role="alert">
                 Токен не подходит: нет доступа к репозиторию sundayrun.

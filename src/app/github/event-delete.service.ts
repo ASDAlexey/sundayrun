@@ -31,8 +31,11 @@ export class EventDeleteService {
     this.#state.set(PublishState.publishing);
 
     try {
-      this.#cdnRef.pin(await deleteEvent(token, slug));
-      this.#state.set(PublishState.success);
+      const { commitSha, pointerPublished } = await deleteEvent(token, slug);
+
+      // Pin either way: the deletion db is live for this session; a lagging pointer only delays others.
+      this.#cdnRef.pin(commitSha);
+      this.#state.set(pointerPublished ? PublishState.success : PublishState.pending);
     } catch (error) {
       this.#state.set(error instanceof GithubAuthError ? PublishState.authError : PublishState.error);
     }
