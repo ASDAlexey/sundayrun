@@ -52,15 +52,15 @@
 
   <section class="home__course">
     <div class="home__course-info">
-      <p class="home__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
+      <p appScrollReveal class="home__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
 
-      <h2 class="home__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
+      <h2 appScrollReveal class="home__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
 
-      <p class="home__course-text" i18n="@@races.courseText">
+      <p appScrollReveal class="home__course-text" i18n="@@races.courseText">
         Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
       </p>
 
-      <dl class="home__course-facts">
+      <dl appScrollReveal class="home__course-facts">
         <div class="home__course-fact">
           <dt class="home__course-fact-term" i18n="@@races.courseFactMeetTerm">Сбор</dt>
 
@@ -76,12 +76,13 @@
         </div>
       </dl>
 
-      <a class="home__course-vk" i18n="@@races.courseVk" matButton="tonal" rel="noopener" target="_blank" [href]="vkUrl"
+      <a appScrollReveal class="home__course-vk" i18n="@@races.courseVk" matButton="tonal" rel="noopener" target="_blank" [href]="vkUrl"
         >Сообщество ВКонтакте</a
       >
     </div>
 
     <button
+      appScrollReveal
       aria-haspopup="dialog"
       aria-label="Открыть схему трассы в полном размере"
       class="home__course-figure"
@@ -147,7 +148,7 @@
 
   @if (selfView(); as self) {
     <section class="home__self">
-      <div class="home__self-head">
+      <div appScrollReveal class="home__self-head">
         <p class="home__self-eyebrow" i18n="@@home.selfEyebrow">Твоя статистика</p>
 
         <h2 class="home__self-name">
@@ -155,7 +156,7 @@
         </h2>
       </div>
 
-      <dl class="home__self-grid">
+      <dl appScrollReveal class="home__self-grid">
         <div class="home__self-item">
           <dt class="home__self-label" i18n="@@home.selfFinishes">финишей · 5 км</dt>
 
@@ -187,12 +188,14 @@
         </div>
       </dl>
 
-      <a class="home__self-cta" i18n="@@home.selfProfile" matButton="outlined" [routerLink]="self.athleteLink">Мой профиль</a>
+      <a appScrollReveal class="home__self-cta" i18n="@@home.selfProfile" matButton="outlined" [routerLink]="self.athleteLink"
+        >Мой профиль</a
+      >
     </section>
   }
 
   <section class="home__latest">
-    <div class="home__latest-head">
+    <div appScrollReveal class="home__latest-head">
       <h2 class="home__latest-title" i18n="@@home.latestTitle">Последние забеги</h2>
 
       <a class="home__latest-all" i18n="@@home.allRaces" matButton="outlined" [routerLink]="racesLink">Все забеги</a>
@@ -213,7 +216,7 @@
 
     @switch (status()) {
       @case (statuses.ready) {
-        <ul class="home__latest-list">
+        <ul appScrollReveal class="home__latest-list">
           @for (race of latestRaces(); track race.slug) {
             <li class="home__latest-item">
               <app-race-card [race]="race" />
@@ -221,7 +224,7 @@
           }
         </ul>
 
-        <a class="home__all-cta" i18n="@@home.allRacesCta" matButton="filled" [routerLink]="racesLink">Все забеги</a>
+        <a appScrollReveal class="home__all-cta" i18n="@@home.allRacesCta" matButton="filled" [routerLink]="racesLink">Все забеги</a>
       }
       @case (statuses.error) {
         <p class="home__error" i18n="@@races.error" role="alert">Не удалось загрузить список забегов.</p>
@@ -233,13 +236,13 @@
 
   @if (statsView(); as stats) {
     <section class="home__stats">
-      <div class="home__stats-head">
+      <div appScrollReveal class="home__stats-head">
         <h2 class="home__stats-title" i18n="@@home.statsTitle">За всю историю</h2>
 
         <a class="home__stats-year" i18n="@@home.yearReviewLink" matButton="outlined" [routerLink]="yearLink">Итоги года</a>
       </div>
 
-      <dl class="home__stats-grid">
+      <dl appScrollReveal class="home__stats-grid">
         <div class="home__stats-item">
           <dt class="home__stats-label" i18n="@@home.statsEvents">забегов проведено</dt>
 
