@@ -20,7 +20,44 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Publications push only data/** (source.xlsx, the db, version.json) — never source code.
+  # This job flags whether anything OUTSIDE data/ changed, so the heavy quality gate below can be
+  # skipped for a plain publication while still running in full on code pushes and every PR.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect non-data changes
+        id: filter
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          # Non-push events (PR, manual dispatch) always run the full quality gate.
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # New branch / unknown base — no reliable diff, so run quality to be safe.
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Skip lint/tests only when every changed file lives under data/.
+          if git diff --name-only "$BEFORE" "$AFTER" | grep -qvE '^data/'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+          fi
+
   quality:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,8 +85,16 @@ jobs:
         run: bun run test:coverage
 
   build:
-    needs: quality
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [changes, quality]
+    # Deploy on non-PR main pushes. `always()` lets the build run when quality was skipped for a
+    # data-only publication, while the guards below still block it if quality actually failed or the
+    # change detection itself errored (fail closed — a broken detector must not ship untested code).
+    if: >-
+      always()
+      && github.event_name != 'pull_request'
+      && github.ref == 'refs/heads/main'
+      && needs.changes.result == 'success'
+      && (needs.quality.result == 'success' || needs.quality.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
