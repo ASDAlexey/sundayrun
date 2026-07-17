@@ -2,6 +2,7 @@ import { CountdownParts } from './next-start.interface';
 import {
   COUNTDOWN_PAD_CHAR,
   COUNTDOWN_PAD_LENGTH,
+  DAYS_PER_WEEK,
   DEFAULT_START_HOURS,
   DEFAULT_START_MINUTES,
   MAX_HOURS,
@@ -66,6 +67,15 @@ export function nextStartAt(now: Date, startTime: string): Date {
   }
 
   return target;
+}
+
+/** True when `date` is the last Sunday of its calendar month — the month's «итоговый забег». */
+export function isLastSundayOfMonth(date: Date): boolean {
+  const nextWeek = new Date(date);
+
+  nextWeek.setDate(date.getDate() + DAYS_PER_WEEK);
+
+  return nextWeek.getMonth() !== date.getMonth();
 }
 
 /** Splits the remaining milliseconds into two-digit day/hour/minute/second parts; never negative. */

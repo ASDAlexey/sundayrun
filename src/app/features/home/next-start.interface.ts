@@ -11,4 +11,6 @@ export interface NextStartView {
   dateLabel: string;
   startTime: string;
   countdown: CountdownParts;
+  /** The upcoming Sunday is the last one of its calendar month — the month's «итоговый забег». */
+  isMonthFinal: boolean;
 }

@@ -49,7 +49,14 @@ import {
 import { HomeSelfView, HomeStatsView } from './home-page.interface';
 import { COUNTDOWN_TICK_MS, DEFAULT_START_TIME } from './next-start.constant';
 import { NextStartView } from './next-start.interface';
-import { formatCountdown, formatStartDate, formatStartTimeLabel, nextStartAt, registrationTimeLabel } from './next-start';
+import {
+  formatCountdown,
+  formatStartDate,
+  formatStartTimeLabel,
+  isLastSundayOfMonth,
+  nextStartAt,
+  registrationTimeLabel,
+} from './next-start';
 
 /** The landing page: hero with a live "next start" countdown, the latest races preview and the course card. */
 @Component({
@@ -236,5 +243,6 @@ function toNextStartView(nowMs: number | null, startTime: string): NextStartView
     dateLabel: formatStartDate(target),
     startTime: formatStartTimeLabel(startTime),
     countdown: formatCountdown(target.getTime() - nowMs),
+    isMonthFinal: isLastSundayOfMonth(target),
   };
 }

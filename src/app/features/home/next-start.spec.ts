@@ -1,4 +1,11 @@
-import { formatCountdown, formatStartDate, formatStartTimeLabel, nextStartAt, registrationTimeLabel } from './next-start';
+import {
+  formatCountdown,
+  formatStartDate,
+  formatStartTimeLabel,
+  isLastSundayOfMonth,
+  nextStartAt,
+  registrationTimeLabel,
+} from './next-start';
 import {
   CUSTOM_START_TIME,
   EXPECTED_CUSTOM_REGISTRATION_LABEL,
@@ -39,6 +46,11 @@ describe('next-start', () => {
   it('breaks the remaining time into whole units and never goes negative', () => {
     expect(formatCountdown(SAMPLE_REMAINING_MS)).toEqual(SAMPLE_COUNTDOWN);
     expect(formatCountdown(-5000)).toEqual(ZERO_COUNTDOWN);
+  });
+
+  it('flags the last Sunday of the month as the «итоговый забег»', () => {
+    expect(isLastSundayOfMonth(FOLLOWING_SUNDAY_START), '26 July — no later Sunday in the month').toBe(true);
+    expect(isLastSundayOfMonth(NEXT_SUNDAY_START), '19 July — 26 July still follows').toBe(false);
   });
 
   it('labels the start date in Russian', () => {

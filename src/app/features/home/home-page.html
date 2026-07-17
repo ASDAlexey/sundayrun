@@ -18,6 +18,10 @@
           <b>{{ ns.dateLabel }}</b> · {{ ns.startTime }}
         </p>
 
+        @if (ns.isMonthFinal) {
+          <p class="home__next-final" i18n="@@home.nextStartMonthFinal">🏁 Итоговый забег этого месяца</p>
+        }
+
         <p class="home__next-timer">
           <span class="home__next-unit">{{ ns.countdown.days }}<small class="home__next-unit-label" i18n="@@home.unitDays">д</small></span>
 

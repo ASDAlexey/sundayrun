@@ -14,6 +14,9 @@ export const MAX_MINUTES = 59;
 /** The run always starts on Sunday (`Date.getDay()` numbering, where Sunday is 0). */
 export const START_WEEKDAY = 0;
 
+/** A week's stride in days — used to hop to the next Sunday. */
+export const DAYS_PER_WEEK = 7;
+
 /** Registration opens this many minutes before the start. */
 export const REGISTRATION_LEAD_MINUTES = 15;
 

@@ -112,6 +112,17 @@
     }
   }
 
+  &__next-final {
+    @include t.text('label', 'medium');
+
+    align-self: flex-start;
+    padding: 4px 12px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: var(--accent-glow);
+    color: var(--accent-light);
+  }
+
   &__next-timer {
     display: flex;
     flex-wrap: wrap;
