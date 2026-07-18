@@ -112,7 +112,13 @@ function withStates(geometry: BumpChartView, hovered: string | null, highlighted
 
   // Light up the left-gutter place of every lit line, in that line's colour, so «which place
   // am I on now» reads at a glance against the tangle of lines.
-  const activePlaces = new Map(lines.filter((line) => line.active).map((line) => [line.finalPlace, line.colorVar]));
+  const activePlaces = lines.reduce((places, line) => {
+    if (line.active) {
+      places.set(line.finalPlace, line.colorVar);
+    }
+
+    return places;
+  }, new Map<number, string>());
 
   return {
     ...geometry,
