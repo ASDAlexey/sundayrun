@@ -10,7 +10,6 @@ import {
   BUMP_DOT_HIT_RADIUS,
   BUMP_DOT_RADIUS,
   BUMP_NAME_GAP,
-  BUMP_NAME_WIDTH,
   BUMP_PAD_BOTTOM,
   BUMP_PAD_LEFT,
   BUMP_PAD_TOP,
@@ -135,16 +134,15 @@ function toChartView(data: SeasonPositions): BumpChartView {
   const rows = buildRows(data.rankedCount);
   const lastX = eventX(Math.max(data.eventDates.length - 1, 0));
   const plotBottom = BUMP_PAD_TOP + rows.length * BUMP_ROW_HEIGHT;
-  const nameX = lastX + BUMP_NAME_GAP;
 
   return {
-    width: nameX + BUMP_NAME_WIDTH,
+    // The names sit in a pinned column outside the scroll, so the plot only reserves a small right gap.
+    width: lastX + BUMP_NAME_GAP,
     height: plotBottom + BUMP_PAD_BOTTOM,
     gridX1: BUMP_PAD_LEFT,
     gridX2: lastX,
     rankX: BUMP_PAD_LEFT - BUMP_RANK_GAP,
     tickY: plotBottom + BUMP_TICK_OFFSET,
-    nameX,
     ticks: data.eventDates.map((dateIso, index) => ({ x: eventX(index), label: tickLabel(dateIso) })),
     rows,
     lines: data.lines.map((line, index) => toLineView(line, index, data.eventDates)),

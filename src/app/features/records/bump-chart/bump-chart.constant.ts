@@ -13,11 +13,8 @@ export const BUMP_PAD_TOP = 8;
 /** Room under the chart for the date ticks, px. */
 export const BUMP_PAD_BOTTOM = 30;
 
-/** Gap between the last event column and the name labels, px. */
+/** Gap between the last event column and the pinned name column, px. */
 export const BUMP_NAME_GAP = 14;
-
-/** Width reserved for the right-edge name labels, px. */
-export const BUMP_NAME_WIDTH = 190;
 
 /** Radius of an event dot, px. */
 export const BUMP_DOT_RADIUS = 3.5;

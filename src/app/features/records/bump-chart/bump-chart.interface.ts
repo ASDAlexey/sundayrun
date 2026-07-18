@@ -71,7 +71,6 @@ export interface BumpChartView {
   gridX2: number;
   rankX: number;
   tickY: number;
-  nameX: number;
   ticks: BumpTickView[];
   rows: BumpRowView[];
   lines: BumpLineView[];

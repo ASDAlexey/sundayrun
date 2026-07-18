@@ -50,23 +50,6 @@
         }
       </svg>
 
-      @for (line of view().lines; track line.key) {
-        <a
-          class="bump-chart__name"
-          [class.bump-chart__name_dimmed]="line.dimmed"
-          [routerLink]="line.athleteLink"
-          [style.--bump-line]="line.colorVar"
-          [style.left.px]="view().nameX"
-          [style.top.px]="line.labelY"
-          (mouseenter)="onHover(line.key)"
-          (mouseleave)="onHover(null)"
-        >
-          <span class="bump-chart__name-place">{{ line.finalPlace }}</span>
-
-          <span class="bump-chart__name-text">{{ line.displayName }}</span>
-        </a>
-      }
-
       @if (tooltip(); as tip) {
         <div
           class="bump-chart__tooltip"
@@ -85,5 +68,23 @@
         </div>
       }
     </div>
+  </div>
+
+  <div class="bump-chart__names" [style.height.px]="view().height">
+    @for (line of view().lines; track line.key) {
+      <a
+        class="bump-chart__name"
+        [class.bump-chart__name_dimmed]="line.dimmed"
+        [routerLink]="line.athleteLink"
+        [style.--bump-line]="line.colorVar"
+        [style.top.px]="line.labelY"
+        (mouseenter)="onHover(line.key)"
+        (mouseleave)="onHover(null)"
+      >
+        <span class="bump-chart__name-place">{{ line.finalPlace }}</span>
+
+        <span class="bump-chart__name-text">{{ line.displayName }}</span>
+      </a>
+    }
   </div>
 </div>

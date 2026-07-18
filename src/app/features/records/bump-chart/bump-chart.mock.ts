@@ -33,13 +33,12 @@ export const HIGHLIGHTED_KEYS = ['громов глеб'];
 
 /** BUMP_DATA laid out with the fixed geometry constants (step 56, row 26, pads 40/8/30). */
 export const EXPECTED_BUMP_VIEW: BumpChartView = {
-  width: 356,
+  width: 166,
   height: 90,
   gridX1: 40,
   gridX2: 152,
   rankX: 28,
   tickY: 80,
-  nameX: 166,
   ticks: [
     { x: 40, label: '6 апр' },
     { x: 96, label: '13 апр' },
