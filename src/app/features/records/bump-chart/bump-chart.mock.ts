@@ -46,8 +46,8 @@ export const EXPECTED_BUMP_VIEW: BumpChartView = {
     { x: 152, label: '20 апр' },
   ],
   rows: [
-    { y: 21, label: '1' },
-    { y: 47, label: '2' },
+    { y: 21, label: '1', place: 1, active: false, colorVar: null },
+    { y: 47, label: '2', place: 2, active: false, colorVar: null },
   ],
   lines: [
     {

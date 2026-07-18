@@ -5,7 +5,16 @@
         @for (row of view().rows; track $index) {
           <line class="bump-chart__grid" [attr.x1]="view().gridX1" [attr.x2]="view().gridX2" [attr.y1]="row.y" [attr.y2]="row.y" />
 
-          <text class="bump-chart__rank" dy="0.35em" [attr.x]="view().rankX" [attr.y]="row.y">{{ row.label }}</text>
+          <text
+            class="bump-chart__rank"
+            dy="0.35em"
+            [attr.x]="view().rankX"
+            [attr.y]="row.y"
+            [class.bump-chart__rank_active]="row.active"
+            [style.--bump-line]="row.colorVar"
+          >
+            {{ row.label }}
+          </text>
         }
 
         @for (tick of view().ticks; track $index) {

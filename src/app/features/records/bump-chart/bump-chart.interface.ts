@@ -45,6 +45,12 @@ export interface BumpTickView {
 export interface BumpRowView {
   y: number;
   label: string;
+  /** The standings place this row marks — matched against the active lines' final place. */
+  place: number;
+  /** Set while an active line currently sits on this place: the label lights up in its colour. */
+  active: boolean;
+  /** `var(--chart-N)` of the active line on this row, or null — piped into the label fill. */
+  colorVar: string | null;
 }
 
 /** Everything the template draws, precomputed from `SeasonPositions`. */

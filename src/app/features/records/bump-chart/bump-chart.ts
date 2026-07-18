@@ -108,10 +108,20 @@ function withStates(geometry: BumpChartView, hovered: string | null, highlighted
   }
 
   const lit = hovered === null ? new Set(highlighted) : new Set([hovered]);
+  const lines = geometry.lines.map((line) => ({ ...line, active: lit.has(line.key), dimmed: !lit.has(line.key) }));
+
+  // Light up the left-gutter place of every lit line, in that line's colour, so «which place
+  // am I on now» reads at a glance against the tangle of lines.
+  const activePlaces = new Map(lines.filter((line) => line.active).map((line) => [line.finalPlace, line.colorVar]));
 
   return {
     ...geometry,
-    lines: geometry.lines.map((line) => ({ ...line, active: lit.has(line.key), dimmed: !lit.has(line.key) })),
+    rows: geometry.rows.map((row) => {
+      const colorVar = activePlaces.get(row.place);
+
+      return colorVar === undefined ? row : { ...row, active: true, colorVar };
+    }),
+    lines,
   };
 }
 
@@ -137,7 +147,13 @@ function toChartView(data: SeasonPositions): BumpChartView {
 
 /** Rank rows 1..N — one per ranked athlete, so everyone fits on the chart. */
 function buildRows(rowCount: number): BumpRowView[] {
-  return Array.from({ length: rowCount }, (_, index) => ({ y: rowY(index + 1), label: `${index + 1}` }));
+  return Array.from({ length: rowCount }, (_, index) => ({
+    y: rowY(index + 1),
+    label: `${index + 1}`,
+    place: index + 1,
+    active: false,
+    colorVar: null,
+  }));
 }
 
 function toLineView(line: SeasonPositionLine, index: number, eventDates: string[]): BumpLineView {

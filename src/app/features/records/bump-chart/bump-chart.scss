@@ -22,6 +22,12 @@
 
     fill: var(--text-muted);
     text-anchor: end;
+    transition: fill var(--transition-time) var(--ease);
+
+    // The place a lit line currently sits on — bright, in the line's colour.
+    &_active {
+      fill: var(--bump-line);
+    }
   }
 
   &__tick {
@@ -102,7 +108,7 @@
 
     display: flex;
     position: absolute;
-    align-items: baseline;
+    align-items: center;
     max-width: 176px;
     gap: 6px;
     transform: translateY(-50%);
@@ -124,10 +130,13 @@
     @include t.text('label', 'small');
 
     flex: none;
-    min-width: 16px;
+    min-width: 22px;
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+    background: color-mix(in srgb, var(--bump-line) 16%, transparent);
     color: var(--bump-line);
     font-variant-numeric: tabular-nums;
-    text-align: right;
+    text-align: center;
   }
 
   &__name-text {
