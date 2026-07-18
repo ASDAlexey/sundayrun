@@ -26,7 +26,7 @@ import {
   ISO_MONTH_END,
   ISO_MONTH_START,
 } from './bump-chart.constant';
-import { BumpChartView, BumpDotView, BumpLineView, BumpRowView, BumpTooltipView } from './bump-chart.interface';
+import { BumpChartView, BumpDotView, BumpLabelView, BumpLineView, BumpRowView, BumpTooltipView } from './bump-chart.interface';
 
 /**
  * The standings race as an SVG bump chart: one line per ranked athlete, one column per event,
@@ -88,7 +88,7 @@ export class BumpChart {
 }
 
 /** The shared tooltip placement: clamped off the left edge, flipped below near the top. */
-function toTooltip(line: BumpLineView, x: number, y: number, label: string | null): BumpTooltipView {
+function toTooltip(line: BumpLineView, x: number, y: number, label: BumpLabelView | null): BumpTooltipView {
   const below = y < BUMP_TOOLTIP_FLIP_Y;
 
   return {
@@ -166,7 +166,11 @@ function toLineView(line: SeasonPositionLine, index: number, eventDates: string[
       {
         x: eventX(eventIndex),
         y: rowY(point.position),
-        label: `${formatRussianDateLong(eventDates[eventIndex])} · №${point.position} · ${formatDuration(point.bestMs)}`,
+        label: {
+          date: formatRussianDateLong(eventDates[eventIndex]),
+          place: `№${point.position}`,
+          time: formatDuration(point.bestMs),
+        },
       },
     ];
   });

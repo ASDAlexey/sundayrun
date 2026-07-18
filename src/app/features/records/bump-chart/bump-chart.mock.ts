@@ -57,9 +57,9 @@ export const EXPECTED_BUMP_VIEW: BumpChartView = {
       colorVar: 'var(--chart-1)',
       path: 'M40 21 C68 21 68 21 96 21 C124 21 124 21 152 21',
       dots: [
-        { x: 40, y: 21, label: '6 апреля 2025 г. · №1 · 20:00' },
-        { x: 96, y: 21, label: '13 апреля 2025 г. · №1 · 20:00' },
-        { x: 152, y: 21, label: '20 апреля 2025 г. · №1 · 20:00' },
+        { x: 40, y: 21, label: { date: '6 апреля 2025 г.', place: '№1', time: '20:00' } },
+        { x: 96, y: 21, label: { date: '13 апреля 2025 г.', place: '№1', time: '20:00' } },
+        { x: 152, y: 21, label: { date: '20 апреля 2025 г.', place: '№1', time: '20:00' } },
       ],
       finalPlace: 1,
       labelY: 21,
@@ -73,8 +73,8 @@ export const EXPECTED_BUMP_VIEW: BumpChartView = {
       colorVar: 'var(--chart-2)',
       path: 'M96 47 C124 47 124 47 152 47',
       dots: [
-        { x: 96, y: 47, label: '13 апреля 2025 г. · №2 · 34:00' },
-        { x: 152, y: 47, label: '20 апреля 2025 г. · №2 · 20:30' },
+        { x: 96, y: 47, label: { date: '13 апреля 2025 г.', place: '№2', time: '34:00' } },
+        { x: 152, y: 47, label: { date: '20 апреля 2025 г.', place: '№2', time: '20:30' } },
       ],
       finalPlace: 2,
       labelY: 47,
@@ -90,7 +90,7 @@ export const EXPECTED_TOP_TOOLTIP: BumpTooltipView = {
   y: 33,
   below: true,
   name: 'Волков Виктор',
-  label: '6 апреля 2025 г. · №1 · 20:00',
+  label: { date: '6 апреля 2025 г.', place: '№1', time: '20:00' },
   colorVar: 'var(--chart-1)',
 };
 

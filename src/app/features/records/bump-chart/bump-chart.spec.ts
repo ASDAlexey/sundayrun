@@ -88,7 +88,12 @@ describe('BumpChart', () => {
 
     expect(tooltip?.classList.contains('bump-chart__tooltip_below')).toBe(true);
     expect(tooltip?.textContent).toContain(EXPECTED_TOP_TOOLTIP.name);
-    expect(tooltip?.textContent).toContain(EXPECTED_TOP_TOOLTIP.label);
+    expect(tooltip?.textContent).toContain(EXPECTED_TOP_TOOLTIP.label?.date);
+    expect(tooltip?.textContent).toContain(EXPECTED_TOP_TOOLTIP.label?.time);
+    expect(
+      element.querySelector('.bump-chart__tooltip-place')?.textContent,
+      'the standings place is split out so it can be tinted in the line colour',
+    ).toContain(EXPECTED_TOP_TOOLTIP.label?.place);
     expect(element.querySelectorAll('.bump-chart__dot-hit').length, 'every dot carries an invisible hover target').toBe(5);
 
     page.onDotLeave();

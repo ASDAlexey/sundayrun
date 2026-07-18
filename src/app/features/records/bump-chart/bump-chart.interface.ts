@@ -15,12 +15,22 @@ export interface BumpLineView {
   dimmed: boolean;
 }
 
+/** The tooltip body split so the standings place can be tinted in the line's colour. */
+export interface BumpLabelView {
+  /** The full event date, e.g. «16 февраля 2025 г.». */
+  date: string;
+  /** The standings place on that date, e.g. «№11» — highlighted in the line's colour. */
+  place: string;
+  /** The season best behind that place, e.g. «27:27». */
+  time: string;
+}
+
 /** One event dot on a line. */
 export interface BumpDotView {
   x: number;
   y: number;
   /** The tooltip body: the full event date, the standings position and the season best behind it. */
-  label: string;
+  label: BumpLabelView;
 }
 
 /** The hover tooltip: the athlete under their line colour; a dot adds the date, position and time. */
@@ -31,7 +41,7 @@ export interface BumpTooltipView {
   below: boolean;
   name: string;
   /** Null on a between-the-dots line hover: the name alone answers «whose line is this». */
-  label: string | null;
+  label: BumpLabelView | null;
   colorVar: string;
 }
 

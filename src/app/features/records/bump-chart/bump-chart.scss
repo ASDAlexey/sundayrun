@@ -103,6 +103,10 @@
     color: var(--text-muted);
   }
 
+  &__tooltip-place {
+    color: var(--bump-line);
+  }
+
   &__name {
     @include t.text('label', 'medium');
 

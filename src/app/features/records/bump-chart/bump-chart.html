@@ -78,7 +78,9 @@
           <div class="bump-chart__tooltip-name">{{ tip.name }}</div>
 
           @if (tip.label; as label) {
-            <div class="bump-chart__tooltip-label">{{ label }}</div>
+            <div class="bump-chart__tooltip-label">
+              {{ label.date }} · <span class="bump-chart__tooltip-place">{{ label.place }}</span> · {{ label.time }}
+            </div>
           }
         </div>
       }
