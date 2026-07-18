@@ -85,6 +85,6 @@
     "stylelint-scss": "^7.2.0",
     "typescript": "~6.0.2",
     "vitest": "^4.0.8",
-    "vitest-auto-spy": "^1.7.0"
+    "vitest-auto-spy": "^1.9.2"
   }
 }
