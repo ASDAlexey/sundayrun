@@ -9,6 +9,7 @@ import { isValidEventSlug } from '../../core/github/event-slug';
 import { formatRaceNumber } from '../../core/github/race-number';
 import { EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
+import { createTransferLoader } from '../../core/transfer/transfer-load';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { finishCountsAt } from '../../core/history/finish-counts';
 import { medianMsOrNull } from '../../core/history/median';
@@ -53,6 +54,7 @@ import {
   NOTE_BADGE_CLASSES,
   RACE_PAGE_BASE_LINK,
   RACE_TABLE_COLUMNS,
+  RACE_TRANSFER_KEY_PREFIX,
   SLUG_ROUTE_PARAM,
   STATUS_NOTE_TOKEN_PATTERN,
   SUMMARY_PART_SEPARATOR,
@@ -90,12 +92,28 @@ export class RacePage {
   #slug = '';
 
   constructor() {
+    // The loader is captured once here; each navigation runs its own slug-keyed transfer load.
+    const load = createTransferLoader();
+
     // Same-route navigation reuses the component instance, so the slug is tracked reactively.
     inject(ActivatedRoute)
       .paramMap.pipe(takeUntilDestroyed())
       .subscribe((params) => {
-        this.#slug = params.get(SLUG_ROUTE_PARAM) ?? '';
-        void this.#load(this.#slug);
+        const slug = params.get(SLUG_ROUTE_PARAM) ?? '';
+
+        this.#slug = slug;
+        this.status.set(RaceStatus.loading);
+        this.race.set(null);
+        // Prerender bakes this slug's protocol under `race.view.<slug>`; the browser trusts it
+        // (`trustBaked`) and skips the four reads a direct load used to make. A client-side
+        // navigation to a non-prerendered-in-this-session slug finds nothing baked and loads live.
+        load({
+          key: `${RACE_TRANSFER_KEY_PREFIX}${slug}`,
+          load: () => this.#resolveState(slug),
+          apply: (state) => this.#applyState(slug, state),
+          onError: () => this.#applyState(slug, { status: RaceStatus.error, race: null }),
+          trustBaked: true,
+        });
       });
   }
 
@@ -117,19 +135,14 @@ export class RacePage {
     }
   }
 
-  async #load(slug: string): Promise<void> {
-    this.status.set(RaceStatus.loading);
-    this.race.set(null);
-
-    const next = await this.#resolveState(slug);
-
-    // A newer navigation may have taken over while the results were loading.
+  /** A newer navigation may have taken over while the results were loading, so the slug is rechecked. */
+  #applyState(slug: string, state: RacePageState): void {
     if (slug !== this.#slug) {
       return;
     }
 
-    this.race.set(next.race);
-    this.status.set(next.status);
+    this.race.set(state.race);
+    this.status.set(state.status);
   }
 
   /** A malformed slug never reaches the CDN; a missing file and a malformed one map to notFound. */

@@ -3,6 +3,9 @@ import { RaceNoteBadgeKind, RaceNoteBadgeKindType } from './race-page.enum';
 /** Route param carrying the event slug (`/races/:slug`). */
 export const SLUG_ROUTE_PARAM = 'slug';
 
+/** TransferState key prefix; each prerendered protocol bakes its view under `race.view.<slug>`. */
+export const RACE_TRANSFER_KEY_PREFIX = 'race.view.';
+
 /** routerLink back to the race list. */
 export const HOME_PAGE_LINK = '/';
 
