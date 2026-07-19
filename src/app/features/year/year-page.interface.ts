@@ -1,9 +1,17 @@
 import { YearBadgeType } from '../../core/history/year-badges.enum';
+import { YearStatusType } from './year-page.enum';
 
 /** One preformatted counter card of the year («Забегов» — «49»). */
 export interface YearStatView {
   label: string;
   value: string;
+}
+
+/** The resolved page payload, baked into TransferState per year so the browser trusts it. */
+export interface YearPageState {
+  status: YearStatusType;
+  years: string[];
+  view: YearReviewView | null;
 }
 
 /** One row of a «лучшие результаты года» board: place, athlete, time and the race it was run at. */

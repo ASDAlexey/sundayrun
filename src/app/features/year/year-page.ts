@@ -4,6 +4,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { pluralText } from '../../core/i18n/plural-text';
+import { createTransferLoader } from '../../core/transfer/transfer-load';
 import { YearBestResult, YearReview } from '../../core/history/year-review.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
@@ -12,9 +13,9 @@ import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { YEAR_PAGE_BASE_LINK, YEAR_PODIUM_SIZE, YEAR_ROUTE_PARAM } from './year-page.constant';
+import { YEAR_LATEST_KEY, YEAR_PAGE_BASE_LINK, YEAR_PODIUM_SIZE, YEAR_ROUTE_PARAM, YEAR_TRANSFER_KEY_PREFIX } from './year-page.constant';
 import { YearStatus, YearStatusType } from './year-page.enum';
-import { YearActiveView, YearBadgeGroupView, YearBestRowView, YearReviewView, YearStatView } from './year-page.interface';
+import { YearActiveView, YearBadgeGroupView, YearBestRowView, YearPageState, YearReviewView, YearStatView } from './year-page.interface';
 
 /** «Итоги года»: the year's totals, best results, most active finishers and badge holders. */
 @Component({
@@ -38,33 +39,43 @@ export class YearPage {
   #requestedYear: string | null = null;
 
   constructor() {
+    // The loader is captured once here; each navigation runs its own year-keyed transfer load.
+    const load = createTransferLoader();
+
     // Same-route navigation reuses the component instance, so the year is tracked reactively.
     inject(ActivatedRoute)
       .paramMap.pipe(takeUntilDestroyed())
       .subscribe((params) => {
-        this.#requestedYear = params.get(YEAR_ROUTE_PARAM);
-        void this.#load(this.#requestedYear);
+        const requestedYear = params.get(YEAR_ROUTE_PARAM);
+
+        this.#requestedYear = requestedYear;
+        this.status.set(YearStatus.loading);
+        this.view.set(null);
+        // Prerender bakes the review under `year.review.<year>` (`latest` for the parameterless
+        // `/year`); the browser trusts it (`trustBaked`) and skips the reads a direct load made.
+        load({
+          key: `${YEAR_TRANSFER_KEY_PREFIX}${requestedYear ?? YEAR_LATEST_KEY}`,
+          load: () => this.#resolveState(requestedYear),
+          apply: (state) => this.#applyState(requestedYear, state),
+          onError: () => this.#applyState(requestedYear, { status: YearStatus.error, years: [], view: null }),
+          trustBaked: true,
+        });
       });
   }
 
-  async #load(requestedYear: string | null): Promise<void> {
-    this.status.set(YearStatus.loading);
-    this.view.set(null);
-
-    const next = await this.#resolveState(requestedYear);
-
-    // A newer navigation may have taken over while the review was loading.
+  /** A newer navigation may have taken over while the review was loading, so the year is rechecked. */
+  #applyState(requestedYear: string | null, state: YearPageState): void {
     if (requestedYear !== this.#requestedYear) {
       return;
     }
 
-    this.years.set(next.years);
-    this.view.set(next.view);
-    this.status.set(next.status);
+    this.years.set(state.years);
+    this.view.set(state.view);
+    this.status.set(state.status);
   }
 
   /** No param → the newest year; an unknown year (or an empty archive) maps to notFound. */
-  async #resolveState(requestedYear: string | null): Promise<{ status: YearStatusType; years: string[]; view: YearReviewView | null }> {
+  async #resolveState(requestedYear: string | null): Promise<YearPageState> {
     try {
       const years = await this.#reviews.loadYears();
       const year = requestedYear ?? years[0] ?? null;
