@@ -287,7 +287,7 @@ describe('HomePage', () => {
     expect(TestBed.inject(TransferState).get(RACES_KEY, null)).toBeNull();
   });
 
-  it('applies the baked races before hydration, then refreshes them from the network', async () => {
+  it('trusts the baked races and skips the redundant network refetch', async () => {
     TestBed.inject(TransferState).set(RACES_KEY, { data: BAKED_RACE_ITEMS });
     fixture = TestBed.createComponent(HomePage);
 
@@ -298,13 +298,7 @@ describe('HomePage', () => {
 
     await settle();
 
-    expect(page.latestRaces(), 'the network answer replaces the baked payload').toEqual(EXPECTED_RACE_ITEMS);
-
-    loadLatest.mockRejectedValue(new Error(INDEX_LOAD_ERROR_MESSAGE));
-    fixture.destroy();
-    fixture = await createPage();
-
-    expect(fixture.componentInstance.status(), 'a refresh failure stays silent while baked content is on screen').toBe(RacesStatus.ready);
-    expect(fixture.componentInstance.latestRaces()).toEqual(BAKED_RACE_ITEMS);
+    expect(page.latestRaces(), 'the baked payload is current for this deploy, so it is not refetched').toEqual(BAKED_RACE_ITEMS);
+    expect(loadLatest, 'trustBaked forgoes the db range requests the refetch would make').not.toHaveBeenCalled();
   });
 });

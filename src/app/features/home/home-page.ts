@@ -102,11 +102,15 @@ export class HomePage {
   constructor() {
     // Prerender bakes the real preview and start time into the static HTML, so hydration
     // shifts no layout; the browser still refreshes from the CDN — data lands between deploys.
+    // `trustBaked`: the preview, start time and totals all ship in the same deploy as this HTML, so
+    // the prerendered value is already current — the browser skips the refetch that used to make the
+    // bulk of the page's db range requests. The self card below stays live: it is never prerendered.
     loadWithTransfer({
       key: HOME_RACES_TRANSFER_KEY,
       load: () => this.#loadLatest(),
       apply: (races) => this.#applyLatest(races),
       onError: () => this.status.set(RacesStatus.error),
+      trustBaked: true,
     });
     // The start time is optional decoration, so a CDN failure falls back to the default instead of erroring.
     loadWithTransfer({
@@ -114,6 +118,7 @@ export class HomePage {
       load: () => this.#siteMeta.load(),
       apply: (meta) => this.siteMeta.set(meta),
       onError: () => this.siteMeta.set(EMPTY_SITE_META),
+      trustBaked: true,
     });
     // Only the tiny computed totals travel through TransferState, never the athletes history itself.
     loadWithTransfer({
@@ -121,6 +126,7 @@ export class HomePage {
       load: () => this.#athletes.loadOverallStats(),
       apply: (stats) => this.#stats.set(stats),
       onError: () => this.#stats.set(null),
+      trustBaked: true,
     });
     // The personal card follows the header pick live; the server never holds one, so prerender skips it.
     effect(() => {
