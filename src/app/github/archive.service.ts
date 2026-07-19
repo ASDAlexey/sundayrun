@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 
+import { createQueryCache } from '../core/cache/query-cache';
 import { ARCHIVE_INDEX_SCHEMA_VERSION } from '../core/github/archive-index.constant';
 import { ArchiveIndexEntry, ArchiveIndexFile } from '../core/github/archive-index.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
@@ -15,13 +16,18 @@ import { PROTOCOL_DB } from './protocol-db.token';
 @Injectable({ providedIn: 'root' })
 export class ArchiveService {
   readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
+  // Session memo: the full index is the races list's whole payload, re-read on every soft return.
+  readonly #cache = createQueryCache();
 
-  async loadIndex(): Promise<ArchiveIndexFile> {
-    return { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: await selectArchiveEvents(this.#db) };
+  loadIndex(): Promise<ArchiveIndexFile> {
+    return this.#cache('index', async () => ({
+      schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,
+      events: await selectArchiveEvents(this.#db),
+    }));
   }
 
   /** The newest `count` events for the home preview: `LIMIT` in SQL. */
   loadLatest(count: number): Promise<ArchiveIndexEntry[]> {
-    return selectArchiveEvents(this.#db, count);
+    return this.#cache(`latest:${count}`, () => selectArchiveEvents(this.#db, count));
   }
 }

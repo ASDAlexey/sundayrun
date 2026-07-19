@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 
+import { createQueryCache } from '../core/cache/query-cache';
 import { YearReview } from '../core/history/year-review.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectFirstEventDateByYear, selectYearReview } from './protocol-db-queries';
@@ -9,16 +10,20 @@ import { PROTOCOL_DB } from './protocol-db.token';
 @Injectable({ providedIn: 'root' })
 export class YearReviewService {
   readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
+  // Session memo: a soft-navigated review carries no baked value and would re-run its selects.
+  readonly #cache = createQueryCache();
 
   /** Years that held at least one race, newest first — the page's year switcher. */
-  async loadYears(): Promise<string[]> {
-    const firstDateByYear = await selectFirstEventDateByYear(this.#db);
+  loadYears(): Promise<string[]> {
+    return this.#cache('years', async () => {
+      const firstDateByYear = await selectFirstEventDateByYear(this.#db);
 
-    return Object.keys(firstDateByYear).sort((left, right) => right.localeCompare(left));
+      return Object.keys(firstDateByYear).sort((left, right) => right.localeCompare(left));
+    });
   }
 
   /** The full review of one year: totals, medians, bests, most active and badge holders. */
   loadReview(year: string): Promise<YearReview> {
-    return selectYearReview(this.#db, year);
+    return this.#cache(`review:${year}`, () => selectYearReview(this.#db, year));
   }
 }
