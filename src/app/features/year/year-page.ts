@@ -74,22 +74,21 @@ export class YearPage {
     this.status.set(state.status);
   }
 
-  /** No param → the newest year; an unknown year (or an empty archive) maps to notFound. */
+  /**
+   * No param → the newest year; an unknown year (or an empty archive) maps to notFound. A failed
+   * read rejects, and the transfer loader's `onError` turns it into the error state.
+   */
   async #resolveState(requestedYear: string | null): Promise<YearPageState> {
-    try {
-      const years = await this.#reviews.loadYears();
-      const year = requestedYear ?? years[0] ?? null;
+    const years = await this.#reviews.loadYears();
+    const year = requestedYear ?? years[0] ?? null;
 
-      if (year === null || !years.includes(year)) {
-        return { status: YearStatus.notFound, years, view: null };
-      }
-
-      const review = await this.#reviews.loadReview(year);
-
-      return { status: YearStatus.ready, years, view: toReviewView(review) };
-    } catch {
-      return { status: YearStatus.error, years: [], view: null };
+    if (year === null || !years.includes(year)) {
+      return { status: YearStatus.notFound, years, view: null };
     }
+
+    const review = await this.#reviews.loadReview(year);
+
+    return { status: YearStatus.ready, years, view: toReviewView(review) };
   }
 }
 

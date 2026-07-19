@@ -145,39 +145,38 @@ export class RacePage {
     this.status.set(state.status);
   }
 
-  /** A malformed slug never reaches the CDN; a missing file and a malformed one map to notFound. */
+  /**
+   * A malformed slug never reaches the CDN; a missing file and a malformed one map to notFound.
+   * A failed results read rejects, and the transfer loader's `onError` turns it into the error state.
+   */
   async #resolveState(slug: string): Promise<RacePageState> {
     if (!isValidEventSlug(slug)) {
       return { status: RaceStatus.notFound, race: null };
     }
 
-    try {
-      const [file, participantRuns, eventSlugs, weather] = await Promise.all([
-        this.#results.loadResults(slug),
-        // The notables, the month-final mark and the weather are garnish: a failed read still renders the protocol.
-        this.#results.loadParticipantRuns(slug).catch(() => []),
-        this.#athletes.loadEventSlugs().catch(() => []),
-        this.#results.loadWeather(slug).catch(() => null),
-      ]);
+    const [file, participantRuns, eventSlugs, weather] = await Promise.all([
+      this.#results.loadResults(slug),
+      // The notables, the month-final mark and the weather are garnish: a failed read still renders the protocol.
+      this.#results.loadParticipantRuns(slug).catch(() => []),
+      this.#athletes.loadEventSlugs().catch(() => []),
+      this.#results.loadWeather(slug).catch(() => null),
+    ]);
 
-      if (file === null) {
-        return { status: RaceStatus.notFound, race: null };
-      }
-
-      return {
-        status: RaceStatus.ready,
-        race: toRaceView(
-          file,
-          buildEventNotables(participantRuns, slug, file.event.dateIso),
-          finishCountsAt(participantRuns, file.event.dateIso),
-          buildPreviousBests(participantRuns, file.event.dateIso),
-          monthFinalSlugs(eventSlugs, isoToday()).has(slug),
-          weather,
-        ),
-      };
-    } catch {
-      return { status: RaceStatus.error, race: null };
+    if (file === null) {
+      return { status: RaceStatus.notFound, race: null };
     }
+
+    return {
+      status: RaceStatus.ready,
+      race: toRaceView(
+        file,
+        buildEventNotables(participantRuns, slug, file.event.dateIso),
+        finishCountsAt(participantRuns, file.event.dateIso),
+        buildPreviousBests(participantRuns, file.event.dateIso),
+        monthFinalSlugs(eventSlugs, isoToday()).has(slug),
+        weather,
+      ),
+    };
   }
 }
 
