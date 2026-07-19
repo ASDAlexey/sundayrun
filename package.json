@@ -5,6 +5,7 @@
   "scripts": {
     "start": "bun scripts/build-sqlite-assets.ts && bun scripts/build-pdf-assets.ts && ng serve",
     "build": "bun scripts/build-sqlite-assets.ts && bun scripts/build-pdf-assets.ts && ng build --localize",
+    "preview": "bun scripts/preview.ts",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:coverage": "ng test --coverage",
