@@ -1,4 +1,22 @@
+import { CourseRecordHistory } from '../../core/history/course-records.type';
+import { FirstLapRecords } from '../../core/history/first-lap.type';
+import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { EventWeatherRow } from '../../core/history/weather-records.interface';
+import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { GenderType } from '../../core/models/gender.enum';
+
+/**
+ * The five boards' source data, loaded together and baked into TransferState so the browser trusts
+ * the prerendered value instead of re-running the aggregates over HTTP range requests. The season
+ * bump chart stays out — it loads lazily per season only when the chart view is opened.
+ */
+export interface RecordsData {
+  records: AthleteRecord[];
+  courseRecords: CourseRecordHistory;
+  firstLapRecords: FirstLapRecords;
+  weatherRows: EventWeatherRow[];
+  winnerEvents: EventWinnerTimes[];
+}
 
 /**
  * One leaderboard row prepared for the template: place, links and preformatted values. `crowned`

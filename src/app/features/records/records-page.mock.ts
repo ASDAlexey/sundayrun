@@ -1,8 +1,11 @@
+import { LEADERBOARD_RECORDS } from '../../core/history/best-results.mock';
 import { EXPECTED_COURSE_RECORD_HISTORY } from '../../core/history/course-records.mock';
 import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
+import { EXPECTED_FIRST_LAP_RECORDS } from '../../core/history/first-lap.mock';
 import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { EventWeatherRow } from '../../core/history/weather-records.interface';
+import { WEATHER_ROWS_MOCK } from '../../core/history/weather-records.mock';
 import { SeasonRun } from '../../core/history/season-positions.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { Gender, GenderType } from '../../core/models/gender.enum';
@@ -15,9 +18,18 @@ import {
   WEATHER_HOTTEST_LABEL,
   WEATHER_WINDIEST_LABEL,
 } from './records-page.constant';
-import { ChartPick, FirstLapRecordView, RatingRowView, WeatherExtremeView } from './records-page.interface';
+import { ChartPick, FirstLapRecordView, RatingRowView, RecordsData, WeatherExtremeView } from './records-page.interface';
 
 export const HISTORY_LOAD_ERROR_MESSAGE = 'history load failed';
+
+/** A prerendered boards payload for the trustBaked path: the browser renders it without a refetch. */
+export const BAKED_RECORDS_DATA: RecordsData = {
+  records: LEADERBOARD_RECORDS,
+  courseRecords: EXPECTED_COURSE_RECORD_HISTORY,
+  firstLapRecords: EXPECTED_FIRST_LAP_RECORDS,
+  weatherRows: WEATHER_ROWS_MOCK,
+  winnerEvents: [],
+};
 
 /** Matches every SEASON_RUNS filler (11 of them) — more than the suggestion cap. */
 export const CHART_FILLER_QUERY = 'филлеров';

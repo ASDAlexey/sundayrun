@@ -1,4 +1,4 @@
-import { PLATFORM_ID } from '@angular/core';
+import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
@@ -28,9 +28,12 @@ import {
   QUEEN_ALL_TIME_TEXT,
   RECORDS_CHART_QUERY_PARAMS,
   RECORDS_RATING_QUERY_PARAMS,
+  RECORDS_TRANSFER_KEY,
 } from './records-page.constant';
 import { RecordsStatus, RecordsView, SeasonMetric } from './records-page.enum';
+import { RecordsData } from './records-page.interface';
 import {
+  BAKED_RECORDS_DATA,
   CHART_FILLER_QUERY,
   CHART_PICK,
   CHART_WOMAN_QUERY,
@@ -75,6 +78,8 @@ describe('RecordsPage', () => {
   const loadSeasonLapRuns = vi.fn();
   const loadWeatherRows = vi.fn();
   const loadEventWinnerTimes = vi.fn();
+
+  const RECORDS_KEY = makeStateKey<{ data: RecordsData } | null>(RECORDS_TRANSFER_KEY);
 
   let platformId = BROWSER_PLATFORM_ID;
   let queryParams: Params = {};
@@ -499,13 +504,24 @@ describe('RecordsPage', () => {
     expect(element.querySelector('.records__chip'), 'removing the last chip hides the list').toBeNull();
   });
 
-  it('does not fetch during prerender and keeps the loading state for hydration', async () => {
+  it('prerender fetches the boards and bakes them into the transfer state', async () => {
     platformId = SERVER_PLATFORM_ID;
     fixture = await createPage();
 
-    expect(loadRecords).not.toHaveBeenCalled();
-    expect(loadCourseRecords).not.toHaveBeenCalled();
-    expect(loadFirstLapRecords).not.toHaveBeenCalled();
-    expect(fixture.componentInstance.status()).toBe(RecordsStatus.loading);
+    expect(loadRecords, 'the boards are fetched off the on-disk db during prerender').toHaveBeenCalled();
+    expect(fixture.componentInstance.status()).toBe(RecordsStatus.ready);
+    expect(TestBed.inject(TransferState).get(RECORDS_KEY, null), 'the boards travel to the browser in the ng-state script').not.toBeNull();
+  });
+
+  it('trusts the baked boards and skips the redundant refetch', async () => {
+    TestBed.inject(TransferState).set(RECORDS_KEY, { data: BAKED_RECORDS_DATA });
+    fixture = await createPage();
+
+    expect(fixture.componentInstance.status(), 'the baked boards render without a network read').toBe(RecordsStatus.ready);
+    expect(
+      fixture.componentInstance.men().map((row) => row.displayName),
+      'the baked records feed the men board',
+    ).toEqual(EXPECTED_MEN_NAMES);
+    expect(loadRecords, 'trustBaked forgoes the aggregate range requests the refetch would make').not.toHaveBeenCalled();
   });
 });

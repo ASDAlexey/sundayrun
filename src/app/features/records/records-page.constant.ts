@@ -14,6 +14,9 @@ export const RECORDS_RATING_QUERY_PARAMS = { [RECORDS_VIEW_QUERY_PARAM]: Records
 /** The dash a rating row without an own-gender course record grades on. */
 export const NO_GRADE_TEXT = '—';
 
+/** TransferState key of the prerendered boards payload (the `ng-state` script). */
+export const RECORDS_TRANSFER_KEY = 'records.data';
+
 /** The season-race «find yourself» dropdown never suggests more names at once. */
 export const CHART_SUGGESTION_LIMIT = 8;
 

@@ -1,8 +1,9 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+
+import { loadWithTransfer } from '../../core/transfer/transfer-load';
 
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
@@ -44,6 +45,7 @@ import {
   QUEEN_YEAR_PREFIX,
   RECORDS_PODIUM_SIZE,
   RECORDS_ROW_HEIGHT_PX,
+  RECORDS_TRANSFER_KEY,
   RECORDS_VIEW_QUERY_PARAM,
   RECORD_DELTA_SIGN,
   WEATHER_COLDEST_LABEL,
@@ -58,6 +60,7 @@ import {
   CourseRecordView,
   FirstLapRecordView,
   RatingRowView,
+  RecordsData,
   WeatherExtremeView,
 } from './records-page.interface';
 
@@ -163,10 +166,16 @@ export class RecordsPage {
   protected readonly podiumSize = RECORDS_PODIUM_SIZE;
 
   constructor() {
-    // Prerender bakes the calm loading state into static HTML; live data arrives after hydration.
-    if (isPlatformBrowser(inject(PLATFORM_ID))) {
-      void this.#load();
-    }
+    // Prerender fetches the boards off the on-disk db and bakes them into the static HTML; the
+    // browser trusts that value (`trustBaked`) and skips the refetch that used to re-run every
+    // aggregate over HTTP range requests. The season bump chart stays lazy — see `#ensureSeason`.
+    loadWithTransfer({
+      key: RECORDS_TRANSFER_KEY,
+      load: () => this.#loadData(),
+      apply: (data) => this.#applyData(data),
+      onError: () => this.status.set(RecordsStatus.error),
+      trustBaked: true,
+    });
   }
 
   onQueryChange(query: string): void {
@@ -256,28 +265,28 @@ export class RecordsPage {
     }
   }
 
-  async #load(): Promise<void> {
-    try {
-      const [records, courseRecords, firstLapRecords, weatherRows, winnerEvents] = await Promise.all([
-        this.#athletes.loadRecords(),
-        this.#athletes.loadCourseRecords(),
-        this.#athletes.loadFirstLapRecords(),
-        // The weather extremes are garnish: a failed read still renders the boards.
-        this.#athletes.loadWeatherRows().catch(() => []),
-        this.#athletes.loadEventWinnerTimes(),
-      ]);
+  async #loadData(): Promise<RecordsData> {
+    const [records, courseRecords, firstLapRecords, weatherRows, winnerEvents] = await Promise.all([
+      this.#athletes.loadRecords(),
+      this.#athletes.loadCourseRecords(),
+      this.#athletes.loadFirstLapRecords(),
+      // The weather extremes are garnish: a failed read still renders the boards.
+      this.#athletes.loadWeatherRows().catch(() => []),
+      this.#athletes.loadEventWinnerTimes(),
+    ]);
 
-      this.#records.set(records);
-      this.#courseRecords.set(courseRecords);
-      this.#firstLapRecords.set(firstLapRecords);
-      this.#weatherRows.set(weatherRows);
-      this.#winnerEvents.set(winnerEvents);
-      this.status.set(records.length === 0 ? RecordsStatus.empty : RecordsStatus.ready);
-      // A deep link straight into the chart view needs its season as soon as the years are known.
-      this.#ensureSeason();
-    } catch {
-      this.status.set(RecordsStatus.error);
-    }
+    return { records, courseRecords, firstLapRecords, weatherRows, winnerEvents };
+  }
+
+  #applyData(data: RecordsData): void {
+    this.#records.set(data.records);
+    this.#courseRecords.set(data.courseRecords);
+    this.#firstLapRecords.set(data.firstLapRecords);
+    this.#weatherRows.set(data.weatherRows);
+    this.#winnerEvents.set(data.winnerEvents);
+    this.status.set(data.records.length === 0 ? RecordsStatus.empty : RecordsStatus.ready);
+    // A deep link straight into the chart view needs its season as soon as the years are known.
+    this.#ensureSeason();
   }
 }
 
