@@ -11,6 +11,14 @@ export const PROTOCOL_DB_SCHEMA_VERSION = '5';
 
 export const PROTOCOL_DB_META_SCHEMA_VERSION_KEY = 'schemaVersion';
 
+/**
+ * The `meta` key holding the JSON-encoded site-wide totals (`OverallStats`), materialised at
+ * write time so the home page reads one keyed row instead of scanning `runs` three times over
+ * HTTP range requests. Absent on dbs published before this key existed — readers fall back to
+ * the on-the-fly aggregate then.
+ */
+export const PROTOCOL_DB_META_OVERALL_STATS_KEY = 'overallStats';
+
 /** Mirrors `ArchiveIndexEntry` + `RaceEvent`; `club_name`/`chairman` are '' for legacy events. */
 export const PROTOCOL_DB_CREATE_EVENTS_TABLE = `
 CREATE TABLE events (

@@ -13,6 +13,7 @@ import { EventWeather } from '../weather/event-weather.interface';
 import { deserializeDbInto } from './deserialize-db';
 import { narrowValues } from './protocol-db-narrow';
 import { recomputeStoredNotes } from './protocol-db-notes';
+import { storeOverallStats } from './protocol-db-overall-stats';
 import { recomputeEventSummaryCounts } from './protocol-db-summary';
 import { athletes, eventWeather, events as eventsTable, meta, participations, results as resultsTable, runs } from './protocol-db.schema';
 import { readHistory, readIndexFile } from './protocol-db-read';
@@ -140,6 +141,9 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     // bests), so the whole archive's notes converge in the same transaction.
     await recomputeStoredNotes(ddb);
     await recomputeEventSummaryCounts(ddb);
+    // Site-wide totals for the home page, materialised from the same rollup the tables were written
+    // from, so a single keyed `meta` read replaces the full-table aggregate scans on the client.
+    await storeOverallStats(ddb, target.history);
     await ddb
       .insert(meta)
       .values({ key: PROTOCOL_DB_META_SCHEMA_VERSION_KEY, value: PROTOCOL_DB_SCHEMA_VERSION })

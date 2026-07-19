@@ -27,7 +27,8 @@ import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interf
 import { parseDuration } from '../core/time/duration';
 import { Gender, GenderType } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
-import { athletes, eventWeather, events, participations, results, runs } from '../core/sqlite/protocol-db.schema';
+import { athletes, eventWeather, events, meta, participations, results, runs } from '../core/sqlite/protocol-db.schema';
+import { PROTOCOL_DB_META_OVERALL_STATS_KEY } from '../core/sqlite/protocol-db-schema.constant';
 import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { ArchiveEntryRow } from './archive-entry-row.type';
 import { asGender, asNumber, asString } from './protocol-db-row';
@@ -333,8 +334,26 @@ export async function selectYearReview(db: ProtocolDrizzle, year: string): Promi
   });
 }
 
-/** Site-wide totals via SQL aggregates, shaped exactly like `computeOverallStats`. */
+/**
+ * Site-wide totals for the home page. The publish flow materialises them into the `meta` row
+ * `overallStats` (see `storeOverallStats`), so the common path is a single keyed lookup instead of
+ * scanning `runs` three times over HTTP range requests. A db published before that key existed
+ * returns null here and falls back to the on-the-fly aggregate, which stays shaped exactly like
+ * `computeOverallStats`.
+ */
 export async function selectOverallStats(db: ProtocolDrizzle): Promise<OverallStats> {
+  return (await selectStoredOverallStats(db)) ?? selectAggregatedOverallStats(db);
+}
+
+/** The materialised totals from the `meta` kv row, or null when the key is absent (pre-key db). */
+async function selectStoredOverallStats(db: ProtocolDrizzle): Promise<OverallStats | null> {
+  const [row] = await db.select({ value: meta.value }).from(meta).where(eq(meta.key, PROTOCOL_DB_META_OVERALL_STATS_KEY));
+
+  return row ? (JSON.parse(row.value) as OverallStats) : null;
+}
+
+/** The fallback aggregate: three full-table passes over `runs`, used only when the stored row is absent. */
+async function selectAggregatedOverallStats(db: ProtocolDrizzle): Promise<OverallStats> {
   const [runCountsRows, eventCountsRows, medianTimeMenMs, medianTimeWomenMs] = await Promise.all([
     db.select({ finishesCount: count(), finishersCount: countDistinct(runs.athleteKey) }).from(runs),
     db.select({ eventsCount: count() }).from(events),
