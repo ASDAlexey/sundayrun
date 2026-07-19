@@ -57,6 +57,8 @@ import {
   RUNLESS_ATHLETE_KEY,
   SEED_ATHLETES,
   SEED_SEASON_LAP_EDGE_RESULTS,
+  SEED_STORED_STATS,
+  STORED_STATS,
   UNKNOWN_ATHLETE_KEY,
   UNKNOWN_EVENT_SLUG,
   YEAR_REVIEW_SEED,
@@ -168,6 +170,12 @@ describe('protocol-db-queries', () => {
       EXPECTED_RIVAL_RUNS,
     );
     await expect(selectCourseRecords(db), 'the corrupt gender code never enters the record scan').resolves.toEqual(EXPECTED_COURSE_RECORDS);
+  });
+
+  it('prefers the materialised overallStats row over re-aggregating the tables', async () => {
+    const db = await drizzleFor([...POPULATED_SEED, ...SEED_STORED_STATS]);
+
+    await expect(selectOverallStats(db), 'the stored meta row wins over the on-the-fly aggregate').resolves.toEqual(STORED_STATS);
   });
 
   it('keeps the zero-division and empty-median guards on an empty db', async () => {

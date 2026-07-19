@@ -280,6 +280,21 @@ export const EXPECTED_SQL_STATS: OverallStats = {
   medianTimeWomenMs: 1700000,
 };
 
+/**
+ * A materialised `overallStats` row whose numbers deliberately differ from `EXPECTED_SQL_STATS`, so
+ * a test that seeds it proves `selectOverallStats` reads the stored value instead of re-aggregating.
+ */
+export const STORED_STATS: OverallStats = {
+  eventsCount: 99,
+  finishesCount: 888,
+  finishersCount: 77,
+  averageFinishes: 11.5,
+  medianTimeMenMs: 1500000,
+  medianTimeWomenMs: 1600000,
+};
+
+export const SEED_STORED_STATS: readonly string[] = [`INSERT INTO meta VALUES (${q('overallStats')}, ${q(JSON.stringify(STORED_STATS))})`];
+
 export const EXPECTED_EMPTY_SQL_STATS: OverallStats = {
   eventsCount: 0,
   finishesCount: 0,

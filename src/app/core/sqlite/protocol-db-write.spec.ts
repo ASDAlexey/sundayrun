@@ -1,8 +1,9 @@
 import { buildEventResultsFile } from '../github/results-file';
+import { computeOverallStats } from '../history/overall-stats';
 import { EXPECTED_FIRST_PUBLISH_HISTORY, EXPECTED_PUBLISHED_HISTORY } from '../github/publish-event.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
 import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
-import { selectEventResults } from '../../github/protocol-db-queries';
+import { selectEventResults, selectOverallStats } from '../../github/protocol-db-queries';
 import { selectEventWeather } from '../../github/protocol-db-weather';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
@@ -64,6 +65,9 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       const db = await reopen(await applyEventToDb(existingBytes, DB_UPDATE_MOCK));
 
       await expect(readHistory(db)).resolves.toEqual(EXPECTED_PUBLISHED_HISTORY);
+      await expect(selectOverallStats(db), 'the overall totals are materialised into the meta row').resolves.toEqual(
+        computeOverallStats(EXPECTED_PUBLISHED_HISTORY),
+      );
       expect((await readIndexFile(db)).events).toEqual(EXPECTED_APPLIED_EVENTS);
       await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(
         buildEventResultsFile(RENUMBERED_RACE_EVENT, EXPECTED_STORED_ROWS),
