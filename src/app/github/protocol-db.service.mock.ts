@@ -7,8 +7,8 @@ import { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK } from './sp
 
 export { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK };
 
-/** The deploy base href the fake DOCUMENT reports, mirroring the `/sundayrun/ru/` Pages sub-path. */
-export const DB_BASE_URI_MOCK = 'https://sundayrun.example/sundayrun/ru/';
+/** The deploy base href the fake DOCUMENT reports, mirroring the `/sundayrun/` Pages sub-path. */
+export const DB_BASE_URI_MOCK = 'https://sundayrun.example/sundayrun/';
 
 /** The `DOCUMENT` stub the service resolves the db url against — only `baseURI` is read. */
 export const DOCUMENT_MOCK: Pick<Document, 'baseURI'> = { baseURI: DB_BASE_URI_MOCK };
