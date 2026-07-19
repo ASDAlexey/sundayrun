@@ -11,10 +11,14 @@ export type QueryCache = <T>(key: string, load: () => Promise<T>) => Promise<T>;
  * next call retries instead of replaying the failure.
  */
 export function createQueryCache(): QueryCache {
-  const entries = new Map<string, Promise<unknown>>();
+  // Two typed views of one heterogeneous map: writes go in as `Promise<unknown>`, reads come back
+  // as `Promise<never>`, which is assignable to every `Promise<T>`. The same key always carries the
+  // same T by contract, so neither end needs a type assertion.
+  const entries = new Map<string, Promise<never>>();
+  const writable: Map<string, Promise<unknown>> = entries;
 
   return <T>(key: string, load: () => Promise<T>): Promise<T> => {
-    const cached = entries.get(key) as Promise<T> | undefined;
+    const cached = entries.get(key);
 
     if (cached !== undefined) {
       return cached;
@@ -22,7 +26,7 @@ export function createQueryCache(): QueryCache {
 
     const pending = load();
 
-    entries.set(key, pending);
+    writable.set(key, pending);
     void pending.catch(() => entries.delete(key));
 
     return pending;

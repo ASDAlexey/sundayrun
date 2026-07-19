@@ -348,8 +348,9 @@ export async function selectOverallStats(db: ProtocolDrizzle): Promise<OverallSt
 /** The materialised totals from the `meta` kv row, or null when the key is absent (pre-key db). */
 async function selectStoredOverallStats(db: ProtocolDrizzle): Promise<OverallStats | null> {
   const [row] = await db.select({ value: meta.value }).from(meta).where(eq(meta.key, PROTOCOL_DB_META_OVERALL_STATS_KEY));
+  const stored: OverallStats | null = row ? JSON.parse(row.value) : null;
 
-  return row ? (JSON.parse(row.value) as OverallStats) : null;
+  return stored;
 }
 
 /** The fallback aggregate: three full-table passes over `runs`, used only when the stored row is absent. */
