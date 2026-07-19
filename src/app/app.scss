@@ -82,6 +82,20 @@
     color: var(--text-muted);
   }
 
+  // The version badge sits next to the brand; `margin-right: auto` hugs it left and pushes the nav
+  // to the far edge, so `justify-content: space-between` does not float it into the middle.
+  &__version {
+    @include t.mono-caption;
+
+    align-self: center;
+    margin-right: auto;
+    padding: 2px 8px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    color: var(--text-muted);
+  }
+
   &__nav {
     display: flex;
     flex-wrap: wrap;

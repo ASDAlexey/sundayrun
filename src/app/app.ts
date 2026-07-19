@@ -11,6 +11,7 @@ import {
   VERSUS_PAGE_LINK,
   VK_COMMUNITY_URL,
 } from './app.constant';
+import { APP_VERSION } from './core/app-version.constant';
 import { ADMIN_PAGE_LINK } from './features/admin/admin-page.constant';
 import { GUIDE_PAGE_LINK } from './features/guide/guide-page.constant';
 import { RECORDS_PAGE_LINK } from './features/records/records-page.constant';
@@ -37,6 +38,7 @@ export class App {
   protected readonly adminLink = ADMIN_PAGE_LINK;
   protected readonly creatorUrl = CREATOR_SITE_URL;
   protected readonly vkUrl = VK_COMMUNITY_URL;
+  protected readonly version = APP_VERSION;
 
   /** `href="#main"` would resolve against `<base href>` and reload the app, so focus is moved manually. */
   skipToMain(event: Event): void {
