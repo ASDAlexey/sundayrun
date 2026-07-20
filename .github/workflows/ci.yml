@@ -173,6 +173,10 @@ jobs:
 
   deploy:
     needs: build
+    # A skipped job anywhere in the needs chain (quality, on data-only publications) propagates:
+    # the implicit `success()` would skip this job too, leaving the run green but the publication
+    # undeployed. Same guard as on `build`: run whenever the build itself actually succeeded.
+    if: always() && needs.build.result == 'success'
     runs-on: ubuntu-latest
     concurrency:
       group: pages
