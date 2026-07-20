@@ -77,11 +77,11 @@ export class AdminPage {
   readonly racesStatus = signal<RaceListStatusType>(RaceListStatus.loading);
   readonly query = signal(EMPTY_QUERY);
 
-  /** The list as the organiser should see it: pending uploads on top, just-deleted events hidden. */
+  /** The list as the organiser should see it: pending uploads on top, just-deleted events dimmed to «удаляется…». */
   readonly allRaces = computed(() => {
-    const hidden = new Set(this.#pendingArchive.deletions().map((deletion) => deletion.slug));
+    const deleting = new Set(this.#pendingArchive.deletions().map((deletion) => deletion.slug));
 
-    return [...this.#pendingRows(), ...this.races().filter((race) => !hidden.has(race.slug))];
+    return [...this.#pendingRows(), ...this.races().map((race) => (deleting.has(race.slug) ? { ...race, deleting: true } : race))];
   });
 
   /** The load status corrected by the pending changes — an empty archive with a placeholder still shows a list. */
@@ -106,8 +106,11 @@ export class AdminPage {
     return query === EMPTY_QUERY ? this.allRaces() : this.allRaces().filter((race) => race.searchText.includes(query));
   });
 
-  /** The number the publish wizard will assign to a new upload — one past the maximum, pending uploads included. */
-  readonly nextNumber = computed(() => this.allRaces().reduce((max, race) => Math.max(max, race.number), NEXT_NUMBER_SEED) + 1);
+  /** The number the publish wizard will assign to a new upload — one past the maximum; pending uploads count, deleting rows do not. */
+  readonly nextNumber = computed(
+    () => this.allRaces().reduce((max, race) => (race.deleting === true ? max : Math.max(max, race.number)), NEXT_NUMBER_SEED) + 1,
+  );
+
   /** The race awaiting the second, confirming click; deletion never fires from a single click. */
   readonly pendingSlug = signal<string | null>(null);
   /** The race whose deletion commit is in flight; its row dims to «удаляется…» and cannot be re-deleted. */
@@ -208,12 +211,12 @@ export class AdminPage {
     await this.#eventDelete.delete(slug);
 
     // Both success (pointer published) and pending (pointer still catching up) mean the event is gone:
-    // the pinned session db still serves it, so remember the deletion to keep the row hidden.
+    // the pinned session db still serves it, so remember the deletion — the row stays visible as
+    // «удаляется…» until a reloaded archive stops serving it (see `allRaces`).
     const state = this.deleteState();
 
     if (state === PublishState.success || state === PublishState.pending) {
       this.#pendingArchive.addDeletion({ slug, atIso: new Date().toISOString() });
-      this.#applyRaces(this.races().filter((race) => race.slug !== slug));
     }
 
     this.deletingSlug.set(null);

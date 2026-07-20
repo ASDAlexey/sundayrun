@@ -12,4 +12,6 @@ export interface AdminRaceItem {
   deleteLabel: string;
   /** A just-published event the archive is still building — rendered as a «публикуется…» row, no actions. */
   pending?: boolean;
+  /** A just-deleted event the archive still serves — rendered as an «удаляется…» row, no actions. */
+  deleting?: boolean;
 }

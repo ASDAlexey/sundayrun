@@ -281,7 +281,8 @@ describe('AdminPage', () => {
       slug: NEWER_ENTRY.slug,
       atIso: expect.any(String),
     });
-    expect(page.races(), 'the deleted race leaves the list').toEqual(EXPECTED_ADMIN_RACES.slice(1));
+    expect(page.races(), 'the archive rows stay put — the pending deletion only dims the view').toEqual(EXPECTED_ADMIN_RACES);
+    expect(page.allRaces()[0].deleting, 'the row stays visible as «удаляется…» until the archive drops it').toBe(true);
 
     fixture.detectChanges();
 
@@ -315,7 +316,7 @@ describe('AdminPage', () => {
     expect(fixture.nativeElement.querySelector('.admin__viewport'), 'no rows to virtualize').toBeNull();
   });
 
-  it('lists a pending upload on top, drops it once served, hides a just-deleted race and lifts the next number', async () => {
+  it('lists a pending upload on top, drops it once served, dims a just-deleted race and lifts the next number', async () => {
     isAdmin.set(true);
     pendingArchive.uploads.set([PENDING_UPLOAD_MOCK]);
     pendingArchive.deletions.set([{ slug: NEWER_ENTRY.slug, atIso: PENDING_UPLOAD_MOCK.atIso }]);
@@ -325,11 +326,12 @@ describe('AdminPage', () => {
 
     expect(
       page.allRaces().map((race) => race.slug),
-      'placeholder on top, the deleted race hidden',
-    ).toEqual([PENDING_UPLOAD_MOCK.slug, OLDER_ENTRY.slug]);
+      'placeholder on top, the deleted race stays in place',
+    ).toEqual([PENDING_UPLOAD_MOCK.slug, NEWER_ENTRY.slug, OLDER_ENTRY.slug]);
     expect(page.allRaces()[0].pending, 'the fresh upload is a placeholder row').toBe(true);
+    expect(page.allRaces()[1].deleting, 'the just-deleted race dims to «удаляется…»').toBe(true);
     expect(page.displayStatus()).toBe(RaceListStatus.ready);
-    expect(page.nextNumber(), 'a pending upload raises the next number').toBe(PENDING_UPLOAD_MOCK.number + 1);
+    expect(page.nextNumber(), 'a pending upload raises the next number, a deleting row never counts').toBe(PENDING_UPLOAD_MOCK.number + 1);
 
     // A pending upload the reloaded archive already serves is not duplicated as a placeholder.
     pendingArchive.uploads.set([{ ...PENDING_UPLOAD_MOCK, slug: OLDER_ENTRY.slug }]);
@@ -370,7 +372,7 @@ describe('AdminPage', () => {
     expect(fixture.nativeElement.querySelector('.admin__feedback_delete .admin__error').getAttribute('role')).toBe('alert');
   });
 
-  it('hides the race and reports softly when the deletion is pending the version pointer', async () => {
+  it('dims the race and reports softly when the deletion is pending the version pointer', async () => {
     isAdmin.set(true);
     deleteRace.mockImplementation(() => {
       deleteState.set(PublishState.pending);
@@ -388,7 +390,7 @@ describe('AdminPage', () => {
       slug: NEWER_ENTRY.slug,
       atIso: expect.any(String),
     });
-    expect(page.races(), 'the deleted race leaves the list even before the pointer lands').toEqual(EXPECTED_ADMIN_RACES.slice(1));
+    expect(page.races(), 'the archive rows stay put even before the pointer lands').toEqual(EXPECTED_ADMIN_RACES);
 
     fixture.detectChanges();
 

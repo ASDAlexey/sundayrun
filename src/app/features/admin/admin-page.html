@@ -147,7 +147,7 @@
                   <li
                     *cdkVirtualFor="let race of filteredRaces()"
                     class="admin__race"
-                    [class.admin__race_deleting]="race.slug === deletingSlug()"
+                    [class.admin__race_deleting]="race.deleting || race.slug === deletingSlug()"
                     [class.admin__race_pending]="race.pending"
                   >
                     <span class="admin__race-number">№ {{ race.number }}</span>
@@ -159,9 +159,17 @@
                     </span>
 
                     @if (race.pending) {
-                      <span class="admin__race-badge" i18n="@@admin.racePublishing">публикуется…</span>
-                    } @else if (race.slug === deletingSlug()) {
-                      <span class="admin__race-badge" i18n="@@admin.raceDeleting">удаляется…</span>
+                      <span class="admin__race-badge">
+                        <mat-progress-spinner class="admin__race-spinner" mode="indeterminate" [diameter]="14" />
+
+                        <ng-container i18n="@@admin.racePublishing">публикуется…</ng-container>
+                      </span>
+                    } @else if (race.deleting || race.slug === deletingSlug()) {
+                      <span class="admin__race-badge">
+                        <mat-progress-spinner class="admin__race-spinner" mode="indeterminate" [diameter]="14" />
+
+                        <ng-container i18n="@@admin.raceDeleting">удаляется…</ng-container>
+                      </span>
                     } @else {
                       <span class="admin__race-actions">
                         <a class="admin__race-protocol" i18n="@@admin.raceProtocol" [routerLink]="race.raceLink">протокол</a>

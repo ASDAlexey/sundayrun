@@ -304,9 +304,17 @@
   &__race-badge {
     @include t.mono-meta;
 
+    display: inline-flex;
     flex: none;
+    align-items: center;
+    gap: 8px;
     color: var(--text-muted);
     white-space: nowrap;
+  }
+
+  &__race-spinner {
+    // Match the ring to the badge's own muted colour instead of the theme accent.
+    --mdc-circular-progress-active-indicator-color: currentcolor;
   }
 
   &__race-question {
