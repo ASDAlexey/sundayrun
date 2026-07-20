@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BRANCH_HEAD_ERROR_STATUS, BRANCH_HEAD_RESPONSE_TEXT, BRANCH_HEAD_SHA_MOCK } from '../core/github/branch-head.mock';
-import { PROTOCOLS_REPO_BRANCH } from '../core/github/protocols-repo.constant';
+import { PROTOCOLS_REPO_BRANCH, VERSION_JSON_PATH } from '../core/github/protocols-repo.constant';
+import { rawGithubFileUrl } from '../core/github/raw-github';
 import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
+import { CDN_REVALIDATE_FETCH_OPTIONS } from './cdn-fetch.constant';
 import { MALFORMED_VERSION_RESPONSE_TEXT, VERSION_POINTER_RESPONSE_TEXT, VERSION_POINTER_SHA_MOCK } from '../core/github/version-file.mock';
 import { CdnRefService } from './cdn-ref.service';
 import { CDN_REF_NETWORK_ERROR_MESSAGE, CDN_REF_SHA_MOCK, VERSION_POINTER_ERROR_STATUS } from './cdn-ref.service.mock';
@@ -28,6 +30,10 @@ describe('CdnRefService', () => {
     await expect(service.resolve()).resolves.toBe(VERSION_POINTER_SHA_MOCK);
     await expect(service.resolve(), 'the second call reuses the cached lookup').resolves.toBe(VERSION_POINTER_SHA_MOCK);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock, 'the pointer is read from the raw branch url, not jsDelivr').toHaveBeenCalledWith(
+      rawGithubFileUrl(VERSION_JSON_PATH),
+      CDN_REVALIDATE_FETCH_OPTIONS,
+    );
 
     service.pin(CDN_REF_SHA_MOCK);
 
