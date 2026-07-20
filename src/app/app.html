@@ -1,8 +1,9 @@
 <a class="skip-link" href="#main" i18n="@@app.skipToContent" (click)="skipToMain($event)">К содержимому</a>
 
-<app-db-freshness-banner />
-
 <header class="shell-header">
+  <!-- Inside the sticky header, so the deploy-progress strip stays pinned and scrolls with it. -->
+  <app-db-freshness-banner />
+
   <mat-toolbar class="shell-header__inner">
     <a class="shell-header__brand" [routerLink]="homeLink">
       <img alt="" class="shell-header__mark" height="160" src="logo-mark.webp" width="160" />
@@ -111,7 +112,24 @@
         >© 2019–2026 Воскресный парковый пробег, Таганрог. Все права защищены.</span
       >
 
-      <a class="shell-footer__admin" i18n="@@app.forOrganizer" [routerLink]="adminLink" (click)="scrollToTop()">для организатора</a>
+      <a class="shell-footer__admin" [routerLink]="adminLink" (click)="scrollToTop()">
+        <svg
+          aria-hidden="true"
+          class="shell-footer__admin-key"
+          fill="none"
+          height="13"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-width="1.4"
+          viewBox="0 0 16 16"
+          width="13"
+        >
+          <circle cx="5.5" cy="10.5" r="3" />
+          <path d="M8 8 13.5 2.5M11 5l2 2" />
+        </svg>
+
+        <ng-container i18n="@@app.forOrganizer">для организатора</ng-container>
+      </a>
     </div>
   </div>
 </footer>

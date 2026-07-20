@@ -294,14 +294,38 @@
     color: var(--text-muted);
   }
 
+  // The organiser's service door: a quiet mono pill that lights up orange and turns its key on hover.
   &__admin {
-    @include t.text('label', 'small');
+    @include t.pill;
+    @include t.mono-caption;
 
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    gap: 8px;
+    border: 1px solid var(--border-soft);
     color: var(--text-muted);
-    transition: color var(--transition-time) var(--ease);
+    text-decoration: none;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease),
+      box-shadow var(--transition-time) var(--ease);
 
     &:hover {
-      color: var(--text-secondary);
+      border-color: var(--accent-line);
+      background: var(--accent-glow);
+      box-shadow: 0 0 18px var(--accent-glow);
+      color: var(--accent);
     }
+  }
+
+  &__admin-key {
+    flex: none;
+    transition: transform var(--transition-time) var(--ease);
+  }
+
+  &__admin:hover &__admin-key {
+    transform: rotate(-25deg);
   }
 }
