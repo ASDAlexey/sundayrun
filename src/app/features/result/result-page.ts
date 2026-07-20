@@ -65,13 +65,6 @@ export class ResultPage implements OnDestroy {
   readonly #elapsedMs = signal(0);
   readonly #publishedInMs = signal<number | null>(null);
 
-  /** When the «Опубликовать» click happened; meaningful only while the wait is on. */
-  #startedAtMs = 0;
-
-  /** Marks Updating along the way; a heal back to Fresh after that means the poll gave up. */
-  #deploySeen = false;
-  #tickId: ReturnType<typeof setInterval> | null = null;
-
   /** The first announcement line doubles as the share/repost title. */
   readonly #titleLine = computed(() => this.description().split(LINE_SEPARATOR)[0]);
 
@@ -144,6 +137,13 @@ export class ResultPage implements OnDestroy {
   protected readonly statuses = ResultStatus;
   protected readonly publishStates = PublishState;
   protected readonly adminLink = ADMIN_PAGE_LINK;
+
+  /** When the «Опубликовать» click happened; meaningful only while the wait is on. */
+  #startedAtMs = 0;
+
+  /** Marks Updating along the way; a heal back to Fresh after that means the poll gave up. */
+  #deploySeen = false;
+  #tickId: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     // A fresh event must not inherit the publish state / pdf url of the previously published one.

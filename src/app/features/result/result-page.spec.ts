@@ -255,6 +255,7 @@ describe('ResultPage', () => {
     expect(page.summary()).toBe(EMPTY_TEXT);
     expect(page.fileName()).toBe(EMPTY_TEXT);
     expect(page.description()).toBe(EMPTY_TEXT);
+    expect(page.raceLink()).toBeNull();
 
     await page.publish();
 
