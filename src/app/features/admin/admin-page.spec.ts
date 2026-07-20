@@ -13,6 +13,8 @@ import { ArchiveService } from '../../github/archive.service';
 import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
 import { PendingArchiveService } from '../../github/pending-archive.service';
+import { PublishDurationService } from '../../github/publish-duration.service';
+import { PUBLISH_DURATION_AVERAGE_MOCK, publishDurationServiceMock } from '../../github/publish-duration.service.mock';
 import { PENDING_UPLOAD_MOCK, pendingArchiveMock } from '../../github/pending-archive.service.mock';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock';
@@ -45,6 +47,7 @@ describe('AdminPage', () => {
   const deleteState = signal<PublishStateType>(PublishState.idle);
   const deleteRace = vi.fn();
   const pendingArchive = pendingArchiveMock();
+  const publishDuration = publishDurationServiceMock();
 
   let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<AdminPage>;
@@ -57,6 +60,7 @@ describe('AdminPage', () => {
     deleteState.set(PublishState.idle);
     pendingArchive.uploads.set([]);
     pendingArchive.deletions.set([]);
+    publishDuration.averageMs.set(null);
     validate.mockResolvedValue(TokenCheck.valid);
     loadMeta.mockResolvedValue(EXISTING_SITE_META);
     saveMeta.mockResolvedValue(undefined);
@@ -70,6 +74,7 @@ describe('AdminPage', () => {
         { provide: ArchiveService, useValue: { loadIndex } },
         { provide: EventDeleteService, useValue: { state: deleteState, delete: deleteRace } },
         { provide: PendingArchiveService, useValue: pendingArchive },
+        { provide: PublishDurationService, useValue: publishDuration },
         { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
@@ -332,6 +337,16 @@ describe('AdminPage', () => {
     expect(page.allRaces()[1].deleting, 'the just-deleted race dims to «удаляется…»').toBe(true);
     expect(page.displayStatus()).toBe(RaceListStatus.ready);
     expect(page.nextNumber(), 'a pending upload raises the next number, a deleting row never counts').toBe(PENDING_UPLOAD_MOCK.number + 1);
+
+    // The publish-delay hint prefers the measured average over the hardcoded «~2–3 минуты».
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('~2–3 минуты');
+
+    publishDuration.averageMs.set(PUBLISH_DURATION_AVERAGE_MOCK);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent, 'the measured average replaces the static hint').toContain('~2:30');
 
     // A pending upload the reloaded archive already serves is not duplicated as a placeholder.
     pendingArchive.uploads.set([{ ...PENDING_UPLOAD_MOCK, slug: OLDER_ENTRY.slug }]);

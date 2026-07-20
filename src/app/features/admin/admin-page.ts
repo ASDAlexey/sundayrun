@@ -9,6 +9,7 @@ import { buildSiteMeta } from '../../core/github/site-meta';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
 import { SiteMetaFile } from '../../core/github/site-meta.interface';
 import { TokenCheck } from '../../core/github/token-check.enum';
+import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ArchiveService } from '../../github/archive.service';
@@ -16,6 +17,7 @@ import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { PendingArchiveService } from '../../github/pending-archive.service';
 import { PendingUpload } from '../../github/pending-archive.interface';
+import { PublishDurationService } from '../../github/publish-duration.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { ProtocolDropzone } from '../upload/protocol-dropzone/protocol-dropzone';
 import {
@@ -48,6 +50,7 @@ export class AdminPage {
   readonly #archive = inject(ArchiveService);
   readonly #eventDelete = inject(EventDeleteService);
   readonly #pendingArchive = inject(PendingArchiveService);
+  readonly #publishDuration = inject(PublishDurationService);
 
   /** Just-published events the archive db has not caught up to yet, shown as «публикуется…» placeholders. */
   readonly #pendingRows = computed<AdminRaceItem[]>(() => {
@@ -110,6 +113,13 @@ export class AdminPage {
   readonly nextNumber = computed(
     () => this.allRaces().reduce((max, race) => (race.deleting === true ? max : Math.max(max, race.number)), NEXT_NUMBER_SEED) + 1,
   );
+
+  /** The measured average of recent publications; null (the static «~2–3 минуты» hint) until one is recorded. */
+  readonly averagePublishText = computed(() => {
+    const averageMs = this.#publishDuration.averageMs();
+
+    return averageMs === null ? null : formatDuration(averageMs);
+  });
 
   /** The race awaiting the second, confirming click; deletion never fires from a single click. */
   readonly pendingSlug = signal<string | null>(null);

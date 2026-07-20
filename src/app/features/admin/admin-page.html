@@ -25,7 +25,15 @@
             </p>
           }
 
-          <p class="admin__upload-note" i18n="@@admin.publishDelay">Забег появится на сайте не сразу — публикация занимает ~2–3 минуты.</p>
+          @if (averagePublishText(); as average) {
+            <p class="admin__upload-note" i18n="@@admin.publishDelayMeasured">
+              Забег появится на сайте не сразу — обычно публикация занимает ~{{ average }}.
+            </p>
+          } @else {
+            <p class="admin__upload-note" i18n="@@admin.publishDelay">
+              Забег появится на сайте не сразу — публикация занимает ~2–3 минуты.
+            </p>
+          }
         </section>
 
         <section class="admin__card">
