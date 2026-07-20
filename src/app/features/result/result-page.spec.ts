@@ -6,10 +6,17 @@ import { PublishEventInput } from '../../core/github/publish-event.interface';
 import { RaceEvent } from '../../core/models/race-event.interface';
 import { PDF_EVENT_MOCK, PDF_PREVIOUS_BESTS_MOCK, PDF_ROWS_MOCK } from '../../core/pdf/protocol-doc-definition.mock';
 import { AdminTokenService } from '../../github/admin-token.service';
+import { CdnRefService } from '../../github/cdn-ref.service';
+import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
+import { DbFreshness } from '../../github/db-freshness.enum';
+import { DbFreshnessService } from '../../github/db-freshness.service';
+import { dbFreshnessServiceMock } from '../../github/db-freshness.service.mock';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
 import { PendingArchiveService } from '../../github/pending-archive.service';
 import { pendingArchiveMock } from '../../github/pending-archive.service.mock';
+import { PublishDurationService } from '../../github/publish-duration.service';
+import { PUBLISH_DURATION_AVERAGE_MOCK, publishDurationServiceMock } from '../../github/publish-duration.service.mock';
 import { ResultsService } from '../../github/results.service';
 import { PdfService } from '../../pdf/pdf.service';
 import { ProtocolImageService } from '../../pdf/protocol-image.service';
@@ -61,6 +68,9 @@ describe('ResultPage', () => {
   const publish = vi.fn((_input: PublishEventInput) => Promise.resolve());
   const reset = vi.fn();
   const pendingArchive = pendingArchiveMock();
+  const dbFreshness = dbFreshnessServiceMock();
+  const publishDuration = publishDurationServiceMock();
+  const cdnRef = cdnRefServiceMock();
   const createObjectURL = vi.fn(() => OBJECT_URL_MOCK);
   const revokeObjectURL = vi.fn();
 
@@ -79,6 +89,9 @@ describe('ResultPage', () => {
     canShareFile.mockReturnValue(true);
     canShareFiles.mockReturnValue(true);
     copyToClipboard.mockResolvedValue(true);
+    dbFreshness.state.set(DbFreshness.Fresh);
+    dbFreshness.pinnedDbAvailable.mockResolvedValue(true);
+    publishDuration.averageMs.set(null);
     // The router's fake platform navigation does `new URL()`, so the stub must stay constructible.
     vi.stubGlobal('URL', Object.assign(class extends URL {}, { createObjectURL, revokeObjectURL }));
     TestBed.configureTestingModule({
@@ -95,6 +108,9 @@ describe('ResultPage', () => {
         { provide: GithubStorageService, useValue: { state: publishState, publish, reset } },
         { provide: PendingArchiveService, useValue: pendingArchive },
         { provide: AdminTokenService, useValue: { isAdmin } },
+        { provide: DbFreshnessService, useValue: dbFreshness },
+        { provide: PublishDurationService, useValue: publishDuration },
+        { provide: CdnRefService, useValue: cdnRef },
       ],
     });
   });
@@ -361,6 +377,11 @@ describe('ResultPage', () => {
     fixture.detectChanges();
 
     expect(element.querySelector('.result__publish-button').disabled, 'a published event cannot be re-published').toBe(true);
+    expect(publishDuration.record, 'an instantly-available deploy is still measured').toHaveBeenCalledTimes(1);
+    expect(
+      element.querySelector('.result__publish-open').getAttribute('href'),
+      'the race link opens the just-published protocol',
+    ).toContain(PDF_EVENT_MOCK.dateIso);
 
     publishState.set(PublishState.publishing);
     fixture.detectChanges();
@@ -384,6 +405,69 @@ describe('ResultPage', () => {
     fixture.detectChanges();
 
     expect(element.querySelector('.result__publish-error').getAttribute('role')).toBe('alert');
+  });
+
+  it('ticks the elapsed wait with the average hint, completes via the freshness poll and records the duration', async () => {
+    publishDuration.averageMs.set(PUBLISH_DURATION_AVERAGE_MOCK);
+    dbFreshness.pinnedDbAvailable.mockResolvedValue(false);
+    publish.mockImplementation(() => {
+      publishState.set(PublishState.success);
+
+      return Promise.resolve();
+    });
+    fixture = await createPage();
+
+    vi.useFakeTimers();
+
+    const page = fixture.componentInstance;
+    const element = fixture.nativeElement;
+
+    await page.publish();
+    fixture.detectChanges();
+
+    expect(element.querySelector('.result__publish-spinner'), 'the wait spins until the deploy lands').not.toBeNull();
+    expect(element.querySelector('.result__publish-average').textContent, 'the measured average replaces the hardcoded hint').toContain(
+      '2:30',
+    );
+
+    await vi.advanceTimersByTimeAsync(65_000);
+
+    expect(page.elapsedText(), 'the elapsed counter ticks second by second').toBe('1:05');
+
+    // The freshness poll walks Updating → Updated once the sha-named db lands.
+    dbFreshness.state.set(DbFreshness.Updating);
+    fixture.detectChanges();
+    dbFreshness.state.set(DbFreshness.Updated);
+    fixture.detectChanges();
+
+    expect(page.deployDone()).toBe(true);
+    expect(publishDuration.record, 'the click-to-live time feeds the average').toHaveBeenCalledWith(65_000);
+    expect(page.publishedInText()).toBe('1:05');
+
+    vi.useRealTimers();
+  });
+
+  it('ends the wait without a measured time when the freshness poll gives up', async () => {
+    dbFreshness.pinnedDbAvailable.mockResolvedValue(false);
+    publish.mockImplementation(() => {
+      publishState.set(PublishState.success);
+
+      return Promise.resolve();
+    });
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    await page.publish();
+
+    dbFreshness.state.set(DbFreshness.Updating);
+    fixture.detectChanges();
+    dbFreshness.state.set(DbFreshness.Fresh);
+    fixture.detectChanges();
+
+    expect(page.deployDone(), 'a given-up poll still ends the wait').toBe(true);
+    expect(publishDuration.record, 'an unmeasured deploy never skews the average').not.toHaveBeenCalled();
+    expect(page.publishedInText()).toBeNull();
   });
 
   it('skips publishing without the source file and hides the publish section for non-admins', async () => {

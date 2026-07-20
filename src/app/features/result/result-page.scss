@@ -105,6 +105,10 @@
     color: var(--accent-light);
   }
 
+  &__publish-average {
+    color: var(--text-muted);
+  }
+
   &__publish-error {
     @include t.text('body', 'medium');
 

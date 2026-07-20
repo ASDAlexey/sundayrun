@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, OnDestroy, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, OnDestroy, computed, effect, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,12 +10,17 @@ import { eventFinishCounts } from '../../core/history/finish-counts';
 import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { composeRaceAnnouncement } from '../../core/share/race-announcement';
 import { LINE_SEPARATOR } from '../../core/share/race-announcement.constant';
+import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { AdminTokenService } from '../../github/admin-token.service';
+import { CdnRefService } from '../../github/cdn-ref.service';
+import { DbFreshness } from '../../github/db-freshness.enum';
+import { DbFreshnessService } from '../../github/db-freshness.service';
 import { ResultsService } from '../../github/results.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { GithubStorageService } from '../../github/github-storage.service';
 import { PendingArchiveService } from '../../github/pending-archive.service';
+import { PublishDurationService } from '../../github/publish-duration.service';
 import { triggerBlobDownload } from '../../pdf/blob-download';
 import { PdfService } from '../../pdf/pdf.service';
 import { PDF_FILE_EXTENSION } from '../../pdf/pdf.service.constant';
@@ -23,8 +28,8 @@ import { ProtocolImageService } from '../../pdf/protocol-image.service';
 import { PROTOCOL_IMAGE_FILE_EXTENSION, PROTOCOL_IMAGE_MIME_TYPE } from '../../pdf/protocol-image.service.constant';
 import { ShareService } from '../../share/share.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
-import { ADMIN_PAGE_LINK } from '../admin/admin-page.constant';
-import { EMPTY_TEXT, EVENT_NUMBER_PREFIX, PDF_MIME_TYPE, SUMMARY_SEPARATOR } from './result-page.constant';
+import { ADMIN_PAGE_LINK, RACE_PAGE_PREFIX } from '../admin/admin-page.constant';
+import { EMPTY_TEXT, EVENT_NUMBER_PREFIX, PDF_MIME_TYPE, PUBLISH_TICK_INTERVAL_MS, SUMMARY_SEPARATOR } from './result-page.constant';
 import { ResultStatus, ResultStatusType } from './result-page.enum';
 import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';
 
@@ -47,10 +52,25 @@ export class ResultPage implements OnDestroy {
   readonly #results = inject(ResultsService);
   readonly #adminToken = inject(AdminTokenService);
   readonly #protocolImage = inject(ProtocolImageService);
+  readonly #dbFreshness = inject(DbFreshnessService);
+  readonly #publishDuration = inject(PublishDurationService);
+  readonly #cdnRef = inject(CdnRefService);
   readonly #document = inject(DOCUMENT);
   readonly #blob = signal<Blob | null>(null);
   readonly #imageBlob = signal<Blob | null>(null);
   readonly #runPhoto = signal<File | null>(null);
+
+  /** True from a successful publish until the deploy wait ends — the freshness effect's gate. */
+  readonly #waitingForDeploy = signal(false);
+  readonly #elapsedMs = signal(0);
+  readonly #publishedInMs = signal<number | null>(null);
+
+  /** When the «Опубликовать» click happened; meaningful only while the wait is on. */
+  #startedAtMs = 0;
+
+  /** Marks Updating along the way; a heal back to Fresh after that means the poll gave up. */
+  #deploySeen = false;
+  #tickId: ReturnType<typeof setInterval> | null = null;
 
   /** The first announcement line doubles as the share/repost title. */
   readonly #titleLine = computed(() => this.description().split(LINE_SEPARATOR)[0]);
@@ -97,6 +117,30 @@ export class ResultPage implements OnDestroy {
 
   readonly runPhotoName = computed(() => this.#runPhoto()?.name ?? EMPTY_TEXT);
 
+  /** True once the deploy carrying this publication is live — the wait ends, the race link appears. */
+  readonly deployDone = signal(false);
+  readonly elapsedText = computed(() => formatDuration(this.#elapsedMs()));
+
+  /** The measured click-to-live time of this publication; null while waiting or when the poll gave up. */
+  readonly publishedInText = computed(() => {
+    const publishedInMs = this.#publishedInMs();
+
+    return publishedInMs === null ? null : formatDuration(publishedInMs);
+  });
+
+  /** The measured average of recent publications; null until the first one is recorded. */
+  readonly averagePublishText = computed(() => {
+    const averageMs = this.#publishDuration.averageMs();
+
+    return averageMs === null ? null : formatDuration(averageMs);
+  });
+
+  readonly raceLink = computed(() => {
+    const event = this.#store.event();
+
+    return event === null ? null : `${RACE_PAGE_PREFIX}${event.dateIso}`;
+  });
+
   protected readonly statuses = ResultStatus;
   protected readonly publishStates = PublishState;
   protected readonly adminLink = ADMIN_PAGE_LINK;
@@ -105,6 +149,22 @@ export class ResultPage implements OnDestroy {
     // A fresh event must not inherit the publish state / pdf url of the previously published one.
     this.#github.reset();
     void this.#generate();
+
+    // Ends the click-to-live wait: Updating marks the deploy as watched, Updated completes it
+    // with a measured duration, a heal back to Fresh after Updating means the poll gave up.
+    effect(() => {
+      const state = this.#dbFreshness.state();
+
+      if (!this.#waitingForDeploy() || this.deployDone()) {
+        return;
+      }
+
+      if (state === DbFreshness.Updating) {
+        this.#deploySeen = true;
+      } else if (state === DbFreshness.Updated || (state === DbFreshness.Fresh && this.#deploySeen)) {
+        this.#finishDeployWait(state === DbFreshness.Updated);
+      }
+    });
   }
 
   async share(): Promise<void> {
@@ -130,6 +190,7 @@ export class ResultPage implements OnDestroy {
     }
 
     const rows = this.#store.protocolRows();
+    const startedAtMs = Date.now();
 
     await this.#github.publish({ event, rows, sourceXlsxBytes: sourceFile.bytes });
 
@@ -142,6 +203,10 @@ export class ResultPage implements OnDestroy {
         participantCount: rows.length,
         atIso: new Date().toISOString(),
       });
+      this.#startedAtMs = startedAtMs;
+      this.#waitingForDeploy.set(true);
+      this.#tickId = setInterval(() => this.#elapsedMs.set(Date.now() - startedAtMs), PUBLISH_TICK_INTERVAL_MS);
+      void this.#completeIfAlreadyLive();
     }
   }
 
@@ -186,10 +251,43 @@ export class ResultPage implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.#stopTicking();
+
     const url = this.objectUrl();
 
     if (url !== null) {
       URL.revokeObjectURL(url);
+    }
+  }
+
+  /**
+   * The freshness probe is memoized from the publish flow's own check, so this costs no extra
+   * request — it only catches the rare deploy that already landed before the page could watch it.
+   */
+  async #completeIfAlreadyLive(): Promise<void> {
+    const ref = await this.#cdnRef.resolve();
+
+    if (await this.#dbFreshness.pinnedDbAvailable(ref)) {
+      this.#finishDeployWait(true);
+    }
+  }
+
+  #finishDeployWait(measured: boolean): void {
+    this.#stopTicking();
+    this.deployDone.set(true);
+
+    if (measured) {
+      const durationMs = Date.now() - this.#startedAtMs;
+
+      this.#publishedInMs.set(durationMs);
+      this.#publishDuration.record(durationMs);
+    }
+  }
+
+  #stopTicking(): void {
+    if (this.#tickId !== null) {
+      clearInterval(this.#tickId);
+      this.#tickId = null;
     }
   }
 

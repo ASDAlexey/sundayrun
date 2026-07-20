@@ -88,9 +88,29 @@
                 </div>
               }
               @case (publishStates.success) {
-                <p class="result__publish-status">
-                  <span i18n="@@result.published">Опубликовано</span>
-                </p>
+                <div class="result__publish-status">
+                  @if (deployDone()) {
+                    @if (publishedInText(); as took) {
+                      <span i18n="@@result.publishedIn">Опубликовано за {{ took }}</span>
+                    } @else {
+                      <span i18n="@@result.published">Опубликовано</span>
+                    }
+
+                    @if (raceLink(); as link) {
+                      <a class="result__publish-open" i18n="@@result.publishOpen" matButton="filled" [routerLink]="link">
+                        Показать результаты
+                      </a>
+                    }
+                  } @else {
+                    <mat-progress-spinner class="result__publish-spinner" mode="indeterminate" [diameter]="24" />
+
+                    <span i18n="@@result.publishDeploying">Опубликовано — сайт обновляется… прошло {{ elapsedText() }}</span>
+
+                    @if (averagePublishText(); as average) {
+                      <span class="result__publish-average" i18n="@@result.publishAverage">в среднем занимает {{ average }}</span>
+                    }
+                  }
+                </div>
               }
               @case (publishStates.authError) {
                 <p class="result__publish-error" role="alert">
