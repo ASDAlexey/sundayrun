@@ -1,3 +1,4 @@
+@use 'sass:string';
 @use '@angular/material' as mat;
 @use 'styles/tokens';
 @use 'styles/typography' as t;
@@ -15,8 +16,10 @@ html {
         theme-type: dark,
       ),
       typography: (
-        plain-family: 'Inter Variable',
-        brand-family: 'Inter Variable',
+        // With fallbacks: the fonts load with `font-display: optional`, so on a cold cache the
+        // page renders in the fallback — without one Material text degraded to the UA serif.
+        plain-family: string.unquote("'Inter Variable', -apple-system, 'Segoe UI', sans-serif"),
+        brand-family: string.unquote("'Inter Variable', -apple-system, 'Segoe UI', sans-serif"),
       ),
       density: 0,
     )
