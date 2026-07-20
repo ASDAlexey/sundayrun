@@ -100,8 +100,11 @@
 }
 
 @mixin button-label {
+  // Explicit line-height: an <a> inherits the body's 1.6 while a <button> computes `normal`,
+  // so without it the two button kinds render different heights and their labels sit uneven.
   font-weight: 600;
   font-size: 0.96rem;
+  line-height: 1.2;
 }
 
 @mixin stat-value {

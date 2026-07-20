@@ -8,8 +8,13 @@
 @mixin button-accent {
   @include t.button-label;
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 24px;
-  border: 0;
+  // Transparent, not 0: the box math stays identical to button-outline, so the two kinds
+  // sitting in one row come out the same height with their labels on the same line.
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--accent-contrast);
@@ -31,6 +36,9 @@
 @mixin button-outline {
   @include t.button-label;
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 24px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
