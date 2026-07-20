@@ -99,6 +99,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Depth 2: the sha-copy step below diffs HEAD~1..HEAD to see whether this commit changed the db.
+          fetch-depth: 2
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -128,10 +131,21 @@ jobs:
       # changes the name, so no cache — browser or Fastly — can answer for it stale. The plain
       # name stays as the fallback read while the deploy carrying a publication is in flight,
       # and the missing sha-named file is what drives the "results are updating" banner.
+      # The copy is SKIPPED when this very commit changed the db: version.json then still names
+      # the previous data commit, and shipping the new bytes under that old name would mutate an
+      # immutable-by-contract url (CDNs may mix old and new range reads) and silence the banner.
+      # The pointer commit that follows a publication restores the name/content pair.
       - name: Bundle sha-named db copy
+        id: shacopy
         run: |
           sha=$(jq -r '.sha' data/version.json)
-          cp dist/parkrun/browser/data/sundayrun.db "dist/parkrun/browser/data/sundayrun-${sha}.db"
+          if git rev-parse --verify -q HEAD~1 >/dev/null && git diff --name-only HEAD~1 HEAD | grep -qx 'data/sundayrun.db'; then
+            echo "HEAD changed the db; version.json still names the previous commit — skipping the sha copy"
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          else
+            cp dist/parkrun/browser/data/sundayrun.db "dist/parkrun/browser/data/sundayrun-${sha}.db"
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Smoke-check build output
         run: |
@@ -139,7 +153,9 @@ jobs:
           grep -q 'base href="/${{ github.event.repository.name }}/"' dist/parkrun/browser/index.html
           # the db must ship inside the deploy — the app reads it same-origin, base-href relative
           test -f dist/parkrun/browser/data/sundayrun.db
-          test -f "dist/parkrun/browser/data/sundayrun-$(jq -r '.sha' data/version.json).db"
+          if [ "${{ steps.shacopy.outputs.created }}" = "true" ]; then
+            test -f "dist/parkrun/browser/data/sundayrun-$(jq -r '.sha' data/version.json).db"
+          fi
 
       # spa-github-pages: Pages serves 404.html for unknown deep links (e.g. /parkrun/races/…
       # after a refresh; prerendered pages are served directly and never hit this). Remember the

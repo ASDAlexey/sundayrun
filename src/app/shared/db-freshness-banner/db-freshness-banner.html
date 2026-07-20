@@ -2,13 +2,11 @@
   <div aria-live="polite" class="db-freshness-banner" role="status">
     <span aria-hidden="true" class="db-freshness-banner__spinner"></span>
 
-    <span class="db-freshness-banner__text" i18n="@@app.dbUpdating">
-      Результаты обновляются — свежий протокол появится через пару минут
-    </span>
+    <span class="db-freshness-banner__text" i18n="@@app.dbUpdating"> Результаты обновляются — изменения появятся через пару минут </span>
   </div>
 } @else if (state() === states.Updated) {
   <div aria-live="polite" class="db-freshness-banner db-freshness-banner_ready" role="status">
-    <span class="db-freshness-banner__text" i18n="@@app.dbUpdated">Свежий протокол опубликован</span>
+    <span class="db-freshness-banner__text" i18n="@@app.dbUpdated">Результаты обновлены</span>
 
     <button class="db-freshness-banner__reload" i18n="@@app.dbUpdatedShow" type="button" (click)="reload()">Показать</button>
   </div>

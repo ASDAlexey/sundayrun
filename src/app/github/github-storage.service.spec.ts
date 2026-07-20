@@ -5,6 +5,8 @@ import { HTTP_UNAUTHORIZED } from '../core/github/github-api.constant';
 import { PUBLISH_INPUT } from '../core/github/publish-event.mock';
 import { statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { AdminTokenService } from './admin-token.service';
+import { DbFreshnessService } from './db-freshness.service';
+import { dbFreshnessServiceMock } from './db-freshness.service.mock';
 import { PublishState } from './github-storage.enum';
 import { GithubStorageService } from './github-storage.service';
 import {
@@ -23,14 +25,19 @@ vi.mock('@sqlite.org/sqlite-wasm', async () => {
 
 describe('GithubStorageService', () => {
   const token = signal<string | null>(STORED_TOKEN_MOCK);
+  const dbFreshness = dbFreshnessServiceMock();
 
   let service: GithubStorageService;
 
   beforeEach(() => {
     resetFakeSqlite3();
     token.set(STORED_TOKEN_MOCK);
+    dbFreshness.check.mockClear();
     TestBed.configureTestingModule({
-      providers: [{ provide: AdminTokenService, useValue: { token } }],
+      providers: [
+        { provide: AdminTokenService, useValue: { token } },
+        { provide: DbFreshnessService, useValue: dbFreshness },
+      ],
     });
     service = TestBed.inject(GithubStorageService);
   });
@@ -51,6 +58,7 @@ describe('GithubStorageService', () => {
     await publishing;
 
     expect(service.state()).toBe(PublishState.success);
+    expect(dbFreshness.check, 'a success re-checks freshness so the shell banner tracks the deploy').toHaveBeenCalledTimes(1);
 
     service.reset();
 

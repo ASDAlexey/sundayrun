@@ -5,6 +5,7 @@ import { publishEvent } from '../core/github/publish-event';
 import { PublishEventInput } from '../core/github/publish-event.interface';
 import { AdminTokenService } from './admin-token.service';
 import { CdnRefService } from './cdn-ref.service';
+import { DbFreshnessService } from './db-freshness.service';
 import { PublishState, PublishStateType } from './github-storage.enum';
 
 /** Publishes one event into the protocols repository, exposing the flow state. */
@@ -12,6 +13,7 @@ import { PublishState, PublishStateType } from './github-storage.enum';
 export class GithubStorageService {
   readonly #adminToken = inject(AdminTokenService);
   readonly #cdnRef = inject(CdnRefService);
+  readonly #dbFreshness = inject(DbFreshnessService);
   readonly #state = signal<PublishStateType>(PublishState.idle);
 
   readonly state = this.#state.asReadonly();
@@ -41,6 +43,9 @@ export class GithubStorageService {
 
       this.#cdnRef.pin(result.commitSha);
       this.#state.set(PublishState.success);
+      // The shell banner only checks on mount; re-check against the pinned commit so the
+      // «результаты обновляются» strip appears right away and flips once the deploy lands.
+      this.#dbFreshness.check();
     } catch (error) {
       this.#state.set(error instanceof GithubAuthError ? PublishState.authError : PublishState.error);
     }

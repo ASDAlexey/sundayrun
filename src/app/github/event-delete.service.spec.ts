@@ -6,6 +6,8 @@ import { GIT_REF_UPDATE_URL, HTTP_UNAUTHORIZED, HTTP_UNPROCESSABLE } from '../co
 import { jsonResponse, statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { resetFakeSqlite3 } from '../core/sqlite/spec-utils/fake-sqlite3';
 import { AdminTokenService } from './admin-token.service';
+import { DbFreshnessService } from './db-freshness.service';
+import { dbFreshnessServiceMock } from './db-freshness.service.mock';
 import { EventDeleteService } from './event-delete.service';
 import { EVENT_DELETE_NETWORK_ERROR_MESSAGE, EVENT_DELETE_STORED_TOKEN, createEventDeleteFetch } from './event-delete.service.mock';
 import { PublishState } from './github-storage.enum';
@@ -18,14 +20,19 @@ vi.mock('@sqlite.org/sqlite-wasm', async () => {
 
 describe('EventDeleteService', () => {
   const token = signal<string | null>(EVENT_DELETE_STORED_TOKEN);
+  const dbFreshness = dbFreshnessServiceMock();
 
   let service: EventDeleteService;
 
   beforeEach(() => {
     resetFakeSqlite3();
     token.set(EVENT_DELETE_STORED_TOKEN);
+    dbFreshness.check.mockClear();
     TestBed.configureTestingModule({
-      providers: [{ provide: AdminTokenService, useValue: { token } }],
+      providers: [
+        { provide: AdminTokenService, useValue: { token } },
+        { provide: DbFreshnessService, useValue: dbFreshness },
+      ],
     });
     service = TestBed.inject(EventDeleteService);
   });
@@ -52,6 +59,7 @@ describe('EventDeleteService', () => {
     await deleting;
 
     expect(service.state()).toBe(PublishState.success);
+    expect(dbFreshness.check, 'a success re-checks freshness so the shell banner tracks the deploy').toHaveBeenCalledTimes(1);
   });
 
   it('reports pending, not error, when the data commit lands but the pointer keeps failing', async () => {
