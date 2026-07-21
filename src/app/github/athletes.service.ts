@@ -8,15 +8,16 @@ import { LegendFinish } from '../core/history/legend.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { RivalRun } from '../core/history/rivals.interface';
 import { EventWinnerTimes } from '../core/history/runner-scores.interface';
+import { SeasonBestRow } from '../core/history/season-ranks.interface';
 import { SeasonRun } from '../core/history/season-positions.interface';
 import { EventWeatherRow } from '../core/history/weather-records.interface';
 import { YearBestRow } from '../core/history/year-ranks.interface';
 import { createQueryCache } from '../core/cache/query-cache';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { selectYearBadgeRarity, selectYearBestRows } from './protocol-db-badges';
+import { selectSeasonBestRows, selectYearBadgeRarity, selectYearBestRows } from './protocol-db-badges';
+import { selectAthleteBestFirstLap, selectAthleteFirstLaps } from './protocol-db-first-lap';
 import {
-  selectAthleteBestFirstLap,
   selectAthleteRecord,
   selectAthleteRecords,
   selectAthleteRunPlaces,
@@ -87,6 +88,11 @@ export class AthletesService {
     return this.#cache(`bestFirstLap:${key}`, () => selectAthleteBestFirstLap(this.#db, key));
   }
 
+  /** Every recorded first-lap split of the athlete; feeds the per-year lap bests on the profile. */
+  loadFirstLaps(key: string): Promise<AthleteFirstLap[]> {
+    return this.#cache(`firstLaps:${key}`, () => selectAthleteFirstLaps(this.#db, key));
+  }
+
   /** The home page totals as SQL aggregates. */
   loadOverallStats(): Promise<OverallStats> {
     return this.#cache('overallStats', () => selectOverallStats(this.#db));
@@ -115,6 +121,11 @@ export class AthletesService {
   /** Every athlete-year's best 5 km time; feeds the year-ranking badges on the athlete page. */
   loadYearBests(): Promise<YearBestRow[]> {
     return this.#cache('yearBests', () => selectYearBestRows(this.#db));
+  }
+
+  /** Every athlete-season's best 5 km time; feeds the season crowns and podiums. */
+  loadSeasonBests(): Promise<SeasonBestRow[]> {
+    return this.#cache('seasonBests', () => selectSeasonBestRows(this.#db));
   }
 
   /** Every finished run of the archive; feeds the «Легенда трассы» window tally on the athlete page. */

@@ -3,12 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
 import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { AthletesService } from './athletes.service';
-import { EXPECTED_DB_BADGE_RARITY, EXPECTED_DB_YEAR_BEST_ROWS } from './protocol-db-badges.mock';
+import { EXPECTED_DB_BADGE_RARITY, EXPECTED_DB_SEASON_BEST_ROWS, EXPECTED_DB_YEAR_BEST_ROWS } from './protocol-db-badges.mock';
 import {
   ATHLETE_KEY,
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
   EXPECTED_DB_BEST_FIRST_LAP,
+  EXPECTED_DB_FIRST_LAPS,
   EXPECTED_DB_FIRST_LAP_RECORDS,
   EXPECTED_DB_WEATHER_ROWS,
   EXPECTED_EVENT_SLUGS,
@@ -61,10 +62,12 @@ describe('AthletesService', () => {
     await expect(service.loadFirstEventDateByYear()).resolves.toEqual(EXPECTED_FIRST_EVENT_DATE_BY_YEAR);
     await expect(service.loadYearBadgeRarity(), 'the ranking crowns reach the rarity map').resolves.toEqual(EXPECTED_DB_BADGE_RARITY);
     await expect(service.loadYearBests()).resolves.toEqual(EXPECTED_DB_YEAR_BEST_ROWS);
+    await expect(service.loadSeasonBests()).resolves.toEqual(EXPECTED_DB_SEASON_BEST_ROWS);
     await expect(service.loadLegendFinishes()).resolves.toEqual(EXPECTED_LEGEND_FINISHES);
     await expect(service.loadRivalRuns(ATHLETE_KEY)).resolves.toEqual(EXPECTED_LONE_RIVAL_RUNS);
     await expect(service.loadFirstLapRecords()).resolves.toEqual(EXPECTED_DB_FIRST_LAP_RECORDS);
     await expect(service.loadBestFirstLap(ATHLETE_KEY)).resolves.toEqual(EXPECTED_DB_BEST_FIRST_LAP);
+    await expect(service.loadFirstLaps(ATHLETE_KEY)).resolves.toEqual(EXPECTED_DB_FIRST_LAPS);
     await expect(service.loadSeasonRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_RUNS);
     await expect(service.loadSeasonLapRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_LAP_RUNS);
   });
