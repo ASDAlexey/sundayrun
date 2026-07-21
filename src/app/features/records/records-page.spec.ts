@@ -12,6 +12,7 @@ import {
   EXPECTED_WOMEN_POSITIONS,
   SEASON_RUNS,
 } from '../../core/history/season-positions.mock';
+import { Season } from '../../core/history/seasons.enum';
 import { WEATHER_ROWS_MOCK } from '../../core/history/weather-records.mock';
 import { Gender } from '../../core/models/gender.enum';
 import { AthletesService } from '../../github/athletes.service';
@@ -22,6 +23,7 @@ import { settle } from '../spec-utils/settle';
 import { RecordsPage } from './records-page';
 import {
   ALL_GENDERS_VALUE,
+  ALL_SEASONS_VALUE,
   CHART_SUGGESTION_LIMIT,
   KING_ALL_TIME_TEXT,
   KING_YEAR_PREFIX,
@@ -29,6 +31,7 @@ import {
   RECORDS_CHART_QUERY_PARAMS,
   RECORDS_RATING_QUERY_PARAMS,
   RECORDS_TRANSFER_KEY,
+  SEASON_GENITIVE_LABELS,
 } from './records-page.constant';
 import { RecordsStatus, RecordsView, SeasonMetric } from './records-page.enum';
 import { RecordsData } from './records-page.interface';
@@ -214,9 +217,25 @@ describe('RecordsPage', () => {
     expect(page.kingText()).toBe(`${KING_YEAR_PREFIX} ${LEADERBOARD_YEAR}`);
     expect(page.women()).toEqual([]);
 
+    page.onSeasonChange(Season.spring);
+
+    expect(
+      page.men().map((row) => row.raceLink.at(-1)),
+      'the spring cut keeps the March record run',
+    ).toEqual([EXPECTED_YEAR_RACE_SLUG]);
+    expect(page.kingText(), 'the crown names the season cut').toBe(
+      `${KING_YEAR_PREFIX} ${SEASON_GENITIVE_LABELS[Season.spring]} ${LEADERBOARD_YEAR}`,
+    );
+
+    page.onSeasonChange(ALL_SEASONS_VALUE);
+
+    expect(page.kingText(), 'the sentinel drops the season cut').toBe(`${KING_YEAR_PREFIX} ${LEADERBOARD_YEAR}`);
+
+    page.onSeasonChange(Season.spring);
     page.onYearChange(ALL_YEARS_VALUE);
 
     expect(page.men().length).toBe(EXPECTED_MEN_NAMES.length);
+    expect(page.season(), '«Все годы» drops the season cut with its chips').toBeNull();
     expect(page.kingText(), 'the crown label follows the season filter back').toBe(KING_ALL_TIME_TEXT);
 
     page.onGenderChange(Gender.male);

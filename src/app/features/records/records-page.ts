@@ -8,7 +8,7 @@ import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { NAME_COLLATION_LOCALE } from '../../core/history/athletes-list.constant';
-import { bestResults, bestResultYears } from '../../core/history/best-results';
+import { bestResults, bestResultYears, bestSeasonResults } from '../../core/history/best-results';
 import { BestResult } from '../../core/history/best-results.interface';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
 import { CourseRecordEntry } from '../../core/history/course-records.interface';
@@ -22,6 +22,7 @@ import { EventWinnerTimes, RatingRow } from '../../core/history/runner-scores.in
 import { scoreText } from '../../core/history/score-text';
 import { buildSeasonPositions } from '../../core/history/season-positions';
 import { SeasonPositionLine, SeasonRun } from '../../core/history/season-positions.interface';
+import { SeasonType } from '../../core/history/seasons.enum';
 import { weatherExtremes } from '../../core/history/weather-records';
 import { EventWeatherRow, WeatherExtreme, WeatherExtremes } from '../../core/history/weather-records.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
@@ -37,6 +38,7 @@ import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { BumpChart } from './bump-chart/bump-chart';
 import {
   ALL_GENDERS_VALUE,
+  ALL_SEASONS_VALUE,
   CHART_SUGGESTION_LIMIT,
   KING_ALL_TIME_TEXT,
   KING_YEAR_PREFIX,
@@ -48,6 +50,8 @@ import {
   RECORDS_TRANSFER_KEY,
   RECORDS_VIEW_QUERY_PARAM,
   RECORD_DELTA_SIGN,
+  SEASON_FILTER_OPTIONS,
+  SEASON_GENITIVE_LABELS,
   WEATHER_COLDEST_LABEL,
   WEATHER_HOTTEST_LABEL,
   WEATHER_WINDIEST_LABEL,
@@ -91,8 +95,8 @@ export class RecordsPage {
   readonly #weatherRows = signal<EventWeatherRow[]>([]);
   readonly #winnerEvents = signal<EventWinnerTimes[]>([]);
   // The lambdas run lazily, so referencing the filter signals declared below is safe.
-  readonly #menBoard = computed(() => toBoard(this.#records(), Gender.male, this.year()));
-  readonly #womenBoard = computed(() => toBoard(this.#records(), Gender.female, this.year()));
+  readonly #menBoard = computed(() => toBoard(this.#records(), Gender.male, this.year(), this.season()));
+  readonly #womenBoard = computed(() => toBoard(this.#records(), Gender.female, this.year(), this.season()));
   /** The combined М+Ж rating board; places are fixed before the search and gender filters cut it. */
   readonly #ratingBoard = computed(() =>
     ratingBoard(this.#records(), winnerTimesBySlug(this.#winnerEvents()), this.#courseRecords(), newestEventIso(this.#winnerEvents())).map(
@@ -112,6 +116,8 @@ export class RecordsPage {
   readonly status = signal<RecordsStatusType>(RecordsStatus.loading);
   readonly query = signal('');
   readonly year = signal<string | null>(null);
+  /** The season cut of the chosen year's boards; always null while the year filter says «Все годы». */
+  readonly season = signal<SeasonType | null>(null);
   readonly gender = signal<GenderType | null>(null);
   readonly view = signal<RecordsViewType>(this.#initialView());
   readonly chartMetric = signal<SeasonMetricType>(SeasonMetric.fiveKm);
@@ -147,8 +153,8 @@ export class RecordsPage {
   readonly showMen = computed(() => this.gender() !== Gender.female);
   readonly showWomen = computed(() => this.gender() !== Gender.male);
   readonly noMatches = computed(() => (!this.showMen() || this.men().length === 0) && (!this.showWomen() || this.women().length === 0));
-  readonly kingText = computed(() => crownText(KING_ALL_TIME_TEXT, KING_YEAR_PREFIX, this.year()));
-  readonly queenText = computed(() => crownText(QUEEN_ALL_TIME_TEXT, QUEEN_YEAR_PREFIX, this.year()));
+  readonly kingText = computed(() => crownText(KING_ALL_TIME_TEXT, KING_YEAR_PREFIX, this.year(), this.season()));
+  readonly queenText = computed(() => crownText(QUEEN_ALL_TIME_TEXT, QUEEN_YEAR_PREFIX, this.year(), this.season()));
   readonly menRecordTimeline = computed(() => toTimeline(this.#courseRecords()[Gender.male]));
   readonly womenRecordTimeline = computed(() => toTimeline(this.#courseRecords()[Gender.female]));
   readonly menFirstLap = computed(() => toFirstLapView(this.#firstLapRecords()[Gender.male]));
@@ -162,6 +168,8 @@ export class RecordsPage {
   protected readonly genders = Gender;
   protected readonly allYearsValue = ALL_YEARS_VALUE;
   protected readonly allGendersValue = ALL_GENDERS_VALUE;
+  protected readonly allSeasonsValue = ALL_SEASONS_VALUE;
+  protected readonly seasonOptions = SEASON_FILTER_OPTIONS;
   protected readonly rowHeightPx = RECORDS_ROW_HEIGHT_PX;
   protected readonly podiumSize = RECORDS_PODIUM_SIZE;
 
@@ -184,7 +192,18 @@ export class RecordsPage {
 
   onYearChange(value: string): void {
     this.year.set(value === ALL_YEARS_VALUE ? null : value);
+
+    // The season cut belongs to one year; «Все годы» drops it together with its chips.
+    if (value === ALL_YEARS_VALUE) {
+      this.season.set(null);
+    }
+
     this.#ensureSeason();
+  }
+
+  /** The season chips carry the "all" sentinel, like the gender toggle. */
+  onSeasonChange(value: SeasonType | typeof ALL_SEASONS_VALUE): void {
+    this.season.set(value === ALL_SEASONS_VALUE ? null : value);
   }
 
   onViewChange(view: RecordsViewType): void {
@@ -296,8 +315,8 @@ function seasonCacheKey(year: string, metric: SeasonMetricType): string {
 }
 
 /** The ranked board for one gender and season, prepared for the template. */
-function toBoard(records: AthleteRecord[], gender: GenderType, year: string | null): BestResultView[] {
-  const board = bestResults(records, gender, year);
+function toBoard(records: AthleteRecord[], gender: GenderType, year: string | null, season: SeasonType | null): BestResultView[] {
+  const board = year !== null && season !== null ? bestSeasonResults(records, gender, year, season) : bestResults(records, gender, year);
   const crowned = crownedKey(board);
 
   return board.map((result, index) => toView(result, index, crowned));
@@ -432,9 +451,13 @@ function windText(windKmh: number): string {
   return $localize`:@@records.weatherWind:ветер ${rounded}:windKmh: км/ч`;
 }
 
-/** The all-time crown label, or the short prefix with the chosen season («Король 2024»). */
-function crownText(allTime: string, yearPrefix: string, year: string | null): string {
-  return year === null ? allTime : `${yearPrefix} ${year}`;
+/** The all-time crown label, or the prefix with the chosen cut: «Король 2024», «Король лета 2026». */
+function crownText(allTime: string, yearPrefix: string, year: string | null, season: SeasonType | null): string {
+  if (year === null) {
+    return allTime;
+  }
+
+  return season === null ? `${yearPrefix} ${year}` : `${yearPrefix} ${SEASON_GENITIVE_LABELS[season]} ${year}`;
 }
 
 /** The progression flipped newest-first for the timeline: the current record leads the list. */

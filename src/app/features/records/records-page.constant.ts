@@ -1,3 +1,4 @@
+import { Season, SeasonType } from '../../core/history/seasons.enum';
 import { RecordsView } from './records-page.enum';
 
 /** routerLink to the all-time best results page, linked from the header navigation. */
@@ -37,6 +38,25 @@ export const QUEEN_ALL_TIME_TEXT = $localize`:@@records.queenAllTime:Корол�
 export const KING_YEAR_PREFIX = $localize`:@@records.kingYear:Король`;
 
 export const QUEEN_YEAR_PREFIX = $localize`:@@records.queenYear:Королева`;
+
+/** The season toggle value that disables filtering, like `ALL_GENDERS_VALUE`. */
+export const ALL_SEASONS_VALUE = 'all';
+
+/** The season filter chips in calendar order; shown once a specific year is chosen. */
+export const SEASON_FILTER_OPTIONS: readonly { value: SeasonType; label: string }[] = [
+  { value: Season.winter, label: $localize`:@@records.seasonWinter:Зима` },
+  { value: Season.spring, label: $localize`:@@records.seasonSpring:Весна` },
+  { value: Season.summer, label: $localize`:@@records.seasonSummer:Лето` },
+  { value: Season.autumn, label: $localize`:@@records.seasonAutumn:Осень` },
+];
+
+/** The genitive season names the crown labels are built from: «Король лета 2026». */
+export const SEASON_GENITIVE_LABELS: Record<SeasonType, string> = {
+  [Season.winter]: $localize`:@@records.seasonOfWinter:зимы`,
+  [Season.spring]: $localize`:@@records.seasonOfSpring:весны`,
+  [Season.summer]: $localize`:@@records.seasonOfSummer:лета`,
+  [Season.autumn]: $localize`:@@records.seasonOfAutumn:осени`,
+};
 
 /** Prepended to the formatted gain of each record-beating run («−0:12»). */
 export const RECORD_DELTA_SIGN = '−';

@@ -91,69 +91,98 @@
           </label>
         }
 
-        @if (view() !== views.rating) {
-          <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
-            @if (view() === views.table) {
-              <button
-                class="records__seg-option"
-                i18n="@@records.allYears"
-                type="button"
-                [attr.aria-pressed]="yearSegValue() === null"
-                [class.records__seg-option_active]="yearSegValue() === null"
-                (click)="onYearChange(allYearsValue)"
-              >
-                Все годы
-              </button>
-            }
+        <div class="records__filter-row">
+          @if (view() !== views.rating) {
+            <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
+              @if (view() === views.table) {
+                <button
+                  class="records__seg-option"
+                  i18n="@@records.allYears"
+                  type="button"
+                  [attr.aria-pressed]="yearSegValue() === null"
+                  [class.records__seg-option_active]="yearSegValue() === null"
+                  (click)="onYearChange(allYearsValue)"
+                >
+                  Все годы
+                </button>
+              }
 
-            @for (boardYear of years(); track boardYear) {
+              @for (boardYear of years(); track boardYear) {
+                <button
+                  class="records__seg-option"
+                  type="button"
+                  [attr.aria-pressed]="yearSegValue() === boardYear"
+                  [class.records__seg-option_active]="yearSegValue() === boardYear"
+                  (click)="onYearChange(boardYear)"
+                >
+                  {{ boardYear }}
+                </button>
+              }
+            </div>
+          }
+
+          <div aria-label="Пол" class="records__seg" i18n-aria-label="@@records.genderFilterLabel" role="group">
+            <button
+              class="records__seg-option"
+              i18n="@@records.genderAll"
+              type="button"
+              [attr.aria-pressed]="gender() === null"
+              [class.records__seg-option_active]="gender() === null"
+              (click)="onGenderChange(allGendersValue)"
+            >
+              Все
+            </button>
+
+            <button
+              class="records__seg-option"
+              i18n="@@records.genderMen"
+              type="button"
+              [attr.aria-pressed]="gender() === genders.male"
+              [class.records__seg-option_active]="gender() === genders.male"
+              (click)="onGenderChange(genders.male)"
+            >
+              Мужчины
+            </button>
+
+            <button
+              class="records__seg-option"
+              i18n="@@records.genderWomen"
+              type="button"
+              [attr.aria-pressed]="gender() === genders.female"
+              [class.records__seg-option_active]="gender() === genders.female"
+              (click)="onGenderChange(genders.female)"
+            >
+              Женщины
+            </button>
+          </div>
+        </div>
+
+        @if (view() === views.table && year() !== null) {
+          <div aria-label="Сезон" class="records__seg" i18n-aria-label="@@records.seasonFilterLabel" role="group">
+            <button
+              class="records__seg-option"
+              i18n="@@records.allSeasons"
+              type="button"
+              [attr.aria-pressed]="season() === null"
+              [class.records__seg-option_active]="season() === null"
+              (click)="onSeasonChange(allSeasonsValue)"
+            >
+              Весь год
+            </button>
+
+            @for (option of seasonOptions; track option.value) {
               <button
                 class="records__seg-option"
                 type="button"
-                [attr.aria-pressed]="yearSegValue() === boardYear"
-                [class.records__seg-option_active]="yearSegValue() === boardYear"
-                (click)="onYearChange(boardYear)"
+                [attr.aria-pressed]="season() === option.value"
+                [class.records__seg-option_active]="season() === option.value"
+                (click)="onSeasonChange(option.value)"
               >
-                {{ boardYear }}
+                {{ option.label }}
               </button>
             }
           </div>
         }
-
-        <div aria-label="Пол" class="records__seg" i18n-aria-label="@@records.genderFilterLabel" role="group">
-          <button
-            class="records__seg-option"
-            i18n="@@records.genderAll"
-            type="button"
-            [attr.aria-pressed]="gender() === null"
-            [class.records__seg-option_active]="gender() === null"
-            (click)="onGenderChange(allGendersValue)"
-          >
-            Все
-          </button>
-
-          <button
-            class="records__seg-option"
-            i18n="@@records.genderMen"
-            type="button"
-            [attr.aria-pressed]="gender() === genders.male"
-            [class.records__seg-option_active]="gender() === genders.male"
-            (click)="onGenderChange(genders.male)"
-          >
-            Мужчины
-          </button>
-
-          <button
-            class="records__seg-option"
-            i18n="@@records.genderWomen"
-            type="button"
-            [attr.aria-pressed]="gender() === genders.female"
-            [class.records__seg-option_active]="gender() === genders.female"
-            (click)="onGenderChange(genders.female)"
-          >
-            Женщины
-          </button>
-        </div>
 
         @if (view() === views.chart) {
           <div aria-label="Дистанция" class="records__seg" i18n-aria-label="@@records.metricLabel" role="group">

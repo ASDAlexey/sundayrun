@@ -148,6 +148,17 @@
     }
   }
 
+  // The year filter keeps the left edge; the gender one sits at the right while the row fits both,
+  // and a wrap on narrow screens stacks them back at the left.
+  &__filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-self: stretch;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
   &__seg {
     display: flex;
     flex-wrap: wrap;
