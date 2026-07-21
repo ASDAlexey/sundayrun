@@ -32,18 +32,18 @@ export async function selectSeasonRuns(db: ProtocolDrizzle, year: string): Promi
 }
 
 /**
- * The first-lap (2.3 km) splits of one season's 5 km finishers, same shape as `selectSeasonRuns`
- * with the split as `timeMs` — the «Первый круг» mode of the bump chart ranks them with the very
- * same standings scan. Splits live as text on the protocol rows (not in `runs`), so the read goes
- * through `results`, parses on the fly and drops rows without a recorded split; the slug doubles
- * as the ISO event date, saving the events join.
+ * The recorded first-lap (2.3 km) splits of one season, with or without a 5 km finish, same shape
+ * as `selectSeasonRuns` with the split as `timeMs` — the «Первый круг» mode of the bump chart
+ * ranks them with the very same standings scan. Splits live as text on the protocol rows (not in
+ * `runs`), so the read goes through `results`, parses on the fly and drops rows without a
+ * recorded split; the slug doubles as the ISO event date, saving the events join.
  */
 export async function selectSeasonLapRuns(db: ProtocolDrizzle, year: string): Promise<SeasonRun[]> {
   const [rows, athleteRows] = await Promise.all([
     db
       .select({ fullName: results.fullName, time23: results.time23, gender: results.gender, slug: results.slug })
       .from(results)
-      .where(and(ne(results.time23, ''), ne(results.time5, ''), isNotNull(results.gender), like(results.slug, `${year}-%`)))
+      .where(and(ne(results.time23, ''), isNotNull(results.gender), like(results.slug, `${year}-%`)))
       .orderBy(asc(results.slug), asc(results.fullName)),
     db.select({ key: athletes.key, displayName: athletes.displayName }).from(athletes),
   ]);

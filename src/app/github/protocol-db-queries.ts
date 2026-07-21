@@ -178,17 +178,18 @@ export async function selectCourseRecords(db: ProtocolDrizzle): Promise<CourseRe
 }
 
 /**
- * The first-lap (2.3 km) record per gender — the fastest recorded split among 5 km finishers.
- * Splits live only in the protocol rows under the organisers' spellings, so the display name is
- * resolved through the athletes table by the normalized key (the protocol spelling is the fallback
- * for a finisher the rollup has not ranked). Old protocols without splits contribute no rows.
+ * The first-lap (2.3 km) record per gender — the fastest recorded split, with or without a 5 km
+ * finish behind it. Splits live only in the protocol rows under the organisers' spellings, so the
+ * display name is resolved through the athletes table by the normalized key (the protocol spelling
+ * is the fallback for a finisher the rollup has not ranked). Old protocols without splits
+ * contribute no rows.
  */
 export async function selectFirstLapRecords(db: ProtocolDrizzle): Promise<FirstLapRecords> {
   const [rows, athleteRows] = await Promise.all([
     db
       .select({ fullName: results.fullName, time23: results.time23, gender: results.gender, slug: results.slug })
       .from(results)
-      .where(and(ne(results.time23, ''), ne(results.time5, ''), isNotNull(results.gender))),
+      .where(and(ne(results.time23, ''), isNotNull(results.gender))),
     db.select({ key: athletes.key, displayName: athletes.displayName }).from(athletes),
   ]);
   const displayNames = new Map(athleteRows.map((row) => [row.key, row.displayName]));

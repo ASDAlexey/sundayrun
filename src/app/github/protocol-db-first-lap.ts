@@ -13,16 +13,16 @@ import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
  */
 
 /**
- * Every recorded first-lap (2.3 km) split over the athlete's 5 km finishes. The rows arrive like
- * in `selectAthleteRunPlaces`: joined by the athlete's runs and matched back by the normalized
- * name against the organisers' spelling.
+ * Every recorded first-lap (2.3 km) split of the athlete, with or without a 5 km finish — the
+ * lap stands on its own. The rows arrive like in `selectAthleteRunPlaces`: joined by the
+ * athlete's runs and matched back by the normalized name against the organisers' spelling.
  */
 export async function selectAthleteFirstLaps(db: ProtocolDrizzle, key: string): Promise<AthleteFirstLap[]> {
   const rows = await db
     .select({ slug: results.slug, fullName: results.fullName, time23: results.time23, dateIso: runs.dateIso })
     .from(results)
     .innerJoin(runs, and(eq(runs.slug, results.slug), eq(runs.athleteKey, key)))
-    .where(and(ne(results.time23, ''), ne(results.time5, '')));
+    .where(ne(results.time23, ''));
 
   return rows.flatMap((row) => {
     const lapMs = parseDuration(row.time23);

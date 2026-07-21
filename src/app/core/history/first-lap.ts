@@ -3,9 +3,9 @@ import { AthleteFirstLap, FirstLapRun } from './first-lap.interface';
 import { FirstLapRecords } from './first-lap.type';
 
 /**
- * The standing first-lap (2.3 km) record per gender: the fastest recorded split among 5 km
- * finishers. The record belongs to the athlete who ran the split first — a later equal split never
- * takes it over, mirroring the course-record semantics.
+ * The standing first-lap (2.3 km) record per gender: the fastest recorded split, regardless of
+ * whether the 5 km was finished. The record belongs to the athlete who ran the split first — a
+ * later equal split never takes it over, mirroring the course-record semantics.
  */
 export function firstLapRecords(runs: readonly FirstLapRun[]): FirstLapRecords {
   const records: FirstLapRecords = { ...EMPTY_FIRST_LAP_RECORDS };
