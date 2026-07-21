@@ -1724,7 +1724,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="guide.firstLapText" datatype="html">
-        <source> Самый быстрый первый круг — 2,3 км — среди финишёров полной дистанции. Учитываются забеги, где хронометраж записал время кругов. Свой лучший круг виден на странице атлета. </source>
+        <source> Самый быстрый первый круг — 2,3 км — независимо от результата на полной дистанции. Учитываются забеги, где хронометраж записал время кругов. Свой лучший круг виден на странице атлета. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/guide/guide-page.html</context>
           <context context-type="linenumber">26,30</context>
