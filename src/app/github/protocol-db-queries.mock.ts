@@ -121,7 +121,7 @@ export const EXPECTED_RUN_PLACES: Record<string, number> = { '2024-05-05': 3, '2
  * The fastest recorded splits per gender: Иванов's caps-spelled 11:15 resolves its display name
  * through the athletes table; Мария's 11:30 tie (2026-07-05 vs 2024-06-06) stays with the earlier
  * run, and her name falls back to the protocol spelling — she is not a ranked athlete. The 2.3 km
- * row (time5 empty) never enters.
+ * row (time5 empty) enters the scan but its 16:39 split is too slow to take the record.
  */
 export const EXPECTED_DB_FIRST_LAP_RECORDS: FirstLapRecords = {
   [Gender.male]: {
@@ -145,10 +145,11 @@ export const EXPECTED_DB_FIRST_LAP_RECORDS: FirstLapRecords = {
 /** Иванов's own best split — the caps-spelled 11:15; Мария's row at the shared event is name-matched away. */
 export const EXPECTED_DB_BEST_FIRST_LAP: AthleteFirstLap = { dateIso: '2024-06-06', slug: '2024-06-06', lapMs: 675000 };
 
-/** Both of Иванов's recorded splits; the 2.3 km row (empty time5) and Мария's rival row stay out. */
+/** All of Иванов's recorded splits including the 2.3 km-only run; Мария's rival row is name-matched away. */
 export const EXPECTED_DB_FIRST_LAPS: AthleteFirstLap[] = [
   { dateIso: '2024-05-05', slug: '2024-05-05', lapMs: 720000 },
   EXPECTED_DB_BEST_FIRST_LAP,
+  { dateIso: '2025-04-04', slug: '2025-04-04', lapMs: 999000 },
 ];
 
 /** Нина's single run resolves through the women's place column. */
@@ -389,18 +390,20 @@ export const SEED_SEASON_LAP_EDGE_RESULTS: readonly string[] = [
 ];
 
 /**
- * The lap standings source of the seeded 2025: only Нина's protocol row carries both a split and a
- * 5 km finish. Иван's 2.3 km-only row (empty `time5`), the 2024 rows, the corrupt gender code and
- * the unparseable split all stay out; her display name resolves through the athletes table.
+ * The lap standings source of the seeded 2025: every recorded split enters regardless of a 5 km
+ * finish, so Иван's 2.3 km-only row joins Нина's. The 2024 rows, the corrupt gender code and the
+ * unparseable split all stay out; display names resolve through the athletes table.
  */
 export const EXPECTED_SEASON_LAP_RUNS: SeasonRun[] = [
   { key: RUNLESS_ATHLETE_KEY, displayName: 'Новикова Нина', gender: Gender.female, dateIso: '2025-02-02', timeMs: 780000 },
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', gender: Gender.male, dateIso: '2025-04-04', timeMs: 999000 },
 ];
 
-/** With the edge seed on top: the stranger joins under the protocol spelling of his name. */
+/** With the edge seed on top: the stranger joins under the protocol spelling of his name, in slug order. */
 export const EXPECTED_SEASON_LAP_RUNS_WITH_EDGES: SeasonRun[] = [
-  ...EXPECTED_SEASON_LAP_RUNS,
+  EXPECTED_SEASON_LAP_RUNS[0],
   { key: 'незнакомец ник', displayName: 'Незнакомец Ник', gender: Gender.male, dateIso: '2025-03-03', timeMs: 660000 },
+  EXPECTED_SEASON_LAP_RUNS[1],
 ];
 
 /** Only the stranger survives the edge rows: the corrupt gender and the junk split are skipped. */

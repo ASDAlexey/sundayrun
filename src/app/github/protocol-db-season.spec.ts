@@ -26,7 +26,7 @@ describe('protocol-db-season', () => {
     await expect(selectSeasonRuns(db, SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_RUNS);
     await expect(
       selectSeasonLapRuns(db, SEASON_RUNS_YEAR),
-      'only rows with a parseable split, a 5 km finish and a sane gender enter the lap standings',
+      'every row with a parseable split and a sane gender enters the lap standings, 5 km finish or not',
     ).resolves.toEqual(EXPECTED_SEASON_LAP_RUNS_WITH_EDGES);
 
     populated.close();
