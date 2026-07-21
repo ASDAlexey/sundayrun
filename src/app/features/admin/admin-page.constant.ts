@@ -23,3 +23,6 @@ export const EMPTY_QUERY = '';
  * value, and `.admin__race` in the stylesheet must stay in sync with it.
  */
 export const ADMIN_RACE_ROW_HEIGHT_PX = 64;
+
+/** Second-by-second refresh of the «удаляется… m:ss» counter while the deletion deploy is in flight. */
+export const DELETE_TICK_INTERVAL_MS = 1000;

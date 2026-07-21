@@ -10,6 +10,10 @@ import { TokenCheck } from '../../core/github/token-check.enum';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ADMIN_TOKEN_MOCK } from '../../github/admin-token.service.mock';
 import { ArchiveService } from '../../github/archive.service';
+import { DbFreshness } from '../../github/db-freshness.enum';
+import { DbFreshnessService } from '../../github/db-freshness.service';
+import { dbFreshnessServiceMock } from '../../github/db-freshness.service.mock';
+import { DeleteDurationService } from '../../github/delete-duration.service';
 import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState, PublishStateType } from '../../github/github-storage.enum';
 import { PendingArchiveService } from '../../github/pending-archive.service';
@@ -22,6 +26,7 @@ import { ProtocolStateService } from '../../state/protocol-state.service';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
 import { AdminPage } from './admin-page';
+import { DELETE_TICK_INTERVAL_MS } from './admin-page.constant';
 import { RaceListStatus, TokenSaveStatus } from './admin-page.enum';
 import {
   ADMIN_RACES_LOAD_ERROR_MESSAGE,
@@ -48,6 +53,9 @@ describe('AdminPage', () => {
   const deleteRace = vi.fn();
   const pendingArchive = pendingArchiveMock();
   const publishDuration = publishDurationServiceMock();
+  /** Same mocked surface as the publish history — the delete history mirrors it. */
+  const deleteDuration = publishDurationServiceMock();
+  const freshness = dbFreshnessServiceMock();
 
   let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<AdminPage>;
@@ -61,6 +69,8 @@ describe('AdminPage', () => {
     pendingArchive.uploads.set([]);
     pendingArchive.deletions.set([]);
     publishDuration.averageMs.set(null);
+    deleteDuration.averageMs.set(null);
+    freshness.state.set(DbFreshness.Fresh);
     validate.mockResolvedValue(TokenCheck.valid);
     loadMeta.mockResolvedValue(EXISTING_SITE_META);
     saveMeta.mockResolvedValue(undefined);
@@ -75,6 +85,8 @@ describe('AdminPage', () => {
         { provide: EventDeleteService, useValue: { state: deleteState, delete: deleteRace } },
         { provide: PendingArchiveService, useValue: pendingArchive },
         { provide: PublishDurationService, useValue: publishDuration },
+        { provide: DeleteDurationService, useValue: deleteDuration },
+        { provide: DbFreshnessService, useValue: freshness },
         { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
@@ -82,6 +94,7 @@ describe('AdminPage', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     fixture.destroy();
   });
 
@@ -276,6 +289,8 @@ describe('AdminPage', () => {
 
     expect(deleteRace, 'no pending race — nothing to confirm').not.toHaveBeenCalled();
 
+    // Fake timers from here: the deletion wait counter must tick under the controllable clock.
+    vi.useFakeTimers();
     page.askDelete(NEWER_ENTRY.slug);
     await page.confirmDelete();
 
@@ -288,10 +303,31 @@ describe('AdminPage', () => {
     });
     expect(page.races(), 'the archive rows stay put — the pending deletion only dims the view').toEqual(EXPECTED_ADMIN_RACES);
     expect(page.allRaces()[0].deleting, 'the row stays visible as «удаляется…» until the archive drops it').toBe(true);
+    expect(page.timedDeleteSlug(), 'the deploy wait keeps the row on the live counter').toBe(NEWER_ENTRY.slug);
+
+    await vi.advanceTimersByTimeAsync(DELETE_TICK_INTERVAL_MS);
+
+    expect(page.deleteElapsedText(), 'the wait counter ticks second by second').toBe('0:01');
 
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.admin__feedback_delete .admin__saved')).not.toBeNull();
+
+    // The reloaded archive dropping the row ends the wait: the counter stops and the duration is recorded.
+    pendingArchive.deletions.set([]);
+    fixture.detectChanges();
+
+    expect(page.timedDeleteSlug()).toBeNull();
+    expect(deleteDuration.record, 'the click-to-gone time feeds the measured average').toHaveBeenCalledWith(DELETE_TICK_INTERVAL_MS);
+
+    vi.useRealTimers();
+
+    // The landed deploy re-reads the list, so «публикуется…»/«удаляется…» rows retire on their own.
+    freshness.state.set(DbFreshness.Updated);
+    fixture.detectChanges();
+    await settle();
+
+    expect(loadIndex, 'the updated db re-reads the archive without a manual reload').toHaveBeenCalledTimes(2);
   });
 
   it('filters the list by number, month and year and reports when nothing matches', async () => {
@@ -347,6 +383,14 @@ describe('AdminPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent, 'the measured average replaces the static hint').toContain('~2:30');
+
+    // The delete hint mirrors the publish one: measured average over the hardcoded promise.
+    deleteDuration.averageMs.set(PUBLISH_DURATION_AVERAGE_MOCK);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent, 'the measured delete average replaces the static hint').toContain(
+      'Обычно удаление занимает ~2:30',
+    );
 
     // A pending upload the reloaded archive already serves is not duplicated as a placeholder.
     pendingArchive.uploads.set([{ ...PENDING_UPLOAD_MOCK, slug: OLDER_ENTRY.slug }]);

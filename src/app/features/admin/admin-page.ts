@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 
@@ -13,6 +13,9 @@ import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { ArchiveService } from '../../github/archive.service';
+import { DbFreshness } from '../../github/db-freshness.enum';
+import { DbFreshnessService } from '../../github/db-freshness.service';
+import { DeleteDurationService } from '../../github/delete-duration.service';
 import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { PendingArchiveService } from '../../github/pending-archive.service';
@@ -22,6 +25,7 @@ import { SiteMetaService } from '../../github/site-meta.service';
 import { ProtocolDropzone } from '../upload/protocol-dropzone/protocol-dropzone';
 import {
   ADMIN_RACE_ROW_HEIGHT_PX,
+  DELETE_TICK_INTERVAL_MS,
   EMPTY_QUERY,
   EMPTY_TOKEN,
   NEXT_NUMBER_SEED,
@@ -51,6 +55,12 @@ export class AdminPage {
   readonly #eventDelete = inject(EventDeleteService);
   readonly #pendingArchive = inject(PendingArchiveService);
   readonly #publishDuration = inject(PublishDurationService);
+  readonly #deleteDuration = inject(DeleteDurationService);
+  readonly #dbFreshness = inject(DbFreshnessService);
+  readonly #deleteElapsedMs = signal(0);
+
+  /** The deletion whose deploy this session is timing; null once the archive stops serving it. */
+  readonly #watchedDeletionSlug = signal<string | null>(null);
 
   /** Just-published events the archive db has not caught up to yet, shown as «публикуется…» placeholders. */
   readonly #pendingRows = computed<AdminRaceItem[]>(() => {
@@ -121,6 +131,19 @@ export class AdminPage {
     return averageMs === null ? null : formatDuration(averageMs);
   });
 
+  /** The measured average of recent deletions; null (the static «~2–3 минуты» hint) until one is recorded. */
+  readonly averageDeleteText = computed(() => {
+    const averageMs = this.#deleteDuration.averageMs();
+
+    return averageMs === null ? null : formatDuration(averageMs);
+  });
+
+  /** The ticking «прошло m:ss» beside the deletion this session is waiting out. */
+  readonly deleteElapsedText = computed(() => formatDuration(this.#deleteElapsedMs()));
+
+  /** The row that shows the live counter: the commit in flight or the deploy being timed. */
+  readonly timedDeleteSlug = computed(() => this.deletingSlug() ?? this.#watchedDeletionSlug());
+
   /** The race awaiting the second, confirming click; deletion never fires from a single click. */
   readonly pendingSlug = signal<string | null>(null);
   /** The race whose deletion commit is in flight; its row dims to «удаляется…» and cannot be re-deleted. */
@@ -136,12 +159,38 @@ export class AdminPage {
   protected readonly tokenHelpUrl = TOKEN_HELP_URL;
   protected readonly rowHeightPx = ADMIN_RACE_ROW_HEIGHT_PX;
 
+  /** When the «Точно удалить» click happened; meaningful only while a deletion is being timed. */
+  #deleteStartedAtMs = 0;
+  #deleteTickId: ReturnType<typeof setInterval> | null = null;
+
   constructor() {
     // Prerender ships the page without data; the editor prefill and the race list arrive after hydration.
     if (isPlatformBrowser(inject(PLATFORM_ID)) && this.isAdmin()) {
       void this.#loadMeta();
       void this.#loadRaces();
     }
+
+    // The landed deploy retires the «публикуется…»/«удаляется…» rows: the pinned db serves the
+    // change now, so the list is re-read without the organiser reloading the page.
+    effect(() => {
+      if (this.#dbFreshness.state() === DbFreshness.Updated && this.isAdmin()) {
+        void this.#loadRaces();
+      }
+    });
+
+    // The reloaded archive dropping the watched deletion ends its wait: the counter stops and the
+    // measured click-to-gone duration feeds the «обычно занимает ~…» hint.
+    effect(() => {
+      const slug = this.#watchedDeletionSlug();
+
+      if (slug !== null && !this.#pendingArchive.deletions().some((deletion) => deletion.slug === slug)) {
+        this.#watchedDeletionSlug.set(null);
+        this.#stopDeleteTicking();
+        this.#deleteDuration.record(Date.now() - this.#deleteStartedAtMs);
+      }
+    });
+
+    inject(DestroyRef).onDestroy(() => this.#stopDeleteTicking());
   }
 
   async save(rawToken: string): Promise<void> {
@@ -218,6 +267,7 @@ export class AdminPage {
     // Close the modal at once; the row dims to «удаляется…» while the feedback strip reports progress.
     this.pendingSlug.set(null);
     this.deletingSlug.set(slug);
+    this.#startDeleteTicking();
     await this.#eventDelete.delete(slug);
 
     // Both success (pointer published) and pending (pointer still catching up) mean the event is gone:
@@ -227,6 +277,10 @@ export class AdminPage {
 
     if (state === PublishState.success || state === PublishState.pending) {
       this.#pendingArchive.addDeletion({ slug, atIso: new Date().toISOString() });
+      this.#watchedDeletionSlug.set(slug);
+    } else {
+      // The commit never landed — nothing to wait out.
+      this.#stopDeleteTicking();
     }
 
     this.deletingSlug.set(null);
@@ -270,6 +324,23 @@ export class AdminPage {
   #applyRaces(races: AdminRaceItem[]): void {
     this.races.set(races);
     this.racesStatus.set(races.length === 0 ? RaceListStatus.empty : RaceListStatus.ready);
+  }
+
+  #startDeleteTicking(): void {
+    this.#stopDeleteTicking();
+
+    const startedAtMs = Date.now();
+
+    this.#deleteStartedAtMs = startedAtMs;
+    this.#deleteElapsedMs.set(0);
+    this.#deleteTickId = setInterval(() => this.#deleteElapsedMs.set(Date.now() - startedAtMs), DELETE_TICK_INTERVAL_MS);
+  }
+
+  #stopDeleteTicking(): void {
+    if (this.#deleteTickId !== null) {
+      clearInterval(this.#deleteTickId);
+      this.#deleteTickId = null;
+    }
   }
 }
 

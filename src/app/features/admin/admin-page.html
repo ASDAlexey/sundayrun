@@ -172,6 +172,12 @@
 
                         <ng-container i18n="@@admin.racePublishing">публикуется…</ng-container>
                       </span>
+                    } @else if (race.slug === timedDeleteSlug()) {
+                      <span class="admin__race-badge">
+                        <mat-progress-spinner class="admin__race-spinner" mode="indeterminate" [diameter]="14" />
+
+                        <ng-container i18n="@@admin.raceDeletingTimed">удаляется… {{ deleteElapsedText() }}</ng-container>
+                      </span>
                     } @else if (race.deleting || race.slug === deletingSlug()) {
                       <span class="admin__race-badge">
                         <mat-progress-spinner class="admin__race-spinner" mode="indeterminate" [diameter]="14" />
@@ -213,9 +219,15 @@
               </cdk-virtual-scroll-viewport>
             }
 
-            <p class="admin__races-note" i18n="@@admin.racesNote">
-              Удаление в один клик не выполняется — сначала подтверждение. После удаления пересборка сайта займёт ~2–3 минуты.
-            </p>
+            @if (averageDeleteText(); as average) {
+              <p class="admin__races-note" i18n="@@admin.racesNoteMeasured">
+                Удаление в один клик не выполняется — сначала подтверждение. Обычно удаление занимает ~{{ average }}.
+              </p>
+            } @else {
+              <p class="admin__races-note" i18n="@@admin.racesNote">
+                Удаление в один клик не выполняется — сначала подтверждение. После удаления пересборка сайта займёт ~2–3 минуты.
+              </p>
+            }
           }
         }
 
