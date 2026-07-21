@@ -19,6 +19,14 @@ export const YearBadge = {
   yearPodium: 'yearPodium',
   yearTopTen: 'yearTopTen',
   yearTopThirty: 'yearTopThirty',
+  winterKing: 'winterKing',
+  winterPodium: 'winterPodium',
+  springKing: 'springKing',
+  springPodium: 'springPodium',
+  summerKing: 'summerKing',
+  summerPodium: 'summerPodium',
+  autumnKing: 'autumnKing',
+  autumnPodium: 'autumnPodium',
 } as const;
 
 export type YearBadgeType = (typeof YearBadge)[keyof typeof YearBadge];
