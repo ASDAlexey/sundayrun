@@ -1,7 +1,7 @@
 import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
 import { createProtocolDrizzle, ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { EXPECTED_DB_BADGE_RARITY, EXPECTED_DB_YEAR_BEST_ROWS } from './protocol-db-badges.mock';
-import { selectYearBadgeRarity, selectYearBestRows } from './protocol-db-badges';
+import { EXPECTED_DB_BADGE_RARITY, EXPECTED_DB_SEASON_BEST_ROWS, EXPECTED_DB_YEAR_BEST_ROWS } from './protocol-db-badges.mock';
+import { selectSeasonBestRows, selectYearBadgeRarity, selectYearBestRows } from './protocol-db-badges';
 import { POPULATED_SEED, YEAR_REVIEW_SEED } from './protocol-db-queries.mock';
 
 describe('protocol-db-badges', () => {
@@ -24,6 +24,9 @@ describe('protocol-db-badges', () => {
     const db = await drizzleFor(POPULATED_SEED);
 
     await expect(selectYearBestRows(db)).resolves.toEqual(EXPECTED_DB_YEAR_BEST_ROWS);
+    await expect(selectSeasonBestRows(db), 'the months fold into calendar-year season lanes').resolves.toEqual(
+      EXPECTED_DB_SEASON_BEST_ROWS,
+    );
     await expect(selectYearBadgeRarity(db), 'no activity badge is reached, but both one-lane tables crown their athletes').resolves.toEqual(
       EXPECTED_DB_BADGE_RARITY,
     );
@@ -33,12 +36,14 @@ describe('protocol-db-badges', () => {
     const db = await drizzleFor(YEAR_REVIEW_SEED);
 
     await expect(selectYearBestRows(db), 'the corrupt gender code never ranks').resolves.toEqual(EXPECTED_DB_YEAR_BEST_ROWS);
+    await expect(selectSeasonBestRows(db), 'the corrupt gender code never ranks a season').resolves.toEqual(EXPECTED_DB_SEASON_BEST_ROWS);
 
     close?.();
 
     const empty = await drizzleFor([]);
 
     await expect(selectYearBestRows(empty)).resolves.toEqual([]);
+    await expect(selectSeasonBestRows(empty)).resolves.toEqual([]);
     await expect(selectYearBadgeRarity(empty), 'no participants — no rarity').resolves.toEqual({});
   });
 });
