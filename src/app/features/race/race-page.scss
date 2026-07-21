@@ -163,6 +163,78 @@
     &_center {
       text-align: center;
     }
+
+    // The 5 km time carries the same accent as the athlete's name — the two anchors of the row.
+    &_accent {
+      color: var(--accent);
+    }
+  }
+
+  // The «Пол» chip: boys cool blue, girls warm pink — a light wash, not a flag.
+  &__gender {
+    @include t.text('label', 'small');
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+
+    &_male {
+      border-color: color-mix(in srgb, var(--chart-10) 35%, transparent);
+      background: color-mix(in srgb, var(--chart-10) 10%, transparent);
+      color: var(--chart-10);
+    }
+
+    &_female {
+      border-color: color-mix(in srgb, var(--chart-4) 35%, transparent);
+      background: color-mix(in srgb, var(--chart-4) 12%, transparent);
+      color: var(--chart-4);
+    }
+  }
+
+  // Keeps the medal glued to the place number even when the cell wraps.
+  &__place-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  // The podium medal beside the gender place, on the year-badge gold/silver/bronze scale.
+  &__medal {
+    flex: none;
+    width: 16px;
+    height: 16px;
+
+    &_gold {
+      --medal: var(--accent-light);
+      --medal-deep: var(--accent-deep);
+    }
+
+    &_silver {
+      --medal: var(--chart-13);
+      --medal-deep: var(--text-secondary);
+    }
+
+    &_bronze {
+      --medal: color-mix(in srgb, var(--chart-12) 65%, var(--accent-light));
+      --medal-deep: var(--chart-12);
+    }
+  }
+
+  &__medal-ribbon {
+    fill: none;
+    stroke: var(--medal-deep);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.6;
+  }
+
+  &__medal-disc {
+    fill: var(--medal);
   }
 
   &__athlete {

@@ -48,10 +48,12 @@ import {
   FEMALE_GENDER_TEXT,
   FINISH_CLUB_TIERS,
   GAP_TEXT_PREFIX,
+  GENDER_CHIP_CLASSES,
   HOME_PAGE_LINK,
   KIDS_NOTE_TOKEN_PATTERN,
   MALE_GENDER_TEXT,
   NOTE_BADGE_CLASSES,
+  PLACE_MEDAL_CLASSES,
   RACE_PAGE_BASE_LINK,
   RACE_TABLE_COLUMNS,
   RACE_TRANSFER_KEY_PREFIX,
@@ -239,8 +241,11 @@ function toRowView(
     time5: row.time5,
     paceText: paceTextOf(row.totalMs, row.distanceKm),
     genderText: genderTextOf(row.gender),
+    genderClass: row.gender === null ? EMPTY_CELL_TEXT : GENDER_CHIP_CLASSES[row.gender],
     placeMText: placeTextOf(row.placeM),
     placeFText: placeTextOf(row.placeF),
+    placeMMedalClass: placeMedalClassOf(row.placeM),
+    placeFMedalClass: placeMedalClassOf(row.placeF),
     gapMText: row.gender === Gender.male ? gapText : EMPTY_CELL_TEXT,
     gapFText: row.gender === Gender.female ? gapText : EMPTY_CELL_TEXT,
     finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
@@ -394,4 +399,8 @@ function genderTextOf(gender: GenderType | null): string {
 
 function placeTextOf(place: number | null): string {
   return place === null ? EMPTY_CELL_TEXT : String(place);
+}
+
+function placeMedalClassOf(place: number | null): string {
+  return place === null ? EMPTY_CELL_TEXT : (PLACE_MEDAL_CLASSES[place] ?? EMPTY_CELL_TEXT);
 }

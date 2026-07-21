@@ -2455,14 +2455,14 @@
         <source>М</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.constant.ts</context>
-          <context context-type="linenumber">16</context>
+          <context context-type="linenumber">17</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.genderFemale" datatype="html">
         <source>Ж</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.constant.ts</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.loading" datatype="html">
@@ -2560,165 +2560,165 @@
         <source> Ср. темп </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">103,104</context>
+          <context context-type="linenumber">110,111</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.table.gender" datatype="html">
         <source> Пол </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">111,112</context>
+          <context context-type="linenumber">118,119</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.table.placeM" datatype="html">
         <source> Место М </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">119,120</context>
+          <context context-type="linenumber">130,131</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.gapTitle" datatype="html">
         <source>До следующего места в своей группе</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">126,127</context>
+          <context context-type="linenumber">146,147</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">140,141</context>
+          <context context-type="linenumber">169,170</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.table.placeF" datatype="html">
         <source> Место Ж </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">133,134</context>
+          <context context-type="linenumber">153,154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.table.finishes" datatype="html">
         <source> Участий за всё время </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">147,148</context>
+          <context context-type="linenumber">176,177</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.table.club" datatype="html">
         <source>Клуб</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">158,160</context>
+          <context context-type="linenumber">187,189</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.table.note" datatype="html">
         <source>Примечание</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">164,166</context>
+          <context context-type="linenumber">193,195</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.backHome" datatype="html">
         <source>К списку забегов</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">237,240</context>
+          <context context-type="linenumber">266,269</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.error" datatype="html">
         <source>Не удалось загрузить протокол.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">241,243</context>
+          <context context-type="linenumber">270,272</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.pdfAriaLabel" datatype="html">
         <source>Протокол пробега № <x id="number" equiv-text="file.event.number"/> (PDF)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">205</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.athleteAriaLabel" datatype="html">
         <source>История атлета <x id="fullName" equiv-text="row.fullName"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">237</context>
+          <context context-type="linenumber">239</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.notableAllTimeRank" datatype="html">
         <source><x id="rank" equiv-text="notable.rank"/>-й результат за всё время</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">331</context>
+          <context context-type="linenumber">336</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.notableWindowBest" datatype="html">
         <source>Лучший результат за 6 месяцев</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">334</context>
+          <context context-type="linenumber">339</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryFinishersOne" datatype="html">
         <source><x id="count" equiv-text="finisherCount"/> финишёр</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">347</context>
+          <context context-type="linenumber">352</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryFinishersFew" datatype="html">
         <source><x id="count" equiv-text="finisherCount"/> финишёра</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">348</context>
+          <context context-type="linenumber">353</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryFinishersMany" datatype="html">
         <source><x id="count" equiv-text="finisherCount"/> финишёров</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">349</context>
+          <context context-type="linenumber">354</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryNewcomersOne" datatype="html">
         <source><x id="count" equiv-text="newcomerCount"/> новичок</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">352</context>
+          <context context-type="linenumber">357</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryNewcomersFew" datatype="html">
         <source><x id="count" equiv-text="newcomerCount"/> новичка</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">353</context>
+          <context context-type="linenumber">358</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryNewcomersMany" datatype="html">
         <source><x id="count" equiv-text="newcomerCount"/> новичков</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">354</context>
+          <context context-type="linenumber">359</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryRecordsOne" datatype="html">
         <source><x id="count" equiv-text="personalRecordCount"/> личный рекорд</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">357</context>
+          <context context-type="linenumber">362</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryRecordsFew" datatype="html">
         <source><x id="count" equiv-text="personalRecordCount"/> личных рекорда</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">358</context>
+          <context context-type="linenumber">363</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.summaryRecordsMany" datatype="html">
         <source><x id="count" equiv-text="personalRecordCount"/> личных рекордов</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.ts</context>
-          <context context-type="linenumber">359</context>
+          <context context-type="linenumber">364</context>
         </context-group>
       </trans-unit>
       <trans-unit id="races.raceTitle" datatype="html">
@@ -3524,98 +3524,98 @@
         <source>Опубликовано за <x id="INTERPOLATION" equiv-text="{{ took }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">101,102</context>
+          <context context-type="linenumber">109,110</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.published" datatype="html">
         <source>Опубликовано</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">103,104</context>
+          <context context-type="linenumber">111,112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishedNote" datatype="html">
         <source>Результаты уже на сайте</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">106,107</context>
+          <context context-type="linenumber">114,115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishOpen" datatype="html">
         <source> Показать результаты </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">111,112</context>
+          <context context-type="linenumber">119,120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishDeploying" datatype="html">
         <source>Опубликовано — сайт обновляется…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">117,119</context>
+          <context context-type="linenumber">125,127</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishAverage" datatype="html">
         <source>обычно занимает ~<x id="INTERPOLATION" equiv-text="{{ average }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">123,124</context>
+          <context context-type="linenumber">131,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.stepCommitted" datatype="html">
         <source>Протокол в архиве</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">136,138</context>
+          <context context-type="linenumber">144,146</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.stepDeploying" datatype="html">
         <source>Сайт пересобирается</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">138,140</context>
+          <context context-type="linenumber">146,148</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.stepLive" datatype="html">
         <source>Результаты на сайте</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">140,141</context>
+          <context context-type="linenumber">148,149</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishAuthError" datatype="html">
         <source>Нет доступа к GitHub: токен отсутствует или истёк.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">147,149</context>
+          <context context-type="linenumber">155,157</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishAdminLink" datatype="html">
         <source>Обновить токен</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">149,151</context>
+          <context context-type="linenumber">157,159</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishError" datatype="html">
         <source>Не удалось опубликовать</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">153,155</context>
+          <context context-type="linenumber">161,163</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.error" datatype="html">
         <source>Не удалось сгенерировать PDF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">161,163</context>
+          <context context-type="linenumber">169,171</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.back" datatype="html">
         <source>Назад к предпросмотру</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">163,166</context>
+          <context context-type="linenumber">171,174</context>
         </context-group>
       </trans-unit>
       <trans-unit id="upload.zoneAriaLabel" datatype="html">
@@ -3774,31 +3774,31 @@
         </context-group>
       </trans-unit>
       <trans-unit id="versus.note" datatype="html">
-        <source> Время слева — первый атлет, справа — второй; победитель встречи подсвечен, в последней колонке — разница. Дата ведёт на протокол забега. </source>
+        <source> У каждого атлета свой цвет: слева — первый, справа — второй; медаль — у победителя встречи, в последней колонке — разница. Дата ведёт на протокол забега. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/versus/versus-page.html</context>
-          <context context-type="linenumber">170,171</context>
+          <context context-type="linenumber">188,189</context>
         </context-group>
       </trans-unit>
       <trans-unit id="versus.noMeetings" datatype="html">
         <source>Эти атлеты ещё ни разу не финишировали на одном забеге.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/versus/versus-page.html</context>
-          <context context-type="linenumber">175,178</context>
+          <context context-type="linenumber">193,196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="versus.reset" datatype="html">
         <source>Сбросить выбор</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/versus/versus-page.html</context>
-          <context context-type="linenumber">182,185</context>
+          <context context-type="linenumber">200,203</context>
         </context-group>
       </trans-unit>
       <trans-unit id="versus.duelError" datatype="html">
         <source>Не удалось загрузить историю атлетов.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/versus/versus-page.html</context>
-          <context context-type="linenumber">186,188</context>
+          <context context-type="linenumber">204,206</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.loading" datatype="html">

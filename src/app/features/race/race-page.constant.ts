@@ -1,3 +1,4 @@
+import { Gender, GenderType } from '../../core/models/gender.enum';
 import { RaceNoteBadgeKind, RaceNoteBadgeKindType } from './race-page.enum';
 
 /** Route param carrying the event slug (`/races/:slug`). */
@@ -43,6 +44,19 @@ export const NOTE_BADGE_CLASSES: Record<RaceNoteBadgeKindType, string> = {
   [RaceNoteBadgeKind.kids]: 'race__note-badge_kids',
   [RaceNoteBadgeKind.status]: 'race__note-badge_status',
   [RaceNoteBadgeKind.plain]: '',
+};
+
+/** The tinted «Пол» chip: cool blue for М, warm pink for Ж — a light wash telling the groups apart. */
+export const GENDER_CHIP_CLASSES: Record<GenderType, string> = {
+  [Gender.male]: 'race__gender_male',
+  [Gender.female]: 'race__gender_female',
+};
+
+/** Medal palette of the top-3 gender places, reusing the year-badge gold/silver/bronze scale. */
+export const PLACE_MEDAL_CLASSES: Record<number, string> = {
+  1: 'race__medal_gold',
+  2: 'race__medal_silver',
+  3: 'race__medal_bronze',
 };
 
 /**

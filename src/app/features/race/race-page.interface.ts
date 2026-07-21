@@ -31,8 +31,14 @@ export interface RaceRowView {
   time5: string;
   paceText: string;
   genderText: string;
+  /** The tint of the «Пол» chip («race__gender_male»); empty when the gender is unknown. */
+  genderClass: string;
   placeMText: string;
   placeFText: string;
+  /** The medal modifier of a top-3 male place («race__medal_gold»); empty below the podium. */
+  placeMMedalClass: string;
+  /** The same gold/silver/bronze modifier for the female podium. */
+  placeFMedalClass: string;
   /** «+0:12» до следующего места в своей группе under the male place; blank for winners, ties and the rest. */
   gapMText: string;
   /** The same Smashrun-style gap under the female place. */

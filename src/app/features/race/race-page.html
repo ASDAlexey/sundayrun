@@ -95,7 +95,9 @@
                 Время 5 км
               </th>
 
-              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell>{{ row.time5 }}</td>
+              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell [class.race__td_accent]="row.time5 !== ''">
+                {{ row.time5 }}
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="pace">
@@ -111,7 +113,11 @@
                 Пол
               </th>
 
-              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>{{ row.genderText }}</td>
+              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
+                @if (row.genderText !== '') {
+                  <span class="race__gender {{ row.genderClass }}">{{ row.genderText }}</span>
+                }
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="placeM">
@@ -120,7 +126,16 @@
               </th>
 
               <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
-                {{ row.placeMText }}
+                <span class="race__place-cell">
+                  @if (row.placeMMedalClass !== '') {
+                    <svg aria-hidden="true" class="race__medal {{ row.placeMMedalClass }}" viewBox="0 0 12 12">
+                      <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
+                      <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
+                    </svg>
+                  }
+
+                  {{ row.placeMText }}
+                </span>
 
                 @if (row.gapMText !== '') {
                   <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{ row.gapMText }}</span>
@@ -134,7 +149,16 @@
               </th>
 
               <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
-                {{ row.placeFText }}
+                <span class="race__place-cell">
+                  @if (row.placeFMedalClass !== '') {
+                    <svg aria-hidden="true" class="race__medal {{ row.placeFMedalClass }}" viewBox="0 0 12 12">
+                      <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
+                      <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
+                    </svg>
+                  }
+
+                  {{ row.placeFText }}
+                </span>
 
                 @if (row.gapFText !== '') {
                   <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{ row.gapFText }}</span>
