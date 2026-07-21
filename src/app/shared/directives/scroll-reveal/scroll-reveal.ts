@@ -25,6 +25,13 @@ export class ScrollReveal {
   #observe(): void {
     const el = this.#host.nativeElement;
 
+    // No IntersectionObserver (an old browser, jsdom in tests) — show the element right away.
+    if (typeof IntersectionObserver === 'undefined') {
+      el.classList.add('is-visible');
+
+      return;
+    }
+
     const observer = new IntersectionObserver((entries) => {
       el.classList.toggle('is-visible', entries[0].isIntersecting);
     }, REVEAL_OBSERVER_OPTIONS);

@@ -58,8 +58,6 @@ class RevealHost {}
 describe('ScrollReveal', () => {
   let fixture: ComponentFixture<RevealHost>;
 
-  beforeEach(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
-
   afterEach(() => {
     fixture.destroy();
     vi.unstubAllGlobals();
@@ -67,6 +65,7 @@ describe('ScrollReveal', () => {
   });
 
   it('adds the hidden class and toggles visibility as it enters and leaves view', () => {
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
     fixture = TestBed.createComponent(RevealHost);
     fixture.detectChanges();
     TestBed.tick();
@@ -83,5 +82,16 @@ describe('ScrollReveal', () => {
 
     observer?.fire(false);
     expect(target.classList.contains('is-visible')).toBe(false);
+  });
+
+  it('reveals the element immediately when IntersectionObserver is unavailable', () => {
+    fixture = TestBed.createComponent(RevealHost);
+    fixture.detectChanges();
+    TestBed.tick();
+
+    const target: HTMLElement = fixture.nativeElement.querySelector('.target');
+
+    expect(MockIntersectionObserver.last, 'no observer is constructed without the API').toBeUndefined();
+    expect(target.classList.contains('is-visible'), 'the fallback shows the element right away').toBe(true);
   });
 });
