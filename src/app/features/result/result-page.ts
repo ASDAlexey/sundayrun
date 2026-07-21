@@ -29,7 +29,15 @@ import { PROTOCOL_IMAGE_FILE_EXTENSION, PROTOCOL_IMAGE_MIME_TYPE } from '../../p
 import { ShareService } from '../../share/share.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { ADMIN_PAGE_LINK, RACE_PAGE_PREFIX } from '../admin/admin-page.constant';
-import { EMPTY_TEXT, EVENT_NUMBER_PREFIX, PDF_MIME_TYPE, PUBLISH_TICK_INTERVAL_MS, SUMMARY_SEPARATOR } from './result-page.constant';
+import {
+  DEPLOY_PROGRESS_CAP_PERCENT,
+  EMPTY_TEXT,
+  EVENT_NUMBER_PREFIX,
+  PDF_MIME_TYPE,
+  PERCENT_FULL,
+  PUBLISH_TICK_INTERVAL_MS,
+  SUMMARY_SEPARATOR,
+} from './result-page.constant';
 import { ResultStatus, ResultStatusType } from './result-page.enum';
 import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';
 
@@ -126,6 +134,13 @@ export class ResultPage implements OnDestroy {
     const averageMs = this.#publishDuration.averageMs();
 
     return averageMs === null ? null : formatDuration(averageMs);
+  });
+
+  /** The wait bar's fill toward the measured average, capped short of full; null (no history) shows the scanning bar. */
+  readonly deployProgressPercent = computed<number | null>(() => {
+    const averageMs = this.#publishDuration.averageMs();
+
+    return averageMs === null ? null : Math.min(DEPLOY_PROGRESS_CAP_PERCENT, Math.round((this.#elapsedMs() / averageMs) * PERCENT_FULL));
   });
 
   readonly raceLink = computed(() => {

@@ -394,7 +394,7 @@ describe('ResultPage', () => {
     publishState.set(PublishState.success);
     fixture.detectChanges();
 
-    expect(element.querySelector('.result__publish-status'), 'the success state renders without an archived-pdf link').not.toBeNull();
+    expect(element.querySelector('.result__deploy'), 'the success state renders without an archived-pdf link').not.toBeNull();
     expect(element.querySelector('.result__publish-link'), 'there is no archived pdf to link to').toBeNull();
 
     publishState.set(PublishState.authError);
@@ -426,14 +426,18 @@ describe('ResultPage', () => {
     await page.publish();
     fixture.detectChanges();
 
-    expect(element.querySelector('.result__publish-spinner'), 'the wait spins until the deploy lands').not.toBeNull();
-    expect(element.querySelector('.result__publish-average').textContent, 'the measured average replaces the hardcoded hint').toContain(
+    expect(element.querySelector('.result__deploy-track'), 'the wait shows the deploy journey until it lands').not.toBeNull();
+    expect(element.querySelector('.result__deploy-average').textContent, 'the measured average replaces the hardcoded hint').toContain(
       '2:30',
     );
+    expect(element.querySelector('.result__deploy-step_active'), 'the rebuild step pulses while in flight').not.toBeNull();
 
     await vi.advanceTimersByTimeAsync(65_000);
+    fixture.detectChanges();
 
     expect(page.elapsedText(), 'the elapsed counter ticks second by second').toBe('1:05');
+    expect(page.deployProgressPercent(), 'the bar fills toward the measured average').toBe(43);
+    expect(element.querySelector('.result__deploy-fill').style.width).toBe('43%');
 
     // The freshness poll walks Updating → Updated once the sha-named db lands.
     dbFreshness.state.set(DbFreshness.Updating);
@@ -444,6 +448,7 @@ describe('ResultPage', () => {
     expect(page.deployDone()).toBe(true);
     expect(publishDuration.record, 'the click-to-live time feeds the average').toHaveBeenCalledWith(65_000);
     expect(page.publishedInText()).toBe('1:05');
+    expect(element.querySelector('.result__deploy-check'), 'the landed deploy celebrates with the check').not.toBeNull();
 
     vi.useRealTimers();
   });
@@ -460,6 +465,13 @@ describe('ResultPage', () => {
     const page = fixture.componentInstance;
 
     await page.publish();
+    fixture.detectChanges();
+
+    expect(page.deployProgressPercent(), 'no measured history — no percent target').toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.result__deploy-fill_scanning'),
+      'without an average the bar scans instead of filling',
+    ).not.toBeNull();
 
     dbFreshness.state.set(DbFreshness.Updating);
     fixture.detectChanges();

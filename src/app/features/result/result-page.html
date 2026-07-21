@@ -88,29 +88,67 @@
                 </div>
               }
               @case (publishStates.success) {
-                <div class="result__publish-status">
-                  @if (deployDone()) {
-                    @if (publishedInText(); as took) {
-                      <span i18n="@@result.publishedIn">Опубликовано за {{ took }}</span>
-                    } @else {
-                      <span i18n="@@result.published">Опубликовано</span>
-                    }
+                @if (deployDone()) {
+                  <div class="result__deploy result__deploy_done">
+                    <span aria-hidden="true" class="result__deploy-check">
+                      <svg
+                        class="result__deploy-check-icon"
+                        fill="none"
+                        height="18"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        viewBox="0 0 18 18"
+                        width="18"
+                      >
+                        <path d="M3.5 9.5l3.5 3.5L14.5 5" />
+                      </svg>
+                    </span>
+
+                    <span class="result__deploy-done-text">
+                      @if (publishedInText(); as took) {
+                        <span class="result__deploy-done-title" i18n="@@result.publishedIn">Опубликовано за {{ took }}</span>
+                      } @else {
+                        <span class="result__deploy-done-title" i18n="@@result.published">Опубликовано</span>
+                      }
+
+                      <span class="result__deploy-done-note" i18n="@@result.publishedNote">Результаты уже на сайте</span>
+                    </span>
 
                     @if (raceLink(); as link) {
                       <a class="result__publish-open" i18n="@@result.publishOpen" matButton="filled" [routerLink]="link">
                         Показать результаты
                       </a>
                     }
-                  } @else {
-                    <mat-progress-spinner class="result__publish-spinner" mode="indeterminate" [diameter]="24" />
+                  </div>
+                } @else {
+                  <div class="result__deploy">
+                    <span class="visually-hidden" i18n="@@result.publishDeploying">Опубликовано — сайт обновляется…</span>
 
-                    <span i18n="@@result.publishDeploying">Опубликовано — сайт обновляется… прошло {{ elapsedText() }}</span>
+                    <div aria-hidden="true" class="result__deploy-clock">
+                      <span class="result__deploy-elapsed">{{ elapsedText() }}</span>
 
-                    @if (averagePublishText(); as average) {
-                      <span class="result__publish-average" i18n="@@result.publishAverage">в среднем занимает {{ average }}</span>
-                    }
-                  }
-                </div>
+                      @if (averagePublishText(); as average) {
+                        <span class="result__deploy-average" i18n="@@result.publishAverage">обычно занимает ~{{ average }}</span>
+                      }
+                    </div>
+
+                    <div aria-hidden="true" class="result__deploy-track">
+                      @if (deployProgressPercent() === null) {
+                        <div class="result__deploy-fill result__deploy-fill_scanning"></div>
+                      } @else {
+                        <div class="result__deploy-fill" [style.width.%]="deployProgressPercent()"></div>
+                      }
+                    </div>
+
+                    <ul class="result__deploy-steps">
+                      <li class="result__deploy-step result__deploy-step_done" i18n="@@result.stepCommitted">Протокол в архиве</li>
+
+                      <li class="result__deploy-step result__deploy-step_active" i18n="@@result.stepDeploying">Сайт пересобирается</li>
+
+                      <li class="result__deploy-step" i18n="@@result.stepLive">Результаты на сайте</li>
+                    </ul>
+                  </div>
+                }
               }
               @case (publishStates.authError) {
                 <p class="result__publish-error" role="alert">

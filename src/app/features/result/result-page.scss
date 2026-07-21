@@ -101,11 +101,134 @@
     color: var(--text-secondary);
   }
 
-  &__publish-link {
-    color: var(--accent-light);
+  &__deploy {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 420px;
+    gap: 14px;
+
+    &_done {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      max-width: none;
+      gap: 16px;
+    }
   }
 
-  &__publish-average {
+  &__deploy-clock {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__deploy-elapsed {
+    @include t.mono-value-large;
+
+    color: var(--text);
+  }
+
+  &__deploy-average {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__deploy-track {
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--accent-glow);
+  }
+
+  &__deploy-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent-gradient);
+    transition: width var(--transition-time) linear;
+
+    &_scanning {
+      width: 40%;
+      animation: result-deploy-scan 1.8s ease-in-out infinite alternate;
+    }
+  }
+
+  &__deploy-steps {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+    list-style: none;
+  }
+
+  &__deploy-step {
+    @include t.mono-meta;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+
+    &::before {
+      flex: none;
+      width: 8px;
+      height: 8px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      content: '';
+    }
+
+    &_done {
+      color: var(--text-secondary);
+
+      &::before {
+        border-color: var(--green);
+        background: var(--green);
+      }
+    }
+
+    &_active {
+      color: var(--text);
+
+      &::before {
+        border-color: var(--accent);
+        background: var(--accent);
+        animation: result-deploy-pulse 1.4s ease-in-out infinite;
+      }
+    }
+  }
+
+  &__deploy-check {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--accent-contrast);
+    animation: result-deploy-pop var(--transition-time) ease-out;
+  }
+
+  &__deploy-done-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__deploy-done-title {
+    @include t.mono-value;
+
+    color: var(--text);
+  }
+
+  &__deploy-done-note {
+    @include t.mono-caption;
+
     color: var(--text-muted);
   }
 
@@ -121,5 +244,50 @@
 
   &__publish-admin {
     color: var(--accent-light);
+  }
+}
+
+// The scanning bar sweeps until the first measured average gives the fill a real target.
+@keyframes result-deploy-scan {
+  from {
+    transform: translateX(-60%);
+  }
+
+  to {
+    transform: translateX(210%);
+  }
+}
+
+@keyframes result-deploy-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.45;
+  }
+}
+
+@keyframes result-deploy-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// The wait choreography goes still for reduced motion; the ticking figures already tell the story.
+@media (prefers-reduced-motion: reduce) {
+  .result__deploy-fill_scanning,
+  .result__deploy-step_active::before,
+  .result__deploy-check {
+    animation: none;
   }
 }
