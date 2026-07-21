@@ -1,5 +1,6 @@
 import { Gender } from '../models/gender.enum';
-import { bestResults, bestResultYears } from './best-results';
+import { bestResults, bestResultYears, bestSeasonResults } from './best-results';
+import { Season } from './seasons.enum';
 import {
   EXPECTED_FEMALE_LEADERBOARD,
   EXPECTED_MALE_LEADERBOARD,
@@ -23,6 +24,16 @@ describe('bestResults', () => {
     expect(bestResults(LEADERBOARD_RECORDS, Gender.female, LEADERBOARD_YEAR), 'athletes without a best in that year are skipped').toEqual(
       [],
     );
+  });
+});
+
+describe('bestSeasonResults', () => {
+  it('narrows the boards to one calendar-year season with the same order, tie-breaks and record dates', () => {
+    // Every 2025 run of the fixtures falls in March–May, so the spring board equals the all-time one.
+    expect(bestSeasonResults(LEADERBOARD_RECORDS, Gender.male, '2025', Season.spring)).toEqual(EXPECTED_MALE_LEADERBOARD);
+    expect(bestSeasonResults(LEADERBOARD_RECORDS, Gender.female, '2025', Season.spring)).toEqual(EXPECTED_FEMALE_LEADERBOARD);
+    expect(bestSeasonResults(LEADERBOARD_RECORDS, Gender.male, LEADERBOARD_YEAR, Season.spring)).toEqual(EXPECTED_MALE_YEAR_LEADERBOARD);
+    expect(bestSeasonResults(LEADERBOARD_RECORDS, Gender.male, '2025', Season.summer), 'no summer runs — an empty board').toEqual([]);
   });
 });
 
