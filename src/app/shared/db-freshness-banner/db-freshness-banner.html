@@ -3,6 +3,8 @@
     <span aria-hidden="true" class="db-freshness-banner__spinner"></span>
 
     <span class="db-freshness-banner__text" i18n="@@app.dbUpdating"> Результаты обновляются — изменения появятся через пару минут </span>
+
+    <span class="db-freshness-banner__elapsed" i18n="@@app.dbUpdatingElapsed">прошло {{ elapsedText() }}</span>
   </div>
 } @else if (state() === states.Updated) {
   <div aria-live="polite" class="db-freshness-banner db-freshness-banner_ready" role="status">

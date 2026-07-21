@@ -17,6 +17,10 @@ describe('DbFreshnessBanner', () => {
     });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('kicks off the check and walks the empty → updating → updated flow', async () => {
     const fixture = TestBed.createComponent(DbFreshnessBanner);
 
@@ -26,11 +30,20 @@ describe('DbFreshnessBanner', () => {
     expect(freshness.check, 'mounting the shell starts the freshness watch').toHaveBeenCalledOnce();
     expect(element.querySelector('.db-freshness-banner'), 'fresh data needs no banner').toBeNull();
 
+    // Fake timers only from here: `whenStable` above needs the real scheduler, while the ticker
+    // below must start its interval under the controllable clock.
+    vi.useFakeTimers();
     freshness.state.set(DbFreshness.Updating);
     fixture.detectChanges();
 
     expect(element.querySelector('.db-freshness-banner__spinner'), 'the deploy-in-flight strip shows').not.toBeNull();
     expect(element.querySelector('.db-freshness-banner__reload')).toBeNull();
+    expect(element.querySelector('.db-freshness-banner__elapsed')?.textContent).toContain('0:00');
+
+    await vi.advanceTimersByTimeAsync(37_000);
+    fixture.detectChanges();
+
+    expect(element.querySelector('.db-freshness-banner__elapsed')?.textContent, 'the wait counter ticks').toContain('0:37');
 
     freshness.state.set(DbFreshness.Updated);
     fixture.detectChanges();

@@ -28,6 +28,14 @@
     @include t.text('label', 'medium');
   }
 
+  &__elapsed {
+    @include t.text('label', 'medium');
+
+    flex: none;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
   &__reload {
     @include t.button-label;
 
