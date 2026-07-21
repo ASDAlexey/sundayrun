@@ -145,6 +145,12 @@ export const EXPECTED_DB_FIRST_LAP_RECORDS: FirstLapRecords = {
 /** Иванов's own best split — the caps-spelled 11:15; Мария's row at the shared event is name-matched away. */
 export const EXPECTED_DB_BEST_FIRST_LAP: AthleteFirstLap = { dateIso: '2024-06-06', slug: '2024-06-06', lapMs: 675000 };
 
+/** Both of Иванов's recorded splits; the 2.3 km row (empty time5) and Мария's rival row stay out. */
+export const EXPECTED_DB_FIRST_LAPS: AthleteFirstLap[] = [
+  { dateIso: '2024-05-05', slug: '2024-05-05', lapMs: 720000 },
+  EXPECTED_DB_BEST_FIRST_LAP,
+];
+
 /** Нина's single run resolves through the women's place column. */
 export const EXPECTED_WOMAN_RUN_PLACES: Record<string, number> = { '2025-02-02': 1 };
 

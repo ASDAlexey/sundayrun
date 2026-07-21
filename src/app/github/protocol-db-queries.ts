@@ -8,8 +8,7 @@ import { normalizeAthleteKey } from '../core/history/athlete-key';
 import { HistoryRunRow } from '../core/history/badge-signals.interface';
 import { courseRecordHistory } from '../core/history/course-records';
 import { CourseRecordHistory } from '../core/history/course-records.type';
-import { bestFirstLap, firstLapRecords } from '../core/history/first-lap';
-import { AthleteFirstLap } from '../core/history/first-lap.interface';
+import { firstLapRecords } from '../core/history/first-lap';
 import { FirstLapRecords } from '../core/history/first-lap.type';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { isoYear } from '../core/history/iso-year';
@@ -207,27 +206,6 @@ export async function selectFirstLapRecords(db: ProtocolDrizzle): Promise<FirstL
 
       // The slug doubles as the ISO event date (see `selectEventSlugs`), saving the events join.
       return [{ key, displayName: displayNames.get(key) ?? row.fullName, gender, dateIso: row.slug, slug: row.slug, lapMs }];
-    }),
-  );
-}
-
-/**
- * The athlete's fastest first-lap (2.3 km) split over their 5 km finishes, or null when no run of
- * theirs carries a recorded split. The rows arrive like in `selectAthleteRunPlaces`: joined by the
- * athlete's runs and matched back by the normalized name against the organisers' spelling.
- */
-export async function selectAthleteBestFirstLap(db: ProtocolDrizzle, key: string): Promise<AthleteFirstLap | null> {
-  const rows = await db
-    .select({ slug: results.slug, fullName: results.fullName, time23: results.time23, dateIso: runs.dateIso })
-    .from(results)
-    .innerJoin(runs, and(eq(runs.slug, results.slug), eq(runs.athleteKey, key)))
-    .where(and(ne(results.time23, ''), ne(results.time5, '')));
-
-  return bestFirstLap(
-    rows.flatMap((row) => {
-      const lapMs = parseDuration(row.time23);
-
-      return lapMs === null || normalizeAthleteKey(row.fullName) !== key ? [] : [{ dateIso: row.dateIso, slug: row.slug, lapMs }];
     }),
   );
 }

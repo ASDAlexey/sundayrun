@@ -8,9 +8,9 @@ import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-me
 import { createProtocolDrizzle, ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../core/history/course-records.constant';
 import { EMPTY_FIRST_LAP_RECORDS } from '../core/history/first-lap.constant';
+import { selectAthleteBestFirstLap, selectAthleteFirstLaps } from './protocol-db-first-lap';
 import {
   selectArchiveEvents,
-  selectAthleteBestFirstLap,
   selectAthleteRecord,
   selectAthleteRecords,
   selectAthleteRunPlaces,
@@ -33,6 +33,7 @@ import {
   EXPECTED_ATHLETE_RECORD,
   EXPECTED_COURSE_RECORDS,
   EXPECTED_DB_BEST_FIRST_LAP,
+  EXPECTED_DB_FIRST_LAPS,
   EXPECTED_DB_FIRST_LAP_RECORDS,
   EXPECTED_DB_YEAR_REVIEW,
   EXPECTED_EMPTY_SQL_STATS,
@@ -158,6 +159,7 @@ describe('protocol-db-queries', () => {
       selectFirstLapRecords(db),
       'the women’s tie stays with the earlier run; the caps spelling resolves through the athletes table',
     ).resolves.toEqual(EXPECTED_DB_FIRST_LAP_RECORDS);
+    await expect(selectAthleteFirstLaps(db, ATHLETE_KEY), 'every recorded split of the athlete').resolves.toEqual(EXPECTED_DB_FIRST_LAPS);
     await expect(selectAthleteBestFirstLap(db, ATHLETE_KEY)).resolves.toEqual(EXPECTED_DB_BEST_FIRST_LAP);
     await expect(selectAthleteBestFirstLap(db, UNKNOWN_ATHLETE_KEY), 'an unknown key has no splits').resolves.toBeNull();
   });
