@@ -132,7 +132,7 @@
         @if (rightSide(); as right) {
           <section class="versus__score-card">
             <div class="versus__scoreboard">
-              <a class="versus__score-name" [routerLink]="left.athleteLink">{{ left.displayName }}</a>
+              <a class="versus__score-name versus__score-name_left" [routerLink]="left.athleteLink">{{ left.displayName }}</a>
 
               <span class="versus__score">{{ left.wins }} : {{ right.wins }}</span>
 
@@ -157,9 +157,27 @@
                   <li class="versus__meeting">
                     <a class="versus__date" [routerLink]="meeting.raceLink">{{ meeting.dateShort }}</a>
 
-                    <span class="versus__time" [class.versus__time_won]="meeting.leftWon">{{ meeting.leftTimeText }}</span>
+                    <span class="versus__time versus__time_left">
+                      @if (meeting.leftWon) {
+                        <svg aria-hidden="true" class="versus__medal" viewBox="0 0 12 12">
+                          <path class="versus__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
+                          <circle class="versus__medal-disc" cx="6" cy="8" r="3.4" />
+                        </svg>
+                      }
 
-                    <span class="versus__time" [class.versus__time_won]="meeting.rightWon">{{ meeting.rightTimeText }}</span>
+                      {{ meeting.leftTimeText }}
+                    </span>
+
+                    <span class="versus__time versus__time_right">
+                      @if (meeting.rightWon) {
+                        <svg aria-hidden="true" class="versus__medal" viewBox="0 0 12 12">
+                          <path class="versus__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
+                          <circle class="versus__medal-disc" cx="6" cy="8" r="3.4" />
+                        </svg>
+                      }
+
+                      {{ meeting.rightTimeText }}
+                    </span>
 
                     <span class="versus__gap">{{ meeting.gapText }}</span>
                   </li>
@@ -167,8 +185,8 @@
               </ol>
 
               <p class="versus__note" i18n="@@versus.note">
-                Время слева — первый атлет, справа — второй; победитель встречи подсвечен, в последней колонке — разница. Дата ведёт на
-                протокол забега.
+                У каждого атлета свой цвет: слева — первый, справа — второй; медаль — у победителя встречи, в последней колонке — разница.
+                Дата ведёт на протокол забега.
               </p>
             </section>
           } @else {

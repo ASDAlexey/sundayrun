@@ -6,6 +6,10 @@
 .versus {
   @include s.section;
 
+  // Each duellist keeps one colour across the whole page: the first is warm, the second cool.
+  --duel-left: var(--accent);
+  --duel-right: var(--chart-3);
+
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -233,12 +237,21 @@
     color: var(--text);
     transition: color var(--transition-time) var(--ease);
 
-    &:hover {
-      color: var(--accent);
+    &_left {
+      color: var(--duel-left);
+
+      &:hover {
+        color: color-mix(in srgb, var(--duel-left) 70%, var(--white));
+      }
     }
 
     &_right {
+      color: var(--duel-right);
       text-align: right;
+
+      &:hover {
+        color: color-mix(in srgb, var(--duel-right) 70%, var(--white));
+      }
     }
   }
 
@@ -315,11 +328,39 @@
   &__time {
     @include t.mono-value;
 
-    color: var(--text-secondary);
+    // The medal slot is always reserved, so the times line up whether the meeting was won or lost.
+    position: relative;
+    padding-left: 22px;
 
-    &_won {
-      color: var(--accent-light);
+    &_left {
+      color: var(--duel-left);
     }
+
+    &_right {
+      color: var(--duel-right);
+    }
+  }
+
+  // The gold medal marks the meeting's winner; a draw leaves both times bare.
+  &__medal {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+  }
+
+  &__medal-ribbon {
+    fill: none;
+    stroke: var(--accent-deep);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.6;
+  }
+
+  &__medal-disc {
+    fill: var(--accent-light);
   }
 
   &__gap {

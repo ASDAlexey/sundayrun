@@ -98,12 +98,12 @@ describe('VersusPage', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
-    const wonTimes = [...element.querySelectorAll('.versus__time_won')];
+    const wonTimes = [...element.querySelectorAll('.versus__medal')].map((medal: Element) => medal.closest('.versus__time'));
 
     expect(element.querySelector('.versus__score').textContent.trim()).toBe(`${EXPECTED_LEFT_SIDE.wins} : ${EXPECTED_RIGHT_SIDE.wins}`);
     expect(element.querySelectorAll('.versus__meeting').length).toBe(EXPECTED_MEETING_VIEWS.length);
     expect(
-      wonTimes.map((time: Element) => time.textContent?.trim()),
+      wonTimes.map((time: Element | null) => time?.textContent?.trim()),
       'exactly one winning time per decided meeting, none for the draw',
     ).toEqual(EXPECTED_WINNING_TIMES);
     expect(element.querySelector('.versus__date').getAttribute('href')).toBe(EXPECTED_MEETING_VIEWS[0].raceLink.join('/'));
