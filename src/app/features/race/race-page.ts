@@ -402,5 +402,6 @@ function placeTextOf(place: number | null): string {
 }
 
 function placeMedalClassOf(place: number | null): string {
-  return place === null ? EMPTY_CELL_TEXT : (PLACE_MEDAL_CLASSES[place] ?? EMPTY_CELL_TEXT);
+  // A missing place looks up rank 0 — off the podium map, like any place past the bronze.
+  return PLACE_MEDAL_CLASSES[place ?? 0] ?? EMPTY_CELL_TEXT;
 }
