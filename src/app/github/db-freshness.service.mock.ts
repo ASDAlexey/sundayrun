@@ -21,6 +21,11 @@ export function probeResponse(status: number): Response {
   return new Response(null, { status });
 }
 
+/** The cache-busted `version.json` body of the second-opinion pointer read. */
+export function pointerResponse(sha: string): Response {
+  return new Response(JSON.stringify({ schemaVersion: 1, sha }), { status: 200 });
+}
+
 /** The mocked surface: the state signal stays writable so specs can drive the banner. */
 interface DbFreshnessServiceMock {
   state: WritableSignal<DbFreshnessType>;

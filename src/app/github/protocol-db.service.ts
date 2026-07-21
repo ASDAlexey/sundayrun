@@ -45,7 +45,7 @@ export class ProtocolDbService {
   readonly #document = inject(DOCUMENT);
   readonly #isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  #poolRef = '';
+  #poolUrl = '';
   #pool: Promise<SQLiteHTTPPool> | null = null;
 
   /** Rows as positional value arrays for the columns of `sql`, narrowed to the db's value kinds. */
@@ -77,15 +77,18 @@ export class ProtocolDbService {
   }
 
   /**
-   * One pool per data version, cached for the session like the JSON reads: a `pin` after a
-   * publication swaps in a pool over the new sha and lets the old one close in the background.
-   * A failed open is evicted from the cache, so a later query can retry the connection.
+   * One pool per db url, cached for the session like the JSON reads: a `pin` after a publication
+   * swaps in a pool over the new sha, and the url flipping from the plain fallback to the sha copy
+   * (the moment the deploy lands) reopens over the fresh file — both let the old pool close in the
+   * background. A failed open is evicted from the cache, so a later query can retry the connection.
    */
-  #poolFor(ref: string): Promise<SQLiteHTTPPool> {
-    if (this.#pool === null || this.#poolRef !== ref) {
+  async #poolFor(ref: string): Promise<SQLiteHTTPPool> {
+    const url = await this.#dbUrl(ref);
+
+    if (this.#pool === null || this.#poolUrl !== url) {
       void this.#pool?.then((pool) => pool.close()).catch(() => undefined);
-      this.#poolRef = ref;
-      this.#pool = this.#openPool(ref).catch((error: unknown) => {
+      this.#poolUrl = url;
+      this.#pool = this.#openPool(url).catch((error: unknown) => {
         this.#pool = null;
         throw error;
       });
@@ -116,8 +119,7 @@ export class ProtocolDbService {
   }
 
   /** The dynamic import keeps every wasm/worker byte out of the initial bundle and the prerender. */
-  async #openPool(ref: string): Promise<SQLiteHTTPPool> {
-    const url = await this.#dbUrl(ref);
+  async #openPool(url: string): Promise<SQLiteHTTPPool> {
     const { createSQLiteHTTPPool } = await this.#loadSqliteHttp();
     const pool = await createSQLiteHTTPPool({ workers: PROTOCOL_DB_WORKER_COUNT, httpOptions: PROTOCOL_DB_HTTP_OPTIONS });
 
