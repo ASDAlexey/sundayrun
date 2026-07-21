@@ -154,7 +154,11 @@
 
               <ol class="versus__meetings-list">
                 @for (meeting of meetings(); track meeting.slug) {
-                  <li class="versus__meeting">
+                  <li
+                    class="versus__meeting"
+                    [class.versus__meeting_left-won]="meeting.leftWon"
+                    [class.versus__meeting_right-won]="meeting.rightWon"
+                  >
                     <a class="versus__date" [routerLink]="meeting.raceLink">{{ meeting.dateShort }}</a>
 
                     <span class="versus__time versus__time_left">
@@ -168,6 +172,8 @@
                       {{ meeting.leftTimeText }}
                     </span>
 
+                    <span class="versus__gap">{{ meeting.gapText }}</span>
+
                     <span class="versus__time versus__time_right">
                       @if (meeting.rightWon) {
                         <svg aria-hidden="true" class="versus__medal" viewBox="0 0 12 12">
@@ -178,15 +184,13 @@
 
                       {{ meeting.rightTimeText }}
                     </span>
-
-                    <span class="versus__gap">{{ meeting.gapText }}</span>
                   </li>
                 }
               </ol>
 
               <p class="versus__note" i18n="@@versus.note">
-                У каждого атлета свой цвет: слева — первый, справа — второй; медаль — у победителя встречи, в последней колонке — разница.
-                Дата ведёт на протокол забега.
+                У каждого атлета свой цвет: слева — первый, справа — второй; медаль — у победителя встречи, между временами — разница. Дата
+                ведёт на протокол забега.
               </p>
             </section>
           } @else {

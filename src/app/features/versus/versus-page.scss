@@ -215,6 +215,7 @@
     font-variant-numeric: tabular-nums;
   }
 
+  // The tale-of-the-tape: each corner's colour washes in from its own side of the board.
   &__score-card {
     @include c.card;
 
@@ -222,6 +223,9 @@
     flex-direction: column;
     padding: 24px;
     gap: 12px;
+    background:
+      radial-gradient(70% 130% at 0% 50%, color-mix(in srgb, var(--duel-left) 7%, transparent) 0%, transparent 60%),
+      radial-gradient(70% 130% at 100% 50%, color-mix(in srgb, var(--duel-right) 7%, transparent) 0%, transparent 60%), var(--card-bg);
   }
 
   &__scoreboard {
@@ -301,16 +305,29 @@
     list-style: none;
   }
 
+  // A fight-card round: the times close in on the centre axis where the gap chip sits as the pivot;
+  // the winner's colour washes in from their own corner.
   &__meeting {
     display: grid;
-    grid-template-columns: minmax(96px, auto) 1fr 1fr auto;
+    grid-template-columns: minmax(96px, auto) 1fr auto 1fr;
     align-items: center;
-    padding: 12px 4px;
-    gap: 12px;
+    padding: 12px 8px;
+    gap: 16px;
     border-bottom: 1px solid var(--border-soft);
+    transition: background var(--transition-time) var(--ease);
 
     &:last-child {
       border-bottom: 0;
+    }
+
+    &_left-won {
+      border-radius: var(--radius-xs);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--duel-left) 7%, transparent), transparent 50%);
+    }
+
+    &_right-won {
+      border-radius: var(--radius-xs);
+      background: linear-gradient(270deg, color-mix(in srgb, var(--duel-right) 8%, transparent), transparent 50%);
     }
   }
 
@@ -333,10 +350,12 @@
     padding-left: 22px;
 
     &_left {
+      justify-self: end;
       color: var(--duel-left);
     }
 
     &_right {
+      justify-self: start;
       color: var(--duel-right);
     }
   }
@@ -363,11 +382,14 @@
     fill: var(--accent-light);
   }
 
+  // The pivot of the round: the margin of victory sits on the centre axis between the corners.
   &__gap {
     @include t.text('label', 'small');
 
-    padding: 1px 6px;
-    border-radius: var(--radius-xs);
+    min-width: 44px;
+    padding: 2px 8px;
+    border: 1px solid var(--border-soft);
+    border-radius: 999px;
     background: var(--bg-subtle);
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
