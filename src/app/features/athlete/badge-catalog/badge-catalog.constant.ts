@@ -53,6 +53,38 @@ export const BADGE_CATALOG: readonly BadgeCatalogEntry[] = [
     description: $localize`:@@badgeCatalog.yearKing:Лучший результат года на 5 км`,
   },
   {
+    badge: YearBadge.winterPodium,
+    description: $localize`:@@badgeCatalog.winterPodium:2-е или 3-е место в лучших результатах зимы — января, февраля и декабря года`,
+  },
+  {
+    badge: YearBadge.winterKing,
+    description: $localize`:@@badgeCatalog.winterKing:Лучший результат зимы на 5 км — у мужчин и женщин свой зачёт`,
+  },
+  {
+    badge: YearBadge.springPodium,
+    description: $localize`:@@badgeCatalog.springPodium:2-е или 3-е место в лучших результатах весны`,
+  },
+  {
+    badge: YearBadge.springKing,
+    description: $localize`:@@badgeCatalog.springKing:Лучший результат весны на 5 км — у мужчин и женщин свой зачёт`,
+  },
+  {
+    badge: YearBadge.summerPodium,
+    description: $localize`:@@badgeCatalog.summerPodium:2-е или 3-е место в лучших результатах лета`,
+  },
+  {
+    badge: YearBadge.summerKing,
+    description: $localize`:@@badgeCatalog.summerKing:Лучший результат лета на 5 км — у мужчин и женщин свой зачёт`,
+  },
+  {
+    badge: YearBadge.autumnPodium,
+    description: $localize`:@@badgeCatalog.autumnPodium:2-е или 3-е место в лучших результатах осени`,
+  },
+  {
+    badge: YearBadge.autumnKing,
+    description: $localize`:@@badgeCatalog.autumnKing:Лучший результат осени на 5 км — у мужчин и женщин свой зачёт`,
+  },
+  {
     badge: YearBadge.courseKing,
     description: $localize`:@@badgeCatalog.courseKing:Действующий рекорд трассы на 5 км — корона переходит к новому рекордсмену`,
   },

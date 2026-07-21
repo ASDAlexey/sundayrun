@@ -6,6 +6,8 @@ import { LegendFinish } from '../../core/history/legend.interface';
 import { MEME_THRESHOLDS } from '../../core/history/meme-thresholds.constant';
 import { MemeThreshold } from '../../core/history/meme-thresholds.interface';
 import { RivalRun } from '../../core/history/rivals.interface';
+import { SeasonBestRow } from '../../core/history/season-ranks.interface';
+import { Season } from '../../core/history/seasons.enum';
 import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { AthleteYearBadges } from '../../core/history/year-badges';
 import { YearBadge } from '../../core/history/year-badges.enum';
@@ -87,6 +89,25 @@ export const EXPECTED_BEST_TIME_TEXT = '24:00';
 /** The best first-lap split the service stub serves for `REPEAT_RUNNER_KEY`. */
 export const ATHLETE_BEST_FIRST_LAP: AthleteFirstLap = { dateIso: '2026-01-03', slug: 'kuzminki-2', lapMs: 660000 };
 
+/**
+ * Every split the stub serves, deliberately unsorted: a lone 2025 lane, a slower 2026 opener the
+ * 11:00 must beat, an equal-but-later split that must not take the tie and an equal-but-earlier
+ * one that must — the per-year reduce walks every branch.
+ */
+export const ATHLETE_FIRST_LAPS: AthleteFirstLap[] = [
+  { dateIso: '2025-12-27', slug: 'kuzminki-1', lapMs: 710000 },
+  { dateIso: '2026-01-10', slug: 'kuzminki-3', lapMs: 700000 },
+  ATHLETE_BEST_FIRST_LAP,
+  { dateIso: '2026-01-17', slug: 'kuzminki-4', lapMs: 660000 },
+  { dateIso: '2026-01-01', slug: 'kuzminki-0', lapMs: 660000 },
+];
+
+/** The lap tiles those splits build: the 2026 tie goes to the earliest run, 2025 stays plain. */
+export const EXPECTED_LAP_YEAR_BEST_VIEWS: YearBestView[] = [
+  { year: '2026', timeText: '11:00', raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-0'], isAllTime: true },
+  { year: '2025', timeText: '11:50', raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-1'], isAllTime: false },
+];
+
 /** `ATHLETE_BEST_FIRST_LAP` prepared for the template: the time linked to its protocol. */
 export const EXPECTED_FIRST_LAP_VIEW: FirstLapView = { timeText: '11:00', raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'] };
 
@@ -162,6 +183,11 @@ export const STUB_BADGE_RARITY: YearBadgeRarity = { [YearBadge.newYearRace]: 12 
 /** Иванов's lone 2026 best — the one-lane year table crowns him king. */
 export const ATHLETE_YEAR_BESTS: YearBestRow[] = [{ athleteKey: REPEAT_RUNNER_KEY, gender: Gender.male, year: '2026', bestMs: 1440000 }];
 
+/** The same best as a winter lane — the one-lane season table adds the winter crown. */
+export const ATHLETE_SEASON_BESTS: SeasonBestRow[] = [
+  { athleteKey: REPEAT_RUNNER_KEY, gender: Gender.male, year: '2026', season: Season.winter, bestMs: 1440000 },
+];
+
 /** Иванов also holds the standing course record, set by his 2026-01-03 run. */
 export const ATHLETE_COURSE_RECORDS: CourseRecordHistory = {
   [Gender.male]: [
@@ -186,7 +212,9 @@ export const ATHLETE_WINNER_EVENTS: EventWinnerTimes[] = [
 ];
 
 /** The ranking crowns lead the 2026 row; the activity criteria award nothing on three runs. */
-export const EXPECTED_RANK_YEAR_BADGES: AthleteYearBadges[] = [{ year: '2026', badges: [YearBadge.courseKing, YearBadge.yearKing] }];
+export const EXPECTED_RANK_YEAR_BADGES: AthleteYearBadges[] = [
+  { year: '2026', badges: [YearBadge.courseKing, YearBadge.yearKing, YearBadge.winterKing] },
+];
 
 /** Every finish the legend stub serves: Иванов leads with three, Новиков trails with two. */
 export const LEGEND_FINISHES: LegendFinish[] = [

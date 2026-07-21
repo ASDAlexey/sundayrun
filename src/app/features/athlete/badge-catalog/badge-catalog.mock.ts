@@ -86,16 +86,30 @@ export const EXPECTED_CATALOG_ROWS: BadgeCatalogRow[] = [
     progressPercent: 40,
     isEarned: false,
   },
-  ...([YearBadge.yearTopThirty, YearBadge.yearTopTen, YearBadge.yearPodium, YearBadge.yearKing, YearBadge.courseKing] as const).map(
-    (badge) => ({
-      badge,
-      description: descriptionOf(badge),
-      earnedYearsText: null,
-      progressText: null,
-      progressPercent: null,
-      isEarned: false,
-    }),
-  ),
+  ...(
+    [
+      YearBadge.yearTopThirty,
+      YearBadge.yearTopTen,
+      YearBadge.yearPodium,
+      YearBadge.yearKing,
+      YearBadge.winterPodium,
+      YearBadge.winterKing,
+      YearBadge.springPodium,
+      YearBadge.springKing,
+      YearBadge.summerPodium,
+      YearBadge.summerKing,
+      YearBadge.autumnPodium,
+      YearBadge.autumnKing,
+      YearBadge.courseKing,
+    ] as const
+  ).map((badge) => ({
+    badge,
+    description: descriptionOf(badge),
+    earnedYearsText: null,
+    progressText: null,
+    progressPercent: null,
+    isEarned: false,
+  })),
 ];
 
 /** Every criteria met this year: no progress lines anywhere. */

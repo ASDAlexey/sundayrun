@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
+import { AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { currentCourseRecordEntries } from '../../core/history/course-records';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
 import { legendBoard, legendProgress } from '../../core/history/legend';
@@ -20,6 +21,7 @@ import { AthleteStreaks } from '../../core/history/streaks.interface';
 import { athleteYearActivity, athleteYearBadges } from '../../core/history/year-badges';
 import { YearBadge, YearBadgeType } from '../../core/history/year-badges.enum';
 import { EventWeatherRow } from '../../core/history/weather-records.interface';
+import { athleteSeasonRankBadges } from '../../core/history/season-ranks';
 import { athleteYearRankBadges } from '../../core/history/year-ranks';
 import { distinctRunYears, filterRuns, sortRuns, yearBestEntries } from '../../core/history/athlete-runs';
 import { RunsSort, RunsSortType } from '../../core/history/athlete-runs.enum';
@@ -99,7 +101,9 @@ export class AthletePage {
   readonly #runPlaces = signal<AthletePageState['runPlaces']>({});
   readonly #rivalRuns = signal<AthletePageState['rivalRuns']>([]);
   readonly #bestFirstLap = signal<AthletePageState['bestFirstLap']>(null);
+  readonly #firstLaps = signal<AthletePageState['firstLaps']>([]);
   readonly #yearBests = signal<AthletePageState['yearBests']>([]);
+  readonly #seasonBests = signal<AthletePageState['seasonBests']>([]);
   readonly #courseRecords = signal<AthletePageState['courseRecords']>(EMPTY_COURSE_RECORD_HISTORY);
   readonly #winnerEvents = signal<AthletePageState['winnerEvents']>([]);
   readonly #weatherRows = signal<EventWeatherRow[]>([]);
@@ -129,6 +133,27 @@ export class AthletePage {
 
     for (const [year, badge] of Object.entries(athleteYearRankBadges(this.#yearBests(), record.key))) {
       (byYear[year] ??= []).push(badge);
+    }
+
+    // The season crowns and podiums follow the year crown within each year's row.
+    for (const [year, badges] of Object.entries(athleteSeasonRankBadges(this.#seasonBests(), record.key))) {
+      (byYear[year] ??= []).push(...badges);
+    }
+
+    return byYear;
+  });
+
+  /** Year → the fastest recorded first-lap split of that year; a tie stays with the earlier run. */
+  readonly #lapBestByYear = computed(() => {
+    const byYear = new Map<string, AthleteFirstLap>();
+
+    for (const lap of this.#firstLaps()) {
+      const year = isoYear(lap.dateIso);
+      const known = byYear.get(year);
+
+      if (known === undefined || lap.lapMs < known.lapMs || (lap.lapMs === known.lapMs && lap.dateIso < known.dateIso)) {
+        byYear.set(year, lap);
+      }
     }
 
     return byYear;
@@ -224,6 +249,20 @@ export class AthletePage {
     return yearBestEntries(this.#record()?.bestMsByYear ?? {}, runs).map((entry) => toYearBestView(entry, bestMs));
   });
 
+  /** The first-lap twin of `yearBests`: one tile per year with a recorded 2.3 km split. */
+  readonly lapYearBests = computed(() => {
+    const bestLapMs = this.#bestFirstLap()?.lapMs ?? null;
+
+    return [...this.#lapBestByYear().entries()]
+      .sort(([left], [right]) => right.localeCompare(left))
+      .map(([year, lap]) => ({
+        year,
+        timeText: formatDuration(lap.lapMs),
+        raceLink: [RACE_PAGE_BASE_LINK, lap.slug],
+        isAllTime: lap.lapMs === bestLapMs,
+      }));
+  });
+
   readonly years = computed(() => distinctRunYears(this.#fiveKmRuns()));
   readonly runs = computed(() =>
     sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), this.sort()).map((run) =>
@@ -294,7 +333,9 @@ export class AthletePage {
     this.#runPlaces.set(next.runPlaces);
     this.#rivalRuns.set(next.rivalRuns);
     this.#bestFirstLap.set(next.bestFirstLap);
+    this.#firstLaps.set(next.firstLaps);
     this.#yearBests.set(next.yearBests);
+    this.#seasonBests.set(next.seasonBests);
     this.#courseRecords.set(next.courseRecords);
     this.#winnerEvents.set(next.winnerEvents);
     this.#weatherRows.set(weatherRows);
@@ -303,53 +344,60 @@ export class AthletePage {
 
   async #resolveState(key: string): Promise<AthletePageState> {
     try {
-      const [
-        record,
-        firstEventDateByYear,
-        eventSlugs,
-        badgeRarity,
-        legendFinishes,
-        runPlaces,
-        rivalRuns,
-        bestFirstLap,
-        yearBests,
-        courseRecords,
-        winnerEvents,
-      ] = await Promise.all([
-        this.#athletes.loadRecord(key),
-        this.#athletes.loadFirstEventDateByYear(),
-        this.#athletes.loadEventSlugs(),
-        this.#athletes.loadYearBadgeRarity(),
-        this.#athletes.loadLegendFinishes(),
-        this.#athletes.loadRunPlaces(key),
-        this.#athletes.loadRivalRuns(key),
-        this.#athletes.loadBestFirstLap(key),
-        this.#athletes.loadYearBests(),
-        this.#athletes.loadCourseRecords(),
-        this.#athletes.loadEventWinnerTimes(),
-      ]);
+      const parts = await this.#loadParts(key);
 
-      if (record === null) {
-        return emptyAthleteState(AthleteStatus.notFound);
-      }
-
-      return {
-        status: AthleteStatus.ready,
-        record,
-        firstEventDateByYear,
-        eventSlugs,
-        badgeRarity,
-        legendFinishes,
-        runPlaces,
-        rivalRuns,
-        bestFirstLap,
-        yearBests,
-        courseRecords,
-        winnerEvents,
-      };
+      return parts.record === null ? emptyAthleteState(AthleteStatus.notFound) : { status: AthleteStatus.ready, ...parts };
     } catch {
       return emptyAthleteState(AthleteStatus.error);
     }
+  }
+
+  async #loadParts(key: string): Promise<Omit<AthletePageState, 'status'>> {
+    const [
+      record,
+      firstEventDateByYear,
+      eventSlugs,
+      badgeRarity,
+      legendFinishes,
+      runPlaces,
+      rivalRuns,
+      bestFirstLap,
+      firstLaps,
+      yearBests,
+      seasonBests,
+      courseRecords,
+      winnerEvents,
+    ] = await Promise.all([
+      this.#athletes.loadRecord(key),
+      this.#athletes.loadFirstEventDateByYear(),
+      this.#athletes.loadEventSlugs(),
+      this.#athletes.loadYearBadgeRarity(),
+      this.#athletes.loadLegendFinishes(),
+      this.#athletes.loadRunPlaces(key),
+      this.#athletes.loadRivalRuns(key),
+      this.#athletes.loadBestFirstLap(key),
+      this.#athletes.loadFirstLaps(key),
+      this.#athletes.loadYearBests(),
+      this.#athletes.loadSeasonBests(),
+      this.#athletes.loadCourseRecords(),
+      this.#athletes.loadEventWinnerTimes(),
+    ]);
+
+    return {
+      record,
+      firstEventDateByYear,
+      eventSlugs,
+      badgeRarity,
+      legendFinishes,
+      runPlaces,
+      rivalRuns,
+      bestFirstLap,
+      firstLaps,
+      yearBests,
+      seasonBests,
+      courseRecords,
+      winnerEvents,
+    };
   }
 }
 
@@ -365,7 +413,9 @@ function emptyAthleteState(status: AthleteStatusType): AthletePageState {
     runPlaces: {},
     rivalRuns: [],
     bestFirstLap: null,
+    firstLaps: [],
     yearBests: [],
+    seasonBests: [],
     courseRecords: EMPTY_COURSE_RECORD_HISTORY,
     winnerEvents: [],
   };

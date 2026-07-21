@@ -20,6 +20,8 @@ import {
   ATHLETE_LOAD_ERROR_MESSAGE,
   ATHLETE_RIVAL_RUNS,
   ATHLETE_WINNER_EVENTS,
+  ATHLETE_FIRST_LAPS,
+  ATHLETE_SEASON_BESTS,
   ATHLETE_YEAR_BESTS,
   ATHLETE_YEAR_FILTER,
   DENORMALIZED_KEY_PARAM,
@@ -44,6 +46,7 @@ import {
   EXPECTED_SEASON_RIVAL_VIEWS,
   EXPECTED_SHORT_RUNNER_VIEWS,
   EXPECTED_STREAKS_VIEW,
+  EXPECTED_LAP_YEAR_BEST_VIEWS,
   EXPECTED_YEAR_BEST_VIEWS,
   EXPECTED_YEAR_FILTERED_VIEWS,
   LEGEND_FINISHES,
@@ -74,7 +77,9 @@ describe('AthletePage', () => {
   const loadRunPlaces = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? STUB_RUN_PLACES : {}));
   const loadRivalRuns = vi.fn(() => Promise.resolve([...ATHLETE_RIVAL_RUNS]));
   const loadBestFirstLap = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? ATHLETE_BEST_FIRST_LAP : null));
+  const loadFirstLaps = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? [...ATHLETE_FIRST_LAPS] : []));
   const loadYearBests = vi.fn(() => Promise.resolve([...ATHLETE_YEAR_BESTS]));
+  const loadSeasonBests = vi.fn(() => Promise.resolve([...ATHLETE_SEASON_BESTS]));
   const loadCourseRecords = vi.fn(() => Promise.resolve(ATHLETE_COURSE_RECORDS));
   const loadEventWinnerTimes = vi.fn(() => Promise.resolve([...ATHLETE_WINNER_EVENTS]));
   // The weather-card scan is covered by its own spec; an empty read keeps the card out of the page here.
@@ -103,7 +108,9 @@ describe('AthletePage', () => {
             loadRunPlaces,
             loadRivalRuns,
             loadBestFirstLap,
+            loadFirstLaps,
             loadYearBests,
+            loadSeasonBests,
             loadCourseRecords,
             loadEventWinnerTimes,
             loadWeatherRows,
@@ -142,6 +149,9 @@ describe('AthletePage', () => {
     expect(page.bestTimeText()).toBe(EXPECTED_BEST_TIME_TEXT);
     expect(page.firstLap(), 'the best recorded split links to its protocol').toEqual(EXPECTED_FIRST_LAP_VIEW);
     expect(page.yearBests()).toEqual(EXPECTED_YEAR_BEST_VIEWS);
+    expect(page.lapYearBests(), 'one first-lap tile per year; the 2026 tie stays with the earliest run').toEqual(
+      EXPECTED_LAP_YEAR_BEST_VIEWS,
+    );
     expect(page.years()).toEqual(EXPECTED_RUN_YEAR_OPTIONS);
     expect(page.runs(), 'runs are sorted by time by default').toEqual(EXPECTED_BY_TIME_VIEWS);
     expect(page.streaks(), 'all three races form one running streak').toEqual(EXPECTED_STREAKS_VIEW);

@@ -3,6 +3,7 @@ import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { LegendFinish } from '../../core/history/legend.interface';
 import { RivalRun } from '../../core/history/rivals.interface';
+import { SeasonBestRow } from '../../core/history/season-ranks.interface';
 import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { YearBestRow } from '../../core/history/year-ranks.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
@@ -26,8 +27,12 @@ export interface AthletePageState {
   rivalRuns: RivalRun[];
   /** The athlete's fastest recorded first-lap (2.3 km) split; null hides the profile chip. */
   bestFirstLap: AthleteFirstLap | null;
+  /** Every recorded first-lap split of the athlete, feeding the per-year lap bests. */
+  firstLaps: AthleteFirstLap[];
   /** Every athlete-year's best 5 km time, feeding the year-ranking badges. */
   yearBests: YearBestRow[];
+  /** Every athlete-season's best 5 km time, feeding the season crowns and podiums. */
+  seasonBests: SeasonBestRow[];
   /** The course record progression; its standing holders wear the «Король трассы» badge. */
   courseRecords: CourseRecordHistory;
   /** Every event's per-gender winning times, feeding the «Рейтинг» card scores. */
@@ -118,7 +123,7 @@ export interface AthleteRunView {
   isMonthFinal: boolean;
 }
 
-/** One year's best prepared for the template. */
+/** One year's best time (a 5 km or first-lap tile) prepared for the template. */
 export interface YearBestView {
   year: string;
   timeText: string;

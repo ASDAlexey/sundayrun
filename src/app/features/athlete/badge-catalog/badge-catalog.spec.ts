@@ -33,7 +33,7 @@ describe('BadgeCatalog', () => {
     const rows = [...dialog.querySelectorAll<HTMLElement>('.badge-catalog__row')];
 
     expect(rows.length, 'one row per possible badge').toBe(EXPECTED_CATALOG_ROWS.length);
-    expect(rows.filter((row) => row.className.includes('badge-catalog__row_locked')).length, 'unearned rows dim').toBe(10);
+    expect(rows.filter((row) => row.className.includes('badge-catalog__row_locked')).length, 'unearned rows dim').toBe(18);
     expect(dialog.querySelectorAll('.badge-catalog__status_earned').length, 'earned rows show their years').toBe(2);
     expect(dialog.querySelectorAll('.badge-catalog__bar-fill').length, 'in-progress rows draw the bar').toBe(4);
 
