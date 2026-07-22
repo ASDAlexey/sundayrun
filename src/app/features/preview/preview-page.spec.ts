@@ -8,12 +8,23 @@ import { Participant } from '../../core/models/participant.interface';
 import { RaceEvent } from '../../core/models/race-event.interface';
 import { HistoryService } from '../../github/history.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
-import { RACE_EVENT } from '../../state/protocol-state.service.mock';
+import { SourceFile } from '../../state/source-file.interface';
 import { settle } from '../spec-utils/settle';
 import { PreviewPage } from './preview-page';
 import { RESULT_ROUTE_COMMANDS } from './preview-page.constant';
 import { HistoryNotesStatus } from './preview-page.enum';
-import { CHANGED_EVENT_DATE_ISO, EXPECTED_PUBLISHED_DATES, HISTORY_LOAD_ERROR_MESSAGE, UNVERIFIED_COUNT } from './preview-page.mock';
+import {
+  ACTIVE_READY_READINESS,
+  ACTIVE_UNREADY_READINESS,
+  BATCH_DRAFT_COUNT,
+  BATCH_UNREADY_COUNT,
+  EXPECTED_BATCH_WARNING_COUNT,
+  EXPECTED_OTHER_UNREADY_WHEN_ACTIVE_READY,
+  EXPECTED_OTHER_UNREADY_WHEN_ACTIVE_UNREADY,
+  EXPECTED_PUBLISHED_DATES,
+  HISTORY_LOAD_ERROR_MESSAGE,
+  UNVERIFIED_COUNT,
+} from './preview-page.mock';
 
 describe('PreviewPage', () => {
   const participants = signal<Participant[]>([]);
@@ -21,9 +32,16 @@ describe('PreviewPage', () => {
   const unknownGenderCount = signal(0);
   const canGenerate = signal(false);
   const event = signal<RaceEvent | null>(null);
-  const publishedEventDates = signal<string[] | null>(null);
+  const activeNumberingDates = signal<string[] | null>(null);
+  const draftCount = signal(1);
+  const unreadyDraftCount = signal(0);
+  const hasDuplicateDates = signal(false);
+  const draftsReady = signal<boolean[]>([]);
+  const activeIndex = signal(0);
+  const sourceFile = signal<SourceFile | null>(null);
   const setEvent = vi.fn();
   const setGender = vi.fn();
+  const selectDraft = vi.fn();
   const applyAutoNotes = vi.fn();
   const setPublishedEventDates = vi.fn();
   const navigate = vi.fn(() => Promise.resolve(true));
@@ -36,6 +54,11 @@ describe('PreviewPage', () => {
     unknownGenderCount.set(0);
     canGenerate.set(false);
     event.set(null);
+    draftCount.set(1);
+    unreadyDraftCount.set(0);
+    hasDuplicateDates.set(false);
+    draftsReady.set([]);
+    activeIndex.set(0);
     TestBed.configureTestingModule({
       providers: [
         {
@@ -46,9 +69,16 @@ describe('PreviewPage', () => {
             unknownGenderCount,
             canGenerate,
             event,
-            publishedEventDates,
+            activeNumberingDates,
+            draftCount,
+            unreadyDraftCount,
+            hasDuplicateDates,
+            draftsReady,
+            activeIndex,
+            sourceFile,
             setEvent,
             setGender,
+            selectDraft,
             applyAutoNotes,
             setPublishedEventDates,
           },
@@ -63,63 +93,74 @@ describe('PreviewPage', () => {
     fixture.destroy();
   });
 
-  it('hides the warning, disables generation and loads the history so the auto number can unblock the form', () => {
+  it('hides the warnings and the pager, disables generation and loads the history so the auto number can unblock the form', () => {
     fixture = TestBed.createComponent(PreviewPage);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.hasUnverified()).toBe(false);
     expect(fixture.nativeElement.querySelector('.preview__warning')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.pager'), 'a single draft needs no pager').toBeNull();
     expect(fixture.nativeElement.querySelector('.preview__generate').disabled).toBe(true);
     expect(loadHistory, 'archive dates feed the positional race number').toHaveBeenCalled();
   });
 
-  it('shows the unverified counter as a live status, enables the button and navigates to /result on click', () => {
+  it('shows the batch warnings as live statuses, the plural generate button, and navigates to /result on click', () => {
     unknownGenderCount.set(UNVERIFIED_COUNT);
     canGenerate.set(true);
+    draftCount.set(BATCH_DRAFT_COUNT);
+    unreadyDraftCount.set(BATCH_UNREADY_COUNT);
+    draftsReady.set(ACTIVE_UNREADY_READINESS);
+    hasDuplicateDates.set(true);
     fixture = TestBed.createComponent(PreviewPage);
     fixture.detectChanges();
 
-    const warning = fixture.nativeElement.querySelector('.preview__warning');
+    const warnings = [...fixture.nativeElement.querySelectorAll('.preview__warning')];
 
-    expect(warning.textContent).toContain(String(UNVERIFIED_COUNT));
-    expect(warning.getAttribute('role')).toBe('status');
-    expect(warning.getAttribute('aria-live')).toBe('polite');
+    expect(warnings).toHaveLength(EXPECTED_BATCH_WARNING_COUNT);
+    expect(warnings[0].textContent).toContain(String(UNVERIFIED_COUNT));
+    expect(warnings[0].getAttribute('role')).toBe('status');
+    expect(warnings[0].getAttribute('aria-live')).toBe('polite');
+    expect(warnings[1].textContent, 'the active unready draft is not double-counted').toContain(
+      String(EXPECTED_OTHER_UNREADY_WHEN_ACTIVE_UNREADY),
+    );
+    expect(warnings[2].getAttribute('role'), 'duplicate dates block the batch loudly').toBe('alert');
     expect(fixture.nativeElement.querySelector('main').id).toBe('main');
+
+    draftsReady.set(ACTIVE_READY_READINESS);
+
+    expect(fixture.componentInstance.otherUnreadyCount(), 'a ready active draft leaves every unready sibling counted').toBe(
+      EXPECTED_OTHER_UNREADY_WHEN_ACTIVE_READY,
+    );
 
     const button = fixture.nativeElement.querySelector('.preview__generate');
 
     expect(button.disabled).toBe(false);
+    expect(button.textContent).toContain(`(${BATCH_DRAFT_COUNT})`);
 
     button.click();
 
     expect(navigate).toHaveBeenCalledWith(RESULT_ROUTE_COMMANDS);
   });
 
-  it('loads history on init, applies the notes once the event date is published and surfaces a load failure', async () => {
+  it('loads history on init, applies the auto notes once it lands and surfaces a load failure', async () => {
     let resolveHistory!: (history: AthletesHistory) => void;
 
     loadHistory.mockReturnValueOnce(new Promise((resolve) => (resolveHistory = resolve)));
-    event.set(RACE_EVENT);
     fixture = TestBed.createComponent(PreviewPage);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.historyStatus()).toBe(HistoryNotesStatus.loading);
     expect(fixture.nativeElement.querySelector('.preview__history-status').getAttribute('aria-live')).toBe('polite');
     expect(fixture.nativeElement.querySelector('.preview__history-status span')).not.toBeNull();
+    expect(applyAutoNotes, 'nothing to apply before the history lands').not.toHaveBeenCalled();
 
     resolveHistory(VALID_HISTORY);
     await settle();
     fixture.detectChanges();
 
     expect(setPublishedEventDates, 'the loaded archive dates feed the auto race number').toHaveBeenCalledWith(EXPECTED_PUBLISHED_DATES);
-    expect(applyAutoNotes).toHaveBeenCalledWith(VALID_HISTORY, RACE_EVENT.dateIso);
+    expect(applyAutoNotes, 'the store runs the notes once per draft, so only the history is passed').toHaveBeenCalledWith(VALID_HISTORY);
     expect(fixture.componentInstance.historyStatus()).toBe(HistoryNotesStatus.idle);
-
-    event.set({ ...RACE_EVENT, dateIso: CHANGED_EVENT_DATE_ISO });
-    fixture.detectChanges();
-
-    expect(loadHistory, 'history loads once; a date edit must not overwrite manual note fixes').toHaveBeenCalledTimes(1);
-    expect(applyAutoNotes).toHaveBeenCalledTimes(1);
 
     fixture.destroy();
     loadHistory.mockRejectedValueOnce(new Error(HISTORY_LOAD_ERROR_MESSAGE));

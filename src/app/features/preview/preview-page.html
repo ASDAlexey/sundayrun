@@ -1,9 +1,23 @@
 <main class="preview" id="main" tabindex="-1">
   <h1 class="preview__title" i18n="@@preview.title">Предпросмотр протокола</h1>
 
+  <app-protocol-pager />
+
   @if (hasUnverified()) {
     <p aria-live="polite" class="preview__warning" i18n="@@preview.unverifiedWarning" role="status">
       Проверьте пол у {{ unknownGenderCount() }} участников
+    </p>
+  }
+
+  @if (otherUnreadyCount() > 0) {
+    <p aria-live="polite" class="preview__warning" i18n="@@preview.otherDraftsWarning" role="status">
+      Ещё не готовы протоколы: {{ otherUnreadyCount() }} — пролистайте и проверьте каждый
+    </p>
+  }
+
+  @if (hasDuplicateDates()) {
+    <p class="preview__warning" i18n="@@preview.duplicateDates" role="alert">
+      Среди загруженных протоколов есть совпадающие даты — уберите дубликат или исправьте дату
     </p>
   }
 
@@ -31,8 +45,12 @@
   <app-participants-table />
 
   <div class="preview__actions">
-    <button class="preview__generate" i18n="@@preview.generate" type="button" [disabled]="!canGenerate()" (click)="generate()">
-      Сгенерировать протокол
+    <button class="preview__generate" type="button" [disabled]="!canGenerate()" (click)="generate()">
+      @if (draftCount() > 1) {
+        <span i18n="@@preview.generateMany">Сгенерировать протоколы ({{ draftCount() }})</span>
+      } @else {
+        <span i18n="@@preview.generate">Сгенерировать протокол</span>
+      }
     </button>
   </div>
 </main>

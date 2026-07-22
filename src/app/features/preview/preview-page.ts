@@ -5,16 +5,17 @@ import { Router } from '@angular/router';
 import { eventDatesFromHistory } from '../../core/history/event-dates';
 import { AthletesHistory } from '../../core/models/athletes-history.type';
 import { HistoryService } from '../../github/history.service';
+import { ProtocolPager } from '../../shared/protocol-pager/protocol-pager';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { EventForm } from './event-form/event-form';
 import { ParticipantsTable } from './participants-table/participants-table';
 import { HISTORY_SPINNER_DIAMETER, RESULT_ROUTE_COMMANDS } from './preview-page.constant';
 import { HistoryNotesStatus, HistoryNotesStatusType } from './preview-page.enum';
 
-/** The /preview page: participants editing plus the race event form before PDF generation. */
+/** The /preview page: participants editing plus the race event form before PDF generation, paging through the batch's drafts. */
 @Component({
   selector: 'app-preview-page',
-  imports: [EventForm, MatProgressSpinnerModule, ParticipantsTable],
+  imports: [EventForm, MatProgressSpinnerModule, ParticipantsTable, ProtocolPager],
   templateUrl: './preview-page.html',
   styleUrl: './preview-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,23 +25,28 @@ export class PreviewPage {
   readonly #history = inject(HistoryService);
   readonly #router = inject(Router);
 
-  /** Auto notes are computed against the event date, which the form only publishes when valid. */
-  readonly #eventDateIso = computed(() => this.#store.event()?.dateIso ?? null);
-
-  /** The loaded archive, kept so the auto notes can run once the event date is published. */
+  /** The loaded archive, kept so the auto notes can run once the drafts' dates are known. */
   readonly #loadedHistory = signal<AthletesHistory | null>(null);
 
   readonly canGenerate = this.#store.canGenerate;
+  readonly draftCount = this.#store.draftCount;
+  readonly unreadyDraftCount = this.#store.unreadyDraftCount;
+  readonly hasDuplicateDates = this.#store.hasDuplicateDates;
   readonly unknownGenderCount = this.#store.unknownGenderCount;
   readonly hasUnverified = computed(() => this.unknownGenderCount() > 0);
+
+  /** Other drafts of the batch still blocking the batch, beyond what this draft's own warning covers. */
+  readonly otherUnreadyCount = computed(() => {
+    const activeReady = this.#store.draftsReady()[this.#store.activeIndex()] ?? false;
+
+    return this.unreadyDraftCount() - (activeReady ? 0 : 1);
+  });
+
   readonly historyStatus = signal<HistoryNotesStatusType>(HistoryNotesStatus.idle);
 
   protected readonly historyStatuses = HistoryNotesStatus;
 
   protected readonly spinnerDiameter = HISTORY_SPINNER_DIAMETER;
-
-  /** Notes are auto-applied once; a later date edit must not overwrite manual note fixes. */
-  #notesApplied = false;
 
   constructor() {
     // History loads with the page so the archive dates feed the positional race number, which is what
@@ -48,14 +54,14 @@ export class PreviewPage {
     // Generate button stays disabled.
     void this.#loadHistory();
 
-    // The number derived above lets the form publish the event; only then is the notes date known.
+    // Applies the auto notes once per draft as soon as its date is known: the store tracks which
+    // drafts already ran, so gender fixes and date edits re-trigger this without ever overwriting a
+    // manual note fix.
     effect(() => {
-      const dateIso = this.#eventDateIso();
       const history = this.#loadedHistory();
 
-      if (dateIso !== null && history !== null && !this.#notesApplied) {
-        this.#notesApplied = true;
-        this.#store.applyAutoNotes(history, dateIso);
+      if (history !== null) {
+        this.#store.applyAutoNotes(history);
       }
     });
   }

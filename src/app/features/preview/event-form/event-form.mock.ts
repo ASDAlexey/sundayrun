@@ -1,7 +1,13 @@
 import { RaceEvent } from '../../../core/models/race-event.interface';
-import { RACE_EVENT_DEFAULTS } from '../race-event-defaults.constant';
+import { RACE_EVENT_DEFAULTS } from '../../../core/protocol/race-event-defaults.constant';
 
 export const SUGGESTED_DATE_ISO = '2026-06-14';
+
+/** The batch's first draft — where the pager starts. */
+export const ACTIVE_DRAFT_INDEX = 0;
+
+/** A sibling draft the pager switches to in the re-seed scenario. */
+export const OTHER_DRAFT_INDEX = 1;
 
 export const VALID_EVENT_NUMBER = 273;
 

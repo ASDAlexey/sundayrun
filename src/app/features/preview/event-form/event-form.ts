@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { eventNumberForDate } from '../../../core/github/archive-index';
+import { RaceEvent } from '../../../core/models/race-event.interface';
+import { RACE_EVENT_DEFAULTS } from '../../../core/protocol/race-event-defaults.constant';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
-import { RACE_EVENT_DEFAULTS } from '../race-event-defaults.constant';
 import { EMPTY_DATE_ISO, MIN_EVENT_NUMBER } from './event-form.constant';
 
 /** The race requisites form; every valid change is pushed to the store, invalid states leave it untouched. */
@@ -36,21 +37,54 @@ export class EventForm {
   constructor() {
     this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.#pushValidEvent());
 
-    // The race number is positional (see `eventNumberForDate`), so it is recomputed from the
-    // published archive whenever the date changes — never typed by hand.
+    // Re-seeds the form whenever another draft of the batch becomes active; the draft's own
+    // requisites (auto-filled or already confirmed) win over the blank defaults.
     effect(() => {
-      const publishedDates = this.#store.publishedEventDates();
+      this.#store.activeIndex();
+      this.#seedFromActiveDraft();
+    });
+
+    // The race number is positional (see `eventNumberForDate`), so it is recomputed whenever the
+    // date changes — never typed by hand. The date base includes the batch's other drafts: an
+    // earlier sibling shifts the number exactly as an archived event would.
+    effect(() => {
+      const numberingDates = this.#store.activeNumberingDates();
       const dateIso = this.#dateIso();
 
-      if (publishedDates === null || dateIso === EMPTY_DATE_ISO) {
+      if (numberingDates === null || dateIso === EMPTY_DATE_ISO) {
         return;
       }
 
-      const number = eventNumberForDate(publishedDates, dateIso);
+      const number = eventNumberForDate(numberingDates, dateIso);
 
       if (this.form.controls.number.value !== number) {
         this.form.controls.number.setValue(number);
       }
+    });
+  }
+
+  /** Applies the active draft's known requisites to the controls; untracked — only the index switch re-seeds. */
+  #seedFromActiveDraft(): void {
+    const event = untracked(this.#store.event);
+    const suggestedDateIso = untracked(this.#store.suggestedDateIso);
+
+    if (event === null) {
+      this.form.reset({ number: null, dateIso: suggestedDateIso ?? EMPTY_DATE_ISO, ...RACE_EVENT_DEFAULTS });
+
+      return;
+    }
+
+    this.#applyEvent(event);
+  }
+
+  #applyEvent(event: RaceEvent): void {
+    this.form.setValue({
+      number: event.number,
+      dateIso: event.dateIso,
+      city: event.city,
+      park: event.park,
+      clubName: event.clubName,
+      chairman: event.chairman,
     });
   }
 
