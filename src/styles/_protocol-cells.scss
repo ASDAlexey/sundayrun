@@ -1,0 +1,207 @@
+// ===========================================================
+//  Protocol table cells — shared between the published race
+//  protocol (/races) and the upload preview (/preview).
+//  Each mixin carries its own BEM modifiers via nested `&_…`.
+// ===========================================================
+
+@use 'typography' as t;
+
+// The «Пол» chip: boys cool blue, girls warm pink — a light wash, not a flag.
+// The male/female washes are standalone mixins so the preview's editable toggles
+// can wear the exact same tint on their active state.
+@mixin gender-chip-base {
+  @include t.text('label', 'small');
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+}
+
+@mixin gender-chip-male {
+  border-color: color-mix(in srgb, var(--chart-10) 35%, transparent);
+  background: color-mix(in srgb, var(--chart-10) 10%, transparent);
+  color: var(--chart-10);
+}
+
+@mixin gender-chip-female {
+  border-color: color-mix(in srgb, var(--chart-4) 35%, transparent);
+  background: color-mix(in srgb, var(--chart-4) 12%, transparent);
+  color: var(--chart-4);
+}
+
+@mixin gender-chip {
+  @include gender-chip-base;
+
+  &_male {
+    @include gender-chip-male;
+  }
+
+  &_female {
+    @include gender-chip-female;
+  }
+}
+
+// Keeps the medal glued to the place number even when the cell wraps.
+@mixin place-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// The podium medal beside the gender place, on the year-badge gold/silver/bronze scale.
+@mixin medal {
+  flex: none;
+  width: 16px;
+  height: 16px;
+
+  &_gold {
+    --medal: var(--accent-light);
+    --medal-deep: var(--accent-deep);
+  }
+
+  &_silver {
+    --medal: var(--chart-13);
+    --medal-deep: var(--text-secondary);
+  }
+
+  &_bronze {
+    --medal: color-mix(in srgb, var(--chart-12) 65%, var(--accent-light));
+    --medal-deep: var(--chart-12);
+  }
+}
+
+@mixin medal-ribbon {
+  fill: none;
+  stroke: var(--medal-deep);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+@mixin medal-disc {
+  fill: var(--medal);
+}
+
+// The Smashrun-style «до следующего места» gap under the gender place.
+@mixin place-gap {
+  @include t.text('label', 'small');
+
+  display: block;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+
+// The finish counter as a 5-вёрст-style club badge; the milestones reuse the year-badge medal scale.
+@mixin finishes-badge {
+  @include t.text('label', 'medium');
+
+  display: inline-flex;
+  justify-content: center;
+  min-width: 44px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+
+  &_25 {
+    border-color: var(--accent-line);
+    color: var(--text);
+  }
+
+  &_50 {
+    border-color: var(--accent);
+    color: var(--accent-deep);
+  }
+
+  &_100 {
+    border-color: var(--accent);
+    background: var(--accent-atmosphere);
+    color: var(--accent);
+  }
+
+  &_250 {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+}
+
+// The note cell content: chips stack one under another so a row with several notes grows down,
+// not sideways — keeping the whole table within the card without a horizontal scroll.
+@mixin notes-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+@mixin note-text {
+  @include t.text('label', 'medium');
+
+  color: var(--text-secondary);
+}
+
+// One chip per recognized note token; the modifiers grade the palette by the event's weight.
+// The debut modifier tints the (only) svg icon inside the chip.
+@mixin note-badge {
+  @include t.text('label', 'small');
+
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  gap: 5px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+
+  &_record {
+    border-color: var(--accent-line);
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  &_year-best {
+    border-color: var(--accent);
+    background: var(--accent-atmosphere);
+    color: var(--accent);
+  }
+
+  &_debut {
+    svg {
+      color: var(--accent);
+    }
+  }
+
+  &_kids {
+    border-color: var(--border-soft);
+  }
+
+  &_status {
+    border-color: var(--border-soft);
+    color: var(--text-muted);
+  }
+}
+
+@mixin note-icon {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.4;
+}
+
+// The star and spark glyphs read better solid at 12px than as hairline outlines.
+@mixin note-icon-fill {
+  fill: currentcolor;
+  stroke: none;
+}
