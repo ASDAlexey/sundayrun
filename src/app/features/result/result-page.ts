@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 
+import { finishCountsWithDrafts, previousBestsWithDrafts } from '../../core/history/draft-priors';
 import { eventFinishCounts } from '../../core/history/finish-counts';
 import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { composeRaceAnnouncement } from '../../core/share/race-announcement';
@@ -27,6 +28,7 @@ import { PDF_FILE_EXTENSION } from '../../pdf/pdf.service.constant';
 import { ProtocolImageService } from '../../pdf/protocol-image.service';
 import { PROTOCOL_IMAGE_FILE_EXTENSION, PROTOCOL_IMAGE_MIME_TYPE } from '../../pdf/protocol-image.service.constant';
 import { ShareService } from '../../share/share.service';
+import { ProtocolPager } from '../../shared/protocol-pager/protocol-pager';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { ADMIN_PAGE_LINK, RACE_PAGE_PREFIX } from '../admin/admin-page.constant';
 import {
@@ -39,12 +41,17 @@ import {
   SUMMARY_SEPARATOR,
 } from './result-page.constant';
 import { ResultStatus, ResultStatusType } from './result-page.enum';
+import { GeneratedProtocol } from './result-page.interface';
 import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';
 
-/** The /result page: renders the protocol PDF on entry, previews it and offers download, share, archive publish and VK repost. */
+/**
+ * The /result page: renders the protocol PDF on entry, previews it and offers download, share, VK
+ * repost and archive publish. A multi-file upload pages through its drafts — each draft's PDF is
+ * rendered on first visit and cached — and «Опубликовать» sends the WHOLE batch as one commit.
+ */
 @Component({
   selector: 'app-result-page',
-  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, RouterLink],
+  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, ProtocolPager, RouterLink],
   templateUrl: './result-page.html',
   styleUrl: './result-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,8 +72,10 @@ export class ResultPage implements OnDestroy {
   readonly #cdnRef = inject(CdnRefService);
   readonly #document = inject(DOCUMENT);
   readonly #blob = signal<Blob | null>(null);
-  readonly #imageBlob = signal<Blob | null>(null);
   readonly #runPhoto = signal<File | null>(null);
+
+  /** Generated artifacts per draft index; paging back to a draft reuses them instead of re-rendering. */
+  readonly #generated = new Map<number, GeneratedProtocol>();
 
   /** True from a successful publish until the deploy wait ends — the freshness effect's gate. */
   readonly #waitingForDeploy = signal(false);
@@ -85,6 +94,7 @@ export class ResultPage implements OnDestroy {
   readonly objectUrl = signal<string | null>(null);
   readonly isAdmin = this.#adminToken.isAdmin;
   readonly publishState = this.#github.state;
+  readonly draftCount = this.#store.draftCount;
 
   readonly summary = computed(() => {
     const event = this.#store.event();
@@ -153,6 +163,9 @@ export class ResultPage implements OnDestroy {
   protected readonly publishStates = PublishState;
   protected readonly adminLink = ADMIN_PAGE_LINK;
 
+  /** Guards against a stale generation landing after a fast draft switch. */
+  #showToken = 0;
+
   /** When the «Опубликовать» click happened; meaningful only while the wait is on. */
   #startedAtMs = 0;
 
@@ -161,9 +174,15 @@ export class ResultPage implements OnDestroy {
   #tickId: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
-    // A fresh event must not inherit the publish state / pdf url of the previously published one.
+    // A fresh batch must not inherit the publish state / pdf url of the previously published one.
     this.#github.reset();
-    void this.#generate();
+
+    // Renders the active draft's protocol — on entry and on every page through the batch.
+    effect(() => {
+      const index = this.#store.activeIndex();
+
+      void this.#showDraft(index);
+    });
 
     // Ends the click-to-live wait: Updating marks the deploy as watched, Updated completes it
     // with a measured duration, a heal back to Fresh after Updating means the poll gave up.
@@ -194,30 +213,32 @@ export class ResultPage implements OnDestroy {
     this.copied.set(await this.#share.copyToClipboard(this.description()));
   }
 
-  /** Publishes the event as one atomic commit; the protocol PDF is generated on the fly, never stored. */
+  /** Publishes the whole batch as one atomic commit; the protocol PDFs are generated on the fly, never stored. */
   async publish(): Promise<void> {
-    const event = this.#store.event();
-    const sourceFile = this.#store.sourceFile();
-    const blob = this.#blob();
+    const inputs = this.#store.buildPublishInputs();
 
-    if (event === null || sourceFile === null || blob === null) {
+    if (inputs.length === 0) {
       return;
     }
 
-    const rows = this.#store.protocolRows();
     const startedAtMs = Date.now();
 
-    await this.#github.publish({ event, rows, sourceXlsxBytes: sourceFile.bytes });
+    await this.#github.publish(inputs);
 
     if (this.publishState() === PublishState.success) {
-      // The archive db rebuild lags the commit, so mark the event pending — /admin shows it as «публикуется…».
-      this.#pendingArchive.addUpload({
-        slug: event.dateIso,
-        number: event.number,
-        dateIso: event.dateIso,
-        participantCount: rows.length,
-        atIso: new Date().toISOString(),
-      });
+      // The archive db rebuild lags the commit, so mark every event pending — /admin shows them as «публикуется…».
+      const atIso = new Date().toISOString();
+
+      for (const input of inputs) {
+        this.#pendingArchive.addUpload({
+          slug: input.event.dateIso,
+          number: input.event.number,
+          dateIso: input.event.dateIso,
+          participantCount: input.rows.length,
+          atIso,
+        });
+      }
+
       this.#startedAtMs = startedAtMs;
       this.#waitingForDeploy.set(true);
       this.#tickId = setInterval(() => this.#elapsedMs.set(Date.now() - startedAtMs), PUBLISH_TICK_INTERVAL_MS);
@@ -259,6 +280,12 @@ export class ResultPage implements OnDestroy {
 
   onDescriptionInput(value: string): void {
     this.description.set(value);
+
+    const generated = this.#generated.get(this.#store.activeIndex());
+
+    if (generated !== undefined) {
+      generated.description = value;
+    }
   }
 
   async back(): Promise<void> {
@@ -268,10 +295,8 @@ export class ResultPage implements OnDestroy {
   ngOnDestroy(): void {
     this.#stopTicking();
 
-    const url = this.objectUrl();
-
-    if (url !== null) {
-      URL.revokeObjectURL(url);
+    for (const generated of this.#generated.values()) {
+      URL.revokeObjectURL(generated.url);
     }
   }
 
@@ -306,36 +331,70 @@ export class ResultPage implements OnDestroy {
     }
   }
 
-  /** The protocol PNG, rasterized from the generated pdf once and cached; null before generation. */
+  /** The protocol PNG, rasterized from the generated pdf once per draft and cached; null before generation. */
   async #protocolImageFile(): Promise<File | null> {
-    const blob = this.#blob();
+    const generated = this.#generated.get(this.#store.activeIndex());
 
-    if (blob === null) {
+    if (generated === undefined) {
       return null;
     }
 
-    let image = this.#imageBlob();
+    generated.imageBlob ??= await this.#protocolImage.render(generated.blob);
 
-    if (image === null) {
-      image = await this.#protocolImage.render(blob);
-      this.#imageBlob.set(image);
-    }
-
-    return new File([image], this.#imageFileName(), { type: PROTOCOL_IMAGE_MIME_TYPE });
+    return new File([generated.imageBlob], this.#imageFileName(), { type: PROTOCOL_IMAGE_MIME_TYPE });
   }
 
-  async #generate(): Promise<void> {
-    const event = this.#store.event();
+  /** Shows the draft's cached protocol, rendering it on the first visit; a stale render never lands. */
+  async #showDraft(index: number): Promise<void> {
+    const token = ++this.#showToken;
+    const cached = this.#generated.get(index);
 
-    if (event === null) {
+    this.copied.set(false);
+
+    if (cached !== undefined) {
+      this.#present(cached);
+
+      return;
+    }
+
+    this.status.set(ResultStatus.generating);
+    this.#blob.set(null);
+    this.objectUrl.set(null);
+
+    const generated = await this.#generate();
+
+    if (generated !== null) {
+      this.#generated.set(index, generated);
+    }
+
+    if (token !== this.#showToken) {
+      return;
+    }
+
+    if (generated === null) {
       this.status.set(ResultStatus.error);
 
       return;
     }
 
-    const rows = this.#store.protocolRows();
+    this.#present(generated);
+  }
 
-    this.description.set(composeRaceAnnouncement(event, rows));
+  #present(generated: GeneratedProtocol): void {
+    this.#blob.set(generated.blob);
+    this.objectUrl.set(generated.url);
+    this.description.set(generated.description);
+    this.status.set(ResultStatus.ready);
+  }
+
+  async #generate(): Promise<GeneratedProtocol | null> {
+    const event = this.#store.event();
+
+    if (event === null) {
+      return null;
+    }
+
+    const rows = this.#store.protocolRows();
 
     try {
       const blob = await this.#pdf.generateProtocolBlob(
@@ -345,30 +404,31 @@ export class ResultPage implements OnDestroy {
         await this.#previousBests(event.dateIso),
       );
 
-      this.#blob.set(blob);
-      this.objectUrl.set(URL.createObjectURL(blob));
-      this.status.set(ResultStatus.ready);
+      return { blob, url: URL.createObjectURL(blob), description: composeRaceAnnouncement(event, rows), imageBlob: null };
     } catch {
-      this.status.set(ResultStatus.error);
+      return null;
     }
   }
 
   /**
-   * The «Финишей» column source: the stored prior counts plus this event's own finishes.
-   * A blank column beats a wrong count, so a failed db read drops the counts, never the PDF.
+   * The «Финишей» column source: the stored prior counts, the batch's earlier drafts and this
+   * event's own finishes. A blank column beats a wrong count, so a failed db read drops the counts,
+   * never the PDF.
    */
   async #finishCounts(dateIso: string): Promise<Record<string, number>> {
     try {
-      return eventFinishCounts(this.#store.protocolRows(), await this.#results.loadFinishCountsBefore(dateIso));
+      const prior = finishCountsWithDrafts(await this.#results.loadFinishCountsBefore(dateIso), this.#store.draftRowsBefore(dateIso));
+
+      return eventFinishCounts(this.#store.protocolRows(), prior);
     } catch {
       return {};
     }
   }
 
-  /** Dates the «ЛР (было X)» notes; an undated note beats a missing PDF, so a failed db read drops the map. */
+  /** Dates the «ЛР (было X)» notes, the batch's earlier drafts included; a failed db read drops the map, not the PDF. */
   async #previousBests(dateIso: string): Promise<Record<string, PreviousBest>> {
     try {
-      return await this.#results.loadPreviousBestsBefore(dateIso);
+      return previousBestsWithDrafts(await this.#results.loadPreviousBestsBefore(dateIso), this.#store.draftRowsBefore(dateIso));
     } catch {
       return {};
     }

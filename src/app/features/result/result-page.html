@@ -1,4 +1,6 @@
 <main class="result" id="main" tabindex="-1">
+  <app-protocol-pager />
+
   @switch (status()) {
     @case (statuses.generating) {
       <div aria-live="polite" class="result__status" role="status">
@@ -69,13 +71,16 @@
         <section class="result__publish">
           <button
             class="result__publish-button"
-            i18n="@@result.publish"
             matButton="filled"
             type="button"
             [disabled]="publishState() === publishStates.publishing || publishState() === publishStates.success"
             (click)="publish()"
           >
-            Опубликовать в архив
+            @if (draftCount() > 1) {
+              <span i18n="@@result.publishMany">Опубликовать все ({{ draftCount() }}) в архив</span>
+            } @else {
+              <span i18n="@@result.publish">Опубликовать в архив</span>
+            }
           </button>
 
           <div aria-live="polite" class="result__publish-feedback">

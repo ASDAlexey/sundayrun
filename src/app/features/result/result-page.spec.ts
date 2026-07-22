@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 
 import { PublishEventInput } from '../../core/github/publish-event.interface';
+import { DraftRows } from '../../core/history/draft-priors.interface';
 import { RaceEvent } from '../../core/models/race-event.interface';
 import { PDF_EVENT_MOCK, PDF_PREVIOUS_BESTS_MOCK, PDF_ROWS_MOCK } from '../../core/pdf/protocol-doc-definition.mock';
 import { AdminTokenService } from '../../github/admin-token.service';
@@ -33,6 +34,7 @@ import {
   EXPECTED_DESCRIPTION,
   EXPECTED_IMAGE_FILE_NAME,
   EXPECTED_RESULT_FINISH_COUNTS,
+  EXPECTED_SECOND_DESCRIPTION,
   EXPECTED_SUMMARY,
   EXPECTED_TITLE_LINE,
   FILE_NAME_MOCK,
@@ -40,8 +42,12 @@ import {
   GENERATE_ERROR_MESSAGE,
   OBJECT_URL_MOCK,
   PROTOCOL_IMAGE_BLOB_MOCK,
+  PUBLISH_INPUTS_BATCH_MOCK,
   RESULT_BLOB_MOCK,
   RUN_PHOTO_MOCK,
+  SECOND_EVENT_MOCK,
+  SECOND_OBJECT_URL_MOCK,
+  SECOND_SOURCE_FILE_MOCK,
   SOURCE_FILE_MOCK,
   VK_URL_MOCK,
 } from './result-page.mock';
@@ -51,6 +57,13 @@ describe('ResultPage', () => {
   const event = signal<RaceEvent | null>(PDF_EVENT_MOCK);
   const protocolRows = signal(PDF_ROWS_MOCK);
   const sourceFile = signal<SourceFile | null>(SOURCE_FILE_MOCK);
+  const activeIndex = signal(0);
+  const draftCount = signal(1);
+  const draftsReady = signal([true]);
+  const selectDraft = vi.fn((index: number) => activeIndex.set(index));
+  // Mirrors the real store: no event — no payloads; a two-draft batch hands out both inputs.
+  const buildPublishInputs = vi.fn(() => (event() === null ? [] : PUBLISH_INPUTS_BATCH_MOCK.slice(0, draftCount())));
+  const draftRowsBefore = vi.fn((_dateIso: string): DraftRows[] => []);
   const generateProtocolBlob = vi.fn();
   const loadFinishCountsBefore = vi.fn();
   const loadPreviousBestsBefore = vi.fn();
@@ -65,7 +78,7 @@ describe('ResultPage', () => {
   const openWindow = vi.fn();
   const isAdmin = signal(true);
   const publishState = signal<PublishStateType>(PublishState.idle);
-  const publish = vi.fn((_input: PublishEventInput) => Promise.resolve());
+  const publish = vi.fn((_inputs: PublishEventInput[]) => Promise.resolve());
   const reset = vi.fn();
   const pendingArchive = pendingArchiveMock();
   const dbFreshness = dbFreshnessServiceMock();
@@ -80,8 +93,12 @@ describe('ResultPage', () => {
     vi.clearAllMocks();
     event.set(PDF_EVENT_MOCK);
     sourceFile.set(SOURCE_FILE_MOCK);
+    activeIndex.set(0);
+    draftCount.set(1);
+    draftsReady.set([true]);
     isAdmin.set(true);
     publishState.set(PublishState.idle);
+    publish.mockImplementation(() => Promise.resolve());
     generateProtocolBlob.mockResolvedValue(RESULT_BLOB_MOCK);
     loadFinishCountsBefore.mockResolvedValue({});
     loadPreviousBestsBefore.mockResolvedValue(PDF_PREVIOUS_BESTS_MOCK);
@@ -97,7 +114,20 @@ describe('ResultPage', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: ProtocolStateService, useValue: { event, protocolRows, sourceFile } },
+        {
+          provide: ProtocolStateService,
+          useValue: {
+            event,
+            protocolRows,
+            sourceFile,
+            activeIndex,
+            draftCount,
+            draftsReady,
+            selectDraft,
+            buildPublishInputs,
+            draftRowsBefore,
+          },
+        },
         { provide: PdfService, useValue: { generateProtocolBlob, suggestedFileName } },
         { provide: ResultsService, useValue: { loadFinishCountsBefore, loadPreviousBestsBefore } },
         { provide: ProtocolImageService, useValue: { render } },
@@ -224,9 +254,9 @@ describe('ResultPage', () => {
 
     expect(shareFile).not.toHaveBeenCalled();
 
-    await page.publish();
+    page.onDescriptionInput(EDITED_DESCRIPTION);
 
-    expect(publish, 'publishing needs the generated blob').not.toHaveBeenCalled();
+    expect(page.description(), 'an edit still lands even with no generated draft to cache it in').toBe(EDITED_DESCRIPTION);
 
     await page.openVk();
 
@@ -259,7 +289,7 @@ describe('ResultPage', () => {
 
     await page.publish();
 
-    expect(publish, 'publishing needs the event').not.toHaveBeenCalled();
+    expect(publish, 'an empty batch of publish payloads is a no-op').not.toHaveBeenCalled();
   });
 
   it('copies the description with a copied flag, accepts edits and shares the protocol image to VK', async () => {
@@ -350,7 +380,7 @@ describe('ResultPage', () => {
 
     expect(publish).toHaveBeenCalledTimes(1);
 
-    const publishInput = publish.mock.calls[0][0];
+    const [publishInput] = publish.mock.calls[0][0];
 
     expect(publishInput.event).toBe(PDF_EVENT_MOCK);
     expect(publishInput.rows).toBe(PDF_ROWS_MOCK);
@@ -406,6 +436,11 @@ describe('ResultPage', () => {
     fixture.detectChanges();
 
     expect(element.querySelector('.result__publish-error').getAttribute('role')).toBe('alert');
+
+    isAdmin.set(false);
+    fixture.detectChanges();
+
+    expect(element.querySelector('.result__publish'), 'non-admins never see the publish section').toBeNull();
   });
 
   it('ticks the elapsed wait with the average hint, completes via the freshness poll and records the duration', async () => {
@@ -483,17 +518,89 @@ describe('ResultPage', () => {
     expect(page.publishedInText()).toBeNull();
   });
 
-  it('skips publishing without the source file and hides the publish section for non-admins', async () => {
-    sourceFile.set(null);
+  it('pages through the batch: renders each draft once, keeps its description, drops a stale render, revokes every url', async () => {
+    draftCount.set(2);
+    createObjectURL.mockReturnValueOnce(OBJECT_URL_MOCK).mockReturnValueOnce(SECOND_OBJECT_URL_MOCK);
     fixture = await createPage();
 
-    await fixture.componentInstance.publish();
+    const page = fixture.componentInstance;
 
-    expect(publish, 'publishing needs the source xlsx').not.toHaveBeenCalled();
+    expect(generateProtocolBlob).toHaveBeenCalledTimes(1);
 
-    isAdmin.set(false);
+    page.onDescriptionInput(EDITED_DESCRIPTION);
+
+    // The second draft's render is held pending, so paging back mid-generation makes it stale.
+    let finishRender = (_blob: Blob): void => undefined;
+
+    generateProtocolBlob.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishRender = resolve;
+        }),
+    );
+    event.set(SECOND_EVENT_MOCK);
+    sourceFile.set(SECOND_SOURCE_FILE_MOCK);
+    activeIndex.set(1);
+    await settle();
+
+    expect(page.status()).toBe(ResultStatus.generating);
+    expect(generateProtocolBlob).toHaveBeenCalledTimes(2);
+    expect(draftRowsBefore, 'the batch priors are cut at the active draft date').toHaveBeenCalledWith(SECOND_EVENT_MOCK.dateIso);
+
+    event.set(PDF_EVENT_MOCK);
+    sourceFile.set(SOURCE_FILE_MOCK);
+    activeIndex.set(0);
+    await settle();
+    finishRender(RESULT_BLOB_MOCK);
+    await settle();
+
+    expect(page.status()).toBe(ResultStatus.ready);
+    expect(page.description(), 'the edit is kept per draft; the stale render never lands').toBe(EDITED_DESCRIPTION);
+    expect(page.objectUrl()).toBe(OBJECT_URL_MOCK);
+
+    event.set(SECOND_EVENT_MOCK);
+    sourceFile.set(SECOND_SOURCE_FILE_MOCK);
+    activeIndex.set(1);
+    await settle();
+
+    expect(generateProtocolBlob, 'paging back re-presents the cache, no re-render').toHaveBeenCalledTimes(2);
+    expect(page.description()).toBe(EXPECTED_SECOND_DESCRIPTION);
+    expect(page.objectUrl()).toBe(SECOND_OBJECT_URL_MOCK);
+
+    fixture.destroy();
+
+    expect(revokeObjectURL).toHaveBeenCalledWith(OBJECT_URL_MOCK);
+    expect(revokeObjectURL).toHaveBeenCalledWith(SECOND_OBJECT_URL_MOCK);
+  });
+
+  it('publishes the whole batch as one commit and marks every event pending', async () => {
+    draftCount.set(2);
+    draftsReady.set([true, true]);
+    publish.mockImplementation(() => {
+      publishState.set(PublishState.success);
+
+      return Promise.resolve();
+    });
+    fixture = await createPage();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.result__publish')).toBeNull();
+    const element = fixture.nativeElement;
+
+    expect(element.querySelector('.pager__position').textContent, 'the pager appears for a batch').toContain('2');
+    expect(element.querySelector('.result__publish-button').textContent).toContain('(2)');
+
+    element.querySelector('.result__publish-button').click();
+    await settle();
+
+    expect(publish).toHaveBeenCalledTimes(1);
+    expect(publish).toHaveBeenCalledWith(PUBLISH_INPUTS_BATCH_MOCK);
+    expect(pendingArchive.addUpload, 'every event of the batch is marked pending').toHaveBeenCalledTimes(2);
+    expect(pendingArchive.addUpload).toHaveBeenCalledWith({
+      slug: SECOND_EVENT_MOCK.dateIso,
+      number: SECOND_EVENT_MOCK.number,
+      dateIso: SECOND_EVENT_MOCK.dateIso,
+      participantCount: PDF_ROWS_MOCK.length,
+      atIso: expect.any(String),
+    });
   });
 });
