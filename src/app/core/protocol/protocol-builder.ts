@@ -13,25 +13,31 @@ import { TimedParticipant } from './protocol-builder.type';
  * then DNF in input order (empty times, no places).
  */
 export function buildProtocolRows(participants: Participant[]): ProtocolRow[] {
-  const finishers = sortByTotalMs(participants.filter(isFiveKmFinisher));
-  const shortRunners = sortByTotalMs(participants.filter(isTwoThreeKmRunner));
-  const didNotFinish = participants.filter((participant) => participant.totalMs === null);
   const places: Record<GenderType, number> = { [Gender.male]: 0, [Gender.female]: 0 };
-  const rows: ProtocolRow[] = [];
 
-  for (const participant of finishers) {
-    rows.push(toFiveKmRow(participant, rows.length + FIRST_ROW_INDEX, places));
-  }
+  return orderProtocolParticipants(participants).map((participant, index) => {
+    if (isFiveKmFinisher(participant)) {
+      return toFiveKmRow(participant, index + FIRST_ROW_INDEX, places);
+    }
 
-  for (const participant of shortRunners) {
-    rows.push(toTwoThreeKmRow(participant, rows.length + FIRST_ROW_INDEX));
-  }
+    if (isTwoThreeKmRunner(participant)) {
+      return toTwoThreeKmRow(participant, index + FIRST_ROW_INDEX);
+    }
 
-  for (const participant of didNotFinish) {
-    rows.push(toDnfRow(participant, rows.length + FIRST_ROW_INDEX));
-  }
+    return toDnfRow(participant, index + FIRST_ROW_INDEX);
+  });
+}
 
-  return rows;
+/**
+ * The exact participant order behind `buildProtocolRows`, exported so an editing view can map
+ * each built row back to its source participant by index.
+ */
+export function orderProtocolParticipants(participants: Participant[]): Participant[] {
+  return [
+    ...sortByTotalMs(participants.filter(isFiveKmFinisher)),
+    ...sortByTotalMs(participants.filter(isTwoThreeKmRunner)),
+    ...participants.filter((participant) => participant.totalMs === null),
+  ];
 }
 
 function isFiveKmFinisher(participant: Participant): participant is TimedParticipant {
