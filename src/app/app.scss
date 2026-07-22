@@ -44,10 +44,13 @@
 
   // Plain home link with the logo + two-line title — deliberately not a Material
   // button, so no state layer / ripple flashes over the brand on hover.
+  // `margin-right: auto` hugs the brand left and pushes the nav to the far edge,
+  // so `justify-content: space-between` does not float the nav into the middle.
   &__brand {
     display: flex;
     align-items: center;
     height: auto;
+    margin-right: auto;
     padding: 0;
     gap: 14px;
     border-radius: var(--radius-sm);
@@ -57,11 +60,11 @@
   &__mark {
     width: 40px;
     height: 40px;
-    padding: 3px;
-    object-fit: contain;
+    padding: 5px;
     border-radius: var(--radius-sm);
     background: var(--white);
     box-shadow: 0 0 24px var(--accent-glow);
+    color: var(--accent-contrast);
   }
 
   &__titles {
@@ -82,16 +85,19 @@
     color: var(--text-muted);
   }
 
-  // The version badge sits next to the brand; `margin-right: auto` hugs it left and pushes the nav
-  // to the far edge, so `justify-content: space-between` does not float it into the middle.
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  // The Litely-style version chip: a tiny bordered pill sitting right after the brand name.
   &__version {
     @include t.mono-caption;
 
-    align-self: center;
-    margin-right: auto;
-    padding: 2px 8px;
+    padding: 1px 6px;
     border: 1px solid var(--card-border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-xs);
     background: var(--card-bg);
     color: var(--text-muted);
   }
@@ -199,10 +205,10 @@
   &__mark {
     width: 36px;
     height: 36px;
-    padding: 3px;
-    object-fit: contain;
+    padding: 5px;
     border-radius: var(--radius-xs);
     background: var(--white);
+    color: var(--accent-contrast);
   }
 
   &__brand-text {

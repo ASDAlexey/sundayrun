@@ -17,11 +17,12 @@ import { GUIDE_PAGE_LINK } from './features/guide/guide-page.constant';
 import { RECORDS_PAGE_LINK } from './features/records/records-page.constant';
 import { YEAR_PAGE_BASE_LINK } from './features/year/year-page.constant';
 import { DbFreshnessBanner } from './shared/db-freshness-banner/db-freshness-banner';
+import { LogoMark } from './shared/logo-mark/logo-mark';
 import { SelfPicker } from './shared/self-picker/self-picker';
 
 @Component({
   selector: 'app-root',
-  imports: [DbFreshnessBanner, SelfPicker, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule],
+  imports: [DbFreshnessBanner, LogoMark, SelfPicker, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

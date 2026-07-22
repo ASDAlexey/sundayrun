@@ -6,16 +6,18 @@
 
   <mat-toolbar class="shell-header__inner">
     <a class="shell-header__brand" [routerLink]="homeLink">
-      <img alt="" class="shell-header__mark" height="160" src="logo-mark.webp" width="160" />
+      <app-logo-mark class="shell-header__mark" />
 
       <span class="shell-header__titles">
-        <span class="shell-header__name" i18n="@@app.brandName">Воскресный парковый пробег</span>
+        <span class="shell-header__name-row">
+          <span class="shell-header__name" i18n="@@app.brandName">Воскресный парковый пробег</span>
+
+          <span class="shell-header__version">{{ version }}</span>
+        </span>
 
         <span class="shell-header__place" i18n="@@app.brandPlace">Таганрог · ПКиО им. Горького</span>
       </span>
     </a>
-
-    <span class="shell-header__version">{{ version }}</span>
 
     <nav aria-label="Основные разделы" class="shell-header__nav" i18n-aria-label="@@app.navLabel">
       <a
@@ -78,7 +80,7 @@
 <footer class="shell-footer">
   <div class="shell-footer__inner">
     <div class="shell-footer__brand">
-      <img alt="" class="shell-footer__mark" decoding="async" height="160" loading="lazy" src="logo-mark.webp" width="160" />
+      <app-logo-mark class="shell-footer__mark" />
 
       <span class="shell-footer__brand-text">
         <span class="shell-footer__brand-name" i18n="@@app.brandName">Воскресный парковый пробег</span>
