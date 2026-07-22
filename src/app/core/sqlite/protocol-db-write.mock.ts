@@ -2,7 +2,7 @@ import { FIRST_ARCHIVE_EVENT_NUMBER } from '../github/archive-index.constant';
 import { EXPECTED_NEW_ENTRY, EXPECTED_RENUMBERED_STALE_EVENTS, STALE_INDEX } from '../github/archive-index.mock';
 import { ArchiveIndexEntry } from '../github/archive-index.interface';
 import { eventFilePaths } from '../github/event-paths';
-import { EXISTING_HISTORY } from '../github/publish-event.mock';
+import { EXISTING_HISTORY, EXPECTED_FIRST_PUBLISH_HISTORY } from '../github/publish-event.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { FIRST_PARTICIPATION_NOTE, PERSONAL_RECORD_NOTE_PREFIX } from '../history/notes-builder.constant';
@@ -251,6 +251,45 @@ export const EXPECTED_PRE_BASELINE_EVENTS: ArchiveIndexEntry[] = [
   { ...EXPECTED_NEW_ENTRY, number: FIRST_ARCHIVE_EVENT_NUMBER + 1, newcomerCount: 2 },
   { ...PRE_BASELINE_ENTRY, newcomerCount: 0, personalRecordCount: 1 },
 ];
+
+/** The second event of a batch, a week after `RACE_EVENT`. */
+export const BATCH_SECOND_SLUG = '2026-07-05';
+
+export const BATCH_SECOND_EVENT: RaceEvent = { ...RACE_EVENT, dateIso: BATCH_SECOND_SLUG };
+
+const MARIA_REPEAT_TIME_5 = '26:00';
+
+const MARIA_REPEAT_MS = 1560000;
+
+/** Мария again, slower than her batch-opening 25:00 — no ЛР and no year best, so the stored note stays empty. */
+export const BATCH_SECOND_ROWS: ProtocolRow[] = [{ ...PROTOCOL_ROWS[0], time5: MARIA_REPEAT_TIME_5, totalMs: MARIA_REPEAT_MS }];
+
+/** A two-event batch given newest first, so the rollup must sort; only the older event carries weather. */
+export const BATCH_UPDATES_MOCK: ProtocolDbEventUpdate[] = [{ event: BATCH_SECOND_EVENT, rows: BATCH_SECOND_ROWS }, DB_UPDATE_MOCK];
+
+/** The later batch event as the write stores it: chronological position two. */
+export const BATCH_SECOND_STORED_EVENT: RaceEvent = { ...BATCH_SECOND_EVENT, number: FIRST_ARCHIVE_EVENT_NUMBER + 1 };
+
+/** The archive order after the batch: newest first, numbers positional. */
+export const EXPECTED_BATCH_EVENT_ORDER: Pick<ArchiveIndexEntry, 'number' | 'slug'>[] = [
+  { slug: BATCH_SECOND_SLUG, number: FIRST_ARCHIVE_EVENT_NUMBER + 1 },
+  { slug: RACE_EVENT.dateIso, number: FIRST_ARCHIVE_EVENT_NUMBER },
+];
+
+const MARIA_BATCH_KEY = 'мария иванова';
+
+/** The merged rollup: Мария carries a run from each batch event, her batch-opening 25:00 stays the best. */
+export const EXPECTED_BATCH_HISTORY: AthletesHistory = {
+  ...EXPECTED_FIRST_PUBLISH_HISTORY,
+  [MARIA_BATCH_KEY]: {
+    ...EXPECTED_FIRST_PUBLISH_HISTORY[MARIA_BATCH_KEY],
+    participationSlugs: [RACE_EVENT.dateIso, BATCH_SECOND_SLUG],
+    runs: [
+      ...EXPECTED_FIRST_PUBLISH_HISTORY[MARIA_BATCH_KEY].runs,
+      { dateIso: BATCH_SECOND_SLUG, slug: BATCH_SECOND_SLUG, timeMs: MARIA_REPEAT_MS, distanceKm: FIVE_KM_DISTANCE_KM },
+    ],
+  },
+};
 
 /** A publication carrying no result rows at all: the results insert is skipped and no athlete is created. */
 export const EMPTY_ROWS_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: [] };

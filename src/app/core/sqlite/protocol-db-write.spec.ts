@@ -7,9 +7,15 @@ import { selectEventResults, selectOverallStats } from '../../github/protocol-db
 import { selectEventWeather } from '../../github/protocol-db-weather';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
+  BATCH_SECOND_ROWS,
+  BATCH_SECOND_SLUG,
+  BATCH_SECOND_STORED_EVENT,
+  BATCH_UPDATES_MOCK,
   DB_UPDATE_MOCK,
   DNF_ONLY_UPDATE_MOCK,
   EMPTY_ROWS_UPDATE_MOCK,
+  EXPECTED_BATCH_EVENT_ORDER,
+  EXPECTED_BATCH_HISTORY,
   EXISTING_DB_SEED,
   EXPECTED_APPLIED_EVENTS,
   EXPECTED_DNF_ONLY_HISTORY,
@@ -27,7 +33,7 @@ import {
   SOLE_EVENT_DB_SEED,
   SOLE_REMOVAL_MOCK,
 } from './protocol-db-write.mock';
-import { applyEventToDb, removeEventFromDb } from './protocol-db-write';
+import { applyEventsToDb, applyEventToDb, removeEventFromDb } from './protocol-db-write';
 import { createProtocolDrizzle, ProtocolDrizzle } from './protocol-drizzle';
 import { exportMemoryProtocolDbBytes, openMemoryProtocolDbFromBytes } from './spec-utils/protocol-db-memory';
 
@@ -90,6 +96,27 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(
         buildEventResultsFile(SOLE_RACE_EVENT, EXPECTED_STORED_ROWS),
       );
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
+
+  it(
+    'applies a two-event batch given newest first: both slugs keep their results, the numbering is positional, the rollup merges and weather lands only where provided',
+    async () => {
+      const db = await reopen(await applyEventsToDb(null, BATCH_UPDATES_MOCK));
+
+      await expect(readHistory(db), 'the rollup carries runs from both events').resolves.toEqual(EXPECTED_BATCH_HISTORY);
+      expect((await readIndexFile(db)).events.map((entry) => ({ slug: entry.slug, number: entry.number }))).toEqual(
+        EXPECTED_BATCH_EVENT_ORDER,
+      );
+      await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(
+        buildEventResultsFile(SOLE_RACE_EVENT, EXPECTED_STORED_ROWS),
+      );
+      await expect(selectEventResults(db, BATCH_SECOND_SLUG)).resolves.toEqual(
+        buildEventResultsFile(BATCH_SECOND_STORED_EVENT, BATCH_SECOND_ROWS),
+      );
+      await expect(selectEventWeather(db, RACE_EVENT.dateIso), 'the update carrying weather stores it').resolves.toEqual(WEATHER_MOCK);
+      await expect(selectEventWeather(db, BATCH_SECOND_SLUG), 'the update without weather stores none').resolves.toBeNull();
     },
     ROUNDTRIP_TIMEOUT_MS,
   );

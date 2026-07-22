@@ -34,13 +34,13 @@ interface PreviousState {
   history: AthletesHistory;
 }
 
-/** The state the db is converged onto: the full index/history plus the slug's results to add or drop. */
+/** The state the db is converged onto: the full index/history plus the slugs' results to add or drop. */
 interface SyncTarget {
   index: ArchiveIndexFile;
   history: AthletesHistory;
-  resultsFile: EventResultsFile | null;
+  resultsFiles: EventResultsFile[];
   removedSlug: string | null;
-  weather: PublishedWeather | null;
+  weathers: PublishedWeather[];
 }
 
 /** The published slug's publish-time weather readings; null (no fetch, or it failed) leaves the stored row alone. */
@@ -69,7 +69,16 @@ function oo1Drizzle(db: Database): ProtocolDrizzle {
  * `events` and athlete tables; only the published slug's `results` rows are replaced.
  */
 export function applyEventToDb(dbBytes: Uint8Array | null, update: ProtocolDbEventUpdate): Promise<Uint8Array> {
-  return syncDbToState(dbBytes, (previous) => rollupPublication(previous, update));
+  return applyEventsToDb(dbBytes, [update]);
+}
+
+/**
+ * The batch form of `applyEventToDb`: rolls every publication onto the db in one pass — the derived
+ * tables are rebuilt and the notes/summaries recomputed once, not per event — so a multi-protocol
+ * upload converges in a single transaction over a single downloaded db.
+ */
+export function applyEventsToDb(dbBytes: Uint8Array | null, updates: ProtocolDbEventUpdate[]): Promise<Uint8Array> {
+  return syncDbToState(dbBytes, (previous) => rollupPublications(previous, updates));
 }
 
 /** The deletion mirror of `applyEventToDb`: the same read-then-rebuild, minus the removed slug everywhere. */
@@ -77,25 +86,39 @@ export function removeEventFromDb(dbBytes: Uint8Array | null, removal: ProtocolD
   return syncDbToState(dbBytes, (previous) => rollupDeletion(previous, removal));
 }
 
-/** Rolls the published event onto the previous state: its rollup contribution, index entry and results. */
-function rollupPublication(previous: PreviousState, update: ProtocolDbEventUpdate): SyncTarget {
-  const slug = update.event.dateIso;
-  const history = applyEventToHistory(
-    removeEventFromHistory(previous.history, slug),
-    { slug, dateIso: update.event.dateIso },
-    toEventResults(update.rows),
-  );
-  // The organisers' legacy number belongs to the archive, not the form: a re-publication keeps it.
-  const legacyNumber = previous.index.events.find((entry) => entry.slug === slug)?.legacyNumber ?? update.event.legacyNumber;
-  const event: RaceEvent = { ...update.event, legacyNumber };
+/**
+ * Rolls the published events onto the previous state — rollup contributions, index entries and
+ * results — chronologically, so an earlier event of the same batch is already part of the state a
+ * later one is rolled onto.
+ */
+function rollupPublications(previous: PreviousState, updates: ProtocolDbEventUpdate[]): SyncTarget {
+  const ordered = [...updates].sort((left, right) => left.event.dateIso.localeCompare(right.event.dateIso));
+  const resultsFiles: EventResultsFile[] = [];
+  const weathers: PublishedWeather[] = [];
+  let { index, history } = previous;
 
-  return {
-    index: upsertIndexEntry(previous.index, buildIndexEntry(event, update.rows)),
-    history,
-    resultsFile: buildEventResultsFile(event, update.rows),
-    removedSlug: null,
-    weather: update.weather ? { slug, readings: update.weather } : null,
-  };
+  for (const update of ordered) {
+    const slug = update.event.dateIso;
+
+    history = applyEventToHistory(
+      removeEventFromHistory(history, slug),
+      { slug, dateIso: update.event.dateIso },
+      toEventResults(update.rows),
+    );
+
+    // The organisers' legacy number belongs to the archive, not the form: a re-publication keeps it.
+    const legacyNumber = index.events.find((entry) => entry.slug === slug)?.legacyNumber ?? update.event.legacyNumber;
+    const event: RaceEvent = { ...update.event, legacyNumber };
+
+    index = upsertIndexEntry(index, buildIndexEntry(event, update.rows));
+    resultsFiles.push(buildEventResultsFile(event, update.rows));
+
+    if (update.weather) {
+      weathers.push({ slug, readings: update.weather });
+    }
+  }
+
+  return { index, history, resultsFiles, removedSlug: null, weathers };
 }
 
 /** Strips the removed slug from the previous state: its index entry, rollup contribution and results rows. */
@@ -103,9 +126,9 @@ function rollupDeletion(previous: PreviousState, removal: ProtocolDbEventRemoval
   return {
     index: removeIndexEntry(previous.index, removal.slug),
     history: removeEventFromHistory(previous.history, removal.slug),
-    resultsFile: null,
+    resultsFiles: [],
     removedSlug: removal.slug,
-    weather: null,
+    weathers: [],
   };
 }
 
@@ -130,12 +153,12 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     const rolled = rollup({ index: await readIndexFile(ddb), history: await readHistory(ddb) });
     // Numbers are positional, so any add or removal renumbers the whole archive.
     const target: SyncTarget = { ...rolled, index: renumberIndexEvents(rolled.index) };
-    const eventMeta = await readEventMeta(ddb, target.resultsFile);
+    const eventMeta = await readEventMeta(ddb, target.resultsFiles);
 
     db.exec(BEGIN_TRANSACTION_SQL);
     await rewriteEvents(ddb, target.index, eventMeta);
-    await rewriteResults(ddb, target.resultsFile, target.removedSlug);
-    await rewriteEventWeather(ddb, target.weather, target.removedSlug);
+    await rewriteResults(ddb, target.resultsFiles, target.removedSlug);
+    await rewriteEventWeather(ddb, target.weathers, target.removedSlug);
     await rewriteAthletes(ddb, target.history);
     // Every add or removal can shift later events' notes (first participation, records, year
     // bests), so the whole archive's notes converge in the same transaction.
@@ -169,10 +192,10 @@ function createSchema(db: Database): void {
 /**
  * `club_name`/`chairman` live in per-event results files, not in the archive, so the full
  * `events` rewrite would lose them; they are re-read from the current rows first, with the
- * published event taking its values from the fresh results file. The archive is read back out of
- * the same `events` table, so every entry the rewrite writes has an entry here.
+ * published events taking their values from the fresh results files. The archive is read back out
+ * of the same `events` table, so every entry the rewrite writes has an entry here.
  */
-async function readEventMeta(db: ProtocolDrizzle, resultsFile: EventResultsFile | null): Promise<Record<string, ProtocolDbEventMeta>> {
+async function readEventMeta(db: ProtocolDrizzle, resultsFiles: EventResultsFile[]): Promise<Record<string, ProtocolDbEventMeta>> {
   const meta: Record<string, ProtocolDbEventMeta> = {};
   const rows = await db
     .select({ slug: eventsTable.slug, clubName: eventsTable.clubName, chairman: eventsTable.chairman })
@@ -182,7 +205,7 @@ async function readEventMeta(db: ProtocolDrizzle, resultsFile: EventResultsFile 
     meta[row.slug] = { clubName: row.clubName, chairman: row.chairman };
   }
 
-  if (resultsFile !== null) {
+  for (const resultsFile of resultsFiles) {
     meta[resultsFile.event.dateIso] = { clubName: resultsFile.event.clubName, chairman: resultsFile.event.chairman };
   }
 
@@ -224,59 +247,55 @@ async function rewriteEvents(db: ProtocolDrizzle, index: ArchiveIndexFile, event
   );
 }
 
-/** Replaces only the published slug's rows and/or drops the removed slug's; other events' results stay. */
-async function rewriteResults(db: ProtocolDrizzle, resultsFile: EventResultsFile | null, removedSlug: string | null): Promise<void> {
+/** Replaces only the published slugs' rows and/or drops the removed slug's; other events' results stay. */
+async function rewriteResults(db: ProtocolDrizzle, resultsFiles: EventResultsFile[], removedSlug: string | null): Promise<void> {
   if (removedSlug !== null) {
     await db.delete(resultsTable).where(eq(resultsTable.slug, removedSlug));
   }
 
-  if (resultsFile === null) {
-    return;
+  for (const resultsFile of resultsFiles) {
+    const slug = resultsFile.event.dateIso;
+
+    await db.delete(resultsTable).where(eq(resultsTable.slug, slug));
+
+    if (resultsFile.rows.length === 0) {
+      continue;
+    }
+
+    await db.insert(resultsTable).values(
+      resultsFile.rows.map((row) => ({
+        slug,
+        idx: row.index,
+        fullName: row.fullName,
+        time23: row.time23,
+        time5: row.time5,
+        totalMs: row.totalMs,
+        distanceKm: row.distanceKm,
+        gender: row.gender,
+        placeM: row.placeM,
+        placeF: row.placeF,
+        club: row.club,
+        note: row.note,
+      })),
+    );
   }
-
-  const slug = resultsFile.event.dateIso;
-
-  await db.delete(resultsTable).where(eq(resultsTable.slug, slug));
-
-  if (resultsFile.rows.length === 0) {
-    return;
-  }
-
-  await db.insert(resultsTable).values(
-    resultsFile.rows.map((row) => ({
-      slug,
-      idx: row.index,
-      fullName: row.fullName,
-      time23: row.time23,
-      time5: row.time5,
-      totalMs: row.totalMs,
-      distanceKm: row.distanceKm,
-      gender: row.gender,
-      placeM: row.placeM,
-      placeF: row.placeF,
-      club: row.club,
-      note: row.note,
-    })),
-  );
 }
 
 /**
- * Upserts the published slug's weather and drops the removed slug's; every other row survives the
+ * Upserts the published slugs' weather and drops the removed slug's; every other row survives the
  * publication untouched — unlike `events`, this table is never rebuilt from the index, because the
  * readings are only fetchable around publish time.
  */
-async function rewriteEventWeather(db: ProtocolDrizzle, weather: PublishedWeather | null, removedSlug: string | null): Promise<void> {
+async function rewriteEventWeather(db: ProtocolDrizzle, weathers: PublishedWeather[], removedSlug: string | null): Promise<void> {
   if (removedSlug !== null) {
     await db.delete(eventWeather).where(eq(eventWeather.slug, removedSlug));
   }
 
-  if (weather === null) {
-    return;
+  for (const weather of weathers) {
+    const row = { slug: weather.slug, ...weather.readings };
+
+    await db.insert(eventWeather).values(row).onConflictDoUpdate({ target: eventWeather.slug, set: row });
   }
-
-  const row = { slug: weather.slug, ...weather.readings };
-
-  await db.insert(eventWeather).values(row).onConflictDoUpdate({ target: eventWeather.slug, set: row });
 }
 
 /** `athletes`/`runs`/`participations` mirror the rollup exactly, so a full rebuild guarantees db ≡ history. */
