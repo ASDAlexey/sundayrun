@@ -2490,35 +2490,56 @@
         <source> Проверьте пол у <x id="INTERPOLATION" equiv-text="{{ unknownGenderCount() }}"/> участников </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
-          <context context-type="linenumber">6,10</context>
+          <context context-type="linenumber">8,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.otherDraftsWarning" datatype="html">
+        <source> Ещё не готовы протоколы: <x id="INTERPOLATION" equiv-text="{{ otherUnreadyCount() }}"/> — пролистайте и проверьте каждый </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">14,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.duplicateDates" datatype="html">
+        <source> Среди загруженных протоколов есть совпадающие даты — уберите дубликат или исправьте дату </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">20,24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preview.historyLoading" datatype="html">
         <source>Загружаем историю…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
-          <context context-type="linenumber">17,21</context>
+          <context context-type="linenumber">31,35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preview.historyError" datatype="html">
         <source>Не удалось загрузить историю</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
-          <context context-type="linenumber">22,26</context>
+          <context context-type="linenumber">36,40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preview.notesHint" datatype="html">
         <source> Примечания («ЛР», «Первое участие» и другие) рассчитываются автоматически по истории — в колонке ниже они показаны так, как попадут в протокол. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
-          <context context-type="linenumber">27,31</context>
+          <context context-type="linenumber">41,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="preview.generateMany" datatype="html">
+        <source>Сгенерировать протоколы (<x id="INTERPOLATION" equiv-text="{{ draftCount() }}"/>)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preview.generate" datatype="html">
-        <source> Сгенерировать протокол </source>
+        <source>Сгенерировать протокол</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/preview/preview-page.html</context>
-          <context context-type="linenumber">35,38</context>
+          <context context-type="linenumber">52,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.genderMale" datatype="html">
@@ -3573,189 +3594,196 @@
         <source>Генерируем PDF…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">7,10</context>
+          <context context-type="linenumber">9,12</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.title" datatype="html">
         <source>Протокол готов</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">11,13</context>
+          <context context-type="linenumber">13,15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.previewTitle" datatype="html">
         <source>Предпросмотр протокола</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">16,19</context>
+          <context context-type="linenumber">18,21</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.download" datatype="html">
         <source>Скачать PDF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">21,24</context>
+          <context context-type="linenumber">23,26</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.share" datatype="html">
         <source>Поделиться</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">25,27</context>
+          <context context-type="linenumber">27,29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.vkDescriptionLabel" datatype="html">
         <source>Описание для ВК</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">31,34</context>
+          <context context-type="linenumber">33,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.copied" datatype="html">
         <source>Скопировано</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">48,49</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.copyDescription" datatype="html">
         <source>Скопировать описание</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">48,50</context>
+          <context context-type="linenumber">50,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.attachPhoto" datatype="html">
         <source> Прикрепить фото с забега </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">55,58</context>
+          <context context-type="linenumber">57,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.vkOpen" datatype="html">
         <source> Поделиться в ВК </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">59,60</context>
+          <context context-type="linenumber">61,62</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.photoAttached" datatype="html">
         <source>Фото прикреплено: <x id="INTERPOLATION" equiv-text="{{ name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">64,66</context>
+          <context context-type="linenumber">66,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="result.publishMany" datatype="html">
+        <source>Опубликовать все (<x id="INTERPOLATION" equiv-text="{{ draftCount() }}"/>) в архив</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/result/result-page.html</context>
+          <context context-type="linenumber">80,81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publish" datatype="html">
-        <source> Опубликовать в архив </source>
+        <source>Опубликовать в архив</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">78,79</context>
+          <context context-type="linenumber">82,84</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishing" datatype="html">
         <source>Публикуем…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">87,89</context>
+          <context context-type="linenumber">92,94</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishedIn" datatype="html">
         <source>Опубликовано за <x id="INTERPOLATION" equiv-text="{{ took }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">109,110</context>
+          <context context-type="linenumber">114,115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.published" datatype="html">
         <source>Опубликовано</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">111,112</context>
+          <context context-type="linenumber">116,117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishedNote" datatype="html">
         <source>Результаты уже на сайте</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">114,115</context>
+          <context context-type="linenumber">119,120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishOpen" datatype="html">
         <source> Показать результаты </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">119,120</context>
+          <context context-type="linenumber">124,125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishDeploying" datatype="html">
         <source>Опубликовано — сайт обновляется…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">125,127</context>
+          <context context-type="linenumber">130,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishAverage" datatype="html">
         <source>обычно занимает ~<x id="INTERPOLATION" equiv-text="{{ average }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">131,132</context>
+          <context context-type="linenumber">136,137</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.stepCommitted" datatype="html">
         <source>Протокол в архиве</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">144,146</context>
+          <context context-type="linenumber">149,151</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.stepDeploying" datatype="html">
         <source>Сайт пересобирается</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">146,148</context>
+          <context context-type="linenumber">151,153</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.stepLive" datatype="html">
         <source>Результаты на сайте</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">148,149</context>
+          <context context-type="linenumber">153,154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishAuthError" datatype="html">
         <source>Нет доступа к GitHub: токен отсутствует или истёк.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">155,157</context>
+          <context context-type="linenumber">160,162</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishAdminLink" datatype="html">
         <source>Обновить токен</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">157,159</context>
+          <context context-type="linenumber">162,164</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.publishError" datatype="html">
         <source>Не удалось опубликовать</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">161,163</context>
+          <context context-type="linenumber">166,168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.error" datatype="html">
         <source>Не удалось сгенерировать PDF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">169,171</context>
+          <context context-type="linenumber">174,176</context>
         </context-group>
       </trans-unit>
       <trans-unit id="result.back" datatype="html">
         <source>Назад к предпросмотру</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/result/result-page.html</context>
-          <context context-type="linenumber">171,174</context>
+          <context context-type="linenumber">176,179</context>
         </context-group>
       </trans-unit>
       <trans-unit id="upload.zoneAriaLabel" datatype="html">
@@ -3773,14 +3801,14 @@
         </context-group>
       </trans-unit>
       <trans-unit id="upload.zoneMeta" datatype="html">
-        <source>или перетащите сюда · xlsx</source>
+        <source>или перетащите сюда · xlsx · можно сразу несколько</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/upload/protocol-dropzone/protocol-dropzone.html</context>
           <context context-type="linenumber">31,34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="upload.error" datatype="html">
-        <source> Не удалось прочитать файл. Убедитесь, что это .xlsx-экспорт приложения-секундомера. </source>
+        <source> Не удалось прочитать файлы. Убедитесь, что каждый из них — .xlsx-экспорт приложения-секундомера. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/upload/protocol-dropzone/protocol-dropzone.html</context>
           <context context-type="linenumber">36,40</context>
@@ -4135,6 +4163,41 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/notification/notification.constant.ts</context>
           <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="pager.ariaLabel" datatype="html">
+        <source>Переключение протоколов</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/protocol-pager/protocol-pager.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="pager.previous" datatype="html">
+        <source>Предыдущий протокол</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/protocol-pager/protocol-pager.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="pager.position" datatype="html">
+        <source>Протокол <x id="INTERPOLATION" equiv-text="{{ index() + 1 }}"/> из <x id="INTERPOLATION_1" equiv-text="{{ count() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/protocol-pager/protocol-pager.html</context>
+          <context context-type="linenumber">17,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="pager.dotLabel" datatype="html">
+        <source>Протокол <x id="INTERPOLATION" equiv-text="{{ $index + 1 }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/protocol-pager/protocol-pager.html</context>
+          <context context-type="linenumber">32,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="pager.next" datatype="html">
+        <source>Следующий протокол</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/protocol-pager/protocol-pager.html</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="reload.button" datatype="html">
