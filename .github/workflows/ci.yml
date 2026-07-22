@@ -57,15 +57,19 @@ jobs:
             echo "code=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Semver kind for the deploy's version bump: a `feat` commit shipped since the previous bump
-      # makes the release a minor, anything else a patch. Decided here — this job already has the
-      # full history that the deploy job's shallow checkout lacks.
+      # Semver kind for the deploy's version bump, from the commits shipped since the previous
+      # bump: a breaking change (`type!:` bang or a `BREAKING CHANGE` footer) makes the release a
+      # major, a `feat` commit a minor, anything else a patch. Decided here — this job already has
+      # the full history that the deploy job's shallow checkout lacks.
       - name: Pick version bump kind
         id: bump
         run: |
           last_bump=$(git log --fixed-strings --grep='chore: bump version' --format=%H -n 1)
           range=$([ -n "$last_bump" ] && echo "$last_bump..HEAD" || echo "HEAD")
-          if git log --format=%s "$range" | grep -qE '^feat(\([^)]*\))?!?:'; then
+          if git log --format=%s "$range" | grep -qE '^[a-z]+(\([^)]*\))?!:' \
+            || git log --format=%B "$range" | grep -qE '^BREAKING[ -]CHANGE:'; then
+            echo "kind=major" >> "$GITHUB_OUTPUT"
+          elif git log --format=%s "$range" | grep -qE '^feat(\([^)]*\))?:'; then
             echo "kind=minor" >> "$GITHUB_OUTPUT"
           else
             echo "kind=patch" >> "$GITHUB_OUTPUT"
