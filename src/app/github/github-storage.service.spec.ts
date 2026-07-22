@@ -51,7 +51,11 @@ describe('GithubStorageService', () => {
 
     expect(service.state()).toBe(PublishState.idle);
 
-    const publishing = service.publish(PUBLISH_INPUT);
+    await service.publish([]);
+
+    expect(service.state(), 'an empty batch is a no-op').toBe(PublishState.idle);
+
+    const publishing = service.publish([PUBLISH_INPUT]);
 
     expect(service.state()).toBe(PublishState.publishing);
 
@@ -70,8 +74,8 @@ describe('GithubStorageService', () => {
 
     vi.stubGlobal('fetch', pendingFetch);
 
-    void service.publish(PUBLISH_INPUT);
-    await service.publish(PUBLISH_INPUT);
+    void service.publish([PUBLISH_INPUT]);
+    await service.publish([PUBLISH_INPUT]);
 
     expect(service.state()).toBe(PublishState.publishing);
     expect(pendingFetch, 'the second call starts no second request cycle').toHaveBeenCalledTimes(CONTENTS_READS_PER_PUBLISH);
@@ -79,7 +83,7 @@ describe('GithubStorageService', () => {
 
   it('reports authError without a token or on 401 and error on any other failure', async () => {
     token.set(null);
-    await service.publish(PUBLISH_INPUT);
+    await service.publish([PUBLISH_INPUT]);
 
     expect(service.state()).toBe(PublishState.authError);
 
@@ -88,7 +92,7 @@ describe('GithubStorageService', () => {
       'fetch',
       vi.fn(() => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED))),
     );
-    await service.publish(PUBLISH_INPUT);
+    await service.publish([PUBLISH_INPUT]);
 
     expect(service.state()).toBe(PublishState.authError);
 
@@ -96,7 +100,7 @@ describe('GithubStorageService', () => {
       'fetch',
       vi.fn(() => Promise.reject(new Error(NETWORK_ERROR_MESSAGE))),
     );
-    await service.publish(PUBLISH_INPUT);
+    await service.publish([PUBLISH_INPUT]);
 
     expect(service.state()).toBe(PublishState.error);
   });
