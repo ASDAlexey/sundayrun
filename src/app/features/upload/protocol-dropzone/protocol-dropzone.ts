@@ -35,7 +35,7 @@ export class ProtocolDropzone {
   async onDrop(event: FileDropEvent): Promise<void> {
     event.preventDefault();
     this.isDragOver.set(false);
-    await this.#importFile(event.dataTransfer === null ? null : firstFileOf(event.dataTransfer.files));
+    await this.#importFiles(event.dataTransfer === null ? [] : toFileArray(event.dataTransfer.files));
   }
 
   openFileDialog(): void {
@@ -50,27 +50,29 @@ export class ProtocolDropzone {
   }
 
   async onFileSelected(files: ArrayLike<File> | null): Promise<void> {
-    await this.#importFile(files === null ? null : firstFileOf(files));
+    await this.#importFiles(files === null ? [] : toFileArray(files));
     this.fileInput().nativeElement.value = EMPTY_INPUT_VALUE;
   }
 
-  /** Resets the store first, so a failed import never leaves stale data behind. */
-  async #importFile(file: File | null): Promise<void> {
+  /** Resets the store first, so a failed import never leaves stale data behind. All-or-nothing: one bad file fails the whole drop. */
+  async #importFiles(files: File[]): Promise<void> {
     this.#store.reset();
     this.hasError.set(false);
 
-    if (file === null) {
+    if (files.length === 0) {
       return;
     }
 
-    if (!file.name.toLowerCase().endsWith(XLSX_EXTENSION)) {
+    if (files.some((file) => !file.name.toLowerCase().endsWith(XLSX_EXTENSION))) {
       this.hasError.set(true);
 
       return;
     }
 
     try {
-      this.#store.importFile(file.name, new Uint8Array(await file.arrayBuffer()));
+      const sources = await Promise.all(files.map(async (file) => ({ name: file.name, bytes: new Uint8Array(await file.arrayBuffer()) })));
+
+      this.#store.importFiles(sources);
       await this.#router.navigate(PREVIEW_ROUTE_COMMANDS);
     } catch {
       this.#store.reset();
@@ -79,7 +81,6 @@ export class ProtocolDropzone {
   }
 }
 
-/** Only the first file of a multi-file drop or selection is taken. */
-function firstFileOf(files: ArrayLike<File>): File | null {
-  return files.length > 0 ? files[0] : null;
+function toFileArray(files: ArrayLike<File>): File[] {
+  return Array.from(files);
 }

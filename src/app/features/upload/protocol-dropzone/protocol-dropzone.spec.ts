@@ -16,7 +16,7 @@ import {
 
 describe('ProtocolDropzone', () => {
   const reset = vi.fn();
-  const importFile = vi.fn();
+  const importFiles = vi.fn();
   const navigate = vi.fn(() => Promise.resolve(true));
 
   let fixture: ComponentFixture<ProtocolDropzone>;
@@ -26,7 +26,7 @@ describe('ProtocolDropzone', () => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
       providers: [
-        { provide: ProtocolStateService, useValue: { reset, importFile } },
+        { provide: ProtocolStateService, useValue: { reset, importFiles } },
         { provide: Router, useValue: { navigate } },
       ],
     });
@@ -62,7 +62,7 @@ describe('ProtocolDropzone', () => {
     expect(preventDefault).toHaveBeenCalledTimes(3);
   });
 
-  it('imports only the first dropped xlsx, resets the store first and navigates to preview', async () => {
+  it('imports every dropped xlsx as one batch, resets the store first and navigates to preview', async () => {
     const preventDefault = vi.fn();
     const files = [new File([FILE_BYTES], DATED_FILE_NAME), new File([FILE_BYTES], SECOND_FILE_NAME)];
 
@@ -73,34 +73,38 @@ describe('ProtocolDropzone', () => {
     expect(dropzone.isDragOver()).toBe(false);
     expect(dropzone.hasError()).toBe(false);
     expect(reset).toHaveBeenCalledTimes(1);
-    expect(importFile).toHaveBeenCalledTimes(1);
-    expect(importFile).toHaveBeenCalledWith(DATED_FILE_NAME, FILE_BYTES);
+    expect(importFiles).toHaveBeenCalledTimes(1);
+    expect(importFiles).toHaveBeenCalledWith([
+      { name: DATED_FILE_NAME, bytes: FILE_BYTES },
+      { name: SECOND_FILE_NAME, bytes: FILE_BYTES },
+    ]);
     expect(navigate).toHaveBeenCalledWith(PREVIEW_ROUTE_COMMANDS);
-    expect(reset.mock.invocationCallOrder[0]).toBeLessThan(importFile.mock.invocationCallOrder[0]);
+    expect(reset.mock.invocationCallOrder[0]).toBeLessThan(importFiles.mock.invocationCallOrder[0]);
+    expect(fixture.nativeElement.querySelector('.dropzone__input').multiple, 'the file dialog allows a multi-select').toBe(true);
   });
 
-  it('ignores empty drops, rejects non-xlsx names, accepts uppercase extension and reports import failures', async () => {
+  it('ignores empty drops, rejects a batch with any non-xlsx name, accepts uppercase extension and reports import failures', async () => {
     await dropzone.onDrop({ preventDefault: vi.fn(), dataTransfer: null });
     await dropzone.onDrop({ preventDefault: vi.fn(), dataTransfer: { files: [] } });
     await dropzone.onFileSelected(null);
 
     expect(dropzone.hasError()).toBe(false);
-    expect(importFile).not.toHaveBeenCalled();
+    expect(importFiles).not.toHaveBeenCalled();
     expect(reset).toHaveBeenCalledTimes(3);
 
-    await dropzone.onFileSelected([new File([FILE_BYTES], WRONG_EXTENSION_FILE_NAME)]);
+    await dropzone.onFileSelected([new File([FILE_BYTES], DATED_FILE_NAME), new File([FILE_BYTES], WRONG_EXTENSION_FILE_NAME)]);
 
-    expect(dropzone.hasError()).toBe(true);
-    expect(importFile).not.toHaveBeenCalled();
+    expect(dropzone.hasError(), 'one bad file fails the whole drop, nothing is imported').toBe(true);
+    expect(importFiles).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
 
     await dropzone.onFileSelected([new File([FILE_BYTES], UPPER_CASE_FILE_NAME)]);
 
     expect(dropzone.hasError()).toBe(false);
-    expect(importFile).toHaveBeenCalledWith(UPPER_CASE_FILE_NAME, FILE_BYTES);
+    expect(importFiles).toHaveBeenCalledWith([{ name: UPPER_CASE_FILE_NAME, bytes: FILE_BYTES }]);
     expect(navigate).toHaveBeenCalledTimes(1);
 
-    importFile.mockImplementationOnce(() => {
+    importFiles.mockImplementationOnce(() => {
       throw IMPORT_FAILURE;
     });
     await dropzone.onFileSelected([new File([FILE_BYTES], DATED_FILE_NAME)]);

@@ -28,13 +28,13 @@
 
   <span class="dropzone__prompt" i18n="@@upload.zonePrompt">Выберите файл протокола</span>
 
-  <span class="dropzone__meta" i18n="@@upload.zoneMeta">или перетащите сюда · xlsx</span>
+  <span class="dropzone__meta" i18n="@@upload.zoneMeta">или перетащите сюда · xlsx · можно сразу несколько</span>
 </div>
 
 @if (hasError()) {
   <p class="dropzone__error" i18n="@@upload.error" role="alert">
-    Не удалось прочитать файл. Убедитесь, что это .xlsx-экспорт приложения-секундомера.
+    Не удалось прочитать файлы. Убедитесь, что каждый из них — .xlsx-экспорт приложения-секундомера.
   </p>
 }
 
-<input #fileInput accept=".xlsx" class="dropzone__input" type="file" (change)="onFileSelected(fileInput.files)" />
+<input #fileInput accept=".xlsx" class="dropzone__input" multiple type="file" (change)="onFileSelected(fileInput.files)" />
