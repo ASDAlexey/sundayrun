@@ -4,6 +4,7 @@ import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { AthletesHistory } from '../core/models/athletes-history.type';
 import { Gender } from '../core/models/gender.enum';
 import { RaceEvent } from '../core/models/race-event.interface';
+import { RACE_EVENT_DEFAULTS } from '../core/protocol/race-event-defaults.constant';
 import { WORKBOOK_PATH, WORKBOOK_RELS_PATH, XL_ROOT } from '../core/xlsx/xlsx-reader.constant';
 
 export const IMPORT_FILE_NAME = '14.06.2026.xlsx';
@@ -12,6 +13,20 @@ export const EXPECTED_SUGGESTED_DATE_ISO = '2026-06-14';
 
 /** File name without a DD.MM.YYYY date part. */
 export const UNDATED_FILE_NAME = 'results.xlsx';
+
+/** Second undated file; sorts before `UNDATED_FILE_NAME` by name. */
+export const SECOND_UNDATED_FILE_NAME = 'a-results.xlsx';
+
+/** The batch's earlier draft: same athletes a week before, each noticeably slower. */
+export const BATCH_FIRST_FILE_NAME = '07.06.2026.xlsx';
+
+export const BATCH_FIRST_DATE_ISO = '2026-06-07';
+
+/** A date later than every dated draft of the batch, typed into the undated draft's form. */
+export const BATCH_LATE_DATE_ISO = '2026-06-21';
+
+/** Later than every draft in the batch — `draftRowsBefore` collects them all. */
+export const FUTURE_DATE_ISO = '2026-07-01';
 
 export const KNOWN_MALE_NAME = 'Троилин Антон';
 
@@ -62,8 +77,19 @@ export const EXPECTED_PR_NOTE = 'ЛР (было 20:00); Лучший резул�
 /** A back-dated import: the athlete counts as a first-timer. */
 export const EXPECTED_BACKDATED_NOTE = 'Первое участие';
 
+/** The known male beating his own `BATCH_FIRST_XLSX_BYTES` time from the same batch's earlier draft. */
+export const EXPECTED_BATCH_PR_NOTE = 'ЛР (было 21:03); Лучший результат 2026 г.';
+
 /** Archive dates for the auto race number, as `setPublishedEventDates` receives them. */
 export const PUBLISHED_EVENT_DATES = ['2026-06-07', EXPECTED_SUGGESTED_DATE_ISO];
+
+/** What the auto-fill gives a dated draft once the archive dates land: defaults plus the positional number. */
+export const EXPECTED_AUTO_FILLED_EVENT: RaceEvent = {
+  ...RACE_EVENT_DEFAULTS,
+  number: 2,
+  legacyNumber: null,
+  dateIso: EXPECTED_SUGGESTED_DATE_ISO,
+};
 
 const KNOWN_FEMALE_TOTAL_MS = 1260000;
 
@@ -170,4 +196,19 @@ export const IMPORT_XLSX_BYTES: Uint8Array = zipSync({
   [WORKBOOK_PATH]: strToU8(WORKBOOK_XML),
   [WORKBOOK_RELS_PATH]: strToU8(WORKBOOK_RELS_XML),
   [`${XL_ROOT}${SHEET_TARGET}`]: strToU8(SHEET_XML),
+});
+
+const SLOWER_SHEET_XML =
+  '<worksheet><sheetData>' +
+  xmlRow(['Name', 'Total', 'Avg/lap', 'Avg/km', 'Lap 1', 'Lap 2']) +
+  xmlRow([KNOWN_MALE_NAME, '0:21:03,028', '', '', '0:09:29,705', '0:11:33,323']) +
+  xmlRow([KNOWN_FEMALE_NAME, '0:23:00,000', '', '', '0:11:00,000', '0:12:00,000']) +
+  xmlRow([UNKNOWN_GENDER_NAME, '0:27:00,000', '', '', '0:13:00,000', '0:14:00,000']) +
+  '</sheetData></worksheet>';
+
+/** The same three athletes, each ~2 min slower — `IMPORT_XLSX_BYTES` beats every time in here. */
+export const BATCH_FIRST_XLSX_BYTES: Uint8Array = zipSync({
+  [WORKBOOK_PATH]: strToU8(WORKBOOK_XML),
+  [WORKBOOK_RELS_PATH]: strToU8(WORKBOOK_RELS_XML),
+  [`${XL_ROOT}${SHEET_TARGET}`]: strToU8(SLOWER_SHEET_XML),
 });
