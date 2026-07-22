@@ -7,7 +7,7 @@ import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { EventWeather } from '../../core/weather/event-weather.interface';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { RACE_PAGE_BASE_LINK } from './race-page.constant';
-import { RaceNoteBadgeKind } from './race-page.enum';
+import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
 import { RacePrNoteView, RaceView } from './race-page.interface';
 
 /** The published slug equals the event `dateIso`. */
@@ -137,7 +137,7 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       finishClubClass: '',
       club: '',
       // An unrecognized organiser note stays running text — no chip, no icon.
-      noteBadges: [{ kind: RaceNoteBadgeKind.plain, className: '', text: 'сход', prNote: null }],
+      noteBadges: [{ kind: NoteBadgeKind.plain, className: '', text: 'сход', prNote: null }],
       notableText: '',
     },
   ],
@@ -248,9 +248,9 @@ export const PR_NOTE_PROTOCOL_ROWS: ProtocolRow[] = PROTOCOL_ROWS.map((row) => {
 
 /** How `toNoteBadges` classifies `PR_NOTE_PROTOCOL_ROWS`, row by row. */
 export const EXPECTED_NOTE_BADGE_KINDS: string[][] = [
-  [RaceNoteBadgeKind.record, RaceNoteBadgeKind.yearBest],
-  [RaceNoteBadgeKind.debut, RaceNoteBadgeKind.kids],
-  [RaceNoteBadgeKind.status, RaceNoteBadgeKind.record],
+  [NoteBadgeKind.record, NoteBadgeKind.yearBest],
+  [NoteBadgeKind.debut, NoteBadgeKind.kids],
+  [NoteBadgeKind.status, NoteBadgeKind.record],
 ];
 
 /** Against `RANK_PARTICIPANT_RUNS`: the earlier best is the 24:00 of 2025-08-03 — its date and race join the note. */

@@ -1,4 +1,5 @@
-import { RaceNoteBadgeKindType, RaceStatusType } from './race-page.enum';
+import { NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
+import { RaceStatusType } from './race-page.enum';
 
 /** The «ЛР (было X)» note split around the previous record, which links to the race where it was set. */
 export interface RacePrNoteView {
@@ -11,7 +12,7 @@ export interface RacePrNoteView {
 
 /** One note token prepared for the template: an icon chip for the known kinds, running text for `plain`. */
 export interface RaceNoteBadgeView {
-  kind: RaceNoteBadgeKindType;
+  kind: NoteBadgeKindType;
   /** The precomputed BEM modifier («race__note-badge_record»); empty for `plain`. */
   className: string;
   text: string;

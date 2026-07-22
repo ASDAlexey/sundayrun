@@ -19,13 +19,10 @@ import { placeGapsMs } from '../../core/history/place-gaps';
 import { NotableKind } from '../../core/history/notables.enum';
 import { Notable } from '../../core/history/notables.interface';
 import { splitNote } from '../../core/history/note-tokens';
-import {
-  FIRST_PARTICIPATION_TOKEN_PATTERN,
-  LEGACY_PERSONAL_RECORD_TOKEN_PATTERN,
-  PERSONAL_RECORD_TOKEN_PATTERN,
-  YEAR_BEST_TOKEN_PATTERN,
-} from '../../core/history/notes-builder.constant';
 import { prNoteTimeWithDate, splitPrNote } from '../../core/history/pr-note';
+import { noteBadgeKindOf } from '../../core/protocol/note-badge-kind';
+import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
+import { paceTextOf } from '../../core/protocol/pace-text';
 import { buildPreviousBests } from '../../core/history/previous-bests';
 import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { summarizeRace } from '../../core/history/race-summary';
@@ -50,7 +47,6 @@ import {
   GAP_TEXT_PREFIX,
   GENDER_CHIP_CLASSES,
   HOME_PAGE_LINK,
-  KIDS_NOTE_TOKEN_PATTERN,
   MALE_GENDER_TEXT,
   NOTE_BADGE_CLASSES,
   PLACE_MEDAL_CLASSES,
@@ -58,10 +54,9 @@ import {
   RACE_TABLE_COLUMNS,
   RACE_TRANSFER_KEY_PREFIX,
   SLUG_ROUTE_PARAM,
-  STATUS_NOTE_TOKEN_PATTERN,
   SUMMARY_PART_SEPARATOR,
 } from './race-page.constant';
-import { RaceNoteBadgeKind, RaceNoteBadgeKindType, RaceStatus, RaceStatusType } from './race-page.enum';
+import { RaceStatus, RaceStatusType } from './race-page.enum';
 import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
 
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
@@ -87,7 +82,7 @@ export class RacePage {
   readonly pdfFailed = signal(false);
 
   protected readonly statuses = RaceStatus;
-  protected readonly noteKinds = RaceNoteBadgeKind;
+  protected readonly noteKinds = NoteBadgeKind;
   protected readonly homeLink = HOME_PAGE_LINK;
   protected readonly tableColumns = RACE_TABLE_COLUMNS;
 
@@ -265,34 +260,9 @@ function toNoteBadges(note: string, previousBest: PreviousBest | undefined): Rac
       kind,
       className: NOTE_BADGE_CLASSES[kind],
       text: token,
-      prNote: kind === RaceNoteBadgeKind.record ? toPrNoteView(token, previousBest) : null,
+      prNote: kind === NoteBadgeKind.record ? toPrNoteView(token, previousBest) : null,
     };
   });
-}
-
-/** Recognizes the auto-note tokens plus the organiser-written kids and DNF/DSQ marks. */
-function noteBadgeKindOf(token: string): RaceNoteBadgeKindType {
-  if (PERSONAL_RECORD_TOKEN_PATTERN.test(token) || LEGACY_PERSONAL_RECORD_TOKEN_PATTERN.test(token)) {
-    return RaceNoteBadgeKind.record;
-  }
-
-  if (YEAR_BEST_TOKEN_PATTERN.test(token)) {
-    return RaceNoteBadgeKind.yearBest;
-  }
-
-  if (FIRST_PARTICIPATION_TOKEN_PATTERN.test(token)) {
-    return RaceNoteBadgeKind.debut;
-  }
-
-  if (KIDS_NOTE_TOKEN_PATTERN.test(token)) {
-    return RaceNoteBadgeKind.kids;
-  }
-
-  if (STATUS_NOTE_TOKEN_PATTERN.test(token)) {
-    return RaceNoteBadgeKind.status;
-  }
-
-  return RaceNoteBadgeKind.plain;
 }
 
 /**
@@ -378,15 +348,6 @@ function medianTimeTextOf(rows: ProtocolRow[], gender: GenderType): string | nul
   const medianTimeMs = medianMsOrNull(times);
 
   return medianTimeMs === null ? null : formatDuration(medianTimeMs);
-}
-
-/** Average pace over the covered distance (5 or 2.3 km), min/km; DNF rows stay blank. */
-function paceTextOf(totalMs: number | null, distanceKm: number | null): string {
-  if (totalMs === null || distanceKm === null) {
-    return EMPTY_CELL_TEXT;
-  }
-
-  return formatDuration(totalMs / distanceKm);
 }
 
 function genderTextOf(gender: GenderType | null): string {
