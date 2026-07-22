@@ -1,25 +1,34 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 
+import { normalizeAthleteKey } from '../../../core/history/athlete-key';
+import { finishCountsWithDrafts } from '../../../core/history/draft-priors';
+import { eventFinishCounts } from '../../../core/history/finish-counts';
+import { splitNote } from '../../../core/history/note-tokens';
+import { placeGapsMs } from '../../../core/history/place-gaps';
 import { Gender, GenderConfidence } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
-import { FIVE_KM_TEXT, TWO_THREE_KM_TEXT } from '../../../shared/distance-label.constant';
-import { FormatDurationPipe } from '../../../shared/pipes/format-duration.pipe';
+import { ProtocolRow } from '../../../core/models/protocol-row.interface';
+import { noteBadgeKindOf } from '../../../core/protocol/note-badge-kind';
+import { NoteBadgeKind } from '../../../core/protocol/note-badge-kind.enum';
+import { paceTextOf } from '../../../core/protocol/pace-text';
+import { orderProtocolParticipants } from '../../../core/protocol/protocol-builder';
+import { formatDuration } from '../../../core/time/duration';
+import { ResultsService } from '../../../github/results.service';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import {
-  DNF_TEXT,
-  FULL_DISTANCE_LAPS,
-  LAP_1_INDEX,
-  LAP_2_INDEX,
-  NO_DISTANCE_TEXT,
-  NO_LAP_TEXT,
-  NO_NOTE_TEXT,
-  SHORT_DISTANCE_LAPS,
+  EMPTY_CELL_TEXT,
+  FINISH_CLUB_TIERS,
+  GAP_TEXT_PREFIX,
+  NOTE_BADGE_CLASSES,
+  PLACE_MEDAL_CLASSES,
 } from './participants-table.constant';
-import { ParticipantRowView } from './participants-table.interface';
+import { ParticipantRowView, PreviewNoteBadgeView } from './participants-table.interface';
 
 /**
- * The imported participants list: gender is editable, the note column is a read-only
- * preview of the auto-generated text (ЛР, первое участие…) exactly as the protocol will show it.
+ * The imported participants in the exact shape of the published protocol page — protocol order,
+ * places with medals and gaps, pace, finish counts and note badges. Gender stays editable (the
+ * М/Ж chips), and every edit reflows the places live; the note column is a read-only preview of
+ * the auto-generated text exactly as the protocol will show it.
  */
 @Component({
   selector: 'app-participants-table',
@@ -29,9 +38,48 @@ import { ParticipantRowView } from './participants-table.interface';
 })
 export class ParticipantsTable {
   readonly #store = inject(ProtocolStateService);
-  readonly #formatDuration = new FormatDurationPipe();
+  readonly #results = inject(ResultsService);
 
-  readonly rows = computed(() => this.#store.participants().map((participant) => this.#toRowView(participant)));
+  /** Stored 5 km finish counts strictly before the draft's date; empty until loaded or on a failed read. */
+  readonly #priorFinishCounts = signal<Record<string, number>>({});
+
+  readonly #dateIso = computed(() => this.#store.event()?.dateIso ?? this.#store.suggestedDateIso());
+
+  /**
+   * The «Участий за всё время» column source, mirroring the PDF: the stored prior counts, the
+   * batch's earlier drafts and this draft's own finishes. Blank while the date is unknown.
+   */
+  readonly #finishCounts = computed(() => {
+    const dateIso = this.#dateIso();
+
+    if (dateIso === null) {
+      return {};
+    }
+
+    return eventFinishCounts(
+      this.#store.protocolRows(),
+      finishCountsWithDrafts(this.#priorFinishCounts(), this.#store.draftRowsBefore(dateIso)),
+    );
+  });
+
+  readonly rows = computed(() => {
+    const rows = this.#store.protocolRows();
+    const ordered = orderProtocolParticipants(this.#store.participants());
+    const gapsMs = placeGapsMs(rows);
+    const finishCounts = this.#finishCounts();
+
+    return rows.map((row, index) => toRowView(row, ordered[index], gapsMs[index], finishCounts));
+  });
+
+  protected readonly noteKinds = NoteBadgeKind;
+
+  constructor() {
+    // The prior counts follow the active draft's date; a blank column beats a wrong count, so a
+    // failed db read clears them instead of failing the page.
+    effect(() => {
+      void this.#loadPriorFinishCounts(this.#dateIso());
+    });
+  }
 
   setMale(id: number): void {
     this.#store.setGender(id, Gender.male);
@@ -41,32 +89,77 @@ export class ParticipantsTable {
     this.#store.setGender(id, Gender.female);
   }
 
-  #toRowView(participant: Participant): ParticipantRowView {
-    return {
-      participant,
-      timeText: participant.totalMs === null ? DNF_TEXT : this.#formatDuration.transform(participant.totalMs),
-      lap1Text: this.#lapText(participant.lapsMs, LAP_1_INDEX),
-      lap2Text: this.#lapText(participant.lapsMs, LAP_2_INDEX),
-      distanceText: distanceTextOf(participant.lapsMs.length),
-      unverified: participant.genderConfidence !== GenderConfidence.high,
-      isMale: participant.gender === Gender.male,
-      isFemale: participant.gender === Gender.female,
-      noteText: participant.note === '' ? NO_NOTE_TEXT : participant.note,
-    };
-  }
+  async #loadPriorFinishCounts(dateIso: string | null): Promise<void> {
+    if (dateIso === null) {
+      this.#priorFinishCounts.set({});
 
-  #lapText(lapsMs: (number | null)[], index: number): string {
-    const lapMs = lapsMs[index] ?? null;
+      return;
+    }
 
-    return lapMs === null ? NO_LAP_TEXT : this.#formatDuration.transform(lapMs);
+    const counts = await this.#results.loadFinishCountsBefore(dateIso).catch(() => ({}));
+
+    // A draft switch may have changed the date while the read was in flight; stale results are dropped.
+    if (this.#dateIso() === dateIso) {
+      this.#priorFinishCounts.set(counts);
+    }
   }
 }
 
-/** 2 laps → the full 5 km, 1 lap → the short 2.3 km, none → no distance at all. */
-function distanceTextOf(laps: number): string {
-  if (laps >= FULL_DISTANCE_LAPS) {
-    return FIVE_KM_TEXT;
+function toRowView(
+  row: ProtocolRow,
+  participant: Participant,
+  gapMs: number | null,
+  finishCounts: Record<string, number>,
+): ParticipantRowView {
+  const finishCount = finishCounts[normalizeAthleteKey(row.fullName)];
+  const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatDuration(gapMs);
+
+  return {
+    id: participant.id,
+    index: row.index,
+    fullName: row.fullName,
+    time23: row.time23,
+    time5: row.time5,
+    paceText: paceTextOf(row.totalMs, row.distanceKm),
+    unverified: participant.genderConfidence !== GenderConfidence.high,
+    isMale: row.gender === Gender.male,
+    isFemale: row.gender === Gender.female,
+    placeMText: placeTextOf(row.placeM),
+    placeFText: placeTextOf(row.placeF),
+    placeMMedalClass: placeMedalClassOf(row.placeM),
+    placeFMedalClass: placeMedalClassOf(row.placeF),
+    gapMText: row.gender === Gender.male ? gapText : EMPTY_CELL_TEXT,
+    gapFText: row.gender === Gender.female ? gapText : EMPTY_CELL_TEXT,
+    finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
+    finishClubClass: finishClubClassOf(finishCount),
+    club: row.club,
+    noteBadges: toNoteBadges(row.note),
+  };
+}
+
+/** Splits the stored note into tokens and classifies each into an icon badge (or running text). */
+function toNoteBadges(note: string): PreviewNoteBadgeView[] {
+  return splitNote(note).map((token) => {
+    const kind = noteBadgeKindOf(token);
+
+    return { kind, className: NOTE_BADGE_CLASSES[kind], text: token };
+  });
+}
+
+function placeTextOf(place: number | null): string {
+  return place === null ? EMPTY_CELL_TEXT : String(place);
+}
+
+function placeMedalClassOf(place: number | null): string {
+  // A missing place looks up rank 0 — off the podium map, like any place past the bronze.
+  return PLACE_MEDAL_CLASSES[place ?? 0] ?? EMPTY_CELL_TEXT;
+}
+
+/** The 5-вёрст-style finisher club of the count; below the first milestone the badge stays neutral. */
+function finishClubClassOf(finishCount: number | undefined): string {
+  if (finishCount === undefined) {
+    return EMPTY_CELL_TEXT;
   }
 
-  return laps === SHORT_DISTANCE_LAPS ? TWO_THREE_KM_TEXT : NO_DISTANCE_TEXT;
+  return FINISH_CLUB_TIERS.find((tier) => finishCount >= tier.min)?.className ?? EMPTY_CELL_TEXT;
 }

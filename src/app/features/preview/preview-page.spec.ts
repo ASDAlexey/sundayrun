@@ -1,4 +1,4 @@
-import { signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
@@ -6,7 +6,9 @@ import { VALID_HISTORY } from '../../core/github/history-file.mock';
 import { AthletesHistory } from '../../core/models/athletes-history.type';
 import { Participant } from '../../core/models/participant.interface';
 import { RaceEvent } from '../../core/models/race-event.interface';
+import { buildProtocolRows } from '../../core/protocol/protocol-builder';
 import { HistoryService } from '../../github/history.service';
+import { ResultsService } from '../../github/results.service';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { SourceFile } from '../../state/source-file.interface';
 import { settle } from '../spec-utils/settle';
@@ -46,6 +48,7 @@ describe('PreviewPage', () => {
   const setPublishedEventDates = vi.fn();
   const navigate = vi.fn(() => Promise.resolve(true));
   const loadHistory = vi.fn(() => Promise.resolve<AthletesHistory>(VALID_HISTORY));
+  const loadFinishCountsBefore = vi.fn(() => Promise.resolve<Record<string, number>>({}));
 
   let fixture: ComponentFixture<PreviewPage>;
 
@@ -76,6 +79,8 @@ describe('PreviewPage', () => {
             draftsReady,
             activeIndex,
             sourceFile,
+            protocolRows: computed(() => buildProtocolRows(participants())),
+            draftRowsBefore: () => [],
             setEvent,
             setGender,
             selectDraft,
@@ -83,6 +88,7 @@ describe('PreviewPage', () => {
             setPublishedEventDates,
           },
         },
+        { provide: ResultsService, useValue: { loadFinishCountsBefore } },
         { provide: Router, useValue: { navigate } },
         { provide: HistoryService, useValue: { loadHistory } },
       ],

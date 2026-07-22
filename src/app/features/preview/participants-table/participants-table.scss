@@ -1,5 +1,5 @@
+@use 'styles/protocol-cells' as p;
 @use 'styles/table' as tb;
-@use 'styles/typography' as t;
 
 .participants-table {
   @include tb.wrap;
@@ -10,6 +10,21 @@
 
   &__header {
     @include tb.header-cell;
+
+    &_center {
+      text-align: center;
+    }
+
+    // The nowrap header keeps the column exactly as wide as its own text, killing the idle gaps.
+    &_shrink {
+      width: 1%;
+    }
+
+    // Wide enough for «за всё время» on the second line, so the header breaks into exactly two.
+    &_wrap {
+      width: 10em;
+      white-space: normal;
+    }
   }
 
   &__row {
@@ -29,52 +44,96 @@
     @include tb.cell;
 
     &_mono {
-      @include t.mono-meta;
-
-      color: var(--text);
+      font-family: var(--mono);
       font-variant-numeric: tabular-nums;
     }
 
-    &_note {
-      min-width: 180px;
-      color: var(--accent-light);
+    &_center {
+      text-align: center;
     }
 
-    &_no-note {
-      color: var(--text-muted);
+    // The 5 km time carries the same accent as the athlete's name — the two anchors of the row.
+    &_accent {
+      color: var(--accent);
     }
+  }
+
+  // Matches the athlete link colour of the published protocol; no navigation before publishing.
+  &__athlete {
+    color: var(--accent);
   }
 
   &__gender-group {
     display: inline-flex;
-    padding: 2px;
-    gap: 2px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xs);
-    background: var(--bg);
+    gap: 4px;
   }
 
+  // The published protocol's «Пол» chips, editable: the picked side wears the gender wash.
   &__gender-toggle {
-    @include t.text('label', 'medium');
+    @include p.gender-chip-base;
 
-    padding: 5px 10px;
-    border: none;
-    border-radius: var(--radius-xs);
-    background: none;
-    color: var(--text-secondary);
+    background: transparent;
+    color: var(--text-muted);
     cursor: pointer;
     transition:
       color var(--transition-time) var(--ease),
-      background var(--transition-time) var(--ease);
+      background var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
 
     &:hover {
       color: var(--text);
     }
 
-    &_active {
-      background: var(--accent-glow);
-      box-shadow: inset 0 0 0 1px var(--accent-line);
-      color: var(--accent);
+    &_male {
+      @include p.gender-chip-male;
     }
+
+    &_female {
+      @include p.gender-chip-female;
+    }
+  }
+
+  &__place-cell {
+    @include p.place-cell;
+  }
+
+  &__medal {
+    @include p.medal;
+  }
+
+  &__medal-ribbon {
+    @include p.medal-ribbon;
+  }
+
+  &__medal-disc {
+    @include p.medal-disc;
+  }
+
+  &__gap {
+    @include p.place-gap;
+  }
+
+  &__finishes {
+    @include p.finishes-badge;
+  }
+
+  &__notes {
+    @include p.notes-stack;
+  }
+
+  &__note-text {
+    @include p.note-text;
+  }
+
+  &__note-badge {
+    @include p.note-badge;
+  }
+
+  &__note-icon {
+    @include p.note-icon;
+  }
+
+  &__note-icon-fill {
+    @include p.note-icon-fill;
   }
 }
