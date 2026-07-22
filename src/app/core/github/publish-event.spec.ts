@@ -23,8 +23,15 @@ import { GithubFetchFn } from './github-fetch.type';
 import { JSDELIVR_PURGE_BASE_URL } from './jsdelivr.constant';
 import { CURRENT_DB_BYTES, DB_CONTENTS_KEY } from './protocol-db-file.mock';
 import { VERSION_JSON_PATH } from './protocols-repo.constant';
-import { publishEvent } from './publish-event';
+import { publishEvent, publishEvents } from './publish-event';
 import {
+  BATCH_PUBLISH_INPUTS,
+  EARLIER_EVENT_DATE_ISO,
+  EARLIER_SOURCE_XLSX_BYTES,
+  EVENTS_INSERT_SQL_PREFIX,
+  EXPECTED_BATCH_COMMIT_MESSAGE,
+  EXPECTED_BATCH_COMMIT_PATHS,
+  EXPECTED_BATCH_VERSION_COMMIT_MESSAGE,
   EXPECTED_COMMIT_MESSAGE,
   EXPECTED_COMMIT_PATHS,
   PUBLISH_INPUT,
@@ -117,6 +124,34 @@ describe('publishEvent', () => {
     ).toBe(true);
   });
 
+  it('publishes a batch given out of date order: one atomic commit with every workbook and the db, a range slug and a single pointer', async () => {
+    const fetchFn = createPublishFetch();
+
+    const result = await publishEvents(PUBLISH_TOKEN, BATCH_PUBLISH_INPUTS, fetchFn);
+
+    const contents = blobContents(fetchFn);
+    const commitBodies = requestBodiesOf(fetchFn.mock.calls, POST_METHOD, GIT_COMMITS_URL);
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+    const treePaths = treeBodies.map((body) => body.tree.map((entry) => entry.path));
+    const eventsInsert = FAKE_SQLITE3_STATE.dbs[0].executed.find((call) => call.sql.startsWith(EVENTS_INSERT_SQL_PREFIX));
+
+    expect(result).toEqual({ commitSha: PUBLISH_SHAS.newCommitSha });
+    expect(treePaths, 'the workbooks land date-sorted next to the ONE db, then the pointer follows once').toEqual([
+      EXPECTED_BATCH_COMMIT_PATHS,
+      [VERSION_JSON_PATH],
+    ]);
+    expect(decodeBase64Bytes(contents[0]), 'the earlier workbook uploads first despite arriving second').toEqual(EARLIER_SOURCE_XLSX_BYTES);
+    expect(decodeBase64Bytes(contents[1])).toEqual(SOURCE_XLSX_BYTES);
+    expect(decodeBase64Bytes(contents[2]), 'a single db carries the whole batch').toEqual(FAKE_EXPORTED_BYTES);
+    expect(commitBodies, 'the range slug names both the data commit and the single pointer commit').toMatchObject([
+      { message: EXPECTED_BATCH_COMMIT_MESSAGE },
+      { message: EXPECTED_BATCH_VERSION_COMMIT_MESSAGE },
+    ]);
+    expect(eventsInsert?.bind, 'both events land in the rebuilt db').toEqual(
+      expect.arrayContaining([EARLIER_EVENT_DATE_ISO, PUBLISH_INPUT.event.dateIso]),
+    );
+  });
+
   it('creates a fresh db from scratch when none is published yet', async () => {
     const fetchFn = createPublishFetch({ [DB_CONTENTS_KEY]: () => statusResponse(HTTP_NOT_FOUND) });
 
@@ -158,5 +193,8 @@ describe('publishEvent', () => {
     );
 
     await expect(publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT)).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(publishEvents(PUBLISH_TOKEN, [PUBLISH_INPUT]), 'the batch form defaults to the global fetch too').rejects.toBeInstanceOf(
+      GithubAuthError,
+    );
   });
 });
