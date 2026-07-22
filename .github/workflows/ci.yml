@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      bump: ${{ steps.bump.outputs.kind }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,6 +55,20 @@ jobs:
             echo "code=true" >> "$GITHUB_OUTPUT"
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Semver kind for the deploy's version bump: a `feat` commit shipped since the previous bump
+      # makes the release a minor, anything else a patch. Decided here — this job already has the
+      # full history that the deploy job's shallow checkout lacks.
+      - name: Pick version bump kind
+        id: bump
+        run: |
+          last_bump=$(git log --fixed-strings --grep='chore: bump version' --format=%H -n 1)
+          range=$([ -n "$last_bump" ] && echo "$last_bump..HEAD" || echo "HEAD")
+          if git log --format=%s "$range" | grep -qE '^feat(\([^)]*\))?!?:'; then
+            echo "kind=minor" >> "$GITHUB_OUTPUT"
+          else
+            echo "kind=patch" >> "$GITHUB_OUTPUT"
           fi
 
   quality:
@@ -110,13 +125,14 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Bump the patch version on a code push (never a data-only publication) and push it back to
-      # main. `[skip ci]` keeps the bump commit from re-triggering this workflow. The build below
+      # Bump the version on a code push (never a data-only publication) and push it back to main:
+      # minor when the shipped commits contain a `feat`, patch otherwise (kind picked in `changes`).
+      # `[skip ci]` keeps the bump commit from re-triggering this workflow. The build below
       # then bakes the new number into the bundle via `write-version.ts`.
       - name: Bump version on code change
         if: needs.changes.outputs.code == 'true'
         run: |
-          version=$(bun scripts/bump-version.ts)
+          version=$(bun scripts/bump-version.ts "${{ needs.changes.outputs.bump }}")
           bun scripts/write-version.ts
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
