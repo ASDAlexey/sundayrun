@@ -1,0 +1,89 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+.pager {
+  @include c.card;
+
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  gap: 14px;
+
+  &__nav {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color var(--transition-time) var(--ease);
+
+    &:hover:not(:disabled) {
+      border-color: var(--border-hover);
+    }
+
+    &:disabled {
+      color: var(--text-muted);
+      cursor: default;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  &__position {
+    @include t.text('label', 'medium');
+
+    color: var(--text);
+  }
+
+  &__file {
+    @include t.text('label', 'small');
+
+    overflow: hidden;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__dots {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 1px solid var(--text-muted);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition:
+      transform var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
+
+    &_ready {
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    &_active {
+      transform: scale(1.5);
+    }
+  }
+}

@@ -1,0 +1,68 @@
+@if (count() > 1) {
+  <nav aria-label="Переключение протоколов" class="pager" i18n-aria-label="@@pager.ariaLabel">
+    <button
+      aria-label="Предыдущий протокол"
+      class="pager__nav"
+      i18n-aria-label="@@pager.previous"
+      type="button"
+      [disabled]="isFirst()"
+      (click)="previous()"
+    >
+      <svg
+        aria-hidden="true"
+        class="pager__nav-icon"
+        fill="none"
+        height="16"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 16 16"
+        width="16"
+      >
+        <path d="M10 3L5 8l5 5" />
+      </svg>
+    </button>
+
+    <div class="pager__info">
+      <span class="pager__position" i18n="@@pager.position">Протокол {{ index() + 1 }} из {{ count() }}</span>
+
+      <span class="pager__file">{{ fileName() }}</span>
+    </div>
+
+    <div class="pager__dots">
+      @for (ready of readiness(); track $index) {
+        <button
+          class="pager__dot"
+          type="button"
+          [attr.aria-current]="$index === index() ? true : null"
+          [class.pager__dot_active]="$index === index()"
+          [class.pager__dot_ready]="ready"
+          (click)="select($index)"
+        >
+          <span class="visually-hidden" i18n="@@pager.dotLabel">Протокол {{ $index + 1 }}</span>
+        </button>
+      }
+    </div>
+
+    <button
+      aria-label="Следующий протокол"
+      class="pager__nav"
+      i18n-aria-label="@@pager.next"
+      type="button"
+      [disabled]="isLast()"
+      (click)="next()"
+    >
+      <svg
+        aria-hidden="true"
+        class="pager__nav-icon"
+        fill="none"
+        height="16"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 16 16"
+        width="16"
+      >
+        <path d="M6 3l5 5-5 5" />
+      </svg>
+    </button>
+  </nav>
+}
