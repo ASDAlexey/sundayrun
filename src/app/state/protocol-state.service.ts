@@ -15,6 +15,7 @@ import { RaceEvent } from '../core/models/race-event.interface';
 import { buildProtocolRows } from '../core/protocol/protocol-builder';
 import { RACE_EVENT_DEFAULTS } from '../core/protocol/race-event-defaults.constant';
 import { parseDateFromFileName } from '../core/time/file-name-date';
+import { isoToday } from '../core/time/iso-today';
 import { importParticipants } from '../core/xlsx/import-participants';
 import { ProtocolDraft } from './protocol-draft.interface';
 import { SourceFile } from './source-file.interface';
@@ -85,7 +86,7 @@ export class ProtocolStateService {
         participants: importParticipants(file.bytes),
         event: null,
         sourceFile: file,
-        suggestedDateIso: parseDateFromFileName(file.name),
+        suggestedDateIso: parseDateFromFileName(file.name, isoToday()),
         notesApplied: false,
       }),
     );

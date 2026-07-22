@@ -1,4 +1,7 @@
-/** [file name, expected ISO date or null]. */
+/** Fixed 'today' for the yearless Russian names; a Saturday in mid-2026. */
+export const PARSE_DATE_TODAY_ISO = '2026-06-20';
+
+/** [file name, expected ISO date or null] against `PARSE_DATE_TODAY_ISO`. */
 export const PARSE_DATE_FROM_FILE_NAME_CASES: readonly (readonly [string, string | null])[] = [
   // plain timer export names
   ['14.06.2026.xlsx', '2026-06-14'],
@@ -20,7 +23,21 @@ export const PARSE_DATE_FROM_FILE_NAME_CASES: readonly (readonly [string, string
   ['00.06.2026.xlsx', null],
   ['14.00.2026.xlsx', null],
   ['14.13.2026.xlsx', null],
-  // no DD.MM.YYYY match at all
+  // Russian names with an explicit year
+  ['14 июня 2026.xlsx', '2026-06-14'],
+  ['Забег 5 января 2024 итог.xlsx', '2024-01-05'],
+  ['29 февраля 2026.xlsx', null],
+  // yearless Russian names: past-or-today keeps the current year…
+  ['1 марта.xlsx', '2026-03-01'],
+  ['1 Марта.xlsx', '2026-03-01'],
+  ['20 июня.xlsx', '2026-06-20'],
+  // …a future date rolls back to the previous year
+  ['25 декабря.xlsx', '2025-12-25'],
+  ['21 июня.xlsx', '2025-06-21'],
+  // 29 февраля is invalid in both candidate years around mid-2026
+  ['29 февраля.xlsx', null],
+  ['32 марта.xlsx', null],
+  // no date match at all
   ['results.xlsx', null],
   ['1.6.2026.xlsx', null],
   ['14-06-2026.xlsx', null],
