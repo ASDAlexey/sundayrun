@@ -41,7 +41,7 @@ describe('timer-export-parser', () => {
     expect(participants24.some((participant) => participant.fullName.startsWith(TIMER_EXPORT_NOTE_PREFIX))).toBe(false);
   });
 
-  it('handles synthetic tables: trimmed case-insensitive header, missing laps, empty-name stop, end of rows, no header', () => {
+  it('handles synthetic tables: trimmed case-insensitive header, name re-cased, missing laps, empty-name stop, end of rows, no header', () => {
     expect(parseTimerExport(SYNTHETIC_EXPORT_ROWS)).toEqual(EXPECTED_SYNTHETIC_PARTICIPANTS);
     expect(parseTimerExport(TRAILING_DATA_ROWS)).toEqual(EXPECTED_TRAILING_PARTICIPANTS);
     expect(parseTimerExport(HEADERLESS_ROWS)).toEqual([]);

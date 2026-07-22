@@ -34,18 +34,18 @@ export const EXPECTED_KOVSHOVA_PARTICIPANT: Participant = {
   ...UNKNOWN_PARTICIPANT_FIELDS,
 };
 
-/** Empty row before the header, header found case-insensitively after trim, stop at empty name cell. */
+/** Empty row before the header, header found case-insensitively after trim, mixed-case names, stop at empty name cell. */
 export const SYNTHETIC_EXPORT_ROWS: string[][] = [
   [],
   ['  NAME  ', 'Total'],
-  ['Бегун Один', '0:10:00,000', '', '', '0:10:00,000'],
-  ['Бегун Два'],
+  ['бегун-скороход  ОДИН', '0:10:00,000', '', '', '0:10:00,000'],
+  ['БЕГУН два'],
   ['', 'ignored'],
   ['Бегун Три', '0:09:00', '', '', '0:04:00', '0:05:00'],
 ];
 
 export const EXPECTED_SYNTHETIC_PARTICIPANTS: Participant[] = [
-  { id: 1, fullName: 'Бегун Один', totalMs: 600000, lapsMs: [600000], ...UNKNOWN_PARTICIPANT_FIELDS },
+  { id: 1, fullName: 'Бегун-Скороход Один', totalMs: 600000, lapsMs: [600000], ...UNKNOWN_PARTICIPANT_FIELDS },
   { id: 2, fullName: 'Бегун Два', totalMs: null, lapsMs: [], ...UNKNOWN_PARTICIPANT_FIELDS },
 ];
 
