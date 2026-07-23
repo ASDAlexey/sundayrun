@@ -43,6 +43,7 @@ describe('GuidePage', () => {
       RECORDS_PAGE_LINK,
       YEAR_PAGE_BASE_LINK,
       YEAR_PAGE_BASE_LINK,
+      YEAR_PAGE_BASE_LINK,
       VERSUS_PAGE_LINK,
     ]);
   });
