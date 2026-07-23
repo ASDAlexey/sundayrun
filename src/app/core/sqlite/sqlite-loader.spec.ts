@@ -16,8 +16,8 @@ describe('loadSqlite3', () => {
 
     const [{ locateFile }] = SQLITE3_INIT_MOCK.mock.calls[0];
 
-    expect(locateFile(SQLITE_WASM_FILE_NAME), 'the binary resolves against the document base, not the chunk location').toBe(
-      new URL(SQLITE_WASM_FILE_NAME, document.baseURI).href,
+    expect(locateFile(SQLITE_WASM_FILE_NAME), 'the bare name lets fetch resolve against the document base, not the chunk location').toBe(
+      SQLITE_WASM_FILE_NAME,
     );
   });
 });
