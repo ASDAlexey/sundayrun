@@ -60,11 +60,8 @@
   &__mark {
     width: 40px;
     height: 40px;
-    padding: 5px;
-    border-radius: var(--radius-sm);
-    background: var(--white);
-    box-shadow: 0 0 24px var(--accent-glow);
-    color: var(--accent-contrast);
+    color: var(--white);
+    filter: drop-shadow(0 0 12px var(--accent-glow));
   }
 
   &__titles {
@@ -205,10 +202,7 @@
   &__mark {
     width: 36px;
     height: 36px;
-    padding: 5px;
-    border-radius: var(--radius-xs);
-    background: var(--white);
-    color: var(--accent-contrast);
+    color: var(--white);
   }
 
   &__brand-text {

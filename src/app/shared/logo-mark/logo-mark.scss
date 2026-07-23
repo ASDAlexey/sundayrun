@@ -10,7 +10,11 @@
   &__lap {
     stroke: currentcolor;
     stroke-linecap: round;
-    stroke-width: 5.5;
+    stroke-width: 6;
+  }
+
+  &__lap_inner {
+    stroke: var(--accent);
   }
 
   &__start {

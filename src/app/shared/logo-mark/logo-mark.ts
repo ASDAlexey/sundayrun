@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * The site's own brand mark: the course's two laps drawn as two broken rings with the start
- * point in the opening — a route, a stopwatch and a finish target at once. The rings follow
- * `currentColor` so the context picks the ink; the start dot is always the signature accent.
+ * point in the opening — a route, a stopwatch and a finish target at once. The outer ring
+ * follows `currentColor` so the context picks the ink; the inner ring and the start dot are
+ * always the signature accent.
  */
 @Component({
   selector: 'app-logo-mark',
