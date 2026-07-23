@@ -1,5 +1,6 @@
 import { BEARER_PREFIX, GITHUB_API_VERSION, GITHUB_API_VERSION_HEADER, GITHUB_JSON_ACCEPT } from './github-api.constant';
 import { RepoResponse } from './github-api.interface';
+import { GITHUB_FETCH_CACHE_MODE } from './github-fetch.constant';
 
 export const CHECKED_TOKEN = 'checked-token';
 
@@ -14,6 +15,7 @@ export const READ_ONLY_REPO_RESPONSE: RepoResponse = { permissions: { push: fals
 /** No `permissions` field at all must also be treated as unauthorized. */
 export const NO_PERMISSIONS_REPO_RESPONSE: RepoResponse = {};
 
+/** The init `checkGithubToken` hands to its injected fetchFn — the wrapper's cache mode is not applied yet. */
 export const EXPECTED_CHECK_INIT = {
   headers: {
     Accept: GITHUB_JSON_ACCEPT,
@@ -21,3 +23,6 @@ export const EXPECTED_CHECK_INIT = {
     [GITHUB_API_VERSION_HEADER]: GITHUB_API_VERSION,
   },
 };
+
+/** The same init as the global fetch sees it, after `DEFAULT_GITHUB_FETCH` applies its cache mode. */
+export const EXPECTED_CHECK_GLOBAL_FETCH_INIT = { cache: GITHUB_FETCH_CACHE_MODE, ...EXPECTED_CHECK_INIT };

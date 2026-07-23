@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { PROTOCOLS_REPO_API_URL } from '../core/github/github-api.constant';
 import { jsonResponse } from '../core/github/spec-utils/github-fetch-router';
 import { TokenCheck } from '../core/github/token-check.enum';
-import { CHECKED_TOKEN, EXPECTED_CHECK_INIT, PUSH_REPO_RESPONSE } from '../core/github/token-check.mock';
+import { CHECKED_TOKEN, EXPECTED_CHECK_GLOBAL_FETCH_INIT, PUSH_REPO_RESPONSE } from '../core/github/token-check.mock';
 import { ADMIN_TOKEN_STORAGE_KEY } from './admin-token.constant';
 import { AdminTokenService } from './admin-token.service';
 import { ADMIN_TOKEN_MOCK } from './admin-token.service.mock';
@@ -56,7 +56,7 @@ describe('AdminTokenService', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(service.validate(CHECKED_TOKEN)).resolves.toBe(TokenCheck.valid);
-    expect(fetchMock).toHaveBeenCalledWith(PROTOCOLS_REPO_API_URL, EXPECTED_CHECK_INIT);
+    expect(fetchMock).toHaveBeenCalledWith(PROTOCOLS_REPO_API_URL, EXPECTED_CHECK_GLOBAL_FETCH_INIT);
   });
 
   it('falls back to a noop storage during prerender where localStorage is absent', () => {

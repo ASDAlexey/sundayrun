@@ -6,6 +6,7 @@ import {
   GITHUB_RAW_ACCEPT,
   REPO_CONTENTS_URL,
 } from '../core/github/github-api.constant';
+import { GITHUB_FETCH_CACHE_MODE } from '../core/github/github-fetch.constant';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { AthletesHistory } from '../core/models/athletes-history.type';
@@ -17,6 +18,7 @@ export const EXPECTED_DB_URL = `${REPO_CONTENTS_URL}${PROTOCOL_DB_PATH}${CONTENT
 
 /** Raw-accept init carrying the stored organiser token. */
 export const EXPECTED_HISTORY_INIT = {
+  cache: GITHUB_FETCH_CACHE_MODE,
   headers: {
     Accept: GITHUB_RAW_ACCEPT,
     Authorization: `${BEARER_PREFIX}${ADMIN_TOKEN_MOCK}`,
