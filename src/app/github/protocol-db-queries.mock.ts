@@ -489,6 +489,8 @@ export const EXPECTED_DB_YEAR_REVIEW: YearReview = {
     { key: ATHLETE_KEY, displayName: 'Иванов Иван', finishCount: 2 },
     { key: CORRUPT_GENDER_ATHLETE_KEY, displayName: 'Хитров Ян', finishCount: 1 },
   ],
+  // The seed holds no 2023 runs, so nobody has a previous season to progress against.
+  progress: [],
   badgeHolders: [{ badge: YearBadge.newYearRace, holders: [{ key: ATHLETE_KEY, displayName: 'Иванов Иван' }] }],
   firstEventSlug: '2024-05-05',
 };
