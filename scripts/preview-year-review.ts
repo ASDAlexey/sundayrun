@@ -42,6 +42,12 @@ for (const active of review.mostActive) {
   console.log(`  ${active.displayName} — ${active.finishCount}`);
 }
 
+console.log('\nПрогресс года:');
+
+for (const row of review.progress) {
+  console.log(`  ${row.displayName} — −${row.deltaMs} мс (${row.previousMedianMs} → ${row.currentMedianMs})`);
+}
+
 console.log('\nБейджи:');
 
 for (const group of review.badgeHolders) {
