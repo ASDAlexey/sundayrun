@@ -205,11 +205,11 @@
 
 // The header wordmark set in the display face.
 @mixin logo-name {
-  font-weight: 600;
-  font-size: 0.82rem;
-  line-height: 1.2;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.15;
   font-family: var(--font-display);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 @mixin quote-glyph {

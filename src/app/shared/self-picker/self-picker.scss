@@ -30,20 +30,38 @@
     }
   }
 
+  // «Это ты» — a pill chip in the header: accent wash, a live start dot before
+  // the name, the reset folded into the right cap.
   &__me {
     display: flex;
     align-items: center;
-    gap: 4px;
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    background: var(--accent-glow);
   }
 
   &__me-link {
     @include t.text('label', 'medium');
 
-    padding: 9px 6px 9px 16px;
-    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 4px 7px 14px;
+    gap: 8px;
+    border-radius: 999px 0 0 999px;
     color: var(--accent-light);
     text-decoration: none;
     transition: color var(--transition-time) var(--ease);
+
+    // The runner on the track: a small pulsing start dot marks «you».
+    &::before {
+      flex: none;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      content: '';
+      animation: self-picker-pulse 2.4s var(--ease) infinite;
+    }
 
     &:hover {
       color: var(--accent);
@@ -53,9 +71,9 @@
   &__clear {
     @include t.text('label', 'medium');
 
-    padding: 4px 8px;
+    padding: 7px 12px 7px 6px;
     border: none;
-    border-radius: var(--radius-xs);
+    border-radius: 0 999px 999px 0;
     background: none;
     color: var(--text-muted);
     cursor: pointer;
@@ -151,5 +169,16 @@
     &:hover {
       background: var(--surface-hover);
     }
+  }
+}
+
+@keyframes self-picker-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px var(--accent-glow);
   }
 }

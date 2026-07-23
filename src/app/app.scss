@@ -52,51 +52,92 @@
     height: auto;
     margin-right: auto;
     padding: 0;
-    gap: 14px;
+    gap: 16px;
     border-radius: var(--radius-sm);
     text-align: left;
+
+    // The whole lockup answers the hover as one piece: the mark warms up,
+    // the wordmark catches the accent.
+    &:hover .shell-header__mark {
+      transform: scale(1.04);
+      filter: drop-shadow(0 0 16px var(--accent-line));
+    }
+
+    &:hover .shell-header__name {
+      color: var(--accent-light);
+    }
   }
 
   &__mark {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     color: var(--white);
     filter: drop-shadow(0 0 12px var(--accent-glow));
+    transition:
+      filter var(--transition-time) var(--ease),
+      transform var(--transition-time) var(--ease);
   }
 
+  // The start gate: a hairline fading downward separates the mark from the titles.
   &__titles {
     display: flex;
+    position: relative;
     flex-direction: column;
-    gap: 2px;
+    padding-left: 16px;
+    gap: 3px;
+
+    &::before {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      left: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--accent-line), transparent);
+      content: '';
+    }
   }
 
   &__name {
     @include t.logo-name;
 
     color: var(--text);
+    transition: color var(--transition-time) var(--ease);
   }
 
   &__place {
     @include t.mono-caption;
 
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     color: var(--text-muted);
+
+    // A short accent tick leads the location line — the same «start line» motif
+    // the section eyebrows use.
+    &::before {
+      flex: none;
+      width: 14px;
+      height: 1px;
+      background: var(--accent);
+      content: '';
+      opacity: 0.6;
+    }
   }
 
   &__name-row {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 6px;
   }
 
-  // The Litely-style version chip: a tiny bordered pill sitting right after the brand name.
+  // The version rides the wordmark like a superscript index — quiet mono,
+  // no box, so the name stays the only loud element in the lockup.
   &__version {
     @include t.mono-caption;
 
-    padding: 1px 6px;
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-xs);
-    background: var(--card-bg);
+    margin-top: -1px;
     color: var(--text-muted);
+    opacity: 0.75;
   }
 
   &__nav {
@@ -111,6 +152,7 @@
   &__nav-link {
     @include t.text('label', 'medium');
 
+    position: relative;
     height: auto;
     padding: 9px 16px;
     border: 1px solid transparent;
@@ -121,14 +163,37 @@
       background var(--transition-time) var(--ease),
       border-color var(--transition-time) var(--ease);
 
+    // The finish tape: a hairline that sweeps in from the left under the label.
+    &::after {
+      position: absolute;
+      right: 16px;
+      bottom: 7px;
+      left: 16px;
+      height: 1px;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: var(--accent);
+      content: '';
+      transition: transform var(--transition-time) var(--ease);
+    }
+
     &:hover {
       color: var(--text);
+
+      &::after {
+        transform: scaleX(1);
+      }
     }
 
     &_active {
       border-color: var(--accent-line);
       background: var(--accent-glow);
       color: var(--accent-light);
+
+      // The active pill already carries the accent — no tape underneath.
+      &::after {
+        content: none;
+      }
     }
   }
 
