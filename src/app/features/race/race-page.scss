@@ -84,14 +84,46 @@
   }
 
   &__pdf {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    // The header's single CTA — a size up from stock density, wide enough
+    // that swapping the label to «Готовим…» doesn't change the footprint.
+    --mdc-filled-button-container-height: 48px;
+
+    position: relative;
+    min-width: 184px;
+    padding: 0 26px;
+    overflow: hidden;
+    gap: 10px;
+
+    &_loading {
+      // Keep the accent fill while disabled — the sheen reads «working», not «off».
+      --mdc-filled-button-disabled-container-color: var(--accent-deep);
+      --mdc-filled-button-disabled-label-text-color: var(--accent-contrast);
+
+      &::after {
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(100deg, transparent 25%, color-mix(in srgb, var(--accent-light) 55%, transparent) 50%, transparent 75%);
+        content: '';
+        animation: race-pdf-sheen 1.4s ease-in-out infinite;
+      }
+    }
+  }
+
+  &__pdf-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
   }
 
   &__pdf-spinner {
-    // Match the ring to the button's own text colour instead of the theme accent.
-    --mdc-circular-progress-active-indicator-color: currentcolor;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid color-mix(in srgb, currentcolor 30%, transparent);
+    border-radius: 50%;
+    border-top-color: currentcolor;
+    animation: race-pdf-spin 900ms linear infinite;
   }
 
   &__pdf-error {
@@ -276,5 +308,17 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+}
+
+@keyframes race-pdf-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes race-pdf-sheen {
+  to {
+    transform: translateX(100%);
   }
 }
