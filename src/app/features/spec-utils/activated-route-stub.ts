@@ -3,6 +3,7 @@ import { Observable, Subject, concat, defer, of } from 'rxjs';
 
 export interface ActivatedRouteStub {
   readonly paramMap: Observable<ParamMap>;
+  readonly snapshot: { queryParamMap: ParamMap };
   setParams(next: Params): void;
 }
 
@@ -27,6 +28,7 @@ export function activatedRouteStub(params: Params): ActivatedRouteStub {
       defer(() => of(convertToParamMap(params))),
       changes,
     ),
+    snapshot: { queryParamMap: convertToParamMap({}) },
     setParams(next: Params): void {
       changes.next(convertToParamMap(next));
     },
