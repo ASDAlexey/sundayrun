@@ -1,5 +1,5 @@
 import { loadSqlite3 } from './sqlite-loader';
-import { SQLITE3_INIT_MOCK, SQLITE3_STATIC_MOCK } from './sqlite-loader.mock';
+import { SQLITE3_INIT_MOCK, SQLITE3_STATIC_MOCK, SQLITE_WASM_FILE_NAME } from './sqlite-loader.mock';
 
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
   const mock = await import('./sqlite-loader.mock');
@@ -8,10 +8,16 @@ vi.mock('@sqlite.org/sqlite-wasm', async () => {
 });
 
 describe('loadSqlite3', () => {
-  it('lazily imports the wasm module and resolves the initialized sqlite3 namespace', async () => {
+  it('lazily imports the wasm module, pins the wasm lookup to the web root and resolves the namespace', async () => {
     SQLITE3_INIT_MOCK.mockResolvedValue(SQLITE3_STATIC_MOCK);
 
     await expect(loadSqlite3()).resolves.toBe(SQLITE3_STATIC_MOCK);
     expect(SQLITE3_INIT_MOCK).toHaveBeenCalledTimes(1);
+
+    const [{ locateFile }] = SQLITE3_INIT_MOCK.mock.calls[0];
+
+    expect(locateFile(SQLITE_WASM_FILE_NAME), 'the binary resolves against the document base, not the chunk location').toBe(
+      new URL(SQLITE_WASM_FILE_NAME, document.baseURI).href,
+    );
   });
 });
