@@ -1,7 +1,7 @@
 import { strToU8, zipSync } from 'fflate';
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { cwd } from 'node:process';
 
 import { readXlsxRows } from './xlsx-reader';
 import { WORKSHEET_NOT_FOUND_MESSAGE } from './xlsx-reader.constant';
@@ -18,7 +18,7 @@ import {
   SYNTHETIC_XLSX_FILES,
 } from './xlsx-reader.mock';
 
-const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), FIXTURES_DIR_FROM_ROOT);
+const FIXTURES_DIR = join(cwd(), FIXTURES_DIR_FROM_ROOT);
 
 function readFixture(fileName: string): Uint8Array {
   return readFileSync(join(FIXTURES_DIR, fileName));

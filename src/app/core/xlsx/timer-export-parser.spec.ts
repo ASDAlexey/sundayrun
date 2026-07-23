@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { cwd } from 'node:process';
 
 import { Participant } from '../models/participant.interface';
 import { parseTimerExport } from './timer-export-parser';
@@ -21,7 +21,7 @@ import {
 import { readXlsxRows } from './xlsx-reader';
 import { FIXTURE_14_FILE_NAME, FIXTURE_24_FILE_NAME, FIXTURES_DIR_FROM_ROOT } from './xlsx-reader.mock';
 
-const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), FIXTURES_DIR_FROM_ROOT);
+const FIXTURES_DIR = join(cwd(), FIXTURES_DIR_FROM_ROOT);
 
 function parseFixture(fileName: string): Participant[] {
   return parseTimerExport(readXlsxRows(readFileSync(join(FIXTURES_DIR, fileName))));

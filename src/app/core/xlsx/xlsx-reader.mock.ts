@@ -1,8 +1,9 @@
 import { SHARED_STRINGS_PATH, WORKBOOK_PATH, WORKBOOK_RELS_PATH } from './xlsx-reader.constant';
 
 /**
- * The Angular unit-test builder bundles specs at the project root, so import.meta.url
- * resolves to the root and the fixtures directory is addressed from there.
+ * Where the spec bundle lands depends on the run (the full suite bundles at the project root,
+ * a scoped --include run keeps the source dir), so import.meta.url is unstable — the fixtures
+ * are addressed from the working directory instead, which is the project root either way.
  */
 export const FIXTURES_DIR_FROM_ROOT = 'src/app/core/xlsx/__fixtures__';
 
