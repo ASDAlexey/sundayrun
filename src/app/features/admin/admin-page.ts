@@ -22,6 +22,7 @@ import { PendingArchiveService } from '../../github/pending-archive.service';
 import { PendingUpload } from '../../github/pending-archive.interface';
 import { PublishDurationService } from '../../github/publish-duration.service';
 import { SiteMetaService } from '../../github/site-meta.service';
+import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
 import { ProtocolDropzone } from '../upload/protocol-dropzone/protocol-dropzone';
 import {
   ADMIN_RACE_ROW_HEIGHT_PX,
@@ -164,6 +165,9 @@ export class AdminPage {
   #deleteTickId: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
+    // `?q=` deep-links the race search: a reload keeps the organiser on the filtered list.
+    bindSearchQueryParam(this.query);
+
     // Prerender ships the page without data; the editor prefill and the race list arrive after hydration.
     if (isPlatformBrowser(inject(PLATFORM_ID)) && this.isAdmin()) {
       void this.#loadMeta();

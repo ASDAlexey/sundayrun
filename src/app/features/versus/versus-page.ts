@@ -17,6 +17,7 @@ import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
@@ -80,6 +81,9 @@ export class VersusPage {
   #selfPrefillPending = true;
 
   constructor() {
+    // `?q=` deep-links the picker search: a reload or a shared link restores the typed name.
+    bindSearchQueryParam(this.query);
+
     // Prerender bakes the calm loading state into static HTML; the directory arrives after hydration.
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
       void this.#loadOptions();

@@ -36,6 +36,7 @@ import { temperatureText } from '../../core/weather/temperature-text';
 import { weatherIconOf } from '../../core/weather/weather-icon';
 import { AthletesService } from '../../github/athletes.service';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
 import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { BumpChart } from './bump-chart/bump-chart';
@@ -190,6 +191,9 @@ export class RecordsPage {
   protected readonly podiumSize = RECORDS_PODIUM_SIZE;
 
   constructor() {
+    // `?q=` deep-links the search box, the same way `?view=` deep-links the tabs.
+    bindSearchQueryParam(this.query);
+
     // Prerender fetches the boards off the on-disk db and bakes them into the static HTML; the
     // browser trusts that value (`trustBaked`) and skips the refetch that used to re-run every
     // aggregate over HTTP range requests. The season bump chart stays lazy — see `#ensureSeason`.
