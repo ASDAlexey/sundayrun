@@ -145,6 +145,10 @@
               @if (drawCount() > 0) {
                 <span i18n="@@versus.draws">Ничьих: {{ drawCount() }}</span>
               }
+
+              @if (splitLeadText(); as splitLead) {
+                <span>{{ splitLead }}</span>
+              }
             </p>
           </section>
 
@@ -170,6 +174,18 @@
                       }
 
                       {{ meeting.leftTimeText }}
+
+                      @if (meeting.leftLedSplit) {
+                        <svg
+                          aria-hidden="true"
+                          class="versus__split-flag"
+                          i18n-title="@@versus.splitFlagTitle"
+                          title="Лидировал после первого круга (2,3 км)"
+                          viewBox="0 0 12 12"
+                        >
+                          <path d="M3 11 V1.5 M3 1.8 H9.5 L8 4 L9.5 6.2 H3" />
+                        </svg>
+                      }
                     </span>
 
                     <span class="versus__gap">{{ meeting.gapText }}</span>
@@ -182,6 +198,18 @@
                         </svg>
                       }
 
+                      @if (meeting.rightLedSplit) {
+                        <svg
+                          aria-hidden="true"
+                          class="versus__split-flag"
+                          i18n-title="@@versus.splitFlagTitle"
+                          title="Лидировал после первого круга (2,3 км)"
+                          viewBox="0 0 12 12"
+                        >
+                          <path d="M3 11 V1.5 M3 1.8 H9.5 L8 4 L9.5 6.2 H3" />
+                        </svg>
+                      }
+
                       {{ meeting.rightTimeText }}
                     </span>
                   </li>
@@ -189,8 +217,8 @@
               </ol>
 
               <p class="versus__note" i18n="@@versus.note">
-                У каждого атлета свой цвет: слева — первый, справа — второй; медаль — у победителя встречи, между временами — разница. Дата
-                ведёт на протокол забега.
+                У каждого атлета свой цвет: слева — первый, справа — второй; медаль — у победителя встречи, флажок — у лидера после первого
+                круга (2,3 км), между временами — разница. Дата ведёт на протокол забега.
               </p>
             </section>
           } @else {

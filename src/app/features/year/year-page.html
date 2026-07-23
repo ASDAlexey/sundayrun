@@ -113,6 +113,30 @@
       </section>
     }
 
+    @if (review.progress.length > 0) {
+      <section class="year__progress">
+        <h2 class="year__section-title" i18n="@@year.progressTitle">Прогресс года</h2>
+
+        <p class="year__progress-note" i18n="@@year.progressNote">
+          Кто сильнее всех улучшил свою медиану сезона на 5 км к прошлому году — минимум три финиша в каждом сезоне.
+        </p>
+
+        <ol class="year__list">
+          @for (row of review.progress; track row.place) {
+            <li class="year__row" [class.year__row_podium]="row.place <= podiumSize">
+              <span class="year__place">{{ row.place }}</span>
+
+              <a class="year__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+              <span class="year__progress-delta">{{ row.deltaText }}</span>
+
+              <span class="year__progress-medians">{{ row.mediansText }}</span>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+
     @if (review.badgeGroups.length > 0) {
       <section class="year__badges">
         <h2 class="year__section-title" i18n="@@year.badgesTitle">Бейджи года</h2>

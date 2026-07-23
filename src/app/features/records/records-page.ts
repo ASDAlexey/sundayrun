@@ -16,6 +16,8 @@ import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { EMPTY_FIRST_LAP_RECORDS } from '../../core/history/first-lap.constant';
 import { FirstLapRun } from '../../core/history/first-lap.interface';
 import { FirstLapRecords } from '../../core/history/first-lap.type';
+import { pacingBoards } from '../../core/history/pacing';
+import { EvenestRunner, PacingBoards, PacingRow, SecondHalfFinisher } from '../../core/history/pacing.interface';
 import { ratingBoard } from '../../core/history/rating-board';
 import { newestEventIso, winnerTimesBySlug } from '../../core/history/runner-scores';
 import { EventWinnerTimes, RatingRow } from '../../core/history/runner-scores.interface';
@@ -25,6 +27,7 @@ import { SeasonPositionLine, SeasonRun } from '../../core/history/season-positio
 import { SeasonType } from '../../core/history/seasons.enum';
 import { weatherExtremes } from '../../core/history/weather-records';
 import { EventWeatherRow, WeatherExtreme, WeatherExtremes } from '../../core/history/weather-records.interface';
+import { pluralText } from '../../core/i18n/plural-text';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { formatDuration } from '../../core/time/duration';
@@ -40,9 +43,16 @@ import {
   ALL_GENDERS_VALUE,
   ALL_SEASONS_VALUE,
   CHART_SUGGESTION_LIMIT,
+  DECIMAL_COMMA,
+  EVENEST_FEMALE_LABEL,
+  EVENEST_MALE_LABEL,
   KING_ALL_TIME_TEXT,
   KING_YEAR_PREFIX,
   NO_GRADE_TEXT,
+  PACING_DEVIATION_DECIMALS,
+  PACING_DEVIATION_PREFIX,
+  PACING_GAIN_PREFIX,
+  PACING_PERCENT_BASE,
   QUEEN_ALL_TIME_TEXT,
   QUEEN_YEAR_PREFIX,
   RECORDS_PODIUM_SIZE,
@@ -52,6 +62,8 @@ import {
   RECORD_DELTA_SIGN,
   SEASON_FILTER_OPTIONS,
   SEASON_GENITIVE_LABELS,
+  SECOND_HALF_FEMALE_LABEL,
+  SECOND_HALF_MALE_LABEL,
   WEATHER_COLDEST_LABEL,
   WEATHER_HOTTEST_LABEL,
   WEATHER_WINDIEST_LABEL,
@@ -63,6 +75,7 @@ import {
   ChartPick,
   CourseRecordView,
   FirstLapRecordView,
+  PacingNomineeView,
   RatingRowView,
   RecordsData,
   WeatherExtremeView,
@@ -94,6 +107,7 @@ export class RecordsPage {
   readonly #firstLapRecords = signal<FirstLapRecords>(EMPTY_FIRST_LAP_RECORDS);
   readonly #weatherRows = signal<EventWeatherRow[]>([]);
   readonly #winnerEvents = signal<EventWinnerTimes[]>([]);
+  readonly #pacingRows = signal<PacingRow[]>([]);
   // The lambdas run lazily, so referencing the filter signals declared below is safe.
   readonly #menBoard = computed(() => toBoard(this.#records(), Gender.male, this.year(), this.season()));
   readonly #womenBoard = computed(() => toBoard(this.#records(), Gender.female, this.year(), this.season()));
@@ -161,6 +175,8 @@ export class RecordsPage {
   readonly womenFirstLap = computed(() => toFirstLapView(this.#firstLapRecords()[Gender.female]));
   /** The weather extreme cards of the chosen season (or all time); empty hides the section. */
   readonly weatherViews = computed(() => toWeatherViews(weatherExtremes(this.#weatherRows(), this.year())));
+  /** The pacing nomination cards of the chosen season (or all time); empty hides the section. */
+  readonly pacingViews = computed(() => toPacingViews(pacingBoards(this.#pacingRows(), this.year())));
 
   protected readonly statuses = RecordsStatus;
   protected readonly views = RecordsView;
@@ -285,16 +301,17 @@ export class RecordsPage {
   }
 
   async #loadData(): Promise<RecordsData> {
-    const [records, courseRecords, firstLapRecords, weatherRows, winnerEvents] = await Promise.all([
+    const [records, courseRecords, firstLapRecords, weatherRows, winnerEvents, pacingRows] = await Promise.all([
       this.#athletes.loadRecords(),
       this.#athletes.loadCourseRecords(),
       this.#athletes.loadFirstLapRecords(),
-      // The weather extremes are garnish: a failed read still renders the boards.
+      // The weather extremes and the pacing nominations are garnish: a failed read still renders the boards.
       this.#athletes.loadWeatherRows().catch(() => []),
       this.#athletes.loadEventWinnerTimes(),
+      this.#athletes.loadPacingRows().catch(() => []),
     ]);
 
-    return { records, courseRecords, firstLapRecords, weatherRows, winnerEvents };
+    return { records, courseRecords, firstLapRecords, weatherRows, winnerEvents, pacingRows };
   }
 
   #applyData(data: RecordsData): void {
@@ -303,6 +320,7 @@ export class RecordsPage {
     this.#firstLapRecords.set(data.firstLapRecords);
     this.#weatherRows.set(data.weatherRows);
     this.#winnerEvents.set(data.winnerEvents);
+    this.#pacingRows.set(data.pacingRows);
     this.status.set(data.records.length === 0 ? RecordsStatus.empty : RecordsStatus.ready);
     // A deep link straight into the chart view needs its season as soon as the years are known.
     this.#ensureSeason();
@@ -449,6 +467,68 @@ function windText(windKmh: number): string {
   const rounded = Math.round(windKmh);
 
   return $localize`:@@records.weatherWind:ветер ${rounded}:windKmh: км/ч`;
+}
+
+/** The four nomination cards in display order; a gender slot nobody qualifies for is skipped. */
+function toPacingViews(boards: PacingBoards): PacingNomineeView[] {
+  const views: PacingNomineeView[] = [];
+  const evenestLabels = { [Gender.male]: EVENEST_MALE_LABEL, [Gender.female]: EVENEST_FEMALE_LABEL };
+  const secondHalfLabels = { [Gender.male]: SECOND_HALF_MALE_LABEL, [Gender.female]: SECOND_HALF_FEMALE_LABEL };
+
+  for (const gender of [Gender.male, Gender.female]) {
+    const evenest = boards.evenest[gender];
+
+    if (evenest !== null) {
+      views.push(toEvenestView(evenestLabels[gender], evenest));
+    }
+  }
+
+  for (const gender of [Gender.male, Gender.female]) {
+    const finisher = boards.secondHalf[gender];
+
+    if (finisher !== null) {
+      views.push(toSecondHalfView(secondHalfLabels[gender], finisher));
+    }
+  }
+
+  return views;
+}
+
+/** «±1,2%» — the median per-run deviation from the perfectly even lap-pace index. */
+function toEvenestView(label: string, runner: EvenestRunner): PacingNomineeView {
+  const percentText = (runner.deviation * PACING_PERCENT_BASE).toFixed(PACING_DEVIATION_DECIMALS).replace('.', DECIMAL_COMMA);
+
+  return {
+    label,
+    key: runner.key,
+    athleteLink: [ATHLETES_PAGE_LINK, runner.key],
+    displayName: runner.displayName,
+    valueText: `${PACING_DEVIATION_PREFIX}${percentText}%`,
+    detailText: splitRunsText(runner.count),
+  };
+}
+
+/** «+12 мест» — the on-course places gained on lap 2 over the scope. */
+function toSecondHalfView(label: string, finisher: SecondHalfFinisher): PacingNomineeView {
+  const count = finisher.gainedPlaces;
+  const placesText = pluralText(count, {
+    one: $localize`:@@records.pacingPlacesOne:${count}:count: место`,
+    few: $localize`:@@records.pacingPlacesFew:${count}:count: места`,
+    many: $localize`:@@records.pacingPlacesMany:${count}:count: мест`,
+  });
+
+  return {
+    label,
+    key: finisher.key,
+    athleteLink: [ATHLETES_PAGE_LINK, finisher.key],
+    displayName: finisher.displayName,
+    valueText: PACING_GAIN_PREFIX + placesText,
+    detailText: splitRunsText(finisher.count),
+  };
+}
+
+function splitRunsText(count: number): string {
+  return $localize`:@@records.pacingSplitRuns:Забегов со сплитами: ${count}:count:`;
 }
 
 /** The all-time crown label, or the prefix with the chosen cut: «Король 2024», «Король лета 2026». */

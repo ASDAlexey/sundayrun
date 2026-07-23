@@ -24,6 +24,9 @@ export const EMPTY_CELL_TEXT = '';
 /** Leads the Smashrun-style «до следующего места» gap under the gender place: «+0:12». */
 export const GAP_TEXT_PREFIX = '+';
 
+/** Leads the count of places gained on lap 2 under the finish time: «+3». */
+export const LAP_GAIN_PREFIX = '+';
+
 /** Joins the parts of the summary line: «8 финишёров, 2 новичка, 3 личных рекорда». */
 export const SUMMARY_PART_SEPARATOR = ', ';
 

@@ -35,6 +35,8 @@ describe('GuidePage', () => {
     ).toEqual([
       RECORDS_PAGE_LINK,
       RECORDS_PAGE_LINK,
+      RECORDS_PAGE_LINK,
+      VERSUS_PAGE_LINK,
       EXPECTED_CHART_LINK_HREF,
       EXPECTED_RATING_LINK_HREF,
       RACES_LIST_PAGE_LINK,

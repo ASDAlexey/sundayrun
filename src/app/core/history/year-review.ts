@@ -7,6 +7,7 @@ import { ISO_MONTH_END, ISO_MONTH_START } from './year-badges.constant';
 import { medianMsOrNull } from './median';
 import { yearBadgesOf } from './year-badges';
 import { YearBadge, YearBadgeType } from './year-badges.enum';
+import { yearProgressBoard } from './year-progress';
 import { MOST_ACTIVE_LIMIT, YEAR_BESTS_LIMIT } from './year-review.constant';
 import { YearActiveAthlete, YearBadgeHolders, YearBestResult, YearReview, YearReviewSource, YearRunRow } from './year-review.interface';
 
@@ -42,6 +43,7 @@ export function buildYearReview(source: YearReviewSource): YearReview {
     bestMen: bestsOf(fiveKm, Gender.male),
     bestWomen: bestsOf(fiveKm, Gender.female),
     mostActive: mostActiveOf(byAthlete),
+    progress: yearProgressBoard(source.year, displayNamesOf(byAthlete), source.historyRows),
     badgeHolders: badgeHoldersOf(byAthlete, source.eventDates[0] ?? null, badgeSignalsByAthlete(source.historyRows), source.year),
     firstEventSlug: source.eventDates[0] ?? null,
   };
@@ -61,6 +63,10 @@ function groupByAthlete(rows: YearRunRow[]): Map<string, YearRunRow[]> {
   }
 
   return byAthlete;
+}
+
+function displayNamesOf(byAthlete: Map<string, YearRunRow[]>): Map<string, string> {
+  return new Map([...byAthlete].map(([key, rows]) => [key, rows[0].displayName]));
 }
 
 function medianOf(fiveKm: YearRunRow[], gender: GenderType): number | null {

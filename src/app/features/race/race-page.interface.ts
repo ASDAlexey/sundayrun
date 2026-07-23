@@ -49,6 +49,10 @@ export interface RaceRowView {
   /** The finisher-club modifier for the count's badge («race__finishes_100»); empty below the first milestone. */
   finishClubClass: string;
   club: string;
+  /** «+3» мест, отыгранных на втором круге, under the finish time; blank without a plausible gain. */
+  lapGainText: string;
+  /** True for the rare negative split — the second lap ran at a faster pace than the first. */
+  isNegativeSplit: boolean;
   /** The stored note split into tokens, each classified into an icon badge or running text. */
   noteBadges: RaceNoteBadgeView[];
   /** Preformatted on-the-fly notable («2-й результат за всё время»); empty when nothing stands out. */

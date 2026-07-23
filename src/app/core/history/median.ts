@@ -18,3 +18,14 @@ export function medianMs(timesMs: readonly number[]): number {
 export function medianMsOrNull(timesMs: readonly number[]): number | null {
   return timesMs.length === 0 ? null : medianMs(timesMs);
 }
+
+/**
+ * The unrounded flavour for ratios (the pacing indexes), where whole-ms rounding would erase the
+ * signal. Expects a non-empty sample — every caller gates on a minimum run count first.
+ */
+export function medianRatio(values: readonly number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+
+  return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}

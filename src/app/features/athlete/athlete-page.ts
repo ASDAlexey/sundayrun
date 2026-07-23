@@ -64,6 +64,7 @@ import {
 import { BadgeCatalog } from './badge-catalog/badge-catalog';
 import { FormCard } from './form-card';
 import { LifetimeCard } from './lifetime-card';
+import { PacingCard } from './pacing-card';
 import { ProgressChart } from './progress-chart';
 import { RatingCard } from './rating-card';
 import { WeatherCard } from './weather-card';
@@ -80,6 +81,7 @@ import { WeatherCard } from './weather-card';
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    PacingCard,
     ProgressChart,
     RatingCard,
     ReloadButton,
@@ -187,6 +189,8 @@ export class AthletePage {
   readonly bestTimeText = computed(() => toTimeText(this.#record()?.bestMs ?? null));
   /** The «Лучший первый круг · 2,3 км» profile value; hidden while no run carries a recorded split. */
   readonly firstLap = computed(() => toFirstLapView(this.#bestFirstLap()));
+  /** The «Раскладка» card joins these with the 5 km runs by slug itself. */
+  readonly firstLaps = this.#firstLaps.asReadonly();
   /** Badges count every finished run (the short course included); badge-less years are omitted. */
   readonly yearBadges = computed(() =>
     athleteYearBadges(this.#record()?.runs ?? [], this.#firstEventDateByYear(), this.#rankBadgesByYear()),

@@ -1,5 +1,6 @@
 import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { FirstLapRecords } from '../../core/history/first-lap.type';
+import { PacingRow } from '../../core/history/pacing.interface';
 import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { EventWeatherRow } from '../../core/history/weather-records.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
@@ -16,6 +17,7 @@ export interface RecordsData {
   firstLapRecords: FirstLapRecords;
   weatherRows: EventWeatherRow[];
   winnerEvents: EventWinnerTimes[];
+  pacingRows: PacingRow[];
 }
 
 /**
@@ -76,6 +78,18 @@ export interface WeatherExtremeView {
   detailText: string;
   dateShort: string;
   raceLink: string[];
+}
+
+/** One pacing nomination card: the winner's name with the deciding value and the sample size. */
+export interface PacingNomineeView {
+  label: string;
+  key: string;
+  athleteLink: string[];
+  displayName: string;
+  /** «±1,2%» of the evenest runner, «+12 мест» of the second-half charger. */
+  valueText: string;
+  /** «Забегов со сплитами: 12» — the sample the nomination is decided over. */
+  detailText: string;
 }
 
 /** One record progression step for the timeline, newest first; the head is the current record. */

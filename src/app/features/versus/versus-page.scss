@@ -382,6 +382,18 @@
     fill: var(--accent-light);
   }
 
+  // The «лидировал после первого круга» flag hugs the centre gap on both sides of the round.
+  &__split-flag {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: var(--text-muted);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.4;
+    vertical-align: middle;
+  }
+
   // The pivot of the round: the margin of victory sits on the centre axis between the corners.
   &__gap {
     @include t.text('label', 'small');

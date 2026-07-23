@@ -15,7 +15,15 @@ import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { YEAR_LATEST_KEY, YEAR_PAGE_BASE_LINK, YEAR_PODIUM_SIZE, YEAR_ROUTE_PARAM, YEAR_TRANSFER_KEY_PREFIX } from './year-page.constant';
 import { YearStatus, YearStatusType } from './year-page.enum';
-import { YearActiveView, YearBadgeGroupView, YearBestRowView, YearPageState, YearReviewView, YearStatView } from './year-page.interface';
+import {
+  YearActiveView,
+  YearBadgeGroupView,
+  YearBestRowView,
+  YearPageState,
+  YearProgressRowView,
+  YearReviewView,
+  YearStatView,
+} from './year-page.interface';
 
 /** «Итоги года»: the year's totals, best results, most active finishers and badge holders. */
 @Component({
@@ -99,6 +107,7 @@ function toReviewView(review: YearReview): YearReviewView {
     bestMen: review.bestMen.map(toBestRow),
     bestWomen: review.bestWomen.map(toBestRow),
     mostActive: review.mostActive.map(toActiveView),
+    progress: review.progress.map(toProgressRow),
     badgeGroups: toBadgeGroups(review),
   };
 }
@@ -144,6 +153,16 @@ function toActiveView(active: YearReview['mostActive'][number], index: number): 
       few: $localize`:@@year.finishesFew:${active.finishCount}:count: финиша`,
       many: $localize`:@@year.finishesMany:${active.finishCount}:count: финишей`,
     }),
+  };
+}
+
+function toProgressRow(row: YearReview['progress'][number], index: number): YearProgressRowView {
+  return {
+    place: index + 1,
+    displayName: row.displayName,
+    athleteLink: [ATHLETES_PAGE_LINK, row.key],
+    deltaText: `−${formatDuration(row.deltaMs)}`,
+    mediansText: `${formatDuration(row.previousMedianMs)} → ${formatDuration(row.currentMedianMs)}`,
   };
 }
 

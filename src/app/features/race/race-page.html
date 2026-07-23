@@ -97,6 +97,12 @@
 
               <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell [class.race__td_accent]="row.time5 !== ''">
                 {{ row.time5 }}
+
+                @if (row.lapGainText !== '') {
+                  <span class="race__lap-gain" i18n-title="@@race.lapGainTitle" title="Мест отыграно на втором круге">{{
+                    row.lapGainText
+                  }}</span>
+                }
               </td>
             </ng-container>
 
@@ -238,6 +244,16 @@
                       </svg>
 
                       <span>{{ row.notableText }}</span>
+                    </span>
+                  }
+
+                  @if (row.isNegativeSplit) {
+                    <span class="race__split-chip" i18n-title="@@race.negativeSplitTitle" title="Темп второго круга выше темпа первого">
+                      <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
+                        <path class="race__note-icon-fill" d="M6.9 0.8 L2.6 6.7 H5.4 L5.1 11.2 L9.4 5.3 H6.6 Z" />
+                      </svg>
+
+                      <span i18n="@@race.negativeSplit">Негативный сплит</span>
                     </span>
                   }
                 </span>

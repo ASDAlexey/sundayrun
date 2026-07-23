@@ -6,6 +6,7 @@ import { AthleteFirstLap } from '../core/history/first-lap.interface';
 import { FirstLapRecords } from '../core/history/first-lap.type';
 import { LegendFinish } from '../core/history/legend.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
+import { PacingRow } from '../core/history/pacing.interface';
 import { RivalRun } from '../core/history/rivals.interface';
 import { EventWinnerTimes } from '../core/history/runner-scores.interface';
 import { SeasonBestRow } from '../core/history/season-ranks.interface';
@@ -30,6 +31,7 @@ import {
   selectOverallStats,
   selectRivalRuns,
 } from './protocol-db-queries';
+import { selectPacingRows } from './protocol-db-pacing';
 import { selectSeasonLapRuns, selectSeasonRuns } from './protocol-db-season';
 import { selectEventWeatherRows } from './protocol-db-weather';
 import { PROTOCOL_DB } from './protocol-db.token';
@@ -141,5 +143,10 @@ export class AthletesService {
   /** Every event's stored 9:00 weather; feeds the weather extremes and the athlete's weather bests. */
   loadWeatherRows(): Promise<EventWeatherRow[]> {
     return this.#cache('weatherRows', () => selectEventWeatherRows(this.#db));
+  }
+
+  /** Every 5 km finish with a recorded split; feeds the pacing nominations on the records page. */
+  loadPacingRows(): Promise<PacingRow[]> {
+    return this.#cache('pacingRows', () => selectPacingRows(this.#db));
   }
 }

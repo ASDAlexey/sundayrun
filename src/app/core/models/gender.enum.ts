@@ -16,6 +16,7 @@ export type GenderConfidenceType = (typeof GenderConfidence)[keyof typeof Gender
 export const GenderSource = {
   dictionary: 'dictionary',
   heuristic: 'heuristic',
+  history: 'history',
   manual: 'manual',
   unknown: 'unknown',
 } as const;

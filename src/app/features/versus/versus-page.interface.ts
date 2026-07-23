@@ -1,3 +1,4 @@
+import { AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { DuelStatusType } from './versus-page.enum';
 
@@ -6,6 +7,9 @@ export interface VersusDuelState {
   status: DuelStatusType;
   left: AthleteRecord | null;
   right: AthleteRecord | null;
+  /** Both duelists' recorded first-lap splits — the «кто лидировал на 2,3 км» garnish. */
+  leftLaps: AthleteFirstLap[];
+  rightLaps: AthleteFirstLap[];
 }
 
 /** One side of the scoreboard prepared for the template. */
@@ -33,4 +37,7 @@ export interface MeetingView {
   leftWon: boolean;
   rightWon: boolean;
   gapText: string;
+  /** The flag of the side that led after the first lap; both false without plausible splits or on a tie. */
+  leftLedSplit: boolean;
+  rightLedSplit: boolean;
 }

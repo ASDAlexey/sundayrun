@@ -29,6 +29,7 @@ const runRow = (
 
 const YEAR_RUN_ROWS: YearRunRow[] = [
   // Иванов's runs arrive newest-first: the slower January opener must not displace his 24:00 best.
+  runRow(IVAN, '2026-01-18', 1470000, FIVE_KM_DISTANCE_KM),
   runRow(IVAN, '2026-01-11', 1440000, FIVE_KM_DISTANCE_KM),
   runRow(IVAN, '2026-01-04', 1500000, FIVE_KM_DISTANCE_KM),
   // Петрова's equal 27:00s arrive newest-first, so the best-of-year tie-break must keep the earlier run.
@@ -47,18 +48,22 @@ const historyRow = (row: YearRunRow): HistoryRunRow => ({
 });
 
 /**
- * Two events; Иванов and Петрова ran both (the new-year one included), Смирнова, Кузнецова and
- * the genderless Сидоров ran one each, Сидоров on the short course only. The three women tie at
- * 27:00 season bests, so the best-results board ranks them alphabetically. The history carries
- * one extra pre-season run: Кузнецова's September opener puts a 126-day break before her 2026
- * finish — a comeback.
+ * Three events; Иванов ran all three, Петрова two (the new-year one included), Смирнова,
+ * Кузнецова and the genderless Сидоров one each, Сидоров on the short course only. The three
+ * women tie at 27:00 season bests, so the best-results board ranks them alphabetically. The
+ * history carries the pre-season runs: Кузнецова's September opener puts a 126-day break before
+ * her 2026 finish — a comeback — and Иванов's three autumn runs (26:30 median against 24:30
+ * in 2026, a 49-day new-year break at most) make him the progress board's only qualifier.
  */
 export const YEAR_REVIEW_SOURCE: YearReviewSource = {
   year: '2026',
-  eventDates: ['2026-01-04', '2026-01-11'],
+  eventDates: ['2026-01-04', '2026-01-11', '2026-01-18'],
   runRows: YEAR_RUN_ROWS,
   historyRows: [
     { athleteKey: VERA.key, dateIso: '2025-09-07', timeMs: 1620000, distanceKm: FIVE_KM_DISTANCE_KM },
+    { athleteKey: IVAN.key, dateIso: '2025-10-19', timeMs: 1560000, distanceKm: FIVE_KM_DISTANCE_KM },
+    { athleteKey: IVAN.key, dateIso: '2025-11-02', timeMs: 1590000, distanceKm: FIVE_KM_DISTANCE_KM },
+    { athleteKey: IVAN.key, dateIso: '2025-11-16', timeMs: 1620000, distanceKm: FIVE_KM_DISTANCE_KM },
     ...YEAR_RUN_ROWS.map(historyRow),
   ],
   newcomerCount: 2,
@@ -67,12 +72,12 @@ export const YEAR_REVIEW_SOURCE: YearReviewSource = {
 
 export const EXPECTED_YEAR_REVIEW: YearReview = {
   year: '2026',
-  eventCount: 2,
-  finishCount: 7,
+  eventCount: 3,
+  finishCount: 8,
   finisherCount: 5,
   newcomerCount: 2,
   personalRecordCount: 1,
-  // Median of Иванов's two 5 km runs; the short-course run never reaches the medians.
+  // Median of Иванов's three 5 km runs; the short-course run never reaches the medians.
   medianTimeMenMs: 1470000,
   // The women's sample is four equal 27:00s, so the median is 27:00.
   medianTimeWomenMs: 1620000,
@@ -84,12 +89,14 @@ export const EXPECTED_YEAR_REVIEW: YearReview = {
     { key: ZOYA.key, displayName: ZOYA.displayName, timeMs: 1620000, dateIso: '2026-01-04', slug: '2026-01-04' },
   ],
   mostActive: [
-    { key: IVAN.key, displayName: IVAN.displayName, finishCount: 2 },
+    { key: IVAN.key, displayName: IVAN.displayName, finishCount: 3 },
     { key: ANNA.key, displayName: ANNA.displayName, finishCount: 2 },
     { key: VERA.key, displayName: VERA.displayName, finishCount: 1 },
     { key: OLEG.key, displayName: OLEG.displayName, finishCount: 1 },
     { key: ZOYA.key, displayName: ZOYA.displayName, finishCount: 1 },
   ],
+  // Иванов's season median dropped from 26:30 to 24:30 with three finishes on both sides.
+  progress: [{ key: IVAN.key, displayName: IVAN.displayName, previousMedianMs: 1590000, currentMedianMs: 1470000, deltaMs: 120000 }],
   badgeHolders: [
     {
       badge: YearBadge.newYearRace,
@@ -129,6 +136,7 @@ export const EXPECTED_EMPTY_YEAR_REVIEW: YearReview = {
   bestMen: [],
   bestWomen: [],
   mostActive: [],
+  progress: [],
   badgeHolders: [],
   firstEventSlug: null,
 };

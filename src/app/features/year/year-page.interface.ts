@@ -32,6 +32,17 @@ export interface YearActiveView {
   countText: string;
 }
 
+/** One row of the «прогресс года» board: place, athlete, the gain and the median pair behind it. */
+export interface YearProgressRowView {
+  place: number;
+  displayName: string;
+  athleteLink: string[];
+  /** The season-median improvement, e.g. «−2:00». */
+  deltaText: string;
+  /** The medians behind the gain, e.g. «26:30 → 24:30». */
+  mediansText: string;
+}
+
 export interface YearBadgeHolderView {
   displayName: string;
   athleteLink: string[];
@@ -50,5 +61,6 @@ export interface YearReviewView {
   bestMen: YearBestRowView[];
   bestWomen: YearBestRowView[];
   mostActive: YearActiveView[];
+  progress: YearProgressRowView[];
   badgeGroups: YearBadgeGroupView[];
 }

@@ -27,15 +27,18 @@ import {
   SHARED_PREFIX_QUERY,
   SUGGESTION_QUERY,
   UNKNOWN_KEY,
+  VERSUS_FIRST_LAPS,
   VERSUS_LOAD_ERROR_MESSAGE,
   VERSUS_RECORDS,
   VERSUS_SELF_PICK,
+  EXPECTED_SPLIT_LEAD_TEXT,
   EXPECTED_WINNING_TIMES,
 } from './versus-page.mock';
 
 describe('VersusPage', () => {
   const loadRecord = vi.fn();
   const loadRecords = vi.fn();
+  const loadFirstLaps = vi.fn();
   const routeParams: Params = {};
 
   let platformId = BROWSER_PLATFORM_ID;
@@ -50,12 +53,13 @@ describe('VersusPage', () => {
     delete routeParams[RIGHT_ROUTE_PARAM];
     loadRecord.mockImplementation((key: string) => Promise.resolve(VERSUS_RECORDS[key] ?? null));
     loadRecords.mockImplementation(() => Promise.resolve(DIRECTORY_RECORDS));
+    loadFirstLaps.mockImplementation((key: string) => Promise.resolve(VERSUS_FIRST_LAPS[key] ?? []));
     routeStub = activatedRouteStub(routeParams);
     selfSignal = signal<SelfAthlete | null>(null);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: AthletesService, useValue: { loadRecord, loadRecords } },
+        { provide: AthletesService, useValue: { loadRecord, loadRecords, loadFirstLaps } },
         { provide: SelfAthleteService, useValue: { self: selfSignal } },
         { provide: ActivatedRoute, useValue: routeStub },
         { provide: PLATFORM_ID, useFactory: () => platformId },
@@ -89,6 +93,7 @@ describe('VersusPage', () => {
     expect(page.meetingCount()).toBe(EXPECTED_MEETING_VIEWS.length);
     expect(page.drawCount()).toBe(EXPECTED_DRAW_COUNT);
     expect(page.meetings()).toEqual(EXPECTED_MEETING_VIEWS);
+    expect(page.splitLeadText(), 'one split lead each over the two split-bearing meetings').toBe(EXPECTED_SPLIT_LEAD_TEXT);
     expect(page.pickerOpen(), 'a settled duel hides the search box').toBe(false);
 
     page.onQueryChange(SUGGESTION_QUERY);
@@ -107,7 +112,15 @@ describe('VersusPage', () => {
       'exactly one winning time per decided meeting, none for the draw',
     ).toEqual(EXPECTED_WINNING_TIMES);
     expect(element.querySelector('.versus__date').getAttribute('href')).toBe(EXPECTED_MEETING_VIEWS[0].raceLink.join('/'));
+    expect(element.querySelectorAll('.versus__split-flag').length, 'one lead flag per split-bearing meeting').toBe(2);
     expect(element.querySelector('.versus__search'), 'no search box once both slots are filled').toBeNull();
+
+    loadFirstLaps.mockRejectedValue(new Error(VERSUS_LOAD_ERROR_MESSAGE));
+    routeStub.setParams({ [LEFT_ROUTE_PARAM]: LEFT_KEY, [RIGHT_ROUTE_PARAM]: RIGHT_KEY });
+    await settle();
+
+    expect(page.duelStatus(), 'failed lap reads are garnish — the duel still settles').toBe(DuelStatus.ready);
+    expect(page.splitLeadText(), 'no splits — no lead line').toBeNull();
   });
 
   it('suggests by a normalized query without the picked athletes; picking navigates to the shareable duel', async () => {

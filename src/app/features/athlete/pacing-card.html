@@ -1,0 +1,35 @@
+@if (view(); as v) {
+  <section class="pacing-card">
+    <h2 class="pacing-card__title" i18n="@@athlete.pacingTitle">Раскладка</h2>
+
+    <p class="pacing-card__profile">{{ v.profileText }}</p>
+
+    <p class="pacing-card__hint" i18n="@@athlete.pacingHint">
+      Темп второго круга (2,7 км) против первого (2,3 км) — по забегам с записанными сплитами.
+    </p>
+
+    <ul class="pacing-card__rows">
+      <li class="pacing-card__row">
+        <span class="pacing-card__label" i18n="@@athlete.pacingMedianLabel">Второй круг обычно</span>
+
+        <span class="pacing-card__value">{{ v.medianDeltaText }}</span>
+      </li>
+
+      <li class="pacing-card__row">
+        <span class="pacing-card__label" i18n="@@athlete.pacingNegativeLabel">Негативные сплиты</span>
+
+        <span class="pacing-card__value">{{ v.negativeCountText }}</span>
+      </li>
+
+      @if (v.best; as best) {
+        <li class="pacing-card__row">
+          <span class="pacing-card__label" i18n="@@athlete.pacingBestLabel">Лучшая раскладка</span>
+
+          <span class="pacing-card__value">{{ best.deltaText }}</span>
+
+          <a class="pacing-card__date" [routerLink]="best.raceLink">{{ best.dateShort }}</a>
+        </li>
+      }
+    </ul>
+  </section>
+}

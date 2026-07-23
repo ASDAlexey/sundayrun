@@ -212,6 +212,12 @@
     @include p.place-gap;
   }
 
+  &__lap-gain {
+    @include p.place-gap;
+
+    color: var(--green);
+  }
+
   &__finishes {
     @include p.finishes-badge;
   }
@@ -247,6 +253,21 @@
     border-radius: 999px;
     background: var(--accent-glow);
     color: var(--accent-light);
+    white-space: nowrap;
+  }
+
+  // The rare pride mark: same chip shape as the notable, tinted with the P&L green.
+  &__split-chip {
+    @include t.text('label', 'small');
+
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    gap: 5px;
+    border: 1px solid color-mix(in srgb, var(--green) 30%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--green) 10%, transparent);
+    color: var(--green);
     white-space: nowrap;
   }
 

@@ -474,6 +474,37 @@
           </section>
         }
 
+        @if (pacingViews().length > 0) {
+          <section class="records__pacing">
+            <h2 class="records__history-title" i18n="@@records.pacingTitle">Раскладка по кругам</h2>
+
+            <p class="records__history-tagline" i18n="@@records.pacingTagline">
+              Темп второго круга (2,7 км) против первого (2,3 км): кто держит темп ровнее всех и кто отыгрывает больше всего позиций на
+              втором круге. Считаем по забегам с записанными сплитами — это примерно 70% финишей. Фильтр по годам сужает до сезона.
+            </p>
+
+            <div class="records__boards">
+              @for (nominee of pacingViews(); track nominee.label) {
+                <section class="records__board">
+                  <div class="records__board-head">
+                    <h3 class="records__board-title">{{ nominee.label }}</h3>
+                  </div>
+
+                  <div class="records__pacing-row">
+                    <span class="records__pacing-value">{{ nominee.valueText }}</span>
+
+                    <span class="records__athlete-cell">
+                      <a class="records__athlete" [routerLink]="nominee.athleteLink">{{ nominee.displayName }}</a>
+                    </span>
+
+                    <span class="records__pacing-detail">{{ nominee.detailText }}</span>
+                  </div>
+                </section>
+              }
+            </div>
+          </section>
+        }
+
         <p class="records__note" i18n="@@records.note">
           Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.
         </p>

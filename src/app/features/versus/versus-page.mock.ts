@@ -1,4 +1,5 @@
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
+import { AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
@@ -57,6 +58,20 @@ export const VERSUS_RECORDS: Record<string, AthleteRecord> = {
   ]),
 };
 
+const lap = (slug: string, lapMs: number): AthleteFirstLap => ({ dateIso: slug, slug, lapMs });
+
+/**
+ * The recorded first-lap splits behind the meetings: Пётр led at 2,3 км on kuzminki-2 (and won),
+ * Анна led on kuzminki-3 (and won); the drawn kuzminki-4 lacks his split, so it counts neither.
+ */
+export const VERSUS_FIRST_LAPS: Record<string, AthleteFirstLap[]> = {
+  [LEFT_KEY]: [lap('kuzminki-2', 660000), lap('kuzminki-3', 680000)],
+  [RIGHT_KEY]: [lap('kuzminki-2', 700000), lap('kuzminki-3', 660000), lap('kuzminki-4', 690000)],
+};
+
+/** One split lead each across the two split-bearing meetings. */
+export const EXPECTED_SPLIT_LEAD_TEXT = 'После первого круга впереди: 1 : 1';
+
 const SUGGESTED_RECORD: AthleteRecord = record(SUGGESTED_KEY, 'Петрова Мария', 1620000, []);
 
 const TIMELESS_RECORD: AthleteRecord = record(TIMELESS_KEY, 'Петренко Ольга', null, []);
@@ -91,6 +106,8 @@ export const EXPECTED_MEETING_VIEWS: MeetingView[] = [
     leftWon: false,
     rightWon: false,
     gapText: DRAW_GAP_TEXT,
+    leftLedSplit: false,
+    rightLedSplit: false,
   },
   {
     slug: 'kuzminki-3',
@@ -101,6 +118,8 @@ export const EXPECTED_MEETING_VIEWS: MeetingView[] = [
     leftWon: false,
     rightWon: true,
     gapText: '1:00',
+    leftLedSplit: false,
+    rightLedSplit: true,
   },
   {
     slug: 'kuzminki-2',
@@ -111,6 +130,8 @@ export const EXPECTED_MEETING_VIEWS: MeetingView[] = [
     leftWon: true,
     rightWon: false,
     gapText: '1:00',
+    leftLedSplit: true,
+    rightLedSplit: false,
   },
 ];
 

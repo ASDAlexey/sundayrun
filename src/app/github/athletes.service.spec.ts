@@ -11,6 +11,7 @@ import {
   EXPECTED_DB_BEST_FIRST_LAP,
   EXPECTED_DB_FIRST_LAPS,
   EXPECTED_DB_FIRST_LAP_RECORDS,
+  EXPECTED_DB_PACING_ROWS,
   EXPECTED_DB_WEATHER_ROWS,
   EXPECTED_EVENT_SLUGS,
   EXPECTED_FIRST_EVENT_DATE_BY_YEAR,
@@ -70,6 +71,7 @@ describe('AthletesService', () => {
     await expect(service.loadFirstLaps(ATHLETE_KEY)).resolves.toEqual(EXPECTED_DB_FIRST_LAPS);
     await expect(service.loadSeasonRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_RUNS);
     await expect(service.loadSeasonLapRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_LAP_RUNS);
+    await expect(service.loadPacingRows()).resolves.toEqual(EXPECTED_DB_PACING_ROWS);
   });
 
   it('propagates a db failure from every read so the page can show a distinct error state', async () => {

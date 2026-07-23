@@ -13,6 +13,7 @@ import {
   SEASON_RUNS,
 } from '../../core/history/season-positions.mock';
 import { Season } from '../../core/history/seasons.enum';
+import { PACING_BOARD_ROWS } from '../../core/history/pacing.mock';
 import { WEATHER_ROWS_MOCK } from '../../core/history/weather-records.mock';
 import { Gender } from '../../core/models/gender.enum';
 import { AthletesService } from '../../github/athletes.service';
@@ -54,8 +55,11 @@ import {
   EXPECTED_TIE_CROWNED_KEY,
   EXPECTED_TIMELINE_ROW_COUNT,
   EXPECTED_TOP_TIME_TEXT,
+  EXPECTED_PACING_VIEWS,
   EXPECTED_WEATHER_VIEWS,
   EXPECTED_WINDLESS_WEATHER_VIEWS,
+  EXPECTED_2025_PETR_VALUE,
+  PACING_EMPTY_YEAR,
   EXPECTED_WOMEN_FIRST_LAP_VIEW,
   EXPECTED_WOMEN_NAMES,
   EXPECTED_YEAR_RACE_SLUG,
@@ -81,6 +85,7 @@ describe('RecordsPage', () => {
   const loadSeasonLapRuns = vi.fn();
   const loadWeatherRows = vi.fn();
   const loadEventWinnerTimes = vi.fn();
+  const loadPacingRows = vi.fn();
 
   const RECORDS_KEY = makeStateKey<{ data: RecordsData } | null>(RECORDS_TRANSFER_KEY);
 
@@ -99,6 +104,7 @@ describe('RecordsPage', () => {
     loadSeasonLapRuns.mockResolvedValue([]);
     loadWeatherRows.mockResolvedValue(WEATHER_ROWS_MOCK);
     loadEventWinnerTimes.mockResolvedValue([]);
+    loadPacingRows.mockResolvedValue(PACING_BOARD_ROWS);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -112,6 +118,7 @@ describe('RecordsPage', () => {
             loadSeasonLapRuns,
             loadWeatherRows,
             loadEventWinnerTimes,
+            loadPacingRows,
           },
         },
         { provide: PLATFORM_ID, useFactory: () => platformId },
@@ -161,6 +168,7 @@ describe('RecordsPage', () => {
     expect(page.menFirstLap()).toEqual(EXPECTED_MEN_FIRST_LAP_VIEW);
     expect(page.womenFirstLap()).toEqual(EXPECTED_WOMEN_FIRST_LAP_VIEW);
     expect(page.weatherViews()).toEqual(EXPECTED_WEATHER_VIEWS);
+    expect(page.pacingViews(), 'the four pacing nominations, decided over the whole archive').toEqual(EXPECTED_PACING_VIEWS);
 
     fixture.detectChanges();
 
@@ -168,8 +176,8 @@ describe('RecordsPage', () => {
 
     expect(
       element.querySelectorAll('.records__board').length,
-      'two leaderboards, two timelines, two first-lap cards and three weather cards',
-    ).toBe(9);
+      'two leaderboards, two timelines, two first-lap cards, three weather cards and four pacing cards',
+    ).toBe(13);
     expect(element.querySelector('.records__history')).not.toBeNull();
     expect(element.querySelectorAll('.records__timeline-row').length).toBe(EXPECTED_TIMELINE_ROW_COUNT);
     expect(element.querySelectorAll('.records__timeline-row_current').length, 'one standing record per gender').toBe(2);
@@ -201,7 +209,7 @@ describe('RecordsPage', () => {
     expect(
       fixture.nativeElement.querySelectorAll('.records__board').length,
       'leaderboards hide behind the no-matches message; the record timelines, first-lap and weather cards stay',
-    ).toBe(7);
+    ).toBe(11);
   });
 
   it('filters by season and by gender', async () => {
@@ -244,7 +252,7 @@ describe('RecordsPage', () => {
     expect(
       fixture.nativeElement.querySelectorAll('.records__board').length,
       'one leaderboard, one timeline, one first-lap card — the genderless weather cards stay',
-    ).toBe(6);
+    ).toBe(10);
 
     page.setGender(Gender.female);
     page.onQueryChange(NO_MATCH_QUERY);
@@ -265,6 +273,11 @@ describe('RecordsPage', () => {
 
     expect(page.weatherViews()[0], 'the weather extremes follow the season filter').toEqual(EXPECTED_2025_COLDEST_VIEW);
     expect(page.weatherViews().length, 'the 2025 hottest day stores wind, so the wind card stays').toBe(3);
+    expect(page.pacingViews()[2].valueText, 'the season cut drops petr’s 2024 race from his tally').toBe(EXPECTED_2025_PETR_VALUE);
+
+    page.onYearChange(PACING_EMPTY_YEAR);
+
+    expect(page.pacingViews(), 'a season where nobody reaches three splits hides the section').toEqual([]);
   });
 
   it('drops the wind card when no scoped event stored wind', async () => {
@@ -280,6 +293,7 @@ describe('RecordsPage', () => {
     loadRecords.mockResolvedValue([]);
     loadFirstLapRecords.mockResolvedValue(EMPTY_FIRST_LAP_RECORDS);
     loadWeatherRows.mockRejectedValue(new Error(HISTORY_LOAD_ERROR_MESSAGE));
+    loadPacingRows.mockRejectedValue(new Error(HISTORY_LOAD_ERROR_MESSAGE));
     fixture = await createPage();
 
     const page = fixture.componentInstance;
@@ -288,6 +302,7 @@ describe('RecordsPage', () => {
     expect(page.menFirstLap(), 'no recorded splits keep the first-lap board vacant').toBeNull();
     expect(page.menPositions().lines, 'no seasons at all — the chart has nothing to rank').toEqual([]);
     expect(page.weatherViews(), 'the failed weather read is garnish — no extreme cards, no error').toEqual([]);
+    expect(page.pacingViews(), 'the failed pacing read is garnish too').toEqual([]);
 
     fixture.detectChanges();
 

@@ -3,6 +3,7 @@ import { EXPECTED_COURSE_RECORD_HISTORY } from '../../core/history/course-record
 import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { EXPECTED_FIRST_LAP_RECORDS } from '../../core/history/first-lap.mock';
+import { EVEN_TOTAL_MS, NEGATIVE_LAP_MS, indexOf } from '../../core/history/pacing.mock';
 import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { EventWeatherRow } from '../../core/history/weather-records.interface';
 import { WEATHER_ROWS_MOCK } from '../../core/history/weather-records.mock';
@@ -12,13 +13,21 @@ import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import {
+  DECIMAL_COMMA,
+  EVENEST_FEMALE_LABEL,
+  EVENEST_MALE_LABEL,
   NO_GRADE_TEXT,
+  PACING_DEVIATION_DECIMALS,
+  PACING_DEVIATION_PREFIX,
+  PACING_PERCENT_BASE,
   RECORD_DELTA_SIGN,
+  SECOND_HALF_FEMALE_LABEL,
+  SECOND_HALF_MALE_LABEL,
   WEATHER_COLDEST_LABEL,
   WEATHER_HOTTEST_LABEL,
   WEATHER_WINDIEST_LABEL,
 } from './records-page.constant';
-import { ChartPick, FirstLapRecordView, RatingRowView, RecordsData, WeatherExtremeView } from './records-page.interface';
+import { ChartPick, FirstLapRecordView, PacingNomineeView, RatingRowView, RecordsData, WeatherExtremeView } from './records-page.interface';
 
 export const HISTORY_LOAD_ERROR_MESSAGE = 'history load failed';
 
@@ -29,7 +38,58 @@ export const BAKED_RECORDS_DATA: RecordsData = {
   firstLapRecords: EXPECTED_FIRST_LAP_RECORDS,
   weatherRows: WEATHER_ROWS_MOCK,
   winnerEvents: [],
+  pacingRows: [],
 };
+
+/** `boris`'s median deviation over PACING_BOARD_ROWS, as the card formats it: «±2,6%». */
+const BORIS_DEVIATION_TEXT = `${PACING_DEVIATION_PREFIX}${(Math.abs(indexOf(NEGATIVE_LAP_MS, EVEN_TOTAL_MS) - 1) * PACING_PERCENT_BASE)
+  .toFixed(PACING_DEVIATION_DECIMALS)
+  .replace('.', DECIMAL_COMMA)}%`;
+
+/**
+ * `pacingBoards(PACING_BOARD_ROWS, null)` viewed: the evenest pair, then the second-half pair
+ * with petr's 2024 race widening his all-time tally to +7 over four starts.
+ */
+export const EXPECTED_PACING_VIEWS: PacingNomineeView[] = [
+  {
+    label: EVENEST_MALE_LABEL,
+    key: 'boris',
+    athleteLink: [ATHLETES_PAGE_LINK, 'boris'],
+    displayName: 'boris',
+    valueText: BORIS_DEVIATION_TEXT,
+    detailText: 'Забегов со сплитами: 3',
+  },
+  {
+    label: EVENEST_FEMALE_LABEL,
+    key: 'anna',
+    athleteLink: [ATHLETES_PAGE_LINK, 'anna'],
+    displayName: 'anna',
+    valueText: '±0,0%',
+    detailText: 'Забегов со сплитами: 3',
+  },
+  {
+    label: SECOND_HALF_MALE_LABEL,
+    key: 'petr',
+    athleteLink: [ATHLETES_PAGE_LINK, 'petr'],
+    displayName: 'petr',
+    valueText: '+7 мест',
+    detailText: 'Забегов со сплитами: 4',
+  },
+  {
+    label: SECOND_HALF_FEMALE_LABEL,
+    key: 'zoya',
+    athleteLink: [ATHLETES_PAGE_LINK, 'zoya'],
+    displayName: 'zoya',
+    valueText: '+3 места',
+    detailText: 'Забегов со сплитами: 3',
+  },
+];
+
+/** The 2025 cut drops petr's 2024 race: «+6 мест» over three starts. */
+export const EXPECTED_2025_PETR_VALUE = '+6 мест';
+
+/** The lone 2024 pair never reaches three scoped races — the section hides. */
+export const PACING_EMPTY_YEAR = '2024';
 
 /** Matches every SEASON_RUNS filler (11 of them) — more than the suggestion cap. */
 export const CHART_FILLER_QUERY = 'филлеров';

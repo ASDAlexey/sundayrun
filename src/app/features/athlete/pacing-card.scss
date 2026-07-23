@@ -1,0 +1,75 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+.pacing-card {
+  @include c.card;
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 12px;
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__profile {
+    @include t.text('body', 'large');
+
+    color: var(--accent);
+  }
+
+  &__hint {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    padding: 10px 4px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-soft);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__label {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__value {
+    @include t.text('label', 'medium');
+
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__date {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+}

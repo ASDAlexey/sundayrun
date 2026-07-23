@@ -1,6 +1,7 @@
 import { GenderType } from '../models/gender.enum';
 import { HistoryRunRow } from './badge-signals.interface';
 import { YearBadgeType } from './year-badges.enum';
+import { YearProgressRow } from './year-progress.interface';
 
 /** One finished run of the year joined with its athlete, the raw material of the review. */
 export interface YearRunRow {
@@ -64,6 +65,8 @@ export interface YearReview {
   bestMen: YearBestResult[];
   bestWomen: YearBestResult[];
   mostActive: YearActiveAthlete[];
+  /** Athletes whose 5 km season median beat the previous season's — biggest improvement first. */
+  progress: YearProgressRow[];
   /** Badge → athletes, display order; badges nobody earned are omitted. */
   badgeHolders: YearBadgeHolders[];
   firstEventSlug: string | null;

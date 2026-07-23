@@ -229,6 +229,34 @@
     gap: 16px;
   }
 
+  &__progress {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 16px;
+  }
+
+  &__progress-note {
+    @include t.text('label', 'small');
+
+    color: var(--text-secondary);
+  }
+
+  &__progress-delta {
+    @include t.mono-value;
+
+    color: var(--green);
+  }
+
+  &__progress-medians {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
   &__badges {
     @include c.card;
 

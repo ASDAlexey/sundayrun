@@ -90,6 +90,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       finishCountText: '',
       finishClubClass: '',
       club: 'Курск бегущий',
+      lapGainText: '',
+      isNegativeSplit: false,
       noteBadges: [],
       notableText: '',
     },
@@ -113,6 +115,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       finishCountText: '',
       finishClubClass: '',
       club: '',
+      lapGainText: '',
+      isNegativeSplit: false,
       noteBadges: [],
       notableText: '',
     },
@@ -136,6 +140,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       finishCountText: '',
       finishClubClass: '',
       club: '',
+      lapGainText: '',
+      isNegativeSplit: false,
       // An unrecognized organiser note stays running text — no chip, no icon.
       noteBadges: [{ kind: NoteBadgeKind.plain, className: '', text: 'сход', prNote: null }],
       notableText: '',
@@ -172,6 +178,35 @@ export const GAP_PROTOCOL_ROWS: ProtocolRow[] = [
 export const EXPECTED_GAP_M_TEXTS = ['', '+0:12', '', ''];
 
 export const EXPECTED_GAP_F_TEXTS = ['', '', '', '+0:30'];
+
+const splitRow = (index: number, fullName: string, time23: string, totalMs: number): ProtocolRow => ({
+  index,
+  fullName,
+  time23,
+  time5: '',
+  totalMs,
+  distanceKm: FIVE_KM_DISTANCE_KM,
+  gender: Gender.male,
+  placeM: index,
+  placeF: null,
+  club: '',
+  note: '',
+});
+
+/**
+ * Three split-bearing finishers: the negative splitter overtakes both fast starters on lap 2
+ * (a 12:00 opening lap of a 24:10 finish paces lap 2 faster), the others gain nothing.
+ */
+export const SPLIT_PROTOCOL_ROWS: ProtocolRow[] = [
+  splitRow(1, 'Закрыватель Захар', '12:00', 1450000),
+  splitRow(2, 'Стартер Степан', '10:00', 1470000),
+  splitRow(3, 'Ровный Роман', '11:30', 1500000),
+];
+
+/** Only the charger's gain shows — losses and dead-even laps stay blank. */
+export const EXPECTED_LAP_GAIN_TEXTS = ['+2', '', ''];
+
+export const EXPECTED_NEGATIVE_SPLIT_FLAGS = [true, false, false];
 
 /** Мария's run at `RACE_PAGE_SLUG` (25:00 per the fixture rows), by builder-friendly key. */
 const mariaRun = (dateIso: string, timeMs: number, slug: string = dateIso): ParticipantRun => ({

@@ -70,3 +70,24 @@ export const WEATHER_WINDIEST_LABEL = $localize`:@@records.weatherWindiest:Са�
 
 /** The wind record card leads with the reading itself: «💨 32 км/ч». */
 export const WINDIEST_VALUE_ICON = '💨';
+
+/** The pacing nomination card labels, per gender; the year filter scopes the scan. */
+export const EVENEST_MALE_LABEL = $localize`:@@records.evenestMale:Самый ровный бегун`;
+
+export const EVENEST_FEMALE_LABEL = $localize`:@@records.evenestFemale:Самая ровная бегунья`;
+
+export const SECOND_HALF_MALE_LABEL = $localize`:@@records.secondHalfMale:Король второго круга`;
+
+export const SECOND_HALF_FEMALE_LABEL = $localize`:@@records.secondHalfFemale:Королева второго круга`;
+
+/** The evenness deviation renders as «±1,2%»: whole percents with one decimal, comma-separated. */
+export const PACING_PERCENT_BASE = 100;
+
+export const PACING_DEVIATION_DECIMALS = 1;
+
+export const DECIMAL_COMMA = ',';
+
+export const PACING_DEVIATION_PREFIX = '±';
+
+/** Leads the second-half charger's tally: «+12 мест». */
+export const PACING_GAIN_PREFIX = '+';

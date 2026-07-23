@@ -25,6 +25,7 @@ import {
   PUBLISHED_EVENT_DATES,
   RACE_EVENT,
   REPUBLISHED_HISTORY,
+  REVERSED_NAME_XLSX_BYTES,
   SECOND_UNDATED_FILE_NAME,
   UNDATED_FILE_NAME,
   UNKNOWN_GENDER_ID,
@@ -129,6 +130,17 @@ describe('ProtocolStateService', () => {
     service.applyAutoNotes(FUTURE_ONLY_HISTORY);
 
     expect(service.participants()[0].note, 'a back-dated import must not see future runs').toBe(EXPECTED_BACKDATED_NOTE);
+
+    service.importFile(IMPORT_FILE_NAME, REVERSED_NAME_XLSX_BYTES);
+    service.applyAutoNotes(IMPORT_HISTORY);
+
+    expect(service.participants()[0], 'a reversed name is fixed against the archive before the notes are computed').toMatchObject({
+      fullName: KNOWN_MALE_NAME,
+      gender: Gender.male,
+      genderConfidence: GenderConfidence.high,
+      genderSource: GenderSource.history,
+      note: EXPECTED_PR_NOTE,
+    });
 
     service.setPublishedEventDates(PUBLISHED_EVENT_DATES);
 

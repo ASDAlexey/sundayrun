@@ -9,6 +9,7 @@ import { LegendFinish } from '../core/history/legend.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
 import { PreviousBest } from '../core/history/previous-bests.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
+import { PacingRow } from '../core/history/pacing.interface';
 import { SeasonRun } from '../core/history/season-positions.interface';
 import { RivalRun } from '../core/history/rivals.interface';
 import { EventWinnerTimes } from '../core/history/runner-scores.interface';
@@ -154,6 +155,30 @@ export const EXPECTED_DB_FIRST_LAPS: AthleteFirstLap[] = [
 
 /** Нина's single run resolves through the women's place column. */
 export const EXPECTED_WOMAN_RUN_PLACES: Record<string, number> = { '2025-02-02': 1 };
+
+/**
+ * Edge results only the pacing spec seeds: an unparsable split and a split-bearing row without a
+ * total — the pacing read drops both in code, after the SQL cut.
+ */
+export const SEED_PACING_EDGE_RESULTS: readonly string[] = [
+  `INSERT INTO results VALUES (${q('2025-06-06')}, 1, ${q('Иванов Иван')}, ${q('сбой')}, ${q('25:00')}, 1500000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 1, NULL, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${q('2025-06-06')}, 2, ${q('Иванов Иван')}, ${q('12:00')}, ${q('DNF')}, NULL, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, NULL, NULL, ${q('')}, ${q('')})`,
+];
+
+/**
+ * Every split-bearing 5 km finish, oldest first: both of Иванов's spellings resolve to one key,
+ * Мария falls back to the protocol spelling, and the 2.3 km-only run plus the split-less DNF row
+ * never enter the scan.
+ */
+export const EXPECTED_DB_PACING_ROWS: PacingRow[] = [
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', gender: Gender.male, slug: '2024-05-05', lapMs: 720000, totalMs: 1600000 },
+  { key: ATHLETE_KEY, displayName: 'Иванов Иван', gender: Gender.male, slug: '2024-06-06', lapMs: 675000, totalMs: 1500000 },
+  { key: 'мария иванова', displayName: 'Мария Иванова', gender: Gender.female, slug: '2024-06-06', lapMs: 690000, totalMs: 1530000 },
+  { key: RUNLESS_ATHLETE_KEY, displayName: 'Новикова Нина', gender: Gender.female, slug: '2025-02-02', lapMs: 780000, totalMs: 1700000 },
+  { key: 'мария иванова', displayName: 'Мария Иванова', gender: Gender.female, slug: NEWER_ENTRY.slug, lapMs: 690000, totalMs: 1500000 },
+];
 
 /**
  * Stored 9:00 readings: two on the run-history events (the newer of which kept only the temperature)

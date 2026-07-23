@@ -12,6 +12,8 @@ import {
   AVAILABLE_YEARS,
   BESTLESS_STAT_COUNT,
   BESTLESS_YEAR_REVIEW,
+  PROGRESS_DELTA_TEXT,
+  PROGRESS_MEDIANS_TEXT,
   REQUESTED_YEAR,
   REQUESTED_YEAR_REVIEW,
   UNKNOWN_YEAR,
@@ -70,6 +72,10 @@ describe('YearPage', () => {
       fixture.componentInstance.view()?.mostActive.map((row) => row.place),
       'the activity board carries places too',
     ).toEqual(YEAR_REVIEW.mostActive.map((_, index) => index + 1));
+    expect(
+      fixture.componentInstance.view()?.progress.map((row) => [row.place, row.deltaText, row.mediansText]),
+      'the progress board formats the gain and the median pair',
+    ).toEqual([[1, PROGRESS_DELTA_TEXT, PROGRESS_MEDIANS_TEXT]]);
 
     routeStub.setParams({ [YEAR_ROUTE_PARAM]: REQUESTED_YEAR });
     await settle();

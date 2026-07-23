@@ -7,8 +7,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { suggestAthletes } from '../../core/history/athlete-suggest';
+import { AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { buildHeadToHead } from '../../core/history/head-to-head';
 import { HeadToHead, HeadToHeadMeeting } from '../../core/history/head-to-head.interface';
+import { meetingSplitLeads } from '../../core/history/pacing';
+import { MeetingSplits } from '../../core/history/pacing.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
@@ -41,9 +44,14 @@ export class VersusPage {
   readonly #options = signal<AthleteRecord[]>([]);
   readonly #left = signal<AthleteRecord | null>(null);
   readonly #right = signal<AthleteRecord | null>(null);
+  readonly #leftLaps = signal<AthleteFirstLap[]>([]);
+  readonly #rightLaps = signal<AthleteFirstLap[]>([]);
   readonly #duel = computed(() => toDuel(this.#left(), this.#right()));
   // The lambda runs lazily, so referencing the record signals declared above is safe.
   readonly #pickedKeys = computed(() => [this.#left()?.key, this.#right()?.key]);
+  readonly #duelMeetings = computed(() => this.#duel()?.meetings ?? []);
+  /** Per meeting: both duelists' plausible first-lap splits, or null while either side lacks one. */
+  readonly #splitLeads = computed(() => meetingSplitLeads(this.#duelMeetings(), this.#leftLaps(), this.#rightLaps()));
 
   readonly status = signal<VersusStatusType>(VersusStatus.loading);
   readonly duelStatus = signal<DuelStatusType>(DuelStatus.idle);
@@ -53,7 +61,10 @@ export class VersusPage {
   readonly rightSide = computed(() => toSideView(this.#right(), this.#duel()?.rightWins ?? 0));
   readonly meetingCount = computed(() => this.#duel()?.meetingCount ?? 0);
   readonly drawCount = computed(() => this.#duel()?.draws ?? 0);
-  readonly meetings = computed(() => (this.#duel()?.meetings ?? []).map(toMeetingView));
+  // `meetingSplitLeads` aligns with the meetings, so indexing into it is always in range.
+  readonly meetings = computed(() => this.#duelMeetings().map((meeting, index) => toMeetingView(meeting, this.#splitLeads()[index])));
+  /** «После первого круга впереди: 2 : 1» — null while no meeting carries both splits. */
+  readonly splitLeadText = computed(() => toSplitLeadText(this.#splitLeads()));
   readonly suggestions = computed(() => suggest(this.#options(), this.query(), this.#pickedKeys()));
   /** The search box stays until both slots are filled; a settled duel needs no picking. */
   readonly pickerOpen = computed(() => this.duelStatus() === DuelStatus.idle);
@@ -144,6 +155,8 @@ export class VersusPage {
   async #loadDuel(leftKey: string, rightKey: string): Promise<void> {
     this.#left.set(null);
     this.#right.set(null);
+    this.#leftLaps.set([]);
+    this.#rightLaps.set([]);
 
     if (leftKey === '' && rightKey === '') {
       this.duelStatus.set(DuelStatus.idle);
@@ -162,23 +175,28 @@ export class VersusPage {
 
     this.#left.set(next.left);
     this.#right.set(next.right);
+    this.#leftLaps.set(next.leftLaps);
+    this.#rightLaps.set(next.rightLaps);
     this.duelStatus.set(next.status);
   }
 
   async #resolveDuel(leftKey: string, rightKey: string): Promise<VersusDuelState> {
     try {
-      const [left, right] = await Promise.all([
+      const [left, right, leftLaps, rightLaps] = await Promise.all([
         leftKey === '' ? null : this.#athletes.loadRecord(leftKey),
         rightKey === '' ? null : this.#athletes.loadRecord(rightKey),
+        // The split leads are garnish: a failed lap read still settles the duel.
+        leftKey === '' ? [] : this.#athletes.loadFirstLaps(leftKey).catch(() => []),
+        rightKey === '' ? [] : this.#athletes.loadFirstLaps(rightKey).catch(() => []),
       ]);
 
       if ((leftKey !== '' && left === null) || (rightKey !== '' && right === null)) {
-        return { status: DuelStatus.notFound, left: null, right: null };
+        return { status: DuelStatus.notFound, left: null, right: null, leftLaps: [], rightLaps: [] };
       }
 
-      return { status: left !== null && right !== null ? DuelStatus.ready : DuelStatus.idle, left, right };
+      return { status: left !== null && right !== null ? DuelStatus.ready : DuelStatus.idle, left, right, leftLaps, rightLaps };
     } catch {
-      return { status: DuelStatus.error, left: null, right: null };
+      return { status: DuelStatus.error, left: null, right: null, leftLaps: [], rightLaps: [] };
     }
   }
 }
@@ -208,7 +226,7 @@ function toOptionView(record: AthleteRecord): AthleteOptionView {
   };
 }
 
-function toMeetingView(meeting: HeadToHeadMeeting): MeetingView {
+function toMeetingView(meeting: HeadToHeadMeeting, splits: MeetingSplits | null): MeetingView {
   return {
     slug: meeting.slug,
     raceLink: [RACE_PAGE_BASE_LINK, meeting.slug],
@@ -218,7 +236,23 @@ function toMeetingView(meeting: HeadToHeadMeeting): MeetingView {
     leftWon: meeting.leftMs < meeting.rightMs,
     rightWon: meeting.rightMs < meeting.leftMs,
     gapText: meeting.leftMs === meeting.rightMs ? DRAW_GAP_TEXT : formatDuration(Math.abs(meeting.leftMs - meeting.rightMs)),
+    leftLedSplit: splits !== null && splits.leftLapMs < splits.rightLapMs,
+    rightLedSplit: splits !== null && splits.rightLapMs < splits.leftLapMs,
   };
+}
+
+/** Counts who reached 2,3 км first across the split-bearing meetings; a lap dead heat counts neither. */
+function toSplitLeadText(leads: (MeetingSplits | null)[]): string | null {
+  const known = leads.filter((lead) => lead !== null);
+
+  if (known.length === 0) {
+    return null;
+  }
+
+  const leftLeads = known.filter((lead) => lead.leftLapMs < lead.rightLapMs).length;
+  const rightLeads = known.filter((lead) => lead.rightLapMs < lead.leftLapMs).length;
+
+  return $localize`:@@versus.splitLeads:После первого круга впереди: ${leftLeads}:left: : ${rightLeads}:right:`;
 }
 
 /** `/vs` plus the filled slots in order; a single athlete always occupies the first one. */

@@ -6,6 +6,7 @@ import { historyBeforeDate, applyEventToHistory, removeEventFromHistory } from '
 import { toAutoNoteInput } from '../core/history/auto-note-input';
 import { DraftRows } from '../core/history/draft-priors.interface';
 import { buildEventAutoNotes } from '../core/history/event-auto-notes';
+import { withResolvedNameOrder } from '../core/history/name-order';
 import { mergeAutoNote } from '../core/history/note-merge';
 import { toEventResults } from '../core/github/results-file';
 import { AthletesHistory } from '../core/models/athletes-history.type';
@@ -134,6 +135,8 @@ export class ProtocolStateService {
    * against its own previous publication.
    */
   applyAutoNotes(history: AthletesHistory): void {
+    this.#resolveNameOrders(history);
+
     const ordered = this.#drafts()
       .flatMap((draft, index) => {
         const dateIso = draftDateIso(draft);
@@ -198,6 +201,28 @@ export class ProtocolStateService {
     this.#drafts.set([]);
     this.#activeIndex.set(0);
     this.#publishedEventDates.set(null);
+  }
+
+  /**
+   * Fixes reversed 'Имя Фамилия' names against the archive before the notes are computed (after
+   * that the name is what the notes counted). Untouched drafts keep their object identity and a
+   * fully clean batch skips the signal write, so the notes effect converges instead of looping.
+   */
+  #resolveNameOrders(history: AthletesHistory): void {
+    const drafts = this.#drafts();
+    const next = drafts.map((draft) => {
+      if (draft.notesApplied) {
+        return draft;
+      }
+
+      const participants = draft.participants.map((participant) => withResolvedNameOrder(participant, history));
+
+      return participants.some((participant, index) => participant !== draft.participants[index]) ? { ...draft, participants } : draft;
+    });
+
+    if (next.some((draft, index) => draft !== drafts[index])) {
+      this.#drafts.set(next);
+    }
   }
 
   /**

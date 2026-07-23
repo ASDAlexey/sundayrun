@@ -19,6 +19,7 @@ import { placeGapsMs } from '../../core/history/place-gaps';
 import { NotableKind } from '../../core/history/notables.enum';
 import { Notable } from '../../core/history/notables.interface';
 import { splitNote } from '../../core/history/note-tokens';
+import { isNegativeSplit, lapPlaceDeltas, pacingIndex } from '../../core/history/pacing';
 import { prNoteTimeWithDate, splitPrNote } from '../../core/history/pr-note';
 import { noteBadgeKindOf } from '../../core/protocol/note-badge-kind';
 import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
@@ -29,7 +30,7 @@ import { summarizeRace } from '../../core/history/race-summary';
 import { pluralText } from '../../core/i18n/plural-text';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatDuration, parseDuration } from '../../core/time/duration';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { EventWeather } from '../../core/weather/event-weather.interface';
@@ -47,6 +48,7 @@ import {
   GAP_TEXT_PREFIX,
   GENDER_CHIP_CLASSES,
   HOME_PAGE_LINK,
+  LAP_GAIN_PREFIX,
   MALE_GENDER_TEXT,
   NOTE_BADGE_CLASSES,
   PLACE_MEDAL_CLASSES,
@@ -202,7 +204,7 @@ function toRaceView(
   };
 }
 
-/** The Smashrun-style gaps are scanned over the whole protocol before the per-row mapping. */
+/** The Smashrun-style gaps and the lap-2 ranks are scanned over the whole protocol before the per-row mapping. */
 function toRowViews(
   rows: ProtocolRow[],
   notables: Record<string, Notable>,
@@ -210,8 +212,9 @@ function toRowViews(
   previousBests: Record<string, PreviousBest>,
 ): RaceRowView[] {
   const gapsMs = placeGapsMs(rows);
+  const lapGains = lapPlaceDeltas(rows);
 
-  return rows.map((row, index) => toRowView(row, notables, finishCounts, previousBests, gapsMs[index]));
+  return rows.map((row, index) => toRowView(row, notables, finishCounts, previousBests, gapsMs[index], lapGains[index]));
 }
 
 function toRowView(
@@ -220,6 +223,7 @@ function toRowView(
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
   gapMs: number | null,
+  lapGain: number | null,
 ): RaceRowView {
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];
@@ -246,9 +250,24 @@ function toRowView(
     finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
     finishClubClass: finishClubClassOf(finishCount),
     club: row.club,
+    // Only a gain gets the hint — the protocol celebrates the strong second lap, never shames a fade.
+    lapGainText: lapGain !== null && lapGain > 0 ? LAP_GAIN_PREFIX + lapGain : EMPTY_CELL_TEXT,
+    isNegativeSplit: isNegativeSplitRow(row),
     noteBadges: toNoteBadges(row.note, previousBests[athleteKey]),
     notableText: toNotableText(notables[athleteKey]),
   };
+}
+
+/** The chip only trusts a plausible split — the same noise corridor the lap-gain scan applies. */
+function isNegativeSplitRow(row: ProtocolRow): boolean {
+  if (row.distanceKm !== FIVE_KM_DISTANCE_KM || row.totalMs === null) {
+    return false;
+  }
+
+  const lapMs = parseDuration(row.time23);
+  const index = lapMs === null ? null : pacingIndex(lapMs, row.totalMs);
+
+  return index !== null && isNegativeSplit(index);
 }
 
 /** Splits the stored note into tokens and classifies each into an icon badge (or running text). */

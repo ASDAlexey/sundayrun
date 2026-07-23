@@ -24,6 +24,8 @@ import {
   EXPECTED_CLUB_FINISH_COUNT_TEXT,
   EXPECTED_GAP_F_TEXTS,
   EXPECTED_GAP_M_TEXTS,
+  EXPECTED_LAP_GAIN_TEXTS,
+  EXPECTED_NEGATIVE_SPLIT_FLAGS,
   EXPECTED_NOTE_BADGE_KINDS,
   EXPECTED_PR_NOTE_VIEW,
   EXPECTED_RACE_VIEW,
@@ -42,6 +44,7 @@ import {
   RACE_TODAY_ISO,
   RANK_PARTICIPANT_RUNS,
   RESULTS_LOAD_ERROR_MESSAGE,
+  SPLIT_PROTOCOL_ROWS,
   TEMPERATURELESS_WEATHER_MOCK,
   UNPUBLISHED_RACE_SLUG,
   WINDLESS_WEATHER_MOCK,
@@ -165,6 +168,27 @@ describe('RacePage', () => {
       gaps.map((gap) => gap.textContent.trim()),
       'one hint per runner-up, none for the winners',
     ).toEqual(['+0:12', '+0:30']);
+  });
+
+  it('marks the negative split and the places gained on lap 2, staying silent about fades', async () => {
+    loadResults.mockResolvedValue(buildEventResultsFile(RACE_EVENT, SPLIT_PROTOCOL_ROWS));
+    fixture = await createPage();
+
+    const rows = fixture.componentInstance.race()?.rows ?? [];
+
+    expect(rows.map((row) => row.lapGainText)).toEqual(EXPECTED_LAP_GAIN_TEXTS);
+    expect(rows.map((row) => row.isNegativeSplit)).toEqual(EXPECTED_NEGATIVE_SPLIT_FLAGS);
+
+    fixture.detectChanges();
+
+    const gains = [...fixture.nativeElement.querySelectorAll('.race__lap-gain')];
+    const chips = [...fixture.nativeElement.querySelectorAll('.race__split-chip')];
+
+    expect(
+      gains.map((gain) => gain.textContent.trim()),
+      'only the charger gets the hint',
+    ).toEqual(['+2']);
+    expect(chips.length, 'exactly the negative splitter wears the chip').toBe(1);
   });
 
   it('decorates finishers with on-the-fly notables and survives a failed history read', async () => {

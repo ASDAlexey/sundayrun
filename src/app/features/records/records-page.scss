@@ -512,6 +512,32 @@
     color: var(--text-muted);
   }
 
+  &__pacing {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__pacing-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 12px 4px;
+    gap: 12px;
+  }
+
+  &__pacing-value {
+    @include t.mono-value;
+
+    color: var(--text);
+  }
+
+  &__pacing-detail {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
   &__chart {
     display: flex;
     flex-direction: column;

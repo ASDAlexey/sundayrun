@@ -198,6 +198,22 @@ export const IMPORT_XLSX_BYTES: Uint8Array = zipSync({
   [`${XL_ROOT}${SHEET_TARGET}`]: strToU8(SHEET_XML),
 });
 
+/** `KNOWN_MALE_NAME` written the wrong way round, as a careless timer operator types it. */
+const REVERSED_MALE_NAME = 'Антон Троилин';
+
+const REVERSED_NAME_SHEET_XML =
+  '<worksheet><sheetData>' +
+  xmlRow(['Name', 'Total', 'Avg/lap', 'Avg/km', 'Lap 1', 'Lap 2']) +
+  xmlRow([REVERSED_MALE_NAME, '0:19:03,028', '', '', '0:08:29,705', '0:10:33,323']) +
+  '</sheetData></worksheet>';
+
+/** The known male alone, his name in the reversed 'Имя Фамилия' order. */
+export const REVERSED_NAME_XLSX_BYTES: Uint8Array = zipSync({
+  [WORKBOOK_PATH]: strToU8(WORKBOOK_XML),
+  [WORKBOOK_RELS_PATH]: strToU8(WORKBOOK_RELS_XML),
+  [`${XL_ROOT}${SHEET_TARGET}`]: strToU8(REVERSED_NAME_SHEET_XML),
+});
+
 const SLOWER_SHEET_XML =
   '<worksheet><sheetData>' +
   xmlRow(['Name', 'Total', 'Avg/lap', 'Avg/km', 'Lap 1', 'Lap 2']) +
