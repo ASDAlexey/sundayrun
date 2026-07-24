@@ -1,0 +1,64 @@
+// ===========================================================
+//  Virtual data table — one shared look and behaviour for every
+//  scrolling table on the site (athlete runs, race protocol,
+//  preview participants). A pinned header row sits above a
+//  `cdk-virtual-scroll-viewport`; both share one grid column
+//  template so the columns line up. Keep the row height in sync
+//  with the feature's *_ROW_HEIGHT_PX constant — the virtual
+//  scroll strategy assumes every row is exactly that tall.
+// ===========================================================
+
+@use 'typography' as t;
+
+@mixin table {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+// The pinned header — always visible above the scrolling rows.
+@mixin head($columns) {
+  display: grid;
+  grid-template-columns: $columns;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+@mixin head-cell {
+  @include t.text('label', 'medium');
+
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+// The scroll box: `[style.height.px]` bounds it to the visible-rows cap,
+// after which the rows scroll internally. `stable` keeps the columns from
+// jumping when the scrollbar appears.
+@mixin viewport {
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+@mixin row($columns, $height: 48px) {
+  display: grid;
+  grid-template-columns: $columns;
+  align-items: center;
+  height: $height;
+  padding: 0 16px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-soft);
+  transition: background var(--transition-time) var(--ease);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background: var(--bg-subtle);
+  }
+}

@@ -154,12 +154,14 @@
 
   display: inline-flex;
   align-items: center;
+  // Cap at the (narrow) note column and wrap a long note to a second line instead of
+  // spilling past the card edge — the autosize virtual scroll grows the row to fit.
+  max-width: 100%;
   padding: 2px 9px;
   gap: 5px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 12px;
   color: var(--text-secondary);
-  white-space: nowrap;
 
   &_record {
     border-color: var(--accent-line);
