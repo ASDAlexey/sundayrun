@@ -2,6 +2,7 @@ import { YearBadgeRarity } from '../../core/history/badge-rarity.type';
 import { EXPECTED_ROLLUP_HISTORY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
 import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { EventGenderFinishers } from '../../core/history/gender-finishers.interface';
 import { LegendFinish } from '../../core/history/legend.interface';
 import { MEME_THRESHOLDS } from '../../core/history/meme-thresholds.constant';
 import { MemeThreshold } from '../../core/history/meme-thresholds.interface';
@@ -36,45 +37,63 @@ export const UNKNOWN_KEY_PARAM = 'неизвестный атлет';
 
 export const ATHLETE_LOAD_ERROR_MESSAGE = 'athlete history load failed';
 
-/** Slug → place, as the service stub serves it for `REPEAT_RUNNER_KEY`; the other runs show the dash. */
-export const STUB_RUN_PLACES: Record<string, number> = { 'kuzminki-2': 1 };
+/**
+ * Slug → place for `REPEAT_RUNNER_KEY`: kuzminki-2 has a finisher tally (renders «1/8»), kuzminki-1
+ * has a place but no tally (renders the bare «5»), and kuzminki-3 has no place at all (the dash).
+ */
+export const STUB_RUN_PLACES: Record<string, number> = { 'kuzminki-1': 5, 'kuzminki-2': 1 };
 
-const FIRST_RUN_VIEW: AthleteRunView = {
+/** Slug → the event's per-gender finisher tally the stub serves for `REPEAT_RUNNER_KEY` (a man → «/8»). */
+export const STUB_RUN_FINISHER_COUNTS: Record<string, EventGenderFinishers> = { 'kuzminki-2': { male: 8, female: 3 } };
+
+/** The run views share every field but the rank, which is the row's position in the time-sorted list. */
+type RunViewBase = Omit<AthleteRunView, 'rank'>;
+
+const FIRST_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-1',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-1'],
   dateShort: '27.12.2025 г.',
   timeText: '25:00',
-  placeText: '—',
+  lapText: '11:50',
+  // A stored place with no finisher tally renders bare, and 5th is off the podium.
+  placeText: '5',
+  isPodium: false,
   isMonthFinal: false,
 };
 
-const SECOND_RUN_VIEW: AthleteRunView = {
+const SECOND_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-2',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'],
   dateShort: '03.01.2026 г.',
   timeText: '24:00',
-  placeText: '1',
+  lapText: '11:00',
+  placeText: '1/8',
+  isPodium: true,
   isMonthFinal: false,
 };
 
-const THIRD_RUN_VIEW: AthleteRunView = {
+const THIRD_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-3',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-3'],
   dateShort: '10.01.2026 г.',
   timeText: '25:00',
+  lapText: '11:40',
   placeText: '—',
+  isPodium: false,
   isMonthFinal: false,
 };
 
-/** `REPEAT_RUNNER_KEY`'s runs, fastest first (the default sort); the 25:00 tie keeps the stable input order. */
-export const EXPECTED_BY_TIME_VIEWS: AthleteRunView[] = [SECOND_RUN_VIEW, FIRST_RUN_VIEW, THIRD_RUN_VIEW];
-
-/** The same runs, newest first. */
-export const EXPECTED_BY_DATE_VIEWS: AthleteRunView[] = [THIRD_RUN_VIEW, SECOND_RUN_VIEW, FIRST_RUN_VIEW];
+/** `REPEAT_RUNNER_KEY`'s runs, fastest first (the only order now); the 25:00 tie keeps the stable input order. */
+export const EXPECTED_BY_TIME_VIEWS: AthleteRunView[] = [
+  { ...SECOND_RUN_BASE, rank: 1 },
+  { ...FIRST_RUN_BASE, rank: 2 },
+  { ...THIRD_RUN_BASE, rank: 3 },
+];
 
 export const ATHLETE_YEAR_FILTER = '2025';
 
-export const EXPECTED_YEAR_FILTERED_VIEWS: AthleteRunView[] = [FIRST_RUN_VIEW];
+/** The 2025 filter keeps only Иванов's lone 2025 run, renumbered to rank 1. */
+export const EXPECTED_YEAR_FILTERED_VIEWS: AthleteRunView[] = [{ ...FIRST_RUN_BASE, rank: 1 }];
 
 export const EXPECTED_RUN_YEAR_OPTIONS = ['2026', '2025'];
 
@@ -119,9 +138,12 @@ export const EXPECTED_SHORT_RUNNER_VIEWS: AthleteRunView[] = [
   {
     slug: 'kuzminki-2',
     raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'],
+    rank: 1,
     dateShort: '03.01.2026 г.',
     timeText: '23:20',
+    lapText: '—',
     placeText: '—',
+    isPodium: false,
     isMonthFinal: false,
   },
 ];

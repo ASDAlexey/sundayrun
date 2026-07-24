@@ -1,6 +1,7 @@
 import { YearBadgeRarity } from '../../core/history/badge-rarity.type';
 import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { EventGenderFinishers } from '../../core/history/gender-finishers.interface';
 import { LegendFinish } from '../../core/history/legend.interface';
 import { RivalRun } from '../../core/history/rivals.interface';
 import { SeasonBestRow } from '../../core/history/season-ranks.interface';
@@ -23,6 +24,8 @@ export interface AthletePageState {
   legendFinishes: LegendFinish[];
   /** Slug → the athlete's gender place there, straight from the stored protocol rows. */
   runPlaces: Record<string, number>;
+  /** Slug → the event's per-gender finisher tally, the «3/22» place denominator of the runs table. */
+  runFinisherCounts: Record<string, EventGenderFinishers>;
   /** Every 5 km finish at the athlete's events (own rows included), feeding the «Соперники» card. */
   rivalRuns: RivalRun[];
   /** The athlete's fastest recorded first-lap (2.3 km) split; null hides the profile chip. */
@@ -111,15 +114,21 @@ export interface MemeRowView {
   gapText: string | null;
 }
 
-/** One run prepared for the template: a preformatted date/time/place and a resolved protocol link. */
+/** One run prepared for the template: a preformatted rank/date/time/lap/place and a protocol link. */
 export interface AthleteRunView {
   slug: string;
   raceLink: string[];
+  /** 1-based position in the time-sorted list — «это мои лучшие результаты 1, 2, 3…». */
+  rank: number;
   dateShort: string;
   timeText: string;
-  /** The gender place at that event; a dash when the protocol row carries none. */
+  /** The recorded first-lap (2.3 km) split of this run; a dash when the protocol carries none. */
+  lapText: string;
+  /** «3/22» — the gender place over the event's gender finisher count; a bare place or dash when unknown. */
   placeText: string;
-  /** True for the month-final («итоговый») event — the row gets the accent treatment. */
+  /** A podium gender place (≤ 3) — the place cell keeps the accent colour. */
+  isPodium: boolean;
+  /** True for the month-final («итоговый») event — the row shows the quiet badge, no lane highlight. */
   isMonthFinal: boolean;
 }
 

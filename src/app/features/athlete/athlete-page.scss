@@ -1,8 +1,11 @@
 @use 'styles/card' as c;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
-@use 'styles/table' as tbl;
 @use 'styles/typography' as t;
+@use 'styles/virtual-table' as vt;
+
+// Rank · date · time · first lap · place — shared by the runs table's header and rows.
+$athlete-runs-columns: 40px minmax(0, 1fr) 68px 68px 76px;
 
 .athlete {
   @include s.section;
@@ -503,19 +506,43 @@
     gap: 8px;
   }
 
+  // The runs table lives in one card: the head carries the title and the year filter,
+  // the grid below shares one column template between its pinned header and the scrolling rows.
   &__runs {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  &__controls {
     @include c.card;
 
     display: flex;
     flex-direction: column;
     padding: 24px;
     gap: 16px;
+  }
+
+  &__runs-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+
+  &__runs-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 12px;
+  }
+
+  &__runs-title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  // The live row tally beside the title — «8 забегов», recounted by the year filter.
+  &__runs-count {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
   }
 
   // A Bonds-Tracker-style row: a small label on the left, toggle chips to the right.
@@ -529,7 +556,6 @@
   &__filter-label {
     @include t.text('label', 'medium');
 
-    min-width: 88px;
     color: var(--text-secondary);
     text-transform: uppercase;
   }
@@ -540,49 +566,75 @@
     vertical-align: middle;
   }
 
-  &__table-wrap {
-    @include tbl.wrap;
-  }
-
   &__table {
-    @include tbl.table;
+    @include vt.table;
   }
 
-  &__th {
-    @include tbl.header-cell;
+  &__table-head {
+    @include vt.head($athlete-runs-columns);
   }
 
-  &__td {
-    @include tbl.cell;
+  &__table-hcell {
+    @include vt.head-cell;
 
-    &_mono {
-      font-family: var(--mono);
+    &_num {
+      justify-self: end;
     }
   }
 
-  &__row_final {
-    background: var(--accent-glow);
+  &__viewport {
+    @include vt.viewport;
   }
 
-  &__race {
-    @include tbl.link;
+  // The whole row is the protocol link — «лёгкий переход в сам забег».
+  &__run {
+    @include vt.row($athlete-runs-columns);
+
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  &__run-rank {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__run-date {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent);
+  }
+
+  &__run-time,
+  &__run-lap,
+  &__run-place {
+    justify-self: end;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+
+  &__run-lap {
+    color: var(--text-muted);
+  }
+
+  // A podium gender place keeps the accent; the «итоговый» run stays plain — no lane highlight.
+  &__run-place_podium {
+    @include t.semibold;
+
+    color: var(--accent);
   }
 
   &__final-badge {
     @include t.mono-caption;
     @include t.pill;
 
-    margin-left: 8px;
     padding: 2px 8px;
     border: 1px solid var(--accent-line);
     color: var(--accent);
     white-space: nowrap;
-  }
-
-  &__place_final {
-    @include t.semibold;
-
-    color: var(--accent);
   }
 
   &__not-found {

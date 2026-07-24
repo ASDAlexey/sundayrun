@@ -183,6 +183,77 @@
         </section>
       }
 
+      @if (finishCount() > 0) {
+        <section class="athlete__runs">
+          <div class="athlete__runs-head">
+            <div class="athlete__runs-heading">
+              <h2 class="athlete__runs-title" i18n="@@athlete.runsTitle">Все забеги</h2>
+
+              <span class="athlete__runs-count">{{ runsCountText() }}</span>
+            </div>
+
+            <div class="athlete__filter">
+              <span class="athlete__filter-label" i18n="@@athlete.yearLabel">Год</span>
+
+              <mat-button-toggle-group
+                class="athlete__chips"
+                hideSingleSelectionIndicator
+                [value]="year() ?? allYearsValue"
+                (change)="onYearChange($event.value)"
+              >
+                <mat-button-toggle class="athlete__chip" i18n="@@athlete.allYears" [value]="allYearsValue">Все</mat-button-toggle>
+
+                @for (runYear of years(); track runYear) {
+                  <mat-button-toggle class="athlete__chip" [value]="runYear">{{ runYear }}</mat-button-toggle>
+                }
+              </mat-button-toggle-group>
+            </div>
+          </div>
+
+          <p aria-live="polite" class="athlete__status" role="status">
+            @if (runs().length === 0) {
+              <span i18n="@@athlete.noFilteredRuns">Под выбранные фильтры забеги не попали.</span>
+            }
+          </p>
+
+          @if (runs().length > 0) {
+            <div class="athlete__table">
+              <div class="athlete__table-head">
+                <span class="athlete__table-hcell" i18n="@@athlete.table.rank">№</span>
+
+                <span class="athlete__table-hcell" i18n="@@athlete.table.date">Дата</span>
+
+                <span class="athlete__table-hcell athlete__table-hcell_num" i18n="@@athlete.table.time">Время</span>
+
+                <span class="athlete__table-hcell athlete__table-hcell_num" i18n="@@athlete.table.lap">Круг</span>
+
+                <span class="athlete__table-hcell athlete__table-hcell_num" i18n="@@athlete.table.place">Место</span>
+              </div>
+
+              <cdk-virtual-scroll-viewport class="athlete__viewport" [itemSize]="rowHeightPx" [style.height.px]="viewportHeightPx()">
+                <a *cdkVirtualFor="let run of runs()" class="athlete__run" [routerLink]="run.raceLink">
+                  <span class="athlete__run-rank">{{ run.rank }}</span>
+
+                  <span class="athlete__run-date">
+                    {{ run.dateShort }}
+
+                    @if (run.isMonthFinal) {
+                      <span class="athlete__final-badge" i18n="@@athlete.monthFinalBadge">итоговый</span>
+                    }
+                  </span>
+
+                  <span class="athlete__run-time">{{ run.timeText }}</span>
+
+                  <span class="athlete__run-lap">{{ run.lapText }}</span>
+
+                  <span class="athlete__run-place" [class.athlete__run-place_podium]="run.isPodium">{{ run.placeText }}</span>
+                </a>
+              </cdk-virtual-scroll-viewport>
+            </div>
+          }
+        </section>
+      }
+
       <section class="athlete__legend">
         <h2 class="athlete__legend-title" i18n="@@athlete.legendTitle">Легенда трассы</h2>
 
@@ -303,90 +374,6 @@
           <span i18n="@@athlete.noRuns">Финишей пока нет.</span>
         }
       </p>
-
-      @if (finishCount() > 0) {
-        <section class="athlete__runs">
-          <div class="athlete__controls">
-            <div class="athlete__filter">
-              <span class="athlete__filter-label" i18n="@@athlete.yearLabel">Год</span>
-
-              <mat-button-toggle-group
-                class="athlete__chips"
-                hideSingleSelectionIndicator
-                [value]="year() ?? allYearsValue"
-                (change)="onYearChange($event.value)"
-              >
-                <mat-button-toggle class="athlete__chip" i18n="@@athlete.allYears" [value]="allYearsValue">Все</mat-button-toggle>
-
-                @for (runYear of years(); track runYear) {
-                  <mat-button-toggle class="athlete__chip" [value]="runYear">{{ runYear }}</mat-button-toggle>
-                }
-              </mat-button-toggle-group>
-            </div>
-
-            <div class="athlete__filter">
-              <span class="athlete__filter-label" i18n="@@athlete.sortLabel">Сортировка</span>
-
-              <mat-button-toggle-group
-                class="athlete__chips"
-                hideSingleSelectionIndicator
-                [value]="sort()"
-                (change)="setSort($event.value)"
-              >
-                <mat-button-toggle class="athlete__chip" i18n="@@athlete.sortByTime" [value]="sorts.byTime">По времени</mat-button-toggle>
-
-                <mat-button-toggle class="athlete__chip" i18n="@@athlete.sortByDate" [value]="sorts.byDate">По дате</mat-button-toggle>
-              </mat-button-toggle-group>
-            </div>
-          </div>
-
-          <p aria-live="polite" class="athlete__status" role="status">
-            @if (runs().length === 0) {
-              <span i18n="@@athlete.noFilteredRuns">Под выбранные фильтры забеги не попали.</span>
-            }
-          </p>
-
-          @if (runs().length > 0) {
-            <div class="athlete__table-wrap">
-              <table class="athlete__table" mat-table [dataSource]="runs()">
-                <ng-container matColumnDef="date">
-                  <th *matHeaderCellDef class="athlete__th" i18n="@@athlete.table.date" mat-header-cell scope="col">Дата</th>
-
-                  <td *matCellDef="let run" class="athlete__td" mat-cell>
-                    <a class="athlete__race" [routerLink]="run.raceLink">{{ run.dateShort }}</a>
-
-                    @if (run.isMonthFinal) {
-                      <span class="athlete__final-badge" i18n="@@athlete.monthFinalBadge">итоговый</span>
-                    }
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="time">
-                  <th *matHeaderCellDef class="athlete__th" i18n="@@athlete.table.time" mat-header-cell scope="col">Время</th>
-
-                  <td *matCellDef="let run" class="athlete__td athlete__td_mono" mat-cell>{{ run.timeText }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="place">
-                  <th *matHeaderCellDef class="athlete__th" i18n="@@athlete.table.place" mat-header-cell scope="col">Место</th>
-
-                  <td *matCellDef="let run" class="athlete__td athlete__td_mono" mat-cell>
-                    <span class="athlete__place" [class.athlete__place_final]="run.isMonthFinal">{{ run.placeText }}</span>
-                  </td>
-                </ng-container>
-
-                <tr *matHeaderRowDef="runsTableColumns" mat-header-row></tr>
-                <tr
-                  *matRowDef="let run; columns: runsTableColumns"
-                  class="athlete__row"
-                  mat-row
-                  [class.athlete__row_final]="run.isMonthFinal"
-                ></tr>
-              </table>
-            </div>
-          }
-        </section>
-      }
     }
     @case (statuses.notFound) {
       <div class="athlete__not-found">

@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
-import { RunsSort } from '../../core/history/athlete-runs.enum';
 import { EXPECTED_ROLLUP_HISTORY, DNF_ONLY_KEY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
 import { EMPTY_YEAR_ACTIVITY } from '../../core/history/year-badges.mock';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
@@ -33,7 +32,6 @@ import {
   EXPECTED_BEST_TIME_TEXT,
   EXPECTED_EMPTY_FINALS_ATTENDANCE_TEXT,
   EXPECTED_FINALS_ATTENDANCE_TEXT,
-  EXPECTED_BY_DATE_VIEWS,
   EXPECTED_BY_TIME_VIEWS,
   EXPECTED_CHASER_LEGEND_VIEW,
   EXPECTED_DNF_STREAKS_VIEW,
@@ -56,6 +54,7 @@ import {
   RIVAL_SEASON_FILTER,
   SHORT_RUNNER_KEY_PARAM,
   STUB_BADGE_RARITY,
+  STUB_RUN_FINISHER_COUNTS,
   STUB_RUN_PLACES,
   UNKNOWN_KEY_PARAM,
 } from './athlete-page.mock';
@@ -75,6 +74,7 @@ describe('AthletePage', () => {
   const loadYearBadgeRarity = vi.fn(() => Promise.resolve(STUB_BADGE_RARITY));
   const loadLegendFinishes = vi.fn(() => Promise.resolve([...LEGEND_FINISHES]));
   const loadRunPlaces = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? STUB_RUN_PLACES : {}));
+  const loadRunFinisherCounts = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? STUB_RUN_FINISHER_COUNTS : {}));
   const loadRivalRuns = vi.fn(() => Promise.resolve([...ATHLETE_RIVAL_RUNS]));
   const loadBestFirstLap = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? ATHLETE_BEST_FIRST_LAP : null));
   const loadFirstLaps = vi.fn((key: string) => Promise.resolve(key === REPEAT_RUNNER_KEY ? [...ATHLETE_FIRST_LAPS] : []));
@@ -106,6 +106,7 @@ describe('AthletePage', () => {
             loadYearBadgeRarity,
             loadLegendFinishes,
             loadRunPlaces,
+            loadRunFinisherCounts,
             loadRivalRuns,
             loadBestFirstLap,
             loadFirstLaps,
@@ -165,8 +166,7 @@ describe('AthletePage', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
-    const headers = [...element.querySelectorAll('.athlete__th')];
-    const raceLinks = [...element.querySelectorAll('.athlete__race')];
+    const headerCells = [...element.querySelectorAll('.athlete__table-hcell')];
     const filterChips = [...element.querySelectorAll('.athlete__filter')[0].querySelectorAll('.athlete__chip')];
 
     expect(element.querySelector('.athlete__status').getAttribute('aria-live'), 'the live region stays in the DOM across states').toBe(
@@ -175,15 +175,10 @@ describe('AthletePage', () => {
     expect(element.querySelector('.athlete__status').textContent.trim(), 'the live region is empty once the history is ready').toBe('');
     expect(element.querySelector('.athlete__title').textContent.trim()).toBe(expectedRecord.displayName);
     expect(
-      headers.map((header) => header.getAttribute('scope')),
-      'the table has date, time and place columns',
-    ).toEqual(['col', 'col', 'col']);
-    expect(raceLinks.map((link) => link.textContent.trim())).toEqual(EXPECTED_BY_TIME_VIEWS.map((view) => view.dateShort));
-    expect(
-      [...element.querySelectorAll('.athlete__place')].map((cell) => cell.textContent.trim()),
-      'the place column shows the stored gender places and dashes the rest',
-    ).toEqual(EXPECTED_BY_TIME_VIEWS.map((view) => view.placeText));
-    expect(raceLinks[0].getAttribute('href'), 'the date links to the online protocol').toBe(EXPECTED_BY_TIME_VIEWS[0].raceLink.join('/'));
+      headerCells.map((header) => header.textContent.trim()),
+      'the pinned header carries the rank, date, time, first-lap and place columns',
+    ).toEqual(['№', 'Дата', 'Время', 'Круг', 'Место']);
+    expect(element.querySelector('.athlete__viewport'), 'the runs table scrolls through the virtual viewport').not.toBeNull();
     expect(
       filterChips.map((chip) => chip.textContent.trim()),
       'the year row is the "all" chip plus one per distinct year',
@@ -192,6 +187,10 @@ describe('AthletePage', () => {
       filterChips.map((chip) => chip.classList.contains('mat-button-toggle-checked')),
       'all years by default',
     ).toEqual([true, false, false]);
+    expect(
+      [...element.querySelectorAll('.athlete__filter')].length,
+      'only the year filter remains — the sort toggle is gone, the table is time-sorted',
+    ).toBe(1);
     const catalogDialog = element.querySelector('.badge-catalog');
 
     expect(catalogDialog.open, 'the badge catalog waits closed').toBe(false);
@@ -223,18 +222,16 @@ describe('AthletePage', () => {
     expect(element.querySelector('.athlete__meme-gap').textContent, 'the next target shows the remaining gap').toContain('9:43');
   });
 
-  it('filters by year, re-sorts by date and reports when no runs match', async () => {
+  it('filters by year, renumbers the ranks and reports when no runs match', async () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
 
-    page.setSort(RunsSort.byDate);
-
-    expect(page.runs()).toEqual(EXPECTED_BY_DATE_VIEWS);
+    expect(page.runs(), 'the table is always fastest first').toEqual(EXPECTED_BY_TIME_VIEWS);
 
     page.onYearChange(ATHLETE_YEAR_FILTER);
 
-    expect(page.runs()).toEqual(EXPECTED_YEAR_FILTERED_VIEWS);
+    expect(page.runs(), 'the year filter renumbers the season to rank 1').toEqual(EXPECTED_YEAR_FILTERED_VIEWS);
     expect(page.rivals(), 'the runs year filter no longer touches the rivals list').toEqual(EXPECTED_RIVAL_VIEWS);
 
     page.onRivalsYearChange(ATHLETE_YEAR_FILTER);
@@ -253,7 +250,7 @@ describe('AthletePage', () => {
 
     page.onYearChange(ALL_YEARS_VALUE);
 
-    expect(page.runs(), 'the "all years" chip resets the filter').toEqual(EXPECTED_BY_DATE_VIEWS);
+    expect(page.runs(), 'the "all years" chip restores the full time-sorted list').toEqual(EXPECTED_BY_TIME_VIEWS);
     expect(page.year(), 'the "all" toggle maps the sentinel back to null').toBeNull();
 
     page.setYear(UNKNOWN_KEY_PARAM);
@@ -264,23 +261,18 @@ describe('AthletePage', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
-    const sortChips = [...element.querySelectorAll('.athlete__filter')[1].querySelectorAll('.athlete__chip')];
     const rivalsChips = [...element.querySelectorAll('.athlete__rivals-years .athlete__chip')];
-    const statusRegions = [...element.querySelectorAll('.athlete__status')];
+    const runsStatus = element.querySelector('.athlete__runs .athlete__status');
 
-    expect(element.querySelector('.athlete__table-wrap')).toBeNull();
+    expect(element.querySelector('.athlete__table'), 'no runs match — the table gives way to the note').toBeNull();
     expect(
       rivalsChips.map((chip) => chip.textContent.trim()),
       'the rivals card carries its own "all years" chip plus one per run year',
     ).toEqual(['Все годы', ...EXPECTED_RUN_YEAR_OPTIONS]);
     expect(element.querySelector('.athlete__rivals-list'), 'no close finishes that season — the list gives way').toBeNull();
     expect(element.querySelector('.athlete__rivals-empty'), 'the dry season shows the empty note instead').not.toBeNull();
-    expect(statusRegions.at(-1).getAttribute('role')).toBe('status');
-    expect(statusRegions.at(-1).textContent.trim(), 'the "no filtered runs" note lives in the persistent live region').not.toBe('');
-    expect(
-      sortChips.map((chip) => chip.classList.contains('mat-button-toggle-checked')),
-      'time first, date second',
-    ).toEqual([false, true]);
+    expect(runsStatus.getAttribute('role')).toBe('status');
+    expect(runsStatus.textContent.trim(), 'the "no filtered runs" note lives in the runs section live region').not.toBe('');
   });
 
   it('hides 2.3 km runs everywhere: table, finish counter and year chips', async () => {
@@ -364,8 +356,8 @@ describe('AthletePage', () => {
 
     expect(statusRegions.at(-1).getAttribute('aria-live'), 'the "no finishes" note is announced').toBe('polite');
     expect(statusRegions.at(-1).textContent.trim()).not.toBe('');
-    expect(element.querySelector('.athlete__table-wrap')).toBeNull();
-    expect(element.querySelector('.athlete__controls')).toBeNull();
+    expect(element.querySelector('.athlete__runs'), 'no finishes — the whole runs section stays out').toBeNull();
+    expect(element.querySelector('.athlete__table')).toBeNull();
   });
 
   it('reloads on a same-route key change, resetting the filters, and drops a stale response', async () => {
@@ -374,7 +366,6 @@ describe('AthletePage', () => {
     const page = fixture.componentInstance;
 
     page.setYear(ATHLETE_YEAR_FILTER);
-    page.setSort(RunsSort.byDate);
 
     let resolveStale: (record: AthleteRecord | null) => void = vi.fn();
 
@@ -388,7 +379,6 @@ describe('AthletePage', () => {
 
     expect(page.status(), 'a param change restarts loading').toBe(AthleteStatus.loading);
     expect(page.year(), 'the year filter is reset for the new athlete').toBeNull();
-    expect(page.sort(), 'the sort is reset for the new athlete').toBe(RunsSort.byTime);
 
     routeStub.setParams({ [KEY_ROUTE_PARAM]: DNF_ONLY_KEY });
     await settle();

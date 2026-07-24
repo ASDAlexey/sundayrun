@@ -1,14 +1,16 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { genderFinisherCount } from '../../core/history/gender-finishers';
+import { EventGenderFinishers } from '../../core/history/gender-finishers.interface';
 import { currentCourseRecordEntries } from '../../core/history/course-records';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
 import { legendBoard, legendProgress } from '../../core/history/legend';
@@ -24,7 +26,7 @@ import { EventWeatherRow } from '../../core/history/weather-records.interface';
 import { athleteSeasonRankBadges } from '../../core/history/season-ranks';
 import { athleteYearRankBadges } from '../../core/history/year-ranks';
 import { distinctRunYears, filterRuns, sortRuns, yearBestEntries } from '../../core/history/athlete-runs';
-import { RunsSort, RunsSortType } from '../../core/history/athlete-runs.enum';
+import { RunsSort } from '../../core/history/athlete-runs.enum';
 import { YearBestEntry } from '../../core/history/athlete-runs.interface';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { memeStandings } from '../../core/history/meme-thresholds';
@@ -36,8 +38,8 @@ import { AthletePlacements } from '../../core/history/placements.interface';
 import { closeRivals } from '../../core/history/rivals';
 import { CLOSE_FINISH_GAP_MS } from '../../core/history/rivals.constant';
 import { Rival } from '../../core/history/rivals.interface';
-import { pluralText } from '../../core/i18n/plural-text';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { GenderType } from '../../core/models/gender.enum';
 import { formatDuration } from '../../core/time/duration';
 import { MS_IN_SECOND } from '../../core/time/duration.constant';
 import { isoToday } from '../../core/time/iso-today';
@@ -48,7 +50,17 @@ import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
-import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT, NO_PLACE_TEXT, RUNS_TABLE_COLUMNS, SELF_MEME_KEY } from './athlete-page.constant';
+import {
+  KEY_ROUTE_PARAM,
+  NO_BEST_TIME_TEXT,
+  NO_LAP_TEXT,
+  NO_PLACE_TEXT,
+  PODIUM_PLACE,
+  RUNS_TABLE_ROW_HEIGHT_PX,
+  RUNS_TABLE_VISIBLE_ROWS,
+  SELF_MEME_KEY,
+} from './athlete-page.constant';
+import { closeTimesText, finishesText, runsCountText, weeksText } from './athlete-page-text';
 import { AthleteStatus, AthleteStatusType } from './athlete-page.enum';
 import {
   AthletePageState,
@@ -80,12 +92,12 @@ import { WeatherCard } from './weather-card';
     MatButtonToggleModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatTableModule,
     PacingCard,
     ProgressChart,
     RatingCard,
     ReloadButton,
     RouterLink,
+    ScrollingModule,
     WeatherCard,
     YearBadgeChip,
   ],
@@ -101,6 +113,7 @@ export class AthletePage {
   readonly #badgeRarity = signal<AthletePageState['badgeRarity']>({});
   readonly #legendFinishes = signal<AthletePageState['legendFinishes']>([]);
   readonly #runPlaces = signal<AthletePageState['runPlaces']>({});
+  readonly #runFinisherCounts = signal<AthletePageState['runFinisherCounts']>({});
   readonly #rivalRuns = signal<AthletePageState['rivalRuns']>([]);
   readonly #bestFirstLap = signal<AthletePageState['bestFirstLap']>(null);
   readonly #firstLaps = signal<AthletePageState['firstLaps']>([]);
@@ -161,10 +174,12 @@ export class AthletePage {
     return byYear;
   });
 
+  /** Slug → this run's recorded first-lap split, joining the «Круг» column back to the protocol splits. */
+  readonly #lapMsBySlug = computed(() => new Map(this.#firstLaps().map((lap) => [lap.slug, lap.lapMs])));
+
   readonly status = signal<AthleteStatusType>(AthleteStatus.loading);
   readonly year = signal<string | null>(null);
   readonly rivalsYear = signal<string | null>(null);
-  readonly sort = signal<RunsSortType>(RunsSort.byTime);
 
   readonly displayName = computed(() => this.#record()?.displayName ?? '');
   readonly participationCount = computed(() => this.#record()?.participationSlugs.length ?? 0);
@@ -268,20 +283,37 @@ export class AthletePage {
   });
 
   readonly years = computed(() => distinctRunYears(this.#fiveKmRuns()));
-  readonly runs = computed(() =>
-    sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), this.sort()).map((run) =>
-      toRunView(run, this.#runPlaces(), this.#monthFinals()),
-    ),
-  );
+
+  /**
+   * The runs table, always fastest first: the rank is the row's 1-based position in that order, so a
+   * year filter renumbers the season on its own. The place denominator is the athlete's own gender
+   * finisher count of the event.
+   */
+  readonly runs = computed(() => {
+    const places = this.#runPlaces();
+    const finisherCounts = this.#runFinisherCounts();
+    const lapMsBySlug = this.#lapMsBySlug();
+    const monthFinals = this.#monthFinals();
+    const gender = this.gender();
+
+    return sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), RunsSort.byTime).map((run, index) =>
+      toRunView(run, index + 1, places, finisherCounts, lapMsBySlug, monthFinals, gender),
+    );
+  });
+
+  /** The viewport shrinks to the rows it holds, capped at thirty; below the cap it never shows blank lanes. */
+  readonly viewportHeightPx = computed(() => Math.min(this.runs().length, RUNS_TABLE_VISIBLE_ROWS) * RUNS_TABLE_ROW_HEIGHT_PX);
+
+  /** «8 забегов» beside the table title — recounts itself whenever the year filter narrows the list. */
+  readonly runsCountText = computed(() => runsCountText(this.runs().length));
 
   /** The duel page with this athlete preselected: «сколько раз встречались и кто был впереди». */
   readonly versusLink = computed(() => [VERSUS_PAGE_LINK, this.#record()?.key ?? '']);
 
   protected readonly statuses = AthleteStatus;
-  protected readonly sorts = RunsSort;
   protected readonly athletesLink = ATHLETES_PAGE_LINK;
   protected readonly allYearsValue = ALL_YEARS_VALUE;
-  protected readonly runsTableColumns = RUNS_TABLE_COLUMNS;
+  protected readonly rowHeightPx = RUNS_TABLE_ROW_HEIGHT_PX;
   protected readonly legendWindowDays = LEGEND_WINDOW_DAYS;
   protected readonly closeGapSeconds = CLOSE_FINISH_GAP_MS / MS_IN_SECOND;
 
@@ -310,16 +342,11 @@ export class AthletePage {
     this.rivalsYear.set(value === ALL_YEARS_VALUE ? null : value);
   }
 
-  setSort(sort: RunsSortType): void {
-    this.sort.set(sort);
-  }
-
   async #load(key: string): Promise<void> {
     this.status.set(AthleteStatus.loading);
     this.#record.set(null);
     this.year.set(null);
     this.rivalsYear.set(null);
-    this.sort.set(RunsSort.byTime);
 
     // The weather card is garnish, so its rows ride outside the atomic state and a failed read leaves them empty.
     const [next, weatherRows] = await Promise.all([this.#resolveState(key), this.#athletes.loadWeatherRows().catch(() => [])]);
@@ -335,6 +362,7 @@ export class AthletePage {
     this.#badgeRarity.set(next.badgeRarity);
     this.#legendFinishes.set(next.legendFinishes);
     this.#runPlaces.set(next.runPlaces);
+    this.#runFinisherCounts.set(next.runFinisherCounts);
     this.#rivalRuns.set(next.rivalRuns);
     this.#bestFirstLap.set(next.bestFirstLap);
     this.#firstLaps.set(next.firstLaps);
@@ -364,6 +392,7 @@ export class AthletePage {
       badgeRarity,
       legendFinishes,
       runPlaces,
+      runFinisherCounts,
       rivalRuns,
       bestFirstLap,
       firstLaps,
@@ -378,6 +407,7 @@ export class AthletePage {
       this.#athletes.loadYearBadgeRarity(),
       this.#athletes.loadLegendFinishes(),
       this.#athletes.loadRunPlaces(key),
+      this.#athletes.loadRunFinisherCounts(key),
       this.#athletes.loadRivalRuns(key),
       this.#athletes.loadBestFirstLap(key),
       this.#athletes.loadFirstLaps(key),
@@ -394,6 +424,7 @@ export class AthletePage {
       badgeRarity,
       legendFinishes,
       runPlaces,
+      runFinisherCounts,
       rivalRuns,
       bestFirstLap,
       firstLaps,
@@ -415,6 +446,7 @@ function emptyAthleteState(status: AthleteStatusType): AthletePageState {
     badgeRarity: {},
     legendFinishes: [],
     runPlaces: {},
+    runFinisherCounts: {},
     rivalRuns: [],
     bestFirstLap: null,
     firstLaps: [],
@@ -425,18 +457,41 @@ function emptyAthleteState(status: AthleteStatusType): AthletePageState {
   };
 }
 
-function toRunView(run: AthleteRun, places: Record<string, number>, monthFinals: Set<string>): AthleteRunView {
+function toRunView(
+  run: AthleteRun,
+  rank: number,
+  places: Record<string, number>,
+  finisherCounts: Record<string, EventGenderFinishers>,
+  lapMsBySlug: ReadonlyMap<string, number>,
+  monthFinals: Set<string>,
+  gender: GenderType | null,
+): AthleteRunView {
   const place = places[run.slug];
+  const lapMs = lapMsBySlug.get(run.slug);
 
   return {
     slug: run.slug,
     raceLink: [RACE_PAGE_BASE_LINK, run.slug],
+    rank,
     dateShort: formatRussianDateShort(run.dateIso),
     timeText: formatDuration(run.timeMs),
-    // Old protocols published without places simply show the dash.
-    placeText: place === undefined ? NO_PLACE_TEXT : String(place),
+    lapText: lapMs === undefined ? NO_LAP_TEXT : formatDuration(lapMs),
+    placeText: placeText(place, finisherCounts[run.slug], gender),
+    isPodium: place !== undefined && place <= PODIUM_PLACE,
     isMonthFinal: monthFinals.has(run.slug),
   };
+}
+
+/** «3/22» — the place over the athlete's own gender finisher count; a bare place, or a dash when unknown. */
+function placeText(place: number | undefined, finishers: EventGenderFinishers | undefined, gender: GenderType | null): string {
+  if (place === undefined) {
+    // Old protocols published without places simply show the dash.
+    return NO_PLACE_TEXT;
+  }
+
+  const total = genderFinisherCount(finishers, gender);
+
+  return total ? `${place}/${total}` : String(place);
 }
 
 function toYearBestView(entry: YearBestEntry, bestMs: number | null): YearBestView {
@@ -542,31 +597,4 @@ function toRivalView(rival: Rival, athleteKey: string): RivalView {
     closeText: closeTimesText(rival.closeCount),
     score: `${rival.wins}:${rival.losses}`,
   };
-}
-
-/** «1 раз / 2 раза / 5 раз рядом» — each plural form is a separate translatable message. */
-function closeTimesText(count: number): string {
-  return pluralText(count, {
-    one: $localize`:@@athlete.rivalTimesOne:${count}:count: раз рядом`,
-    few: $localize`:@@athlete.rivalTimesFew:${count}:count: раза рядом`,
-    many: $localize`:@@athlete.rivalTimesMany:${count}:count: раз рядом`,
-  });
-}
-
-/** «1 финиш / 2 финиша / 5 финишей» — each plural form is a separate translatable message. */
-function finishesText(count: number): string {
-  return pluralText(count, {
-    one: $localize`:@@athlete.legendFinishesOne:${count}:count: финиш`,
-    few: $localize`:@@athlete.legendFinishesFew:${count}:count: финиша`,
-    many: $localize`:@@athlete.legendFinishesMany:${count}:count: финишей`,
-  });
-}
-
-/** «1 неделя / 2 недели / 5 недель» — each plural form is a separate translatable message. */
-function weeksText(count: number): string {
-  return pluralText(count, {
-    one: $localize`:@@athlete.streakWeeksOne:${count}:count: неделя`,
-    few: $localize`:@@athlete.streakWeeksFew:${count}:count: недели`,
-    many: $localize`:@@athlete.streakWeeksMany:${count}:count: недель`,
-  });
 }
