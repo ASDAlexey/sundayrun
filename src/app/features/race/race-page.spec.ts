@@ -136,9 +136,9 @@ describe('RacePage', () => {
     expect(pdfButton.getAttribute('aria-label')).toBe(EXPECTED_RACE_VIEW.pdfAriaLabel);
     expect(headers.length, 'the ten PDF columns plus the average pace').toBe(11);
     expect(
-      headers.map((header) => header.getAttribute('scope')),
+      headers.map((header) => header.getAttribute('role')),
       'every header is a column header',
-    ).toEqual(headers.map(() => 'col'));
+    ).toEqual(headers.map(() => 'columnheader'));
     expect(athleteLinks.map((link) => link.textContent.trim())).toEqual(EXPECTED_RACE_VIEW.rows.map((row) => row.fullName));
     expect(athleteLinks.map((link) => link.getAttribute('aria-label'))).toEqual(EXPECTED_RACE_VIEW.rows.map((row) => row.athleteAriaLabel));
     expect(athleteLinks[0].getAttribute('href'), 'the athlete link targets the personal page by key').toBe(

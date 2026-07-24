@@ -5,6 +5,11 @@
 @use 'styles/table' as tbl;
 @use 'styles/typography' as t;
 
+// One shared grid template for the pinned header and every virtual row, so the eleven
+// columns line up. Tuned to fit the card width without horizontal scroll on desktop; the
+// flexible name/club/note tracks absorb the slack, and narrow headers wrap to two lines.
+$race-columns: 32px minmax(112px, 1.3fr) 72px 72px 64px 44px 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
+
 .race {
   @include s.section;
 
@@ -142,58 +147,76 @@
     @include st.error-text;
   }
 
+  // On a narrow screen the wrapper scrolls horizontally rather than crushing the columns.
   &__table-wrap {
-    @include tbl.wrap;
+    @include c.card;
+
+    overflow-x: auto;
   }
 
-  &__table {
-    @include tbl.table;
-
-    // mat-table paints its own surface; keep the card panel of the wrapper visible.
-    --mat-table-background-color: var(--surface);
+  // The pinned header — always visible above the scrolling rows, sharing the row grid.
+  &__thead-row {
+    display: grid;
+    z-index: 1;
+    position: sticky;
+    top: 0;
+    grid-template-columns: $race-columns;
+    align-items: end;
+    padding: 14px 12px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
   }
 
   &__th {
-    @include tbl.header-cell;
+    @include t.text('label', 'medium');
 
-    border-bottom: 0;
+    color: var(--text-secondary);
+    text-align: left;
 
+    // Narrow columns wrap their label to two lines instead of overflowing the fixed track.
     &_center {
       text-align: center;
     }
+  }
 
-    // The nowrap header keeps the column exactly as wide as its own text, killing the idle gaps.
-    &_shrink {
-      width: 1%;
-    }
+  // The window drives the scroll (`scrollWindow`), so the viewport never grows its own
+  // scrollbar — no gutter to reserve, which would otherwise inset the rows past the header.
+  &__viewport {
+    overflow: visible;
+  }
 
-    // Wide enough for «за всё время» on the second line, so the header breaks into exactly two.
-    &_wrap {
-      width: 10em;
-      white-space: normal;
-    }
+  &__row {
+    display: grid;
+    position: relative;
+    grid-template-columns: $race-columns;
+    align-items: center;
+    padding: 10px 12px;
+    gap: 12px;
+    border-top: 1px solid var(--border);
   }
 
   // The visitor's own row («Выбери себя» in the header) — a calm accent wash over the cells.
   &__row_self {
-    // mat-row paints `background: inherit`, so the override targets both the token and the row itself.
-    --mat-table-background-color: var(--accent-glow);
-
     background: var(--accent-glow);
     box-shadow: inset 2px 0 0 var(--accent);
   }
 
   &__td {
-    @include tbl.cell;
+    @include t.text('body', 'medium');
 
-    // The BEM border-top already separates the rows; drop the mat-cell divider.
-    border-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    color: var(--text);
 
     &_mono {
       font-family: var(--mono);
     }
 
     &_center {
+      align-items: center;
       text-align: center;
     }
 
@@ -248,6 +271,8 @@
     @include p.place-gap;
 
     color: var(--green);
+    // Signals the hover tooltip that explains what «+2» means.
+    cursor: help;
   }
 
   &__finishes {
@@ -279,13 +304,13 @@
 
     display: inline-flex;
     align-items: center;
+    max-width: 100%;
     padding: 2px 9px;
     gap: 5px;
     border: 1px solid var(--accent-line);
-    border-radius: 999px;
+    border-radius: 12px;
     background: var(--accent-glow);
     color: var(--accent-light);
-    white-space: nowrap;
   }
 
   // The rare pride mark: same chip shape as the notable, tinted with the P&L green.

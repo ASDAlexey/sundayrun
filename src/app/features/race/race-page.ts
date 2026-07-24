@@ -1,8 +1,10 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { isValidEventSlug } from '../../core/github/event-slug';
@@ -53,7 +55,6 @@ import {
   NOTE_BADGE_CLASSES,
   PLACE_MEDAL_CLASSES,
   RACE_PAGE_BASE_LINK,
-  RACE_TABLE_COLUMNS,
   RACE_TRANSFER_KEY_PREFIX,
   SLUG_ROUTE_PARAM,
   SUMMARY_PART_SEPARATOR,
@@ -64,7 +65,15 @@ import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
 @Component({
   selector: 'app-race-page',
-  imports: [MatButtonModule, MatProgressSpinnerModule, MatTableModule, ReloadButton, RouterLink],
+  imports: [
+    ExperimentalScrollingModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    ReloadButton,
+    RouterLink,
+    ScrollingModule,
+  ],
   templateUrl: './race-page.html',
   styleUrl: './race-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,7 +95,6 @@ export class RacePage {
   protected readonly statuses = RaceStatus;
   protected readonly noteKinds = NoteBadgeKind;
   protected readonly homeLink = HOME_PAGE_LINK;
-  protected readonly tableColumns = RACE_TABLE_COLUMNS;
 
   #slug = '';
 

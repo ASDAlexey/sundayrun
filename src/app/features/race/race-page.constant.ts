@@ -30,9 +30,6 @@ export const LAP_GAIN_PREFIX = '+';
 /** Joins the parts of the summary line: «8 финишёров, 2 новичка, 3 личных рекорда». */
 export const SUMMARY_PART_SEPARATOR = ', ';
 
-/** mat-table column order, mirroring the ten PDF columns plus the average pace. */
-export const RACE_TABLE_COLUMNS = ['index', 'athlete', 'time23', 'time5', 'pace', 'gender', 'placeM', 'placeF', 'finishes', 'club', 'note'];
-
 /** The BEM modifier of each badge kind; `plain` renders as running text and carries no chip. */
 export const NOTE_BADGE_CLASSES: Record<NoteBadgeKindType, string> = {
   [NoteBadgeKind.record]: 'race__note-badge_record',

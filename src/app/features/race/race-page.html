@@ -79,210 +79,185 @@
         </header>
 
         <div class="race__table-wrap">
-          <table class="race__table" mat-table [dataSource]="view.rows">
-            <ng-container matColumnDef="index">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.index" mat-header-cell scope="col">№</th>
+          <div class="race__table">
+            <div class="race__thead-row" role="row">
+              <div class="race__th" i18n="@@race.table.index" role="columnheader">№</div>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.index }}</td>
-            </ng-container>
+              <div class="race__th" i18n="@@race.table.athlete" role="columnheader">Спортсмен</div>
 
-            <ng-container matColumnDef="athlete">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.athlete" mat-header-cell scope="col">Спортсмен</th>
+              <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.time23" role="columnheader">Время 2,3 км</div>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>
-                <a class="race__athlete" [attr.aria-label]="row.athleteAriaLabel" [routerLink]="row.athleteLink">
-                  {{ row.fullName }}
-                </a>
-              </td>
-            </ng-container>
+              <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.time5" role="columnheader">Время 5 км</div>
 
-            <ng-container matColumnDef="time23">
-              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.time23" mat-header-cell scope="col">
-                Время 2,3 км
-              </th>
+              <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.pace" role="columnheader">Ср. темп</div>
 
-              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell>{{ row.time23 }}</td>
-            </ng-container>
+              <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.gender" role="columnheader">Пол</div>
 
-            <ng-container matColumnDef="time5">
-              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.time5" mat-header-cell scope="col">
-                Время 5 км
-              </th>
+              <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.placeM" role="columnheader">Место М</div>
 
-              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell [class.race__td_accent]="row.time5 !== ''">
-                {{ row.time5 }}
+              <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.placeF" role="columnheader">Место Ж</div>
 
-                @if (row.lapGainText !== '') {
-                  <span class="race__lap-gain" i18n-title="@@race.lapGainTitle" title="Мест отыграно на втором круге">{{
-                    row.lapGainText
-                  }}</span>
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="pace">
-              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.pace" mat-header-cell scope="col">
-                Ср. темп
-              </th>
-
-              <td *matCellDef="let row" class="race__td race__td_mono race__td_center" mat-cell>{{ row.paceText }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="gender">
-              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.gender" mat-header-cell scope="col">
-                Пол
-              </th>
-
-              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
-                @if (row.genderText !== '') {
-                  <span class="race__gender {{ row.genderClass }}">{{ row.genderText }}</span>
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="placeM">
-              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.placeM" mat-header-cell scope="col">
-                Место М
-              </th>
-
-              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
-                <span class="race__place-cell">
-                  @if (row.placeMMedalClass !== '') {
-                    <svg aria-hidden="true" class="race__medal {{ row.placeMMedalClass }}" viewBox="0 0 12 12">
-                      <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
-                      <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
-                    </svg>
-                  }
-
-                  {{ row.placeMText }}
-                </span>
-
-                @if (row.gapMText !== '') {
-                  <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{ row.gapMText }}</span>
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="placeF">
-              <th *matHeaderCellDef class="race__th race__th_center race__th_shrink" i18n="@@race.table.placeF" mat-header-cell scope="col">
-                Место Ж
-              </th>
-
-              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
-                <span class="race__place-cell">
-                  @if (row.placeFMedalClass !== '') {
-                    <svg aria-hidden="true" class="race__medal {{ row.placeFMedalClass }}" viewBox="0 0 12 12">
-                      <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
-                      <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
-                    </svg>
-                  }
-
-                  {{ row.placeFText }}
-                </span>
-
-                @if (row.gapFText !== '') {
-                  <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{ row.gapFText }}</span>
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="finishes">
-              <th *matHeaderCellDef class="race__th race__th_center race__th_wrap" i18n="@@race.table.finishes" mat-header-cell scope="col">
+              <div class="race__th race__th_center race__th_wrap" i18n="@@race.table.finishes" role="columnheader">
                 Участий за всё время
-              </th>
+              </div>
 
-              <td *matCellDef="let row" class="race__td race__td_center" mat-cell>
-                @if (row.finishCountText !== '') {
-                  <span class="race__finishes {{ row.finishClubClass }}">{{ row.finishCountText }}</span>
-                }
-              </td>
-            </ng-container>
+              <div class="race__th" i18n="@@race.table.club" role="columnheader">Клуб</div>
 
-            <ng-container matColumnDef="club">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.club" mat-header-cell scope="col">Клуб</th>
+              <div class="race__th" i18n="@@race.table.note" role="columnheader">Примечание</div>
+            </div>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>{{ row.club }}</td>
-            </ng-container>
+            <cdk-virtual-scroll-viewport autosize class="race__viewport" scrollWindow [maxBufferPx]="900" [minBufferPx]="600">
+              <div
+                *cdkVirtualFor="let row of view.rows"
+                class="race__row"
+                role="row"
+                [class.race__row_self]="row.athleteKey !== '' && row.athleteKey === selfKey()"
+              >
+                <div class="race__td" role="cell">{{ row.index }}</div>
 
-            <ng-container matColumnDef="note">
-              <th *matHeaderCellDef class="race__th" i18n="@@race.table.note" mat-header-cell scope="col">Примечание</th>
+                <div class="race__td" role="cell">
+                  <a class="race__athlete" [attr.aria-label]="row.athleteAriaLabel" [routerLink]="row.athleteLink">
+                    {{ row.fullName }}
+                  </a>
+                </div>
 
-              <td *matCellDef="let row" class="race__td" mat-cell>
-                <span class="race__notes">
-                  @for (badge of row.noteBadges; track $index) {
-                    @if (badge.kind === noteKinds.plain) {
-                      <span class="race__note-text">{{ badge.text }}</span>
-                    } @else {
-                      <span class="race__note-badge {{ badge.className }}">
-                        <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
-                          @switch (badge.kind) {
-                            @case (noteKinds.record) {
-                              <path d="M6 10.5 V1.5 M2.5 5 L6 1.5 L9.5 5" />
+                <div class="race__td race__td_mono race__td_center" role="cell">{{ row.time23 }}</div>
+
+                <div class="race__td race__td_mono race__td_center" role="cell" [class.race__td_accent]="row.time5 !== ''">
+                  {{ row.time5 }}
+
+                  @if (row.lapGainText !== '') {
+                    <span
+                      class="race__lap-gain"
+                      i18n-matTooltip="@@race.lapGainTitle"
+                      matTooltip="Отыграно мест на втором круге: обошёл столько соперников после отсечки 2,3 км"
+                      >{{ row.lapGainText }}</span
+                    >
+                  }
+                </div>
+
+                <div class="race__td race__td_mono race__td_center" role="cell">{{ row.paceText }}</div>
+
+                <div class="race__td race__td_center" role="cell">
+                  @if (row.genderText !== '') {
+                    <span class="race__gender {{ row.genderClass }}">{{ row.genderText }}</span>
+                  }
+                </div>
+
+                <div class="race__td race__td_center" role="cell">
+                  <span class="race__place-cell">
+                    @if (row.placeMMedalClass !== '') {
+                      <svg aria-hidden="true" class="race__medal {{ row.placeMMedalClass }}" viewBox="0 0 12 12">
+                        <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
+                        <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
+                      </svg>
+                    }
+
+                    {{ row.placeMText }}
+                  </span>
+
+                  @if (row.gapMText !== '') {
+                    <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{
+                      row.gapMText
+                    }}</span>
+                  }
+                </div>
+
+                <div class="race__td race__td_center" role="cell">
+                  <span class="race__place-cell">
+                    @if (row.placeFMedalClass !== '') {
+                      <svg aria-hidden="true" class="race__medal {{ row.placeFMedalClass }}" viewBox="0 0 12 12">
+                        <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
+                        <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
+                      </svg>
+                    }
+
+                    {{ row.placeFText }}
+                  </span>
+
+                  @if (row.gapFText !== '') {
+                    <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{
+                      row.gapFText
+                    }}</span>
+                  }
+                </div>
+
+                <div class="race__td race__td_center" role="cell">
+                  @if (row.finishCountText !== '') {
+                    <span class="race__finishes {{ row.finishClubClass }}">{{ row.finishCountText }}</span>
+                  }
+                </div>
+
+                <div class="race__td" role="cell">{{ row.club }}</div>
+
+                <div class="race__td" role="cell">
+                  <span class="race__notes">
+                    @for (badge of row.noteBadges; track $index) {
+                      @if (badge.kind === noteKinds.plain) {
+                        <span class="race__note-text">{{ badge.text }}</span>
+                      } @else {
+                        <span class="race__note-badge {{ badge.className }}">
+                          <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
+                            @switch (badge.kind) {
+                              @case (noteKinds.record) {
+                                <path d="M6 10.5 V1.5 M2.5 5 L6 1.5 L9.5 5" />
+                              }
+                              @case (noteKinds.yearBest) {
+                                <path
+                                  class="race__note-icon-fill"
+                                  d="M6 1 L7.5 4.2 L11 4.6 L8.4 7 L9.1 10.5 L6 8.7 L2.9 10.5 L3.6 7 L1 4.6 L4.5 4.2 Z"
+                                />
+                              }
+                              @case (noteKinds.debut) {
+                                <path d="M3 11 V1.5 M3 1.8 H9.5 L8 4 L9.5 6.2 H3" />
+                              }
+                              @case (noteKinds.kids) {
+                                <circle cx="6" cy="4.5" r="3.2" />
+                                <path d="M6 7.7 C6.6 8.6, 5.4 9.4, 6 10.5" />
+                              }
+                              @case (noteKinds.status) {
+                                <circle cx="6" cy="6" r="4.6" />
+                                <path d="M2.8 2.8 L9.2 9.2" />
+                              }
                             }
-                            @case (noteKinds.yearBest) {
-                              <path
-                                class="race__note-icon-fill"
-                                d="M6 1 L7.5 4.2 L11 4.6 L8.4 7 L9.1 10.5 L6 8.7 L2.9 10.5 L3.6 7 L1 4.6 L4.5 4.2 Z"
-                              />
-                            }
-                            @case (noteKinds.debut) {
-                              <path d="M3 11 V1.5 M3 1.8 H9.5 L8 4 L9.5 6.2 H3" />
-                            }
-                            @case (noteKinds.kids) {
-                              <circle cx="6" cy="4.5" r="3.2" />
-                              <path d="M6 7.7 C6.6 8.6, 5.4 9.4, 6 10.5" />
-                            }
-                            @case (noteKinds.status) {
-                              <circle cx="6" cy="6" r="4.6" />
-                              <path d="M2.8 2.8 L9.2 9.2" />
-                            }
+                          </svg>
+
+                          @if (badge.prNote; as pr) {
+                            <span
+                              >{{ pr.before }}<a class="race__pr-link" [routerLink]="pr.link">{{ pr.label }}</a
+                              >{{ pr.after }}</span
+                            >
+                          } @else {
+                            <span>{{ badge.text }}</span>
                           }
+                        </span>
+                      }
+                    }
+
+                    @if (row.notableText !== '') {
+                      <span class="race__notable">
+                        <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
+                          <path class="race__note-icon-fill" d="M6 0.8 L7.2 4.8 L11.2 6 L7.2 7.2 L6 11.2 L4.8 7.2 L0.8 6 L4.8 4.8 Z" />
                         </svg>
 
-                        @if (badge.prNote; as pr) {
-                          <span
-                            >{{ pr.before }}<a class="race__pr-link" [routerLink]="pr.link">{{ pr.label }}</a
-                            >{{ pr.after }}</span
-                          >
-                        } @else {
-                          <span>{{ badge.text }}</span>
-                        }
+                        <span>{{ row.notableText }}</span>
                       </span>
                     }
-                  }
 
-                  @if (row.notableText !== '') {
-                    <span class="race__notable">
-                      <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
-                        <path class="race__note-icon-fill" d="M6 0.8 L7.2 4.8 L11.2 6 L7.2 7.2 L6 11.2 L4.8 7.2 L0.8 6 L4.8 4.8 Z" />
-                      </svg>
+                    @if (row.isNegativeSplit) {
+                      <span class="race__split-chip" i18n-title="@@race.negativeSplitTitle" title="Темп второго круга выше темпа первого">
+                        <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
+                          <path class="race__note-icon-fill" d="M6.9 0.8 L2.6 6.7 H5.4 L5.1 11.2 L9.4 5.3 H6.6 Z" />
+                        </svg>
 
-                      <span>{{ row.notableText }}</span>
-                    </span>
-                  }
-
-                  @if (row.isNegativeSplit) {
-                    <span class="race__split-chip" i18n-title="@@race.negativeSplitTitle" title="Темп второго круга выше темпа первого">
-                      <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
-                        <path class="race__note-icon-fill" d="M6.9 0.8 L2.6 6.7 H5.4 L5.1 11.2 L9.4 5.3 H6.6 Z" />
-                      </svg>
-
-                      <span i18n="@@race.negativeSplit">Негативный сплит</span>
-                    </span>
-                  }
-                </span>
-              </td>
-            </ng-container>
-
-            <tr *matHeaderRowDef="tableColumns" mat-header-row></tr>
-
-            <tr
-              *matRowDef="let row; columns: tableColumns"
-              class="race__row"
-              mat-row
-              [class.race__row_self]="row.athleteKey !== '' && row.athleteKey === selfKey()"
-            ></tr>
-          </table>
+                        <span i18n="@@race.negativeSplit">Негативный сплит</span>
+                      </span>
+                    }
+                  </span>
+                </div>
+              </div>
+            </cdk-virtual-scroll-viewport>
+          </div>
         </div>
       }
     }
