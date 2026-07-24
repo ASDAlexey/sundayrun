@@ -4,6 +4,7 @@ import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtur
 import { CourseRecordHistory } from '../core/history/course-records.type';
 import { AthleteFirstLap } from '../core/history/first-lap.interface';
 import { FirstLapRecords } from '../core/history/first-lap.type';
+import { EventGenderFinishers } from '../core/history/gender-finishers.interface';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { LegendFinish } from '../core/history/legend.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
@@ -117,6 +118,17 @@ export const SEED_RUN_RESULTS: readonly string[] = [
 
 /** Places of `ATHLETE_KEY`'s runs: both spellings resolve; the rival row and the place-less 2.3 km row do not. */
 export const EXPECTED_RUN_PLACES: Record<string, number> = { '2024-05-05': 3, '2024-06-06': 1 };
+
+/**
+ * Per-gender finisher tallies of `ATHLETE_KEY`'s events: 2024-06-06 held one man and one woman,
+ * the two solo men's races count one each, and the place-less 2.3 km row leaves 2025-04-04 empty.
+ * The place-less run slugs with no protocol rows at all (2025-03-03, 2025-05-05) never appear.
+ */
+export const EXPECTED_RUN_FINISHER_COUNTS: Record<string, EventGenderFinishers> = {
+  '2024-05-05': { male: 1, female: 0 },
+  '2024-06-06': { male: 1, female: 1 },
+  '2025-04-04': { male: 0, female: 0 },
+};
 
 /**
  * The fastest recorded splits per gender: Иванов's caps-spelled 11:15 resolves its display name

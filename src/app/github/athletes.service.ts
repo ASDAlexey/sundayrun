@@ -4,6 +4,7 @@ import { YearBadgeRarity } from '../core/history/badge-rarity.type';
 import { CourseRecordHistory } from '../core/history/course-records.type';
 import { AthleteFirstLap } from '../core/history/first-lap.interface';
 import { FirstLapRecords } from '../core/history/first-lap.type';
+import { EventGenderFinishers } from '../core/history/gender-finishers.interface';
 import { LegendFinish } from '../core/history/legend.interface';
 import { OverallStats } from '../core/history/overall-stats.interface';
 import { PacingRow } from '../core/history/pacing.interface';
@@ -21,6 +22,7 @@ import { selectAthleteBestFirstLap, selectAthleteFirstLaps } from './protocol-db
 import {
   selectAthleteRecord,
   selectAthleteRecords,
+  selectAthleteRunFinisherCounts,
   selectAthleteRunPlaces,
   selectCourseRecords,
   selectEventSlugs,
@@ -58,6 +60,11 @@ export class AthletesService {
   /** Slug → the athlete's gender place there; feeds the «Место» column of the runs table. */
   loadRunPlaces(key: string): Promise<Record<string, number>> {
     return this.#cache(`runPlaces:${key}`, () => selectAthleteRunPlaces(this.#db, key));
+  }
+
+  /** Slug → the event's per-gender finisher tally; the «3/22» place denominator of the runs table. */
+  loadRunFinisherCounts(key: string): Promise<Record<string, EventGenderFinishers>> {
+    return this.#cache(`runFinisherCounts:${key}`, () => selectAthleteRunFinisherCounts(this.#db, key));
   }
 
   /** Every ranked athlete for the records page, already shaped for `bestResults`. */

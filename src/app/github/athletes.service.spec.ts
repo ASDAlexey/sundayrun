@@ -18,6 +18,7 @@ import {
   EXPECTED_LEADERBOARD_RECORDS,
   EXPECTED_LEGEND_FINISHES,
   EXPECTED_LONE_RIVAL_RUNS,
+  EXPECTED_RUN_FINISHER_COUNTS,
   EXPECTED_RUN_PLACES,
   EXPECTED_SEASON_RUNS,
   EXPECTED_SQL_STATS,
@@ -54,6 +55,7 @@ describe('AthletesService', () => {
     await expect(service.loadRecord(ATHLETE_KEY)).resolves.toEqual(EXPECTED_ATHLETE_RECORD);
     await expect(service.loadRecord(UNKNOWN_ATHLETE_KEY), 'an unknown key resolves to null').resolves.toBeNull();
     await expect(service.loadRunPlaces(ATHLETE_KEY)).resolves.toEqual(EXPECTED_RUN_PLACES);
+    await expect(service.loadRunFinisherCounts(ATHLETE_KEY)).resolves.toEqual(EXPECTED_RUN_FINISHER_COUNTS);
     await expect(service.loadRecords()).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
     await expect(service.loadCourseRecords()).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(service.loadOverallStats()).resolves.toEqual(EXPECTED_SQL_STATS);

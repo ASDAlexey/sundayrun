@@ -13,6 +13,7 @@ import {
   selectArchiveEvents,
   selectAthleteRecord,
   selectAthleteRecords,
+  selectAthleteRunFinisherCounts,
   selectAthleteRunPlaces,
   selectCourseRecords,
   selectEventParticipantRuns,
@@ -46,6 +47,7 @@ import {
   EXPECTED_LONE_RIVAL_RUNS,
   EXPECTED_PARTICIPANT_RUNS,
   EXPECTED_RIVAL_RUNS,
+  EXPECTED_RUN_FINISHER_COUNTS,
   EXPECTED_RUN_PLACES,
   EXPECTED_SQL_STATS,
   EXPECTED_WINNER_TIMES,
@@ -131,6 +133,11 @@ describe('protocol-db-queries', () => {
       EXPECTED_WOMAN_RUN_PLACES,
     );
     await expect(selectAthleteRunPlaces(db, UNKNOWN_ATHLETE_KEY), 'an unknown key has no places').resolves.toEqual({});
+    await expect(
+      selectAthleteRunFinisherCounts(db, ATHLETE_KEY),
+      'each event splits its finishers by gender; the place-less run stays at zero',
+    ).resolves.toEqual(EXPECTED_RUN_FINISHER_COUNTS);
+    await expect(selectAthleteRunFinisherCounts(db, UNKNOWN_ATHLETE_KEY), 'an unknown key has no events').resolves.toEqual({});
     await expect(selectAthleteRecords(db)).resolves.toEqual(EXPECTED_LEADERBOARD_RECORDS);
     await expect(selectCourseRecords(db)).resolves.toEqual(EXPECTED_COURSE_RECORDS);
     await expect(selectOverallStats(db)).resolves.toEqual(EXPECTED_SQL_STATS);

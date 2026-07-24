@@ -1,4 +1,4 @@
-import { and, asc, avg, count, countDistinct, desc, eq, isNotNull, like, lt, min, ne, sql } from 'drizzle-orm';
+import { and, asc, avg, count, countDistinct, desc, eq, inArray, isNotNull, like, lt, min, ne, sql } from 'drizzle-orm';
 
 import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
 import { eventFilePaths } from '../core/github/event-paths';
@@ -10,6 +10,7 @@ import { courseRecordHistory } from '../core/history/course-records';
 import { CourseRecordHistory } from '../core/history/course-records.type';
 import { firstLapRecords } from '../core/history/first-lap';
 import { FirstLapRecords } from '../core/history/first-lap.type';
+import { EventGenderFinishers } from '../core/history/gender-finishers.interface';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { isoYear } from '../core/history/iso-year';
 import { LegendFinish } from '../core/history/legend.interface';
@@ -94,6 +95,29 @@ export async function selectAthleteRunPlaces(db: ProtocolDrizzle, key: string): 
   }
 
   return places;
+}
+
+/**
+ * Slug → the event's finisher tally split by gender — the denominator of the athlete page's «3/22»
+ * place cell. `count()` ignores NULLs, so counting each gender's place column yields exactly the
+ * finishers ranked in that gender. Only the athlete's own events are scanned (their run slugs drive
+ * the `IN` filter, hitting the `results` composite key by slug); the caller keeps the side matching
+ * the athlete's gender.
+ */
+export async function selectAthleteRunFinisherCounts(db: ProtocolDrizzle, key: string): Promise<Record<string, EventGenderFinishers>> {
+  const athleteSlugs = db.select({ slug: runs.slug }).from(runs).where(eq(runs.athleteKey, key));
+  const rows = await db
+    .select({ slug: results.slug, male: count(results.placeM), female: count(results.placeF) })
+    .from(results)
+    .where(inArray(results.slug, athleteSlugs))
+    .groupBy(results.slug);
+  const totals: Record<string, EventGenderFinishers> = {};
+
+  for (const row of rows) {
+    totals[row.slug] = { male: asNumber(row.male), female: asNumber(row.female) };
+  }
+
+  return totals;
 }
 
 /**
