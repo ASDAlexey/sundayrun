@@ -1,98 +1,106 @@
 <div class="participants-table">
-  <table class="participants-table__table">
-    <thead>
-      <tr>
-        <th class="participants-table__header" i18n="@@preview.table.index" scope="col">№</th>
+  <div class="participants-table__scroll">
+    <div class="participants-table__inner">
+      <div class="participants-table__header-row" role="row">
+        <div class="participants-table__header" i18n="@@preview.table.index" role="columnheader">№</div>
 
-        <th class="participants-table__header" i18n="@@preview.table.name" scope="col">Спортсмен</th>
+        <div class="participants-table__header" i18n="@@preview.table.name" role="columnheader">Спортсмен</div>
 
-        <th
+        <div
           class="participants-table__header participants-table__header_center participants-table__header_shrink"
           i18n="@@preview.table.time23"
-          scope="col"
+          role="columnheader"
         >
           Время 2,3 км
-        </th>
+        </div>
 
-        <th
+        <div
           class="participants-table__header participants-table__header_center participants-table__header_shrink"
           i18n="@@preview.table.time5"
-          scope="col"
+          role="columnheader"
         >
           Время 5 км
-        </th>
+        </div>
 
-        <th
+        <div
           class="participants-table__header participants-table__header_center participants-table__header_shrink"
           i18n="@@preview.table.pace"
-          scope="col"
+          role="columnheader"
         >
           Ср. темп
-        </th>
+        </div>
 
-        <th
+        <div
           class="participants-table__header participants-table__header_center participants-table__header_shrink"
           i18n="@@preview.table.gender"
-          scope="col"
+          role="columnheader"
         >
           Пол
-        </th>
+        </div>
 
-        <th
+        <div
           class="participants-table__header participants-table__header_center participants-table__header_shrink"
           i18n="@@preview.table.placeM"
-          scope="col"
+          role="columnheader"
         >
           Место М
-        </th>
+        </div>
 
-        <th
+        <div
           class="participants-table__header participants-table__header_center participants-table__header_shrink"
           i18n="@@preview.table.placeF"
-          scope="col"
+          role="columnheader"
         >
           Место Ж
-        </th>
+        </div>
 
-        <th
+        <div
           class="participants-table__header participants-table__header_center participants-table__header_wrap"
           i18n="@@preview.table.finishes"
-          scope="col"
+          role="columnheader"
         >
           Участий за всё время
-        </th>
+        </div>
 
-        <th class="participants-table__header" i18n="@@preview.table.club" scope="col">Клуб</th>
+        <div class="participants-table__header" i18n="@@preview.table.club" role="columnheader">Клуб</div>
 
-        <th class="participants-table__header" i18n="@@preview.table.note" scope="col">Примечание</th>
-      </tr>
-    </thead>
+        <div class="participants-table__header" i18n="@@preview.table.note" role="columnheader">Примечание</div>
+      </div>
 
-    <tbody>
-      @for (row of rows(); track row.id) {
-        <tr class="participants-table__row" [class.participants-table__row_unverified]="row.unverified">
-          <td class="participants-table__cell">{{ row.index }}</td>
+      <cdk-virtual-scroll-viewport autosize class="participants-table__viewport" scrollWindow [maxBufferPx]="900" [minBufferPx]="600">
+        <div
+          *cdkVirtualFor="let row of rows(); trackBy: trackRow"
+          class="participants-table__row"
+          role="row"
+          [class.participants-table__row_unverified]="row.unverified"
+        >
+          <div class="participants-table__cell" role="cell">{{ row.index }}</div>
 
-          <td class="participants-table__cell">
+          <div class="participants-table__cell" role="cell">
             <span class="participants-table__athlete">{{ row.fullName }}</span>
 
             @if (row.unverified) {
               <span class="visually-hidden" i18n="@@preview.table.unverifiedGender">пол не определён</span>
             }
-          </td>
+          </div>
 
-          <td class="participants-table__cell participants-table__cell_mono participants-table__cell_center">{{ row.time23 }}</td>
+          <div class="participants-table__cell participants-table__cell_mono participants-table__cell_center" role="cell">
+            {{ row.time23 }}
+          </div>
 
-          <td
+          <div
             class="participants-table__cell participants-table__cell_mono participants-table__cell_center"
+            role="cell"
             [class.participants-table__cell_accent]="row.time5 !== ''"
           >
             {{ row.time5 }}
-          </td>
+          </div>
 
-          <td class="participants-table__cell participants-table__cell_mono participants-table__cell_center">{{ row.paceText }}</td>
+          <div class="participants-table__cell participants-table__cell_mono participants-table__cell_center" role="cell">
+            {{ row.paceText }}
+          </div>
 
-          <td class="participants-table__cell participants-table__cell_center">
+          <div class="participants-table__cell participants-table__cell_center" role="cell">
             <span class="participants-table__gender-group" role="group">
               <button
                 aria-label="Мужской"
@@ -120,9 +128,9 @@
                 Ж
               </button>
             </span>
-          </td>
+          </div>
 
-          <td class="participants-table__cell participants-table__cell_center">
+          <div class="participants-table__cell participants-table__cell_center" role="cell">
             <span class="participants-table__place-cell">
               @if (row.placeMMedalClass !== '') {
                 <svg aria-hidden="true" class="participants-table__medal {{ row.placeMMedalClass }}" viewBox="0 0 12 12">
@@ -139,9 +147,9 @@
                 row.gapMText
               }}</span>
             }
-          </td>
+          </div>
 
-          <td class="participants-table__cell participants-table__cell_center">
+          <div class="participants-table__cell participants-table__cell_center" role="cell">
             <span class="participants-table__place-cell">
               @if (row.placeFMedalClass !== '') {
                 <svg aria-hidden="true" class="participants-table__medal {{ row.placeFMedalClass }}" viewBox="0 0 12 12">
@@ -158,17 +166,17 @@
                 row.gapFText
               }}</span>
             }
-          </td>
+          </div>
 
-          <td class="participants-table__cell participants-table__cell_center">
+          <div class="participants-table__cell participants-table__cell_center" role="cell">
             @if (row.finishCountText !== '') {
               <span class="participants-table__finishes {{ row.finishClubClass }}">{{ row.finishCountText }}</span>
             }
-          </td>
+          </div>
 
-          <td class="participants-table__cell">{{ row.club }}</td>
+          <div class="participants-table__cell" role="cell">{{ row.club }}</div>
 
-          <td class="participants-table__cell">
+          <div class="participants-table__cell" role="cell">
             <span class="participants-table__notes">
               @for (badge of row.noteBadges; track $index) {
                 @if (badge.kind === noteKinds.plain) {
@@ -205,9 +213,9 @@
                 }
               }
             </span>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  </div>
 </div>

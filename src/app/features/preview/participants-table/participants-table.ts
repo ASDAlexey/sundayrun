@@ -1,3 +1,5 @@
+import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
@@ -34,6 +36,7 @@ import { ParticipantRowView, PreviewNoteBadgeView } from './participants-table.i
   selector: 'app-participants-table',
   templateUrl: './participants-table.html',
   styleUrl: './participants-table.scss',
+  imports: [ScrollingModule, ExperimentalScrollingModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParticipantsTable {
@@ -80,6 +83,8 @@ export class ParticipantsTable {
       void this.#loadPriorFinishCounts(this.#dateIso());
     });
   }
+
+  trackRow = (_: number, row: ParticipantRowView): number => row.id;
 
   setMale(id: number): void {
     this.#store.setGender(id, Gender.male);

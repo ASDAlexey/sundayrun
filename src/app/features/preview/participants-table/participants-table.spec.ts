@@ -1,5 +1,7 @@
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { Gender } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
@@ -9,7 +11,7 @@ import { ResultsService } from '../../../github/results.service';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import { ParticipantsTable } from './participants-table';
 import {
-  COLUMN_SCOPE,
+  COLUMN_ROLE,
   EXPECTED_ARIA_PRESSED,
   EXPECTED_LOADED_FINISH_CLASS,
   EXPECTED_LOADED_FINISH_TEXT,
@@ -107,7 +109,16 @@ describe('ParticipantsTable', () => {
     expect(table.rows()[0].finishCountText).toBe('');
   });
 
-  it('renders the protocol design and forwards gender edits', () => {
+  it('renders the protocol design and forwards gender edits', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // jsdom reports a zero-sized scroll container, so the virtual viewport never
+    // renders its first batch on its own; a manual size check forces the autosize
+    // strategy to fill the buffer with the visible rows the assertions inspect.
+    fixture.debugElement.query(By.directive(CdkVirtualScrollViewport)).componentInstance.checkViewportSize();
+    fixture.detectChanges();
+    await fixture.whenStable();
     fixture.detectChanges();
 
     const element = fixture.nativeElement;
@@ -117,7 +128,7 @@ describe('ParticipantsTable', () => {
 
     const headers = [...element.querySelectorAll('.participants-table__header')];
 
-    expect(headers.every((header) => header.getAttribute('scope') === COLUMN_SCOPE)).toBe(true);
+    expect(headers.every((header) => header.getAttribute('role') === COLUMN_ROLE)).toBe(true);
     expect(element.querySelectorAll('.visually-hidden')).toHaveLength(EXPECTED_UNVERIFIED_HINT_COUNT);
     expect(element.querySelectorAll('.participants-table__medal'), 'the male podium wears its medals').toHaveLength(EXPECTED_MEDAL_COUNT);
     expect(element.querySelector('.participants-table__note-text')?.textContent?.trim(), 'the note prints as read-only text').toBe(

@@ -181,7 +181,7 @@ export const EXPECTED_MEDAL_COUNT = 2;
 export const OWN_FINISH_ONLY_TEXT = '1';
 
 /** Every header cell must be marked as a column header for screen readers. */
-export const COLUMN_SCOPE = 'col';
+export const COLUMN_ROLE = 'columnheader';
 
 /** TABLE_PARTICIPANTS rows with an unverified gender, each carrying a visually-hidden hint. */
 export const EXPECTED_UNVERIFIED_HINT_COUNT = 2;
