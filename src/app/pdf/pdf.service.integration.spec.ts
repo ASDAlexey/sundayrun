@@ -18,13 +18,10 @@ import {
   EMBEDDED_FONT_NAMES,
   EXPECTED_PAGE_COUNT,
   FALLBACK_FONT_NAME,
-  HEX_BYTE_WIDTH,
-  HEX_RADIX,
   MIN_PDF_BYTES,
   PDF_FILE_HEADER,
   PUBLIC_DIRECTORY,
   RENDER_TIMEOUT_MS,
-  TO_HEX_METHOD,
 } from './pdf.service.integration.constant';
 import { PdfService } from './pdf.service';
 import { PROTOCOL_IMAGE_PAGE } from './protocol-image.service.constant';
@@ -46,7 +43,6 @@ describe('PdfService against the real pdfmake bundle', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
-    Reflect.deleteProperty(Uint8Array.prototype, TO_HEX_METHOD);
   });
 
   it(
@@ -74,7 +70,10 @@ describe('PdfService against the real pdfmake bundle', () => {
     async () => {
       installPdfJsBrowserApis();
 
-      const pdfjs = await import('pdfjs-dist');
+      // The legacy bundle, the one pdf.js asks Node to use: the default build reaches for language
+      // features this runtime has yet to ship (`Math.sumPrecise`) and warns on every import. Only
+      // the reading side is swapped — the pdf under test is still produced by the real pdfmake.
+      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
       const blob = await renderProtocol();
       const document = await pdfjs.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
       const page = await document.getPage(PROTOCOL_IMAGE_PAGE);
@@ -91,20 +90,14 @@ describe('PdfService against the real pdfmake bundle', () => {
 });
 
 /**
- * Fills the two browser APIs pdf.js relies on that this test runtime lacks — neither is a stand-in
- * for behaviour under test: jsdom ships no `DOMMatrix` (pdf.js news one up in a static field at
- * module scope, and only its canvas rasterizer ever reads it), and Node 24 has yet to ship
- * `Uint8Array.prototype.toHex`, which pdf.js uses to hash the document into its fingerprint.
+ * Fills the one browser API pdf.js relies on that this test runtime lacks, and that is not a
+ * stand-in for behaviour under test: jsdom ships no `DOMMatrix` (pdf.js news one up in a static
+ * field at module scope, and only its canvas rasterizer ever reads it), and the legacy bundle only
+ * warns instead of polyfilling it. The language-level gaps it does close itself — its own
+ * `Uint8Array.prototype.toHex` shim covers the document fingerprint.
  */
 function installPdfJsBrowserApis(): void {
   vi.stubGlobal('DOMMatrix', class {});
-
-  Object.defineProperty(Uint8Array.prototype, TO_HEX_METHOD, {
-    configurable: true,
-    value(this: Uint8Array): string {
-      return Array.from(this, (byte) => byte.toString(HEX_RADIX).padStart(HEX_BYTE_WIDTH, '0')).join('');
-    },
-  });
 }
 
 function renderProtocol(): Promise<Blob> {

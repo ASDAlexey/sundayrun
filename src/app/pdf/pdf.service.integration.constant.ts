@@ -21,10 +21,3 @@ export const A4_PORTRAIT_WIDTH_PT = 595;
 export const A4_PORTRAIT_HEIGHT_PT = 842;
 
 export const EXPECTED_PAGE_COUNT = 1;
-
-export const HEX_RADIX = 16;
-
-/** One byte is two hex digits, zero-padded. */
-export const HEX_BYTE_WIDTH = 2;
-
-export const TO_HEX_METHOD = 'toHex';
