@@ -234,7 +234,8 @@ src/app/
 
 ## Правила проекта
 
-- Компоненты: standalone, OnPush, `signal()`/`computed()`, `inject()`, `#private` в сервисах, `readonly` наружу.
+- Компоненты: standalone, `signal()`/`computed()`, `inject()`, `#private` в сервисах, `readonly` наружу. `changeDetection` не пишем — в Angular 22 OnPush по умолчанию.
+- Сервисы: `@Service()` вместо `@Injectable({ providedIn: 'root' })`; для сервисов, которые провайдятся вручную, — `@Service({ autoProvided: false })`.
 - `.claude/rules/ts-files.md`: константы → `.constant.ts` (UPPER_SNAKE_CASE), enum'ы → `as const` + union в `.enum.ts`, интерфейсы → `.interface.ts`, типы → `.type.ts`.
 - `.claude/rules/spec-files.md`: моки в `.mock.ts`, минимум `it()`-блоков при 100% покрытии, без `async beforeEach`.
 - Запрещён `as` (`consistent-type-assertions: 'never'` в проде) — маппинг значений БД через `asString`/`asNumber`/`asNumberOrNull`/`asGender` из `protocol-db-row.ts`.
