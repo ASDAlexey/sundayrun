@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 
 import { athleteForm } from '../../core/history/form';
 import { FORM_WINDOW_SIZE, PEAK_PERCENT } from '../../core/history/form.constant';
@@ -25,7 +25,6 @@ import { FormChartDot, FormChartPoint, FormTooltipAlign, FormView } from './form
   selector: 'app-form-card',
   templateUrl: './form-card.html',
   styleUrl: './form-card.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormCard {
   /** The athlete's full 5 km history; the order never matters. */

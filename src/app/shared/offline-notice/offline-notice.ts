@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { TIMER_PAGE_LINK } from '../../app.constant';
@@ -16,7 +16,6 @@ import { OfflineStatusService } from './offline-status.service';
   imports: [RouterLink],
   templateUrl: './offline-notice.html',
   styleUrl: './offline-notice.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OfflineNotice {
   readonly #status = inject(OfflineStatusService);

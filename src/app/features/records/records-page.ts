@@ -1,5 +1,5 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
@@ -99,7 +99,6 @@ import {
   imports: [BumpChart, MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink, ScrollingModule],
   templateUrl: './records-page.html',
   styleUrl: './records-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecordsPage {
   readonly #athletes = inject(AthletesService);

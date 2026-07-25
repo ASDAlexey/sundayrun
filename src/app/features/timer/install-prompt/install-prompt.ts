@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DOCUMENT, DestroyRef, computed, inject, signal } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 
 import { TimerRosterService } from '../../../state/timer-roster.service';
@@ -31,7 +31,6 @@ import { formatRosterDate, isInstallPromptEvent } from './install-prompt.view';
   selector: 'app-timer-install',
   templateUrl: './install-prompt.html',
   styleUrl: './install-prompt.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerInstall {
   readonly #view = inject(DOCUMENT).defaultView;

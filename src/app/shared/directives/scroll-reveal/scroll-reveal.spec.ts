@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScrollReveal } from './scroll-reveal';
@@ -49,7 +49,6 @@ class MockIntersectionObserver implements IntersectionObserver {
 
 @Component({
   selector: 'app-reveal-host',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ScrollReveal],
   template: '<div class="target" appScrollReveal></div>',
 })

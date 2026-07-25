@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { AthleteFirstLap } from '../../core/history/first-lap.interface';
@@ -20,7 +20,6 @@ import { PacingBestView, PacingCardView } from './pacing-card.interface';
   imports: [RouterLink],
   templateUrl: './pacing-card.html',
   styleUrl: './pacing-card.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PacingCard {
   /** The athlete's full history; the pacing joins its 5 km finishes with the laps by slug. */

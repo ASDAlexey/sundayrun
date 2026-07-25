@@ -1,15 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  ElementRef,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, DestroyRef, ElementRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import type { Chart } from 'chart.js';
 
 import { filterRuns } from '../../core/history/athlete-runs';
@@ -46,7 +35,6 @@ function loadChartClass(): Promise<ChartClass> {
   selector: 'app-progress-chart',
   templateUrl: './progress-chart.html',
   styleUrl: './progress-chart.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressChart {
   readonly #visibleRuns = computed(() => filterRuns(this.runs(), this.year(), null));

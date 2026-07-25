@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ProtocolStateService } from '../../../state/protocol-state.service';
@@ -13,7 +13,6 @@ import { FileDropEvent, PreventableEvent, ZoneKeyEvent } from './protocol-dropzo
   selector: 'app-protocol-dropzone',
   templateUrl: './protocol-dropzone.html',
   styleUrl: './protocol-dropzone.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProtocolDropzone {
   readonly #store = inject(ProtocolStateService);

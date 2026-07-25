@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 import { YearBadgeType } from '../../core/history/year-badges.enum';
 import { Gender, GenderType } from '../../core/models/gender.enum';
@@ -17,7 +17,6 @@ import { YearBadgeArt } from './year-badge.enum';
   selector: 'app-year-badge',
   templateUrl: './year-badge.html',
   styleUrl: './year-badge.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class YearBadgeChip {
   readonly badge = input.required<YearBadgeType>();

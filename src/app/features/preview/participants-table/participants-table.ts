@@ -1,6 +1,6 @@
 import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
 import { finishCountsWithDrafts } from '../../../core/history/draft-priors';
@@ -37,7 +37,6 @@ import { ParticipantRowView, PreviewNoteBadgeView } from './participants-table.i
   templateUrl: './participants-table.html',
   styleUrl: './participants-table.scss',
   imports: [ScrollingModule, ExperimentalScrollingModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParticipantsTable {
   readonly #store = inject(ProtocolStateService);

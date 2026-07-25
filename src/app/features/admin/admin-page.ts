@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -49,7 +49,6 @@ import { resolveAdminReturnUrl } from './admin-return';
   imports: [MatProgressSpinnerModule, ProtocolDropzone, RouterLink, ScrollingModule],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'onEscapeKey()' },
 })
 export class AdminPage {

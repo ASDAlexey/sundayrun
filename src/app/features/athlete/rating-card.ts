@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { athleteRating, newestEventIso, winnerTimesBySlug } from '../../core/history/runner-scores';
@@ -20,7 +20,6 @@ import { RatingCardView } from './rating-card.interface';
   selector: 'app-rating-card',
   templateUrl: './rating-card.html',
   styleUrl: './rating-card.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RatingCard {
   // The computed lambdas run lazily, so referencing the inputs declared below is safe.

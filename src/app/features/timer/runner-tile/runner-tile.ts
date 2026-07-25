@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 
 import { TimerRunnerStage, TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
 import { TimerRunner } from '../../../core/timer/timer-session.interface';
@@ -31,7 +31,6 @@ import {
   selector: 'app-timer-tile',
   templateUrl: './runner-tile.html',
   styleUrl: './runner-tile.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerTile {
   readonly runner = input.required<TimerRunner>();

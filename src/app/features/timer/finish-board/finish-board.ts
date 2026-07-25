@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 
 import { formatDuration } from '../../../core/time/duration';
 import { unassignedSplits } from '../../../core/timer/session-splits';
@@ -17,7 +17,6 @@ import { buildFinishRows } from './finish-rows';
   selector: 'app-timer-finish-board',
   templateUrl: './finish-board.html',
   styleUrl: './finish-board.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerFinishBoard {
   readonly #sessions = inject(TimerSessionService);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, inject, input, output } from '@angular/core';
+import { Component, ElementRef, afterNextRender, inject, input, output } from '@angular/core';
 
 import { TIMER_CONFIRM_TITLE_ID } from './confirm-dialog.constant';
 
@@ -27,7 +27,6 @@ import { TIMER_CONFIRM_TITLE_ID } from './confirm-dialog.constant';
     '(cancel)': 'onDismiss()',
     '(click)': 'onBackdrop($event)',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerConfirm {
   readonly #element = inject<ElementRef<HTMLDialogElement>>(ElementRef);

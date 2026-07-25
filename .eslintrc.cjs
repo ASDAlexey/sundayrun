@@ -76,7 +76,6 @@ const tsRules = {
   '@typescript-eslint/prefer-nullish-coalescing': 'error',
   '@typescript-eslint/sort-type-constituents': 'error',
   eqeqeq: ['error', 'always'],
-  'change-detection-strategy/on-push': 'error',
   '@eslint-community/eslint-comments/disable-enable-pair': 'error',
   '@eslint-community/eslint-comments/no-unlimited-disable': 'error',
   '@eslint-community/eslint-comments/no-duplicate-disable': 'error',
@@ -91,15 +90,7 @@ module.exports = {
     project: ['./tsconfig.app.json', './tsconfig.spec.json'],
     tsconfigRootDir: __dirname,
   },
-  plugins: [
-    '@typescript-eslint',
-    'optimize-regex',
-    '@angular-eslint',
-    'import',
-    'change-detection-strategy',
-    'local-rules',
-    '@eslint-community/eslint-comments',
-  ],
+  plugins: ['@typescript-eslint', 'optimize-regex', '@angular-eslint', 'import', 'local-rules', '@eslint-community/eslint-comments'],
   overrides: [
     {
       files: ['src/**/*.ts'],

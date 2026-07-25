@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, computed, inject, output, signal } from '@angular/core';
+import { Component, DOCUMENT, computed, inject, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { isoToday } from '../../../core/time/iso-today';
@@ -38,7 +38,6 @@ import { buildTimerSessionRows } from './session-list.view';
   imports: [RouterLink, TimerConfirm],
   templateUrl: './session-list.html',
   styleUrl: './session-list.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerSessions {
   readonly #sessions = inject(TimerSessionService);

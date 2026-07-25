@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { athleteWeatherBests } from '../../core/history/weather-records';
@@ -21,7 +21,6 @@ import { WeatherBestView } from './weather-card.interface';
   imports: [RouterLink],
   templateUrl: './weather-card.html',
   styleUrl: './weather-card.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeatherCard {
   // The lambda runs lazily, so referencing the inputs declared below is safe.

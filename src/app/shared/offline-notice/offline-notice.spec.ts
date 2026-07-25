@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT } from '@angular/core';
+import { Component, DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
@@ -9,7 +9,6 @@ import { OfflineStatusService } from './offline-status.service';
 
 @Component({
   selector: 'app-offline-host',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OfflineNotice],
   template: `<app-offline-notice><p class="host-error">Не удалось загрузить список забегов.</p></app-offline-notice>`,
 })

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
@@ -18,7 +18,6 @@ import { HistoryNotesStatus, HistoryNotesStatusType } from './preview-page.enum'
   imports: [EventForm, MatProgressSpinnerModule, ParticipantsTable, ProtocolPager],
   templateUrl: './preview-page.html',
   styleUrl: './preview-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PreviewPage {
   readonly #store = inject(ProtocolStateService);

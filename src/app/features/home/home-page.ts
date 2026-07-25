@@ -1,16 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  ElementRef,
-  afterNextRender,
-  computed,
-  effect,
-  inject,
-  signal,
-  untracked,
-  viewChild,
-} from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
@@ -66,7 +54,6 @@ import {
   imports: [MatButtonModule, MatProgressSpinnerModule, OfflineNotice, RaceCard, ReloadButton, RouterLink, ScrollReveal],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage {
   readonly #archive = inject(ArchiveService);

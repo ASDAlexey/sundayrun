@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, untracked } from '@angular/core';
+import { Component, effect, inject, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -14,7 +14,6 @@ import { EMPTY_DATE_ISO, MIN_EVENT_NUMBER } from './event-form.constant';
   imports: [ReactiveFormsModule],
   templateUrl: './event-form.html',
   styleUrl: './event-form.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventForm {
   readonly #store = inject(ProtocolStateService);

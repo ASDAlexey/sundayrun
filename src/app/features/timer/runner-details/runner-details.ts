@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 
 import { formatDuration } from '../../../core/time/duration';
 import { removeRunner, setRunnerOutcome, swapRunnerSplits } from '../../../core/timer/session-actions';
@@ -25,7 +25,6 @@ import { cardRemoveNoteText } from './runner-details.text';
   imports: [TimerConfirm],
   templateUrl: './runner-details.html',
   styleUrl: './runner-details.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerRunnerCard {
   readonly #sessions = inject(TimerSessionService);

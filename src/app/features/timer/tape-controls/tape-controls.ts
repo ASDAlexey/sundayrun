@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output, signal, untracked } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, output, signal, untracked } from '@angular/core';
 
 import { formatDuration } from '../../../core/time/duration';
 import { assignNextUnnamed, assignSplit, recordUnnamedSplit, removeSplit } from '../../../core/timer/session-actions';
@@ -32,7 +32,6 @@ import { tapeDiscardNoteText, tapeKeysHintText, tapeNobodyWaitingText, tapeQueue
   imports: [TimerConfirm],
   templateUrl: './tape-controls.html',
   styleUrl: './tape-controls.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerTape {
   readonly #sessions = inject(TimerSessionService);

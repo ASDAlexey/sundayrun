@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, DestroyRef, computed, inject, input, output, signal } from '@angular/core';
+import { Component, DOCUMENT, DestroyRef, computed, inject, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { removeSplit } from '../../../core/timer/session-actions';
@@ -32,7 +32,6 @@ import { buildStepView } from './session-publish.view';
   imports: [RouterLink, TimerConfirm],
   templateUrl: './session-publish.html',
   styleUrl: './session-publish.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerPublish {
   readonly #publish = inject(TimerPublishService);

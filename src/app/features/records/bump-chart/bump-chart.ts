@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ATHLETES_PAGE_LINK } from '../../../app.constant';
@@ -41,7 +41,6 @@ import { BumpChartView, BumpDotView, BumpLabelView, BumpLineView, BumpRowView, B
   imports: [RouterLink],
   templateUrl: './bump-chart.html',
   styleUrl: './bump-chart.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BumpChart {
   // The geometry depends on the data alone, so a hover or a pick never re-plots the paths.

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 import { lifetimeAggregates } from '../../core/history/lifetime-aggregates';
 import { LifetimeAggregates } from '../../core/history/lifetime-aggregates.interface';
@@ -15,7 +15,6 @@ import { LifetimeView } from './lifetime-card.interface';
   selector: 'app-lifetime-card',
   templateUrl: './lifetime-card.html',
   styleUrl: './lifetime-card.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LifetimeCard {
   /** Every finish of both distances — the totals count the short course too. */

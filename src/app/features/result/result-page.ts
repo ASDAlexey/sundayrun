@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { Component, DOCUMENT, OnDestroy, computed, effect, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -54,7 +54,6 @@ import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';
   imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, ProtocolPager, RouterLink],
   templateUrl: './result-page.html',
   styleUrl: './result-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultPage implements OnDestroy {
   readonly #store = inject(ProtocolStateService);

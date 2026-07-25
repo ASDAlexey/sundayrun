@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, output, signal } from '@angular/core';
 
 import { formatRussianDateChip } from '../../../core/time/russian-date';
 import { startSession, stopSession } from '../../../core/timer/session-actions';
@@ -25,7 +25,6 @@ import { bestFinishText, finishedCountText } from './session-clock.text';
   selector: 'app-timer-clock',
   templateUrl: './session-clock.html',
   styleUrl: './session-clock.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerClock {
   readonly #sessions = inject(TimerSessionService);

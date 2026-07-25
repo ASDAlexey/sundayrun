@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, input, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, input, viewChild } from '@angular/core';
 
 import { YearBadgeRarity } from '../../../core/history/badge-rarity.type';
 import { AthleteYearBadges, YearActivity } from '../../../core/history/year-badges';
@@ -15,7 +15,6 @@ import { badgeCatalogRows } from './badge-catalog-rows';
   imports: [YearBadgeChip],
   templateUrl: './badge-catalog.html',
   styleUrl: './badge-catalog.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BadgeCatalog {
   /** The athlete's earned badges per year, newest first. */

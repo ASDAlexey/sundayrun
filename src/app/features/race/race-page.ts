@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -78,7 +78,6 @@ import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView
   ],
   templateUrl: './race-page.html',
   styleUrl: './race-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RacePage {
   readonly #results = inject(ResultsService);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, inject } from '@angular/core';
+import { Component, DOCUMENT, inject } from '@angular/core';
 
 /**
  * A button that reloads the page, shown beside a load-failure message. With the JSON mirror gone, a
@@ -9,7 +9,6 @@ import { ChangeDetectionStrategy, Component, DOCUMENT, inject } from '@angular/c
   selector: 'app-reload-button',
   templateUrl: './reload-button.html',
   styleUrl: './reload-button.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReloadButton {
   readonly #document = inject(DOCUMENT);

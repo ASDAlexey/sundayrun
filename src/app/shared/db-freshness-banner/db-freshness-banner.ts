@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { Component, DOCUMENT, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 
 import { formatDuration } from '../../core/time/duration';
 import { DbFreshness } from '../../github/db-freshness.enum';
@@ -15,7 +15,6 @@ import { UPDATING_TICK_INTERVAL_MS } from './db-freshness-banner.constant';
   selector: 'app-db-freshness-banner',
   templateUrl: './db-freshness-banner.html',
   styleUrl: './db-freshness-banner.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DbFreshnessBanner {
   readonly #document = inject(DOCUMENT);

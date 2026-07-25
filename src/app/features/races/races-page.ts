@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { isoYear } from '../../core/history/iso-year';
@@ -19,7 +19,6 @@ import { RaceListItem, RaceYearGroup } from './races-page.interface';
   imports: [MatProgressSpinnerModule, OfflineNotice, RaceCard, ReloadButton],
   templateUrl: './races-page.html',
   styleUrl: './races-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RacesPage {
   readonly #archive = inject(ArchiveService);

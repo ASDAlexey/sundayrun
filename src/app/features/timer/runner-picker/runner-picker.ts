@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, computed, inject, linkedSignal, output, signal } from '@angular/core';
+import { Component, DOCUMENT, computed, inject, linkedSignal, output, signal } from '@angular/core';
 
 import { inferGender } from '../../../core/gender/gender-inference';
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
@@ -50,7 +50,6 @@ import { TimerGenderOption, TimerPickerCandidate, TimerPickerOption } from './ru
   selector: 'app-timer-picker',
   templateUrl: './runner-picker.html',
   styleUrl: './runner-picker.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerPicker {
   readonly #sessions = inject(TimerSessionService);

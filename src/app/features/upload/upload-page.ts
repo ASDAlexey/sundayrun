@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { ProtocolDropzone } from './protocol-dropzone/protocol-dropzone';
 
@@ -8,6 +8,5 @@ import { ProtocolDropzone } from './protocol-dropzone/protocol-dropzone';
   imports: [ProtocolDropzone],
   templateUrl: './upload-page.html',
   styleUrl: './upload-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadPage {}

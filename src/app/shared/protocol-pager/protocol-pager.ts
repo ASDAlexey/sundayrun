@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { EMPTY_FILE_NAME } from './protocol-pager.constant';
@@ -11,7 +11,6 @@ import { EMPTY_FILE_NAME } from './protocol-pager.constant';
   selector: 'app-protocol-pager',
   templateUrl: './protocol-pager.html',
   styleUrl: './protocol-pager.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProtocolPager {
   readonly #store = inject(ProtocolStateService);

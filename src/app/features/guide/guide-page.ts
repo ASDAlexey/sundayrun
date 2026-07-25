@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { LEGEND_WINDOW_DAYS } from '../../core/history/legend.constant';
@@ -12,7 +12,6 @@ import { YEAR_PAGE_BASE_LINK } from '../year/year-page.constant';
   imports: [RouterLink],
   templateUrl: './guide-page.html',
   styleUrl: './guide-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GuidePage {
   protected readonly recordsLink = RECORDS_PAGE_LINK;

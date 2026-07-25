@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import { Component, computed, inject, output, signal } from '@angular/core';
 
 import { formatDuration } from '../../../core/time/duration';
 import { reassignSplit, removeSplit, setRunnerOutcome, unassignSplit } from '../../../core/timer/session-actions';
@@ -23,7 +23,6 @@ import { historyRemoveNoteText } from './session-history.text';
   imports: [TimerConfirm],
   templateUrl: './session-history.html',
   styleUrl: './session-history.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerHistory {
   readonly #sessions = inject(TimerSessionService);

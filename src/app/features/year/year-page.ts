@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -32,7 +32,6 @@ import {
   imports: [MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink, YearBadgeChip],
   templateUrl: './year-page.html',
   styleUrl: './year-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class YearPage {
   readonly #reviews = inject(YearReviewService);

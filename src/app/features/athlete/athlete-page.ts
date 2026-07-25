@@ -1,5 +1,5 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -105,7 +105,6 @@ import { WeatherCard } from './weather-card';
   ],
   templateUrl: './athlete-page.html',
   styleUrl: './athlete-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AthletePage {
   readonly #athletes = inject(AthletesService);

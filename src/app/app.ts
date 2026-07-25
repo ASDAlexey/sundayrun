@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, inject } from '@angular/core';
+import { Component, DOCUMENT, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -26,7 +26,6 @@ import { SelfPicker } from './shared/self-picker/self-picker';
   imports: [DbFreshnessBanner, LogoMark, SelfPicker, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   readonly #document = inject(DOCUMENT);

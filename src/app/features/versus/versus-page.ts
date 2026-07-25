@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -37,7 +37,6 @@ import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from '.
   imports: [MatButtonModule, MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink],
   templateUrl: './versus-page.html',
   styleUrl: './versus-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VersusPage {
   readonly #athletes = inject(AthletesService);

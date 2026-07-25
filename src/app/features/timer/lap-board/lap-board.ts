@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 
 import { buildLapBoard } from '../../../core/timer/session-lap-board';
 import { TimerRosterService } from '../../../state/timer-roster.service';
@@ -19,7 +19,6 @@ import { buildLapRows } from './lap-rows';
   selector: 'app-timer-lap-board',
   templateUrl: './lap-board.html',
   styleUrl: './lap-board.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerLapBoard {
   readonly #sessions = inject(TimerSessionService);

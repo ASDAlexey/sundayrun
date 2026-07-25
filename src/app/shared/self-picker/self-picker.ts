@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { suggestAthletes } from '../../core/history/athlete-suggest';
@@ -19,7 +19,6 @@ import { SelfPickerStatus, SelfPickerStatusType } from './self-picker.enum';
   imports: [RouterLink],
   templateUrl: './self-picker.html',
   styleUrl: './self-picker.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelfPicker {
   readonly #selfAthlete = inject(SelfAthleteService);

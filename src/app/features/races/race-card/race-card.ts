@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,7 +13,6 @@ import { RaceListItem } from '../races-page.interface';
   imports: [MatCardModule, MatProgressSpinnerModule, MatTooltipModule, RouterLink],
   templateUrl: './race-card.html',
   styleUrl: './race-card.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RaceCard {
   readonly #protocolPdf = inject(ProtocolPdfService);

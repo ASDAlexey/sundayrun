@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TimerConfirm } from './confirm-dialog';
@@ -6,7 +6,6 @@ import { CONFIRM_ACTION_LABEL, CONFIRM_HEADING, CONFIRM_NOTE } from './confirm-d
 
 @Component({
   selector: 'app-confirm-host',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TimerConfirm],
   template: `<dialog
     appTimerConfirm
