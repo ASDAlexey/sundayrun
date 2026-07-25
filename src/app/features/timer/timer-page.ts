@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, linkedSignal, signal } from '@angular/core';
+import { Component, PLATFORM_ID, computed, inject, linkedSignal, signal } from '@angular/core';
 
-import { undoLastSplit } from '../../core/timer/session-actions';
+import { resumeSession, undoLastSplit } from '../../core/timer/session-actions';
 import { resetSession } from '../../core/timer/session-reset';
 import { unassignedSplits } from '../../core/timer/session-splits';
 import { TimerStatus } from '../../core/timer/timer-session.enum';
@@ -16,7 +16,6 @@ import { TimerInstall } from './install-prompt/install-prompt';
 import { TimerLapBoard } from './lap-board/lap-board';
 import { TimerRunnerCard } from './runner-details/runner-details';
 import { TimerGrid } from './runner-grid/runner-grid';
-import { TimerDensityChoice, TimerDensityChoiceType } from './runner-grid/runner-grid.enum';
 import { TimerTileView } from './runner-grid/runner-grid.interface';
 import { TimerPicker } from './runner-picker/runner-picker';
 import { TimerClock } from './session-clock/session-clock';
@@ -38,10 +37,9 @@ import { buildTimerHeader } from './timer-page.view';
  * grid arithmetic gets all 844 px of the phone it was calculated for (design spec §2.1). That makes
  * «←» the only way out, which is why it is the first control in the tab order and never disabled.
  *
- * All UI state of the screen lives here — the open tab, the density choice, the «⋮» menu, the roster
- * sheet, the journal and which runner's card is up — while every fact about the race stays in
- * `TimerSessionService`. The density in particular has to live here and not in the grid, or the menu
- * and the grid would disagree.
+ * All UI state of the screen lives here — the open tab, the «⋮» menu, the roster sheet, the journal
+ * and which runner's card is up — while every fact about the race stays in `TimerSessionService`.
+ * Grid density is not among them: it follows the size of the field and is nobody's decision (§14).
  */
 @Component({
   selector: 'app-timer',
@@ -61,7 +59,6 @@ import { buildTimerHeader } from './timer-page.view';
   ],
   templateUrl: './timer-page.html',
   styleUrl: './timer-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerPage {
   readonly #sessions = inject(TimerSessionService);
@@ -71,7 +68,6 @@ export class TimerPage {
   readonly #farewell = inject(TimerFarewellService);
 
   protected readonly tabs = TimerTab;
-  protected readonly choices = TimerDensityChoice;
   protected readonly kinds = TimerAnnouncementKind;
   protected readonly statuses = TimerStatus;
   protected readonly session = this.#sessions.active;
@@ -92,7 +88,6 @@ export class TimerPage {
     computation: (settled, previous) => (settled && previous?.source === false ? TimerTab.finish : (previous?.value ?? TimerTab.grid)),
   });
 
-  protected readonly density = signal<TimerDensityChoiceType>(TimerDensityChoice.auto);
   protected readonly soundStateText = computed(() => toggleStateText(this.soundEnabled()));
 
   /** The «Сбросить забег?» question in flight — the words are built while the race is in hand. */
@@ -143,17 +138,20 @@ export class TimerPage {
     }
   }
 
+  /**
+   * «Отменить» takes the newest tap back — and with it the finish of the race, if that tap is what
+   * ended it. The clock stops itself once everybody is home (docs/TIMER.md §14), so a misstap on the
+   * last runner would otherwise leave the measurement stopped with people still out on the course and
+   * the core refusing every further split. Undo puts it back on the clock; the digits catch up by
+   * themselves, because the start stamp never moved.
+   */
   protected onUndoLast(): void {
-    this.#sessions.updateActive(undoLastSplit);
+    this.#sessions.updateActive((session) => resumeSession(undoLastSplit(session)));
   }
 
   protected onTab(tab: TimerTabType): void {
     this.tab.set(tab);
     this.historyOpen.set(false);
-  }
-
-  protected onDensity(choice: TimerDensityChoiceType): void {
-    this.density.set(choice);
   }
 
   /**

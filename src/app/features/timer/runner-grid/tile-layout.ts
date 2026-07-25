@@ -1,6 +1,6 @@
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
 import { NAME_PART_SEPARATOR } from '../../../core/timer/timer-session.constant';
-import { TimerDensity, TimerDensityChoice, TimerDensityChoiceType, TimerDensityType } from './runner-grid.enum';
+import { TimerDensity, TimerDensityType } from './runner-grid.enum';
 import { TimerTileName } from './runner-grid.interface';
 import {
   TIMER_DENSITY_LARGE_MAX,
@@ -18,20 +18,18 @@ import {
 } from './runner-grid.constant';
 
 /**
- * How much a tile is asked to *say* for a field of this size, unless the organiser picked it by hand
- * in the «⋮» menu: a full first name and a large face up to twelve people, an initial past twenty-two,
- * the tightest reading past twenty-four (docs/TIMER.md §4).
+ * How much a tile is asked to *say* for a field of this size: a full first name and a large face up
+ * to twelve people, an initial past twenty-two, the tightest reading past twenty-four
+ * (docs/TIMER.md §4). The field size is the only input — the «⋮» menu no longer offers a choice
+ * (§14): four thresholds nobody has to think about beat four buttons in front of an organiser who
+ * is holding a race.
  *
  * It is deliberately no longer a statement about how many tiles fit on a screen. The stylesheet takes
  * these four steps as a minimum tile width and lets `repeat(auto-fill, …)` count the columns from the
- * width it actually has, so the same choice works on a 320 px phone and on a tablet without a table of
+ * width it actually has, so the same step works on a 320 px phone and on a tablet without a table of
  * thresholds pretending to know the viewport.
  */
-export function resolveTimerDensity(choice: TimerDensityChoiceType, runnerCount: number): TimerDensityType {
-  if (choice !== TimerDensityChoice.auto) {
-    return choice;
-  }
-
+export function resolveTimerDensity(runnerCount: number): TimerDensityType {
   if (runnerCount <= TIMER_DENSITY_LARGE_MAX) {
     return TimerDensity.large;
   }

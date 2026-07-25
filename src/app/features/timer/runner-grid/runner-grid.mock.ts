@@ -26,7 +26,7 @@ import {
   TROILIN_RUNNER_ID,
 } from '../../../core/timer/timer-session.mock';
 import { TIMER_SHELF_MIN_RUNNERS } from './runner-grid.constant';
-import { TimerDensity, TimerDensityChoice, TimerDensityChoiceType, TimerDensityType } from './runner-grid.enum';
+import { TimerDensity, TimerDensityType } from './runner-grid.enum';
 import { TimerTileView } from './runner-grid.interface';
 
 /** The archive medians behind the pre-start order; Соколова and Кузнецов are unknown to it. */
@@ -65,20 +65,18 @@ export const GRID_FROZEN_ORDER: readonly string[] = [
 
 /** How many runners a density step is asked about, and which step it has to answer with. */
 export interface GridDensityCase {
-  choice: TimerDensityChoiceType;
   density: TimerDensityType;
   runnerCount: number;
 }
 
-/** Every threshold plus one manual pick — the arithmetic of the 390 × 844 budget. */
+/** Every threshold of the 390 × 844 budget, on both sides of the edge. */
 export const GRID_DENSITY_CASES: readonly GridDensityCase[] = [
-  { choice: TimerDensityChoice.auto, density: TimerDensity.large, runnerCount: 12 },
-  { choice: TimerDensityChoice.auto, density: TimerDensity.medium, runnerCount: 13 },
-  { choice: TimerDensityChoice.auto, density: TimerDensity.medium, runnerCount: 21 },
-  { choice: TimerDensityChoice.auto, density: TimerDensity.small, runnerCount: 22 },
-  { choice: TimerDensityChoice.auto, density: TimerDensity.small, runnerCount: 24 },
-  { choice: TimerDensityChoice.auto, density: TimerDensity.dense, runnerCount: 25 },
-  { choice: TimerDensityChoice.large, density: TimerDensity.large, runnerCount: 30 },
+  { density: TimerDensity.large, runnerCount: 12 },
+  { density: TimerDensity.medium, runnerCount: 13 },
+  { density: TimerDensity.medium, runnerCount: 21 },
+  { density: TimerDensity.small, runnerCount: 22 },
+  { density: TimerDensity.small, runnerCount: 24 },
+  { density: TimerDensity.dense, runnerCount: 25 },
 ];
 
 export const PLAIN_LEADER_ID = 'runner-plain-leader';
@@ -160,6 +158,16 @@ export const GRID_CROWD_SESSION: TimerSession = {
     { id: 'split-crowd-lap', atMs: CROWD_FINISHER_LAP_MS, runnerId: CROWD_FINISHER_ID },
     { id: 'split-crowd-finish', atMs: FINISH_MS, runnerId: CROWD_FINISHER_ID },
   ],
+};
+
+/**
+ * The same three unrelated surnames, padded with the crowd to twenty-five people. Density is no
+ * longer anybody's choice, so the only way to ask for the tightest step is to bring a field that
+ * large — the three plain runners stay first, the archive knows none of the roster.
+ */
+export const GRID_PLAIN_DENSE_SESSION: TimerSession = {
+  ...GRID_PLAIN_SESSION,
+  runners: [...GRID_PLAIN_RUNNERS, ...GRID_CROWD_RUNNERS.slice(GRID_PLAIN_RUNNERS.length)],
 };
 
 /** Лебедев has finished too, so his tile is spent and refuses the next tap. */

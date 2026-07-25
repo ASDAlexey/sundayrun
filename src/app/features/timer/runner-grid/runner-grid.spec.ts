@@ -26,7 +26,6 @@ import {
 } from '../runner-tile/runner-tile.mock';
 import { TimerAnnouncementKind } from '../timer-announcement.enum';
 import { TimerGrid } from './runner-grid';
-import { TimerDensityChoice, TimerDensityChoiceType } from './runner-grid.enum';
 import {
   CROWD_FINISHER_ID,
   GRID_CROWD_FINISH_TEXT,
@@ -44,6 +43,7 @@ import {
   GRID_PLAIN_RETIRED,
   GRID_PLAIN_RUNNERS,
   GRID_PLAIN_RUNNING,
+  GRID_PLAIN_DENSE_SESSION,
   GRID_PLAIN_SESSION,
   GRID_PLAIN_SURNAMES,
   GRID_QUIET_ELAPSED_MS,
@@ -66,9 +66,8 @@ describe('TimerGrid', () => {
   const textOf = (selector: string): (string | undefined)[] =>
     [...fixture.nativeElement.querySelectorAll(selector)].map((node) => node.textContent?.trim());
 
-  const create = async (density: TimerDensityChoiceType = TimerDensityChoice.auto): Promise<void> => {
+  const create = async (): Promise<void> => {
     fixture = TestBed.createComponent(TimerGrid);
-    fixture.componentRef.setInput('density', density);
     fixture.componentInstance.announce.subscribe(announced);
     fixture.componentInstance.details.subscribe(detailed);
     await fixture.whenStable();
@@ -96,12 +95,14 @@ describe('TimerGrid', () => {
   });
 
   it('lays the tiles out by expected lap, shortens a first name only when nobody shares a surname', async () => {
-    sessions.active.set(GRID_PLAIN_SESSION);
-    await create(TimerDensityChoice.dense);
+    sessions.active.set(GRID_PLAIN_DENSE_SESSION);
+    await create();
 
-    expect(fixture.nativeElement.querySelector('.timer-grid_dense')).not.toBeNull();
-    expect(textOf('.timer-tile__surname')).toEqual(GRID_PLAIN_SURNAMES);
-    expect(textOf('.timer-tile__given'), 'four columns leave room for an initial only').toEqual(GRID_PLAIN_INITIALS);
+    const plainCount = GRID_PLAIN_SURNAMES.length;
+
+    expect(fixture.nativeElement.querySelector('.timer-grid_dense'), 'twenty-five people tighten the grid by themselves').not.toBeNull();
+    expect(textOf('.timer-tile__surname').slice(0, plainCount)).toEqual(GRID_PLAIN_SURNAMES);
+    expect(textOf('.timer-tile__given').slice(0, plainCount), 'four columns leave room for an initial only').toEqual(GRID_PLAIN_INITIALS);
 
     sessions.active.set(TIMER_SESSION_IDLE);
     await fixture.whenStable();

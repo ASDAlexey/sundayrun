@@ -34,57 +34,13 @@
 
     @if (menuOpen()) {
       <div class="timer__menu-panel">
-        <p class="timer__menu-title" i18n="@@timer.densityTitle">Плотность сетки</p>
-
-        <div class="timer__menu-row">
-          <button
-            class="timer__menu-toggle"
-            i18n="@@timer.densityAuto"
-            type="button"
-            [class.timer__menu-toggle_on]="density() === choices.auto"
-            (click)="onDensity(choices.auto)"
-          >
-            Авто
-          </button>
-
-          <button
-            class="timer__menu-toggle"
-            i18n="@@timer.densityLarge"
-            type="button"
-            [class.timer__menu-toggle_on]="density() === choices.large"
-            (click)="onDensity(choices.large)"
-          >
-            Крупно
-          </button>
-
-          <button
-            class="timer__menu-toggle"
-            i18n="@@timer.densityMedium"
-            type="button"
-            [class.timer__menu-toggle_on]="density() === choices.medium"
-            (click)="onDensity(choices.medium)"
-          >
-            Средне
-          </button>
-
-          <button
-            class="timer__menu-toggle"
-            i18n="@@timer.densityDense"
-            type="button"
-            [class.timer__menu-toggle_on]="density() === choices.dense"
-            (click)="onDensity(choices.dense)"
-          >
-            Плотно
-          </button>
-        </div>
-
         <button class="timer__menu-item" type="button" [attr.aria-pressed]="soundEnabled()" (click)="onToggleSound()">
           <ng-container i18n="@@timer.soundToggle">Щелчок на отсечку</ng-container>
 
           <span class="timer__menu-state">{{ soundStateText() }}</span>
         </button>
 
-        <button class="timer__menu-item" i18n="@@timer.rosterItem" type="button" (click)="onPicker()">Кто бежит</button>
+        <button class="timer__menu-item" i18n="@@timer.rosterItem" type="button" (click)="onPicker()">Атлеты</button>
 
         <button class="timer__menu-item" i18n="@@timer.historyItem" type="button" (click)="onHistory()">История отсечек</button>
 
@@ -148,12 +104,7 @@
       } @else {
         @switch (tab()) {
           @case (tabs.grid) {
-            <app-timer-grid
-              [density]="density()"
-              [farewell]="farewellWave()"
-              (announce)="onAnnounce($event)"
-              (details)="onDetails($event)"
-            />
+            <app-timer-grid [farewell]="farewellWave()" (announce)="onAnnounce($event)" (details)="onDetails($event)" />
           }
           @case (tabs.lap) {
             <app-timer-lap-board />
@@ -191,7 +142,7 @@
             [class.timer__roster_call]="header().runnerCount === 0"
             (click)="onPicker()"
           >
-            Кто бежит
+            Добавить атлета
 
             <span class="timer__tab-count">{{ header().runnerCount }}</span>
           </button>

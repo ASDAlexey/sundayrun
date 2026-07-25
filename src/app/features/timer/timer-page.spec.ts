@@ -155,6 +155,15 @@ describe('TimerPage', () => {
 
     expect(applyLastChange(TIMER_SESSION).splits.length).toBe(TIMER_SESSION.splits.length - 1);
 
+    sessions.active.set(TIMER_PAGE_FINISHED);
+    await fixture.whenStable();
+    click('.timer__undo');
+
+    const resumed = applyLastChange(TIMER_PAGE_FINISHED);
+
+    expect(resumed.status, 'undo takes the automatic stop back with the tap that caused it').toBe(TimerStatus.running);
+    expect(resumed.stoppedAtMs).toBeNull();
+
     raceGuard.confirmLeave.mockReturnValue(false);
     click('.timer__back');
 
@@ -219,7 +228,7 @@ describe('TimerPage', () => {
     expect(element().querySelector('app-timer-finish-board')).not.toBeNull();
   });
 
-  it('hands the density down to the grid and arms the click from the menu', async () => {
+  it('arms the click from the menu and opens the roster sheet from it', async () => {
     sessions.active.set(TIMER_SESSION_IDLE);
     await create();
 
@@ -227,11 +236,7 @@ describe('TimerPage', () => {
     await fixture.whenStable();
 
     expect(element().querySelector('.timer__menu-panel')).not.toBeNull();
-
-    click('.timer__menu-row .timer__menu-toggle:nth-child(4)');
-    await fixture.whenStable();
-
-    expect(element().querySelector('.timer-grid_dense'), 'the menu and the grid never disagree').not.toBeNull();
+    expect(element().querySelector('.timer__menu-toggle'), 'the grid tightens itself — the menu offers no density any more').toBeNull();
 
     expect(
       element().querySelectorAll('.timer__menu-item')[0].getAttribute('aria-pressed'),
@@ -342,17 +347,20 @@ describe('TimerPage', () => {
     click('.timer__tabs .timer__tab:nth-child(3)');
     await fixture.whenStable();
 
-    click('.timer-tape__toggle');
+    // «Разобрать финиш»: the second key of the pair, and the only man in that half is the one who
+    // already has his lap — the other two are still waiting for theirs and are not in this list.
+    click('.timer-tape__modes .timer-tape__toggle:nth-child(2)');
     await fixture.whenStable();
 
     expect(element().querySelector('.timer-tape__panel')).not.toBeNull();
     expect(element().querySelector('app-timer-grid'), 'a queue is handed out by tapping surnames, so the tiles come back').not.toBeNull();
+    expect(textOf('.timer-tape__runner-name')).toEqual([GRID_PLAIN_RUNNERS[0].fullName]);
 
     click('.timer-tape__runner');
 
     expect(applyLastChange(TIMER_PAGE_QUEUE).splits.find((split) => split.id === PAGE_UNNAMED_SPLIT_ID)?.runnerId).toBe(PLAIN_LEADER_ID);
 
-    click('.timer-tape__toggle');
+    click('.timer-tape__modes .timer-tape__toggle:nth-child(2)');
     await fixture.whenStable();
 
     expect(element().querySelector('.timer-tape__panel'), 'and the panel gives the grid its row back').toBeNull();

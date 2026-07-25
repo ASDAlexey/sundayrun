@@ -13,8 +13,8 @@ import {
 import { resolveTimerDensity, splitTimerName, tileInkIndex } from './tile-layout';
 
 describe('resolveTimerDensity', () => {
-  it('steps down at every threshold of the screen budget and obeys a manual pick', () => {
-    expect(GRID_DENSITY_CASES.map((sample) => resolveTimerDensity(sample.choice, sample.runnerCount))).toEqual(
+  it('steps down at every threshold of the screen budget', () => {
+    expect(GRID_DENSITY_CASES.map((sample) => resolveTimerDensity(sample.runnerCount))).toEqual(
       GRID_DENSITY_CASES.map((sample) => sample.density),
     );
   });

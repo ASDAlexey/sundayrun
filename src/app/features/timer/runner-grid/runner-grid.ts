@@ -1,5 +1,5 @@
 import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
 import { formatDuration } from '../../../core/time/duration';
 import { recordSplit, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
@@ -26,7 +26,7 @@ import {
   TIMER_TILE_EMPTY_TIME,
   TIMER_UNDO_WINDOW_MS,
 } from './runner-grid.constant';
-import { TimerDensity, TimerDensityChoiceType } from './runner-grid.enum';
+import { TimerDensity } from './runner-grid.enum';
 import { TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid.interface';
 
 /**
@@ -40,7 +40,6 @@ import { TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid
   imports: [CdkDrag, CdkDragPlaceholder, CdkDropList, TimerTile],
   templateUrl: './runner-grid.html',
   styleUrl: './runner-grid.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimerGrid {
   readonly #sessions = inject(TimerSessionService);
@@ -89,9 +88,6 @@ export class TimerGrid {
     return quiet && this.runnerCount() >= TIMER_SHELF_MIN_RUNNERS;
   });
 
-  /** The «⋮» menu owns the choice, so the menu and the grid can never disagree about it. */
-  readonly density = input.required<TimerDensityChoiceType>();
-
   /** The last runner is home: the tiles go out in a wave and hand the screen to the protocol. */
   readonly farewell = input(false);
 
@@ -101,7 +97,8 @@ export class TimerGrid {
   protected readonly densities = TimerDensity;
   protected readonly dragStartDelayMs = TIMER_DRAG_START_DELAY_MS;
   protected readonly runnerCount = computed(() => this.#runners().length);
-  protected readonly resolvedDensity = computed(() => resolveTimerDensity(this.density(), this.runnerCount()));
+  /** The field size is the whole input: the grid tightens itself, nobody chooses (docs/TIMER.md §14). */
+  protected readonly resolvedDensity = computed(() => resolveTimerDensity(this.runnerCount()));
   protected readonly scrolling = computed(() => this.runnerCount() >= TIMER_SCROLL_MIN_RUNNERS);
   protected readonly recording = computed(() => this.#status() === TimerStatus.running);
   /** Reordering by hand belongs to the minute before the start; during the race a drag is a misstap. */
