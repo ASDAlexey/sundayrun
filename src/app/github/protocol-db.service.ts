@@ -29,8 +29,9 @@ import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
  * public CDNs mangle range requests (jsDelivr ranges over the brotli-compressed file; others
  * stall on deep offsets or 403 the HEAD), while GitHub Pages' own host serves clean ranges.
  * Any failure — the worker bootstrap, an unsupported range request, a missing db, the statement
- * itself — rejects, and every caller falls back to the JSON path. During prerender `query`
- * rejects before touching the wasm module, keeping the static build clean.
+ * itself — is retried once over a fresh pool and then rejects into the caller's error state; there
+ * is no JSON mirror left to fall back to. During prerender `query` rejects before touching the wasm
+ * module, keeping the static build clean.
  *
  * Cache freshness rides on the file *name*, not a query string: SQLite parses the open target as
  * a URI and strips any `?…` before the VFS sees it, so a `?v=` buster never reaches HTTP. Instead

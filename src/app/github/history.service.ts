@@ -10,9 +10,9 @@ import { HISTORY_MISSING_TOKEN_MESSAGE } from './history.service.constant';
 
 /**
  * Reads the accumulated athletes history out of `sundayrun.db` for the admin import. Goes through the
- * authorized Contents API rather than a jsDelivr range request: during a back-to-back import of old
- * events the CDN would keep serving a stale copy for up to its cache TTL, so the whole file is
- * downloaded and reassembled in memory.
+ * authorized Contents API rather than the public read path: the deploy-bundled db only carries the
+ * data the last deploy shipped, so a back-to-back import of old events would keep computing notes
+ * against a stale copy. The whole file is downloaded and reassembled in memory instead.
  */
 @Injectable({ providedIn: 'root' })
 export class HistoryService {
