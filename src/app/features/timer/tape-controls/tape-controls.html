@@ -1,0 +1,121 @@
+<div class="timer-tape">
+  @if (showQueue()) {
+    <div class="timer-tape__queue">
+      @for (chip of queue(); track chip.id) {
+        <button
+          aria-label="Время без имени"
+          class="timer-tape__chip"
+          i18n-aria-label="@@timer.tapeChipLabel"
+          type="button"
+          [attr.aria-pressed]="chip.selected"
+          [class.timer-tape__chip_next]="chip.next"
+          (click)="onPick(chip.id)"
+        >
+          {{ chip.timeText }}
+        </button>
+      }
+
+      @if (flyingText(); as text) {
+        <span aria-hidden="true" class="timer-tape__chip timer-tape__chip_flying" (animationend)="onFlyEnd()">{{ text }}</span>
+      }
+
+      <button class="timer-tape__toggle" i18n="@@timer.tapeToggle" type="button" [attr.aria-expanded]="open()" (click)="onToggle()">
+        Разобрать
+      </button>
+
+      <span class="timer-tape__count">{{ queueCount() }}</span>
+    </div>
+
+    <p class="timer-tape__hint" i18n="@@timer.tapeHint">тапайте фамилии по порядку</p>
+  }
+
+  @if (open()) {
+    <div aria-label="Очередь времён без имени" class="timer-tape__panel" i18n-aria-label="@@timer.tapePanelLabel" role="group">
+      @if (pickedChip(); as chip) {
+        <div class="timer-tape__panel-head">
+          <span class="timer-tape__picked">{{ chip.timeText }}</span>
+
+          <span class="timer-tape__pick-hint" i18n="@@timer.tapePickHint">тапните фамилию — время уйдёт ей</span>
+
+          <button
+            aria-label="Выбросить время без имени"
+            class="timer-tape__discard"
+            i18n="@@timer.tapeDiscardKey"
+            i18n-aria-label="@@timer.tapeDiscardLabel"
+            type="button"
+            (click)="onDiscardAsk(chip)"
+          >
+            выбросить
+          </button>
+        </div>
+      }
+
+      @if (hasQueue()) {
+        <ul class="timer-tape__list">
+          @for (runner of runners(); track runner.id) {
+            <li class="timer-tape__item">
+              <button
+                class="timer-tape__runner"
+                type="button"
+                [class.timer-tape__runner_taken]="runner.taken"
+                [disabled]="runner.taken"
+                (click)="onAssign(runner.id)"
+              >
+                <span class="timer-tape__runner-name">{{ runner.fullName }}</span>
+
+                <span class="timer-tape__runner-meta">{{ runner.metaText }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="timer-tape__done" i18n="@@timer.tapeQueueDone">Очередь разобрана.</p>
+      }
+    </div>
+  }
+
+  @if (keysHint(); as hint) {
+    <p class="timer-tape__keys-hint">{{ hint }}</p>
+  }
+
+  @if (!finished()) {
+    <div class="timer-tape__keys">
+      <button
+        class="timer-tape__cut"
+        i18n="@@timer.tapeCut"
+        type="button"
+        [disabled]="!canCut()"
+        (keydown.enter)="onKeyCut($event)"
+        (keydown.space)="onKeyCut($event)"
+        (pointerdown)="onCut()"
+      >
+        Отсечка
+      </button>
+
+      <button
+        aria-label="Ещё одна отсечка на то же время"
+        class="timer-tape__more"
+        i18n="@@timer.tapeMore"
+        i18n-aria-label="@@timer.tapeMoreLabel"
+        type="button"
+        [disabled]="!canRepeat()"
+        (click)="onRepeat()"
+      >
+        + ещё один
+      </button>
+    </div>
+  }
+
+  @if (discardAsk(); as ask) {
+    <dialog
+      actionLabel="Выбросить"
+      appTimerConfirm
+      heading="Выбросить время?"
+      i18n-actionLabel="@@timer.tapeDiscardAction"
+      i18n-heading="@@timer.tapeDiscardHeading"
+      [note]="ask.note"
+      (closed)="discardAsk.set(null)"
+      (confirmed)="onDiscard(ask.id)"
+    ></dialog>
+  }
+</div>

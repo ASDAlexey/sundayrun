@@ -1,0 +1,107 @@
+// ===========================================================
+//  Bottom sheet — the one surface «Кто бежит» and the actions
+//  of «Мои замеры» share: a dimming scrim and a panel that
+//  rises from the bottom edge of the phone.
+// ===========================================================
+
+@use 'card' as c;
+@use 'typography' as t;
+
+// `dvh` rather than `vh`: on a phone the browser chrome comes and goes, and a sheet measured against
+// the large viewport hides its «Готово» under the address bar exactly when it is needed.
+@mixin sheet-root {
+  display: flex;
+  z-index: 70;
+  position: fixed;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100dvh;
+  inset: 0 0 auto;
+}
+
+// A button, not a div: closing by tapping outside must work from the keyboard too.
+@mixin sheet-scrim {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: color-mix(in srgb, var(--black) 62%, transparent);
+  cursor: pointer;
+}
+
+@mixin sheet-panel {
+  @include c.card;
+
+  display: flex;
+  z-index: 1;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+  // On a tablet the sheet stops being the whole bottom edge and becomes a card in the middle of it:
+  // a 1024px wide list of surnames is a list nobody can scan.
+  max-width: 560px;
+  max-height: 88dvh;
+  padding: 0 max(16px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  gap: 10px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  animation: timer-sheet-rise var(--transition-time) var(--spring-tap) backwards;
+  scrollbar-width: none;
+}
+
+@mixin sheet-handle {
+  flex: none;
+  align-self: center;
+  width: 44px;
+  height: 4px;
+  margin: 8px 0 2px;
+  border-radius: 999px;
+  background: var(--border-hover);
+}
+
+@mixin sheet-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+@mixin sheet-title {
+  @include t.text('title', 'medium');
+
+  margin: 0;
+  color: var(--text);
+}
+
+@mixin sheet-close {
+  @include t.text('title', 'medium');
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-time) var(--ease);
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
+// Emitted once per component stylesheet that uses the panel — `@keyframes` are global, so the two
+// copies are the very same rise and neither can drift away from the other.
+@mixin sheet-keyframes {
+  @keyframes timer-sheet-rise {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+  }
+}

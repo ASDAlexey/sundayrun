@@ -1,0 +1,111 @@
+<section class="timer-publish" [class.timer-publish_done]="step() === steps.done" [class.timer-publish_failed]="step() === steps.failed">
+  @if (blocked()) {
+    <p class="timer-publish__blocked" role="alert">{{ blockedText() }}</p>
+  }
+
+  @if (hasUnnamed()) {
+    <div class="timer-publish__unnamed">
+      <p class="timer-publish__unnamed-text">{{ unnamedText() }}</p>
+
+      <div class="timer-publish__unnamed-actions">
+        <button class="timer-publish__unnamed-resolve" i18n="@@timerPublish.resolveQueue" type="button" (click)="onResolveQueue()">
+          Разобрать
+        </button>
+
+        <button class="timer-publish__unnamed-drop" i18n="@@timerPublish.dropUnnamed" type="button" (click)="onDiscardUnnamed()">
+          Выбросить
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (step() === steps.done) {
+    <div class="timer-publish__success">
+      <svg aria-hidden="true" class="timer-publish__check" height="48" viewBox="0 0 48 48" width="48">
+        <path class="timer-publish__check-mark" d="M12 25 L21 34 L37 15" />
+      </svg>
+
+      <p class="timer-publish__success-title" i18n="@@timerPublish.done">Забег в архиве</p>
+
+      @if (raceLink(); as link) {
+        <a class="timer-publish__open" i18n="@@timerPublish.openRace" [routerLink]="link">Открыть протокол</a>
+      }
+    </div>
+  } @else if (step() === steps.failed) {
+    <p class="timer-publish__error" role="alert">{{ error() }}</p>
+
+    @if (retryOffered()) {
+      <p class="timer-publish__online" i18n="@@timerPublish.backOnline">Сеть вернулась — можно отправить забег.</p>
+    }
+
+    <button class="timer-publish__retry" i18n="@@timerPublish.retry" type="button" (click)="onRetry()">Повторить</button>
+  } @else if (working()) {
+    <ul aria-live="polite" class="timer-publish__steps">
+      <li
+        class="timer-publish__step"
+        i18n="@@timerPublish.stepNotes"
+        [class.timer-publish__step_active]="notesStep().active"
+        [class.timer-publish__step_done]="notesStep().done"
+      >
+        считаю примечания
+      </li>
+
+      <li
+        class="timer-publish__step"
+        i18n="@@timerPublish.stepCommit"
+        [class.timer-publish__step_active]="commitStep().active"
+        [class.timer-publish__step_done]="commitStep().done"
+      >
+        отправляю на GitHub
+      </li>
+
+      <li
+        class="timer-publish__step"
+        i18n="@@timerPublish.stepDeploy"
+        [class.timer-publish__step_active]="deployStep().active"
+        [class.timer-publish__step_done]="deployStep().done"
+      >
+        ждём деплой
+      </li>
+    </ul>
+  } @else {
+    <button class="timer-publish__save" i18n="@@timerPublish.save" type="button" [disabled]="blocked()" (click)="onSave()">
+      Сохранить
+    </button>
+
+    @if (!isAdmin()) {
+      @if (savedLocally()) {
+        <p class="timer-publish__saved" i18n="@@timerPublish.savedLocally">Сохранено на устройстве</p>
+      }
+
+      <a class="timer-publish__admin-link" i18n="@@timerPublish.adminLink" [queryParams]="adminReturnParams" [routerLink]="adminLink">
+        Я организатор — опубликовать
+      </a>
+
+      <p class="timer-publish__note" i18n="@@timerPublish.keyNote">Проверка ключа требует интернета</p>
+    }
+  }
+
+  <a class="timer-publish__preview-link" i18n="@@timerPublish.previewLink" [routerLink]="previewLink">Проверить перед публикацией</a>
+
+  @if (canRemove()) {
+    <div class="timer-publish__danger">
+      <button class="timer-publish__remove" i18n="@@timerPublish.remove" type="button" (click)="removeAsk.set(true)">Удалить замер</button>
+
+      <p class="timer-publish__remove-hint" i18n="@@timerPublish.removeHint">«Сброс» в меню «⋮» стирает только времена — состав остаётся</p>
+    </div>
+  }
+
+  @if (removeAsk()) {
+    <dialog
+      actionLabel="Удалить замер"
+      appTimerConfirm
+      heading="Удалить замер?"
+      i18n-actionLabel="@@timerPublish.removeAction"
+      i18n-heading="@@timerPublish.removeHeading"
+      [note]="removeNote()"
+      (closed)="removeAsk.set(false)"
+      (confirmed)="onRemove()"
+    ></dialog>
+  }
+</section>

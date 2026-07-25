@@ -1,0 +1,25 @@
+<div class="timer-install">
+  <p class="timer-install__state" [class.timer-install__state_ready]="ready()">
+    @if (ready()) {
+      <ng-container i18n="@@timerOffline.ready">Готово к работе офлайн ✓</ng-container>
+    } @else {
+      <ng-container i18n="@@timerOffline.pending">Готовится к работе офлайн</ng-container>
+    }
+  </p>
+
+  @if (rosterDateText(); as dateText) {
+    <p class="timer-install__roster" i18n="@@timerOffline.roster">Состав участников скачан {{ dateText }}</p>
+  } @else {
+    <p class="timer-install__roster" i18n="@@timerOffline.rosterMissing">
+      Состав участников ещё не скачан — откройте страницу с интернетом
+    </p>
+  }
+
+  @if (offer(); as event) {
+    <button class="timer-install__button" i18n="@@timerOffline.install" type="button" (click)="onInstall(event)">
+      Установить приложение
+    </button>
+  } @else if (manual()) {
+    <p class="timer-install__hint" i18n="@@timerOffline.manual">Чтобы работало без сети: «Поделиться» → «На экран „Домой“»</p>
+  }
+</div>

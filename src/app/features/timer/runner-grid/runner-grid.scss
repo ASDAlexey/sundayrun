@@ -1,0 +1,218 @@
+@use 'styles/typography' as t;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+// The grid is not laid out for one phone any more. Three numbers describe a density and the browser
+// does the arithmetic:
+//
+//   --timer-tile-min   the narrowest a tile may be. Written as `min(<ideal>, <share>)`, so the share
+//                      guarantees a column count on a narrow screen (46 % ⇒ at least two columns,
+//                      30 % ⇒ three, 22 % ⇒ four) while the ideal stops a tile from growing past
+//                      the reach of a thumb on a tablet.
+//   --timer-tile-max   the widest a tile may get — a cap on the cell, deliberately not the `max` of
+//                      the `minmax()`: a definite maximum is what `auto-fit` counts columns with, and
+//                      writing it there collapsed a 390 px phone to one column. Only the sparse end of
+//                      the range ever reaches it, where a lone runner would stretch across 640 px.
+//   --timer-row-min    the floor of a row. Never below 44 px: on a small screen what gives way is
+//                      the density of information, never the size of the key (contract §6c).
+//   --timer-row-max    the ceiling of a row. A row grows into the height that is going spare and
+//                      stops there, so one runner is a tile and not a 500 px button.
+//
+// `repeat(auto-fit, …)` then decides the number of columns from the width it is actually given — the
+// same class produces two columns on a 320 px phone and five on a 1120 px desktop, and the order of
+// the tiles never changes, which is the one thing muscle memory needs (docs/TIMER.md §4). `auto-fit`
+// rather than `auto-fill` for the sake of the empty end of the range only: with a single runner an
+// unused track would leave one small tile in the corner of a black screen, and it differs from
+// `auto-fill` in no other case — a track with a tile in it is never collapsed.
+//
+// The three numbers of a density live on the wrapper, so both grids below read the same ones.
+.timer-grid-field {
+  --timer-tile-min: min(184px, 46%);
+  --timer-tile-max: 260px;
+  --timer-row-min: 48px;
+  --timer-row-max: 132px;
+  --timer-grid-gap: 8px;
+
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  gap: 6px;
+}
+
+.timer-grid_medium {
+  --timer-tile-min: min(140px, 30%);
+  --timer-tile-max: 200px;
+  --timer-row-max: 108px;
+}
+
+.timer-grid_small {
+  --timer-tile-min: min(116px, 30%);
+  --timer-tile-max: 168px;
+  --timer-row-min: 46px;
+  --timer-row-max: 88px;
+}
+
+// The floor inside the floor: below ~344 px of width a quarter of the screen is 67 px, and a 67 px
+// tile shows «Ро…» and nothing else. Measured at 320 × 568 — the 80 px guard drops that screen to
+// three columns of 97 px, which still reads as a surname. It scrolls at 32 runners either way.
+.timer-grid_dense {
+  --timer-tile-min: min(96px, max(22%, 80px));
+  --timer-tile-max: 132px;
+  --timer-row-min: 44px;
+  --timer-row-max: 72px;
+  --timer-grid-gap: 6px;
+}
+
+.timer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--timer-tile-min), 1fr));
+  // `minmax(min, max)` and not `minmax(min, 1fr)`: an `fr` row swallows every spare pixel, so a
+  // single runner ended up as one tile floating in the middle of an empty screen. A bounded track
+  // grows to the ceiling of its density and stops, and `align-content: start` keeps the field where
+  // the eye expects it — under the clock, not in the middle of nowhere.
+  grid-auto-rows: minmax(var(--timer-row-min), var(--timer-row-max));
+  flex: 1;
+  align-content: start;
+  min-height: 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  gap: var(--timer-grid-gap);
+  scrollbar-width: none;
+
+  // From 33 runners on the grid really does scroll, so the last row needs air above the panel.
+  &_scroll {
+    padding-bottom: 8px;
+  }
+
+  // «Последний финишировавший»: the keyboard of the instrument goes out from the top row down,
+  // 20 ms apart, and the protocol arrives when the last cell has faded. Twelve steps of stagger is
+  // 220 ms of wave — past that the delay would outlast the fade itself, so everything later goes
+  // out with the twelfth, which nobody can tell apart from the rest of the wave.
+  &_farewell &__cell {
+    animation: timer-grid-fade-out var(--transition-time) var(--ease) forwards;
+
+    @for $row from 1 through 12 {
+      &:nth-child(#{$row}) {
+        animation-delay: #{($row - 1) * 20}ms;
+      }
+    }
+  }
+
+  &__cell {
+    display: block;
+    min-width: 0;
+    max-width: var(--timer-tile-max);
+    height: 100%;
+  }
+
+  &__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 1px dashed var(--border-hover);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
+  }
+
+  // Its own grid of the same columns rather than a `subgrid` cell of the tiles: as a cell it was
+  // sized like a tile and a list of a dozen finishers simply did not fit in one. Below the tiles it
+  // takes the height it needs, gives the rest back, and scrolls on its own when there are many.
+  &__shelf {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--timer-tile-min), 1fr));
+    flex: none;
+    max-height: 30%;
+    padding-top: 6px;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    gap: var(--timer-grid-gap);
+    border-top: 1px solid var(--border-soft);
+    background: var(--bg);
+    scrollbar-width: none;
+  }
+
+  &__shelf-title {
+    @include t.mono-caption;
+
+    grid-column: 1 / -1;
+    padding-bottom: 4px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // 44 px, not 32: returning a finisher to the grid is a correction made in a hurry, and a
+  // correction must not be harder to hit than the mistake was.
+  &__shelf-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 8px;
+    gap: 6px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-xs);
+    background: var(--bg-subtle);
+    color: var(--text-secondary);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      transform var(--time-spring) var(--spring-tap),
+      border-color var(--transition-time) var(--ease);
+    user-select: none;
+
+    &:hover {
+      border-color: var(--border-hover);
+    }
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform var(--time-press) var(--ease);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__shelf-name {
+    @include t.text('label', 'small');
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__shelf-time {
+    @include t.timer-tile-time;
+
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__shelf-item {
+      transition: none;
+    }
+
+    // The wave is never scheduled under reduced motion (`TimerFarewellService`), but a class that
+    // survives a mid-race preference change must not leave the tiles half-faded either.
+    &_farewell &__cell {
+      animation: none;
+    }
+  }
+}
+
+@keyframes timer-grid-fade-out {
+  to {
+    transform: scale(0.94);
+    opacity: 0.2;
+  }
+}

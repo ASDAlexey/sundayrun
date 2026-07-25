@@ -1,0 +1,81 @@
+<div class="timer-clock">
+  <div class="timer-clock__row">
+    <span
+      aria-hidden="true"
+      class="timer-clock__figure"
+      role="timer"
+      [class.timer-clock__figure_idle]="session()?.status === statuses.idle"
+      [class.timer-clock__figure_wake]="woke()"
+      >{{ figure() }}<span class="timer-clock__fraction">{{ fraction() }}</span></span
+    >
+
+    @if (session(); as active) {
+      @switch (active.status) {
+        @case (statuses.idle) {
+          <button class="timer-clock__control" i18n="@@timer.start" type="button" [disabled]="!canStart()" (click)="onStart(active)">
+            Старт
+          </button>
+        }
+        @case (statuses.running) {
+          <button class="timer-clock__control timer-clock__control_stop" i18n="@@timer.stop" type="button" (click)="onStop(active)">
+            Стоп
+          </button>
+        }
+      }
+    }
+  </div>
+
+  @if (rosterNeeded()) {
+    <button class="timer-clock__roster-call" i18n="@@timer.rosterCall" type="button" (click)="roster.emit()">
+      Сначала соберите состав — откройте «Кто бежит»
+    </button>
+  }
+
+  @if (summary(); as line) {
+    <p aria-atomic="true" aria-live="polite" class="timer-clock__summary">
+      <span>{{ line.dateText }}</span>
+
+      <span class="timer-clock__summary-value">{{ line.finishedText }}</span>
+
+      <span class="timer-clock__summary-value">{{ line.bestText }}</span>
+    </p>
+  } @else {
+    <p aria-atomic="true" aria-live="polite" class="timer-clock__counters">
+      <span class="timer-clock__counter">
+        <ng-container i18n="@@timer.counterLap">круг</ng-container>
+
+        <span class="timer-clock__counter-value">{{ lapDone() }}</span>
+
+        <ng-container i18n="@@timer.counterOf">из</ng-container>
+
+        <span class="timer-clock__counter-value">{{ total() }}</span>
+      </span>
+
+      <span class="timer-clock__counter">
+        <ng-container i18n="@@timer.counterFinish">финиш</ng-container>
+
+        <span class="timer-clock__counter-value">{{ finishDone() }}</span>
+      </span>
+    </p>
+  }
+
+  @if (wakeUnsupported()) {
+    <p class="timer-clock__wake" i18n="@@timer.wakeHint">Экран может погаснуть — поставьте автоблокировку побольше</p>
+  }
+
+  <div
+    aria-valuemin="0"
+    class="timer-clock__progress"
+    role="progressbar"
+    [attr.aria-valuemax]="total()"
+    [attr.aria-valuenow]="finishDone()"
+  >
+    <span class="timer-clock__progress-fill" [style.--timer-progress]="progress()"></span>
+  </div>
+</div>
+
+@if (countdownValue(); as step) {
+  <div class="timer-clock__countdown" role="alert">
+    <span class="timer-clock__countdown-figure">{{ step }}</span>
+  </div>
+}

@@ -1,0 +1,460 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/section' as s;
+@use 'styles/typography' as t;
+
+.timer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  // The race screen owns the whole viewport: the site header and footer must not compete for the
+  // height the grid lives on. «←» in the top bar is therefore the only way out. The z-index has to
+  // clear the sticky `.shell-header` (z-index 50) — below it the header covers the top bar and the
+  // clock, and the race looks like it has no «Старт».
+  //
+  // `100dvh` and not `100vh`: on a phone the browser panel comes and goes, and with `vh` the keys
+  // either sit under it or jump when it hides. `inset: 0 0 auto` leaves the height to `dvh` alone.
+  //
+  // `--timer-inline` is the one horizontal rule of the cockpit: a gutter that clears the rounded
+  // corners of a phone lying on its side, and on a wide screen the margin that centres a content
+  // column of `--timer-cockpit-max` instead of stretching the tiles across 1440 px.
+  &_race {
+    --timer-gutter: 8px;
+    --timer-safe-side: max(env(safe-area-inset-left), env(safe-area-inset-right));
+    --timer-cockpit-max: 1120px;
+    --timer-inline: max(calc(var(--timer-gutter) + var(--timer-safe-side)), calc((100% - var(--timer-cockpit-max)) / 2));
+
+    display: flex;
+    z-index: 60;
+    position: fixed;
+    flex-direction: column;
+    height: 100dvh;
+    inset: 0 0 auto;
+    padding-top: env(safe-area-inset-top);
+    overflow: hidden;
+    overscroll-behavior: contain;
+    background: var(--bg);
+  }
+
+  // The clock is a component, so the cockpit hands it the same inline rule as every other band and
+  // keeps only its own vertical rhythm inside.
+  &_race > app-timer-clock {
+    padding-inline: var(--timer-inline);
+  }
+
+  &__topbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 44px;
+    padding-inline: var(--timer-inline);
+    gap: 4px;
+  }
+
+  &__back {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  // The marking is the one elastic thing in the bar: it gives way to the two keys instead of pushing
+  // them off a 320 px screen.
+  &__marking {
+    @include t.mono-caption;
+
+    flex: 1;
+    min-width: 0;
+    margin-right: auto;
+    overflow: hidden;
+    color: var(--text-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__undo {
+    @include b.button-toggle;
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    // 44 px, not the 36 it used to be: «Отменить» is pressed with a thumb in a hurry, and the floor
+    // of a tap target does not move with the screen (contract §6c).
+    height: 44px;
+    padding: 0 12px;
+    touch-action: manipulation;
+
+    &:disabled {
+      color: var(--text-muted);
+      cursor: default;
+      opacity: 0.5;
+    }
+
+    &_armed {
+      border-color: var(--accent-warm);
+      color: var(--accent-warm);
+    }
+  }
+
+  &__menu {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__menu-panel {
+    @include c.card;
+
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    max-height: 42dvh;
+    margin: 0 var(--timer-inline) 8px;
+    padding: 12px;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    gap: 8px;
+  }
+
+  &__menu-title {
+    @include t.mono-caption;
+
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  &__menu-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  &__menu-toggle {
+    @include b.button-toggle;
+
+    flex: 1 1 64px;
+    height: 44px;
+    touch-action: manipulation;
+
+    &_on {
+      @include b.button-toggle-active;
+    }
+  }
+
+  &__menu-item {
+    @include b.button-outline;
+
+    flex: none;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 0 12px;
+    gap: 10px;
+    text-align: left;
+    touch-action: manipulation;
+
+    &:disabled {
+      color: var(--text-muted);
+      cursor: default;
+    }
+
+    &_danger {
+      border-color: var(--accent-warm);
+      color: var(--accent-warm);
+    }
+  }
+
+  // «вкл» / «выкл» — a switch says what it is doing instead of leaving it to a shade of grey.
+  &__menu-state {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
+  &__tabs {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 44px;
+    padding-inline: var(--timer-inline);
+    gap: 6px;
+  }
+
+  &__tab {
+    @include b.button-toggle;
+
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    // A tab is a key too: 44 px tall whatever the screen, and never wider than a key needs to be —
+    // on a 1120 px column three tabs stretched full width read as a toolbar, not as a filter.
+    max-width: 200px;
+    height: 44px;
+    padding: 0 10px;
+    gap: 6px;
+    touch-action: manipulation;
+    transition: transform var(--time-spring) var(--spring-tap);
+
+    &_on {
+      @include b.button-toggle-active;
+    }
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform var(--time-press) var(--ease);
+    }
+  }
+
+  &__tab-count {
+    @include t.mono-caption;
+
+    color: currentcolor;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // A grid and not a flex column: the panes are grid items, so they inherit a definite height from
+  // the row and can scroll inside themselves. It is also what lets the second column appear on a
+  // wide screen without the template knowing anything about the screen.
+  &__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: minmax(0, 1fr);
+    flex: 1;
+    min-height: 0;
+    padding-inline: var(--timer-inline);
+    gap: 8px;
+  }
+
+  // The live «Круг» table beside the tiles. Narrow screens keep the tabs and never see it; the wide
+  // rule below is the only place it exists, so this is one state shown twice, not a second screen.
+  &__aside {
+    display: none;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  // The journal is not a pane of the race — it replaces the whole area, both columns of it.
+  &__journal {
+    grid-column: 1 / -1;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  // The publish card sits below the boards, and past the finish it is usually the last thing on the
+  // screen — the bottom bar goes with the keys it carried. Hence the safe-area floor: with nothing
+  // under it, «Удалить замер» would otherwise sit on the home indicator of a phone.
+  &__publish {
+    flex: none;
+    max-height: 46dvh;
+    margin: 0 var(--timer-inline) max(6px, env(safe-area-inset-bottom));
+    overflow: hidden auto;
+  }
+
+  // The instrument bar. Centred as one group and not as two: «Кто бежит» pinned to the left edge of a
+  // 1120 px column with «ОТСЕЧКА» centred in what was left read as two unrelated panels. The pair now
+  // sits together under the figure, which is where the thumb and the eye both already are.
+  //
+  // The hairline above it is drawn with a gradient rather than a border: solid across the middle,
+  // fading out at the gutters, so the bar reads as lit from the keys instead of boxed in.
+  &__actions {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    flex: none;
+    // Bottom-aligned, not stretched: the tape carries a hint line above its keys, so a stretched
+    // «Кто бежит» started at the hint and ended twenty pixels above «ОТСЕЧКА». The keys of a cockpit
+    // share one floor — whatever stands over them is the tape's business.
+    align-items: flex-end;
+    justify-content: center;
+    padding: 10px var(--timer-inline) max(10px, env(safe-area-inset-bottom));
+    gap: 8px;
+    backdrop-filter: blur(18px) saturate(1.4);
+    background: linear-gradient(to top, var(--bg) 30%, color-mix(in srgb, var(--bg) 78%, transparent));
+    box-shadow: 0 -1px 0 var(--border-soft);
+  }
+
+  // Visually hidden, but never `display: none` — a hidden live region is never announced.
+  &__announcer {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+
+  // «Мои замеры» is an ordinary page of the site: the common header and footer stay where they are,
+  // and only the cockpit above takes the whole viewport for itself.
+  &__home {
+    @include s.section;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__title {
+    @include t.text('display', 'medium');
+
+    margin: 0;
+    color: var(--text);
+  }
+
+  &__lead {
+    @include t.text('body', 'medium');
+
+    max-width: 46ch;
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  // The offline plate belongs to «Мои замеры», not to the cockpit: installing and warming the cache
+  // are things one does at home, before the race screen ever opens (design spec §1.1).
+  &__offline {
+    margin-top: 4px;
+  }
+
+  // Before the start the roster is the whole job, so it shares the panel with the keys; during the
+  // race the same sheet lives in «⋮» and «ОТСЕЧКА» gets the width back (design §7.1).
+  &__roster {
+    @include b.button-outline;
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    padding: 0 12px;
+    gap: 6px;
+    touch-action: manipulation;
+
+    // Nobody in the line-up yet: this key is the only thing on screen worth pressing, so it says so.
+    &_call {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+      color: var(--accent-light);
+    }
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  //  Short viewport — a phone lying on its side, and any browser that keeps its panel on screen.
+  //  Nothing is hidden and no key shrinks below 44 px; what gives way is the air around them and
+  //  the size of the figure, which `t.timer-figure` already ties to `dvh`.
+  // ---------------------------------------------------------------------------------------------
+  @media (height <= 560px) {
+    &__topbar,
+    &__tabs {
+      height: 44px;
+    }
+
+    &__menu-panel {
+      max-height: 60dvh;
+      padding: 8px;
+    }
+
+    &__publish {
+      max-height: 40dvh;
+    }
+
+    &__actions {
+      padding-top: 6px;
+    }
+
+    &__roster {
+      height: 48px;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  //  Tablet and desktop. Two conditions, not one: width alone would put the second column on a
+  //  phone lying on its side, where the 390 px of height are worth more to the tiles than a table
+  //  of laps is. The tabs stay exactly where they are — «Сетка» means grid ‖ laps, «Финиш» means
+  //  protocol ‖ laps, and «Круг» gives the whole width to the laps. Every tab still does something,
+  //  every tab still says the truth to a screen reader, and nothing is hidden from the keyboard.
+  // ---------------------------------------------------------------------------------------------
+  @media (width >= 760px) and (height >= 600px) {
+    &__body {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    // «Финиш»: the protocol is the thing being read, so it takes the wider half.
+    &__body_finish {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    }
+
+    // «Круг»: the table is already the whole left column, and a second copy beside it would be a
+    // lie about the state. One column, one table.
+    &__body_lap {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    // A rule, not a card: the second column is the same screen seen from the side, and a border is
+    // all it takes to say so without turning the cockpit into a dashboard of panels.
+    &__aside {
+      display: flex;
+      padding-left: 12px;
+      border-left: 1px solid var(--border-soft);
+    }
+
+    &__body_lap &__aside {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__tab {
+      transition: none;
+    }
+  }
+}
+
+// iOS below 18 only knows `-webkit-backdrop-filter`, and vendor prefixes are banned in this project,
+// so the panel is simply opaque there. Not a degradation — the contrast is even higher.
+@supports not (backdrop-filter: blur(1px)) {
+  .timer__actions {
+    background: var(--bg);
+  }
+}

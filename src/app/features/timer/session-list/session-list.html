@@ -1,0 +1,137 @@
+<section class="timer-sessions">
+  @if (isEmpty()) {
+    <div class="timer-sessions__empty">
+      <span aria-hidden="true" class="timer-sessions__empty-mark" i18n="@@timerList.emptyMark">⏱</span>
+
+      <h2 class="timer-sessions__empty-title" i18n="@@timerList.emptyTitle">Ещё ни одного замера</h2>
+
+      <p class="timer-sessions__empty-hint" i18n="@@timerList.emptyHint">Соберите состав и нажмите «Старт» — всё остальное сделает сайт.</p>
+
+      <button class="timer-sessions__new" i18n="@@timerList.newSession" type="button" (click)="onNew()">Новый забег</button>
+    </div>
+  } @else {
+    <button class="timer-sessions__new" i18n="@@timerList.newSession" type="button" (click)="onNew()">Новый забег</button>
+
+    <h2 class="timer-sessions__title" i18n="@@timerList.title">Мои замеры</h2>
+
+    <ul class="timer-sessions__list">
+      @for (row of rows(); track row.session.id) {
+        <li class="timer-sessions__item" [class.timer-sessions__item_pending]="row.status === states.pending">
+          <span class="timer-sessions__date">{{ row.dateText }}</span>
+
+          <span class="timer-sessions__meta">{{ row.metaText }}</span>
+
+          <span
+            class="timer-sessions__status"
+            [class.timer-sessions__status_failed]="row.status === states.failed"
+            [class.timer-sessions__status_local]="row.status === states.local"
+            [class.timer-sessions__status_published]="row.status === states.published"
+          >
+            @switch (row.status) {
+              @case (states.published) {
+                <ng-container i18n="@@timerList.statusPublished">Опубликовано</ng-container>
+              }
+              @case (states.pending) {
+                <ng-container i18n="@@timerList.statusPending">Публикуется…</ng-container>
+              }
+              @case (states.failed) {
+                <ng-container i18n="@@timerList.statusFailed">Не отправлено</ng-container>
+              }
+              @default {
+                <ng-container i18n="@@timerList.statusLocal">Сохранено на устройстве</ng-container>
+              }
+            }
+          </span>
+
+          <button
+            aria-haspopup="dialog"
+            aria-label="Действия с замером"
+            class="timer-sessions__menu"
+            i18n-aria-label="@@timerList.menuLabel"
+            type="button"
+            [attr.aria-expanded]="menuId() === row.session.id"
+            (click)="onOpenMenu(row)"
+          >
+            <span aria-hidden="true" i18n="@@timerList.menuGlyph">⋮</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (menuRow(); as row) {
+    <div
+      aria-modal="true"
+      class="timer-sessions__dialog"
+      role="dialog"
+      [attr.aria-labelledby]="sheetTitleId"
+      (keydown.escape)="onCloseMenu()"
+    >
+      <button
+        aria-label="Закрыть действия"
+        class="timer-sessions__scrim"
+        i18n-aria-label="@@timerList.sheetScrimLabel"
+        type="button"
+        (click)="onCloseMenu()"
+      ></button>
+
+      <div class="timer-sessions__sheet">
+        <span aria-hidden="true" class="timer-sessions__handle"></span>
+
+        <div class="timer-sessions__sheet-head">
+          <h3 class="timer-sessions__sheet-title" [id]="sheetTitleId">{{ row.dateText }}</h3>
+
+          <button
+            aria-label="Закрыть"
+            class="timer-sessions__sheet-close"
+            i18n-aria-label="@@timerList.sheetCloseLabel"
+            type="button"
+            (click)="onCloseMenu()"
+          >
+            ×
+          </button>
+        </div>
+
+        <p class="timer-sessions__sheet-meta">{{ row.metaText }}</p>
+
+        <button class="timer-sessions__menu-item" i18n="@@timerList.open" type="button" (click)="onOpen(row)">Открыть</button>
+
+        <button class="timer-sessions__menu-item" i18n="@@timerList.export" type="button" (click)="onExport(row)">Экспорт в Excel</button>
+
+        <button class="timer-sessions__menu-item" i18n="@@timerList.share" type="button" (click)="onShare(row)">Поделиться</button>
+
+        @if (isAdmin()) {
+          <button class="timer-sessions__menu-item" i18n="@@timerList.publish" type="button" (click)="onPublish(row)">Опубликовать</button>
+        } @else {
+          <a class="timer-sessions__menu-item" i18n="@@timerList.publishWithKey" [queryParams]="adminReturnParams" [routerLink]="adminLink">
+            Опубликовать — нужен ключ
+          </a>
+        }
+
+        <div class="timer-sessions__danger">
+          <button
+            class="timer-sessions__menu-item timer-sessions__menu-item_danger"
+            i18n="@@timerList.remove"
+            type="button"
+            (click)="onRemoveAsk(row)"
+          >
+            Удалить замер
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (removeAsk(); as ask) {
+    <dialog
+      actionLabel="Удалить замер"
+      appTimerConfirm
+      heading="Удалить замер?"
+      i18n-actionLabel="@@timerList.removeAction"
+      i18n-heading="@@timerList.removeHeading"
+      [note]="ask.note"
+      (closed)="removeAsk.set(null)"
+      (confirmed)="onRemove(ask.id)"
+    ></dialog>
+  }
+</section>

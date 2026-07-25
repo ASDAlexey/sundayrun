@@ -1,0 +1,95 @@
+@use 'styles/buttons' as b;
+@use 'styles/typography' as t;
+
+// ===========================================================
+//  «Удалить замер?» — the calm modal every destructive action
+//  of the stopwatch goes through.
+// ===========================================================
+
+:host {
+  width: min(420px, calc(100vw - 32px));
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  animation: timer-confirm-rise var(--transition-time) var(--ease) backwards;
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--black) 65%, transparent);
+  }
+}
+
+.timer-confirm {
+  &__body {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px max(20px, env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    margin: 0;
+    color: var(--text);
+  }
+
+  &__note {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__keys {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    margin-top: 6px;
+    gap: 8px;
+  }
+
+  &__cancel {
+    @include b.button-outline;
+
+    min-height: 44px;
+    padding: 0 18px;
+  }
+
+  // The damage is spelled out by the label and carried by the warm accent — a filled red slab
+  // would shout at the organiser for doing something entirely ordinary.
+  &__action {
+    @include b.button-outline;
+
+    min-height: 44px;
+    padding: 0 18px;
+    border-color: var(--accent-warm);
+    color: var(--accent-warm);
+
+    &:hover {
+      border-color: var(--accent-warm);
+      background: color-mix(in srgb, var(--accent-warm) 12%, transparent);
+    }
+  }
+
+  &__cancel:focus-visible,
+  &__action:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    animation: none;
+  }
+}
+
+@keyframes timer-confirm-rise {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+}

@@ -67,4 +67,32 @@
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-time: 0.3s;
+
+  // Tap physics — one spring for the whole app: the release of a pressed key, sampled from an
+  // underdamped second-order step response (zeta 0.285, omega_n 77.5 rad/s) so a button rebounds
+  // with a small overshoot instead of easing flatly back.
+  --spring-tap: linear(
+    0,
+    0.056 1.9%,
+    0.248 4.2%,
+    1.042 10.8%,
+    1.268 13.5%,
+    1.393 17.7%,
+    1.325 21%,
+    0.928 30%,
+    0.846 35.2%,
+    0.917 41.3%,
+    1.061 52.9%,
+    0.976 70.4%,
+    1.009 88.1%,
+    1
+  );
+
+  // Stopwatch durations. Hardcoded seconds are banned in components, so the instrument's own
+  // timings live here next to --transition-time.
+  --time-press: 0.06s; // finger goes down — has to land within 3-4 frames
+  --time-tap: 0.12s; // ceiling for any «it registered» feedback
+  --time-spring: 0.24s; // finger comes up — the spring settles
+  --time-hold: 0.6s; // long-press ring guarding a destructive action
+  --time-breathe: 2s; // the only two infinite loops we allow
 }

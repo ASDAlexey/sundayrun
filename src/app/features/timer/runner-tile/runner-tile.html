@@ -1,0 +1,28 @@
+<button
+  type="button"
+  [attr.aria-label]="fullName()"
+  [class.timer-tile_done]="stage() === stages.finished"
+  [class.timer-tile_lap]="stage() === stages.waitingFinish"
+  [class.timer-tile_out]="stage() === stages.retired"
+  [class]="tileClass()"
+  [style.--timer-tile-tap-x]="tapX()"
+  [style.--timer-tile-tap-y]="tapY()"
+  (contextmenu)="onContextMenu($event)"
+  (keydown.enter)="onKeyCut($event)"
+  (keydown.space)="onKeyCut($event)"
+  (pointercancel)="onPointerCancel()"
+  (pointerdown)="onPointerDown($event)"
+  (pointerup)="onPointerUp($event)"
+>
+  <span class="timer-tile__surname">{{ surname() }}</span>
+
+  <span class="timer-tile__given">{{ givenName() }}</span>
+
+  @for (frame of timeFrames(); track frame.text) {
+    <span class="timer-tile__time">{{ frame.text }}</span>
+  }
+
+  @if (rippleOn()) {
+    <span aria-hidden="true" class="timer-tile__ripple" (animationend)="onRippleEnd()"></span>
+  }
+</button>

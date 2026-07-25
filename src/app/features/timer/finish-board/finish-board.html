@@ -1,0 +1,53 @@
+<div class="timer-finish-board">
+  @if (hasRows()) {
+    <table class="timer-finish-board__table">
+      <thead>
+        <tr class="timer-finish-board__head">
+          <th i18n="@@timer.finishHeadPlace" scope="col">№</th>
+
+          <th i18n="@@timer.finishHeadName" scope="col">Имя</th>
+
+          <th i18n="@@timer.finishHead23" scope="col">2,3 км</th>
+
+          <th i18n="@@timer.finishHead5" scope="col">5 км</th>
+
+          <th i18n="@@timer.finishHeadPace" scope="col">Темп</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (row of rows(); track row.index) {
+          <tr class="timer-finish-board__row" [class.timer-finish-board__row_out]="row.out">
+            <td class="timer-finish-board__place">{{ row.placeText }}</td>
+
+            <td class="timer-finish-board__name">{{ row.fullName }}</td>
+
+            <td class="timer-finish-board__value">{{ row.time23 }}</td>
+
+            <td class="timer-finish-board__value">{{ row.time5 }}</td>
+
+            <td class="timer-finish-board__pace">{{ row.paceText }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <p class="timer-finish-board__empty" i18n="@@timer.finishEmpty">Протокол пуст: в составе ещё никого нет.</p>
+  }
+
+  @if (unassignedText(); as text) {
+    <div class="timer-finish-board__unassigned" role="alert">
+      <p class="timer-finish-board__unassigned-title">{{ text }}</p>
+
+      <div class="timer-finish-board__unassigned-times">
+        @for (time of unassignedTimes(); track $index) {
+          <span class="timer-finish-board__unassigned-time">{{ time }}</span>
+        }
+      </div>
+
+      <p class="timer-finish-board__unassigned-hint" i18n="@@timer.finishUnnamedHint">
+        Привяжите их к участникам или выбросьте осознанно — иначе они не уедут в архив.
+      </p>
+    </div>
+  }
+</div>

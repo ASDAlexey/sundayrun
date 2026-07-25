@@ -1,0 +1,367 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+// The host has to carry the width, not the div inside it: as a flex item of the bottom bar an
+// unstyled host sizes to its content, and «ОТСЕЧКА» shrank to the width of the word while «+ ещё
+// один» broke onto two lines. 640 px is the ceiling — the keys stay big, but a key the width of a
+// desk reads as a banner, not as an instrument.
+//
+// Centring is left to the bar itself (`.timer__actions`): an auto margin here would centre the keys
+// inside their own slot and push the pair off the middle whenever «Кто бежит» stands beside them.
+:host {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  max-width: 640px;
+}
+
+.timer-tape {
+  display: flex;
+  position: relative;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+
+  &__queue {
+    display: flex;
+    flex: none;
+    align-items: center;
+    min-height: 44px;
+    overflow-x: auto;
+    gap: 6px;
+    scrollbar-width: none;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  // A chip is handed a name with a thumb, in a hurry, with people still running: 44 px like every
+  // other key here, and the queue row grew with it.
+  &__chip {
+    @include t.mono-meta;
+    @include t.pill;
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+    gap: 6px;
+    border: 1px solid var(--accent-line);
+    background: var(--accent-glow);
+    color: var(--accent-light);
+    font-variant-numeric: tabular-nums;
+    animation: timer-tape-chip-in var(--transition-time) var(--spring-tap) backwards;
+    cursor: pointer;
+
+    &_next {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--accent-contrast);
+    }
+
+    // Without the grid geometry of another component the flight has a fixed heading — up and
+    // slightly left, towards the handout list that opens above the keys (see the report).
+    &_flying {
+      --timer-chip-dx: -24px;
+      --timer-chip-dy: -72px;
+
+      animation: timer-tape-chip-fly var(--transition-time) var(--ease) forwards;
+      pointer-events: none;
+    }
+  }
+
+  &__toggle {
+    @include b.button-outline;
+    @include t.mono-meta;
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0 12px;
+  }
+
+  &__count {
+    @include t.mono-value;
+
+    flex: none;
+    color: var(--accent-light);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__hint {
+    @include t.mono-caption;
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  // The handout list opens upwards: the keys must keep their place under the thumb while the
+  // organiser reads surnames (docs/TIMER.md §4, «раздача очереди по порядку»).
+  &__panel {
+    @include c.card;
+
+    display: flex;
+    z-index: 10;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 6px);
+    left: 0;
+    flex-direction: column;
+    max-height: 48dvh;
+    padding: 8px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    gap: 8px;
+  }
+
+  &__panel-head {
+    display: flex;
+    align-items: center;
+    padding-bottom: 8px;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  &__picked {
+    @include t.mono-value;
+
+    flex: none;
+    color: var(--accent-light);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__pick-hint {
+    @include t.mono-caption;
+
+    flex: 1;
+    color: var(--text-secondary);
+  }
+
+  &__discard {
+    @include b.button-outline;
+    @include t.mono-caption;
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    border-color: var(--accent-warm);
+    color: var(--accent-warm);
+
+    &:hover {
+      border-color: var(--accent-warm);
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 4px;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+  }
+
+  &__runner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 10px;
+    gap: 10px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    text-align: left;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform var(--time-spring) var(--spring-tap);
+    user-select: none;
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform var(--time-press) var(--ease);
+    }
+
+    &_taken {
+      background: var(--bg-subtle);
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  &__runner-name {
+    @include t.text('body', 'medium');
+    @include t.semibold;
+
+    overflow: hidden;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__runner-meta {
+    @include t.mono-caption;
+
+    flex: none;
+    color: var(--text-secondary);
+  }
+
+  &__done {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__keys {
+    display: flex;
+    flex: none;
+    align-items: stretch;
+    height: 56px;
+    gap: 8px;
+  }
+
+  // Why a dead key is dead, in one line right above it — the panel never goes grey in silence.
+  // Centred over the keys it explains, so it belongs to them and not to whatever stands to the left.
+  &__keys-hint {
+    @include t.mono-caption;
+
+    margin: 0;
+    color: var(--text-muted);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  &__cut {
+    @include b.button-accent;
+    @include t.timer-action-label;
+
+    flex: 2;
+    padding: 0 12px;
+    transition: transform var(--time-spring) var(--spring-tap);
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform var(--time-press) var(--ease);
+    }
+
+    &:disabled {
+      border-color: var(--border);
+      background: none;
+      color: var(--text-muted);
+      cursor: default;
+    }
+
+    &:disabled:active {
+      transform: none;
+    }
+  }
+
+  // One line, always: «+ ещё один» broken into «+ ещё / один» reads as two dead keys in a row.
+  &__more {
+    @include b.button-outline;
+    @include t.mono-value;
+
+    flex: 1;
+    padding: 0 10px;
+    white-space: nowrap;
+    transition: transform var(--time-spring) var(--spring-tap);
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform var(--time-press) var(--ease);
+    }
+
+    &:disabled {
+      background: none;
+      color: var(--text-muted);
+      cursor: default;
+      opacity: 0.5;
+    }
+
+    &:disabled:active {
+      transform: none;
+    }
+  }
+
+  // A finger must not leave a ring behind; a keyboard cut has to be visible.
+  &__cut:focus-visible,
+  &__more:focus-visible,
+  &__chip:focus-visible,
+  &__discard:focus-visible,
+  &__runner:focus-visible,
+  &__toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  // A phone on its side has 390 px of height for the whole cockpit. The keys give back the eight
+  // pixels they can spare and stop there: 48 px is still four above the floor of a tap target.
+  @media (height <= 560px) {
+    &__keys {
+      height: 48px;
+    }
+
+    &__queue {
+      min-height: 44px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__cut,
+    &__more,
+    &__chip,
+    &__runner {
+      animation: none;
+      transition: none;
+    }
+
+    &__cut:active,
+    &__more:active,
+    &__runner:active {
+      transform: none;
+    }
+
+    // The ghost of a handed-out time is removed by its own `animationend`, so it cannot simply have
+    // no animation: it would sit in the queue row for the rest of the race. It gets a motionless
+    // frame of the same length instead — «чип просто исчезает», exactly as the design table asks.
+    &__chip_flying {
+      animation: timer-tape-chip-vanish var(--time-tap) var(--ease) forwards;
+    }
+  }
+}
+
+@keyframes timer-tape-chip-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes timer-tape-chip-fly {
+  to {
+    transform: translate(var(--timer-chip-dx, 0), var(--timer-chip-dy, 0)) scale(0.4);
+    opacity: 0;
+  }
+}
+
+// Nothing moves and nothing is seen — the frame exists only so that `animationend` still fires.
+@keyframes timer-tape-chip-vanish {
+  from,
+  to {
+    opacity: 0;
+  }
+}

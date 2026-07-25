@@ -1,0 +1,259 @@
+@if (session(); as current) {
+  <!-- role="application" is deliberate: a screen reader must not swallow the swipes that undo a
+  split and retire a runner. It costs the <main> landmark, which the fixed cockpit hides anyway. -->
+  <div class="timer timer_race" role="application">
+    <div class="timer__topbar">
+      <button aria-label="К моим замерам" class="timer__back" i18n-aria-label="@@timer.backLabel" type="button" (click)="onBack()">
+        <span aria-hidden="true" i18n="@@timer.backGlyph">←</span>
+      </button>
+
+      <span class="timer__marking" i18n="@@timer.marking">забег · {{ header().dateText }}</span>
+
+      <button
+        class="timer__undo"
+        i18n="@@timer.undoLast"
+        type="button"
+        [class.timer__undo_armed]="header().undoArmed"
+        [disabled]="!header().undoArmed"
+        (click)="onUndoLast()"
+      >
+        Отменить
+      </button>
+
+      <button
+        aria-label="Настройки забега"
+        class="timer__menu"
+        i18n-aria-label="@@timer.menuLabel"
+        type="button"
+        [attr.aria-expanded]="menuOpen()"
+        (click)="onToggleMenu()"
+      >
+        <span aria-hidden="true" i18n="@@timer.menuGlyph">⋮</span>
+      </button>
+    </div>
+
+    @if (menuOpen()) {
+      <div class="timer__menu-panel">
+        <p class="timer__menu-title" i18n="@@timer.densityTitle">Плотность сетки</p>
+
+        <div class="timer__menu-row">
+          <button
+            class="timer__menu-toggle"
+            i18n="@@timer.densityAuto"
+            type="button"
+            [class.timer__menu-toggle_on]="density() === choices.auto"
+            (click)="onDensity(choices.auto)"
+          >
+            Авто
+          </button>
+
+          <button
+            class="timer__menu-toggle"
+            i18n="@@timer.densityLarge"
+            type="button"
+            [class.timer__menu-toggle_on]="density() === choices.large"
+            (click)="onDensity(choices.large)"
+          >
+            Крупно
+          </button>
+
+          <button
+            class="timer__menu-toggle"
+            i18n="@@timer.densityMedium"
+            type="button"
+            [class.timer__menu-toggle_on]="density() === choices.medium"
+            (click)="onDensity(choices.medium)"
+          >
+            Средне
+          </button>
+
+          <button
+            class="timer__menu-toggle"
+            i18n="@@timer.densityDense"
+            type="button"
+            [class.timer__menu-toggle_on]="density() === choices.dense"
+            (click)="onDensity(choices.dense)"
+          >
+            Плотно
+          </button>
+        </div>
+
+        <button class="timer__menu-item" type="button" [attr.aria-pressed]="countdownEnabled()" (click)="onToggleCountdown()">
+          <ng-container i18n="@@timer.countdownToggle">Обратный отсчёт 3-2-1</ng-container>
+
+          <span class="timer__menu-state">{{ countdownStateText() }}</span>
+        </button>
+
+        <button class="timer__menu-item" type="button" [attr.aria-pressed]="soundEnabled()" (click)="onToggleSound()">
+          <ng-container i18n="@@timer.soundToggle">Щелчок на отсечку</ng-container>
+
+          <span class="timer__menu-state">{{ soundStateText() }}</span>
+        </button>
+
+        <button class="timer__menu-item" i18n="@@timer.rosterItem" type="button" (click)="onPicker()">Кто бежит</button>
+
+        <button class="timer__menu-item" i18n="@@timer.historyItem" type="button" (click)="onHistory()">История отсечек</button>
+
+        <button class="timer__menu-item timer__menu-item_danger" i18n="@@timer.reset" type="button" (click)="onResetAsk(current)">
+          Сбросить времена
+        </button>
+      </div>
+    }
+
+    <app-timer-clock [countdownEnabled]="countdownEnabled()" (roster)="onPicker()" />
+
+    <div class="timer__tabs" role="tablist">
+      <button
+        class="timer__tab"
+        role="tab"
+        type="button"
+        [attr.aria-selected]="tab() === tabs.grid"
+        [class.timer__tab_on]="tab() === tabs.grid"
+        (click)="onTab(tabs.grid)"
+      >
+        <ng-container i18n="@@timer.tabGrid">Сетка</ng-container>
+
+        <span class="timer__tab-count">{{ header().runnerCount }}</span>
+      </button>
+
+      <button
+        class="timer__tab"
+        role="tab"
+        type="button"
+        [attr.aria-selected]="tab() === tabs.lap"
+        [class.timer__tab_on]="tab() === tabs.lap"
+        (click)="onTab(tabs.lap)"
+      >
+        <ng-container i18n="@@timer.tabLap">Круг</ng-container>
+
+        <span class="timer__tab-count">{{ header().lapCount }}</span>
+      </button>
+
+      <button
+        class="timer__tab"
+        role="tab"
+        type="button"
+        [attr.aria-selected]="tab() === tabs.finish"
+        [class.timer__tab_on]="tab() === tabs.finish"
+        (click)="onTab(tabs.finish)"
+      >
+        <ng-container i18n="@@timer.tabFinish">Финиш</ng-container>
+
+        <span class="timer__tab-count">{{ header().finishCount }}</span>
+      </button>
+    </div>
+
+    <div
+      class="timer__body"
+      role="tabpanel"
+      [class.timer__body_finish]="tab() === tabs.finish"
+      [class.timer__body_lap]="tab() === tabs.lap"
+    >
+      @if (historyOpen()) {
+        <app-timer-history class="timer__journal" (close)="historyOpen.set(false)" />
+      } @else {
+        @switch (tab()) {
+          @case (tabs.grid) {
+            <app-timer-grid
+              [density]="density()"
+              [farewell]="farewellWave()"
+              (announce)="onAnnounce($event)"
+              (details)="onDetails($event)"
+            />
+          }
+          @case (tabs.lap) {
+            <app-timer-lap-board />
+          }
+          @case (tabs.finish) {
+            <app-timer-finish-board />
+          }
+        }
+
+        <!-- The second column of a wide screen. It is not a second interface: the tabs above still
+        own the state, and on a phone this whole branch is `display: none`. -->
+        <div class="timer__aside">
+          <app-timer-lap-board />
+        </div>
+      }
+    </div>
+
+    @if (detailsId(); as runnerId) {
+      <app-timer-runner-card [runnerId]="runnerId" (close)="onCloseDetails()" />
+    }
+
+    @if (current.status === statuses.finished) {
+      <div class="timer__publish">
+        <app-timer-publish [session]="current" (queue)="onQueue()" />
+      </div>
+    }
+
+    @if (tapeNeeded()) {
+      <div class="timer__actions">
+        @if (current.status === statuses.idle) {
+          <button
+            class="timer__roster"
+            i18n="@@timer.roster"
+            type="button"
+            [class.timer__roster_call]="header().runnerCount === 0"
+            (click)="onPicker()"
+          >
+            Кто бежит
+
+            <span class="timer__tab-count">{{ header().runnerCount }}</span>
+          </button>
+        }
+
+        <app-timer-tape [openRequest]="queueRequest()" (panelOpen)="onTapePanel($event)" />
+      </div>
+    }
+
+    <p aria-live="assertive" class="timer__announcer" role="status">
+      @if (announcement(); as note) {
+        <span>{{ note.name }}</span>
+
+        @switch (note.kind) {
+          @case (kinds.lap) {
+            <span i18n="@@timer.announceLap">круг</span>
+          }
+          @case (kinds.finish) {
+            <span i18n="@@timer.announceFinish">финиш</span>
+          }
+          @case (kinds.undo) {
+            <span i18n="@@timer.announceUndo">отменено</span>
+          }
+        }
+
+        <span>{{ note.timeText }}</span>
+      }
+    </p>
+  </div>
+
+  @if (pickerOpen()) {
+    <app-timer-picker (close)="pickerOpen.set(false)" />
+  }
+
+  @if (resetAsk(); as note) {
+    <dialog
+      actionLabel="Сбросить времена"
+      appTimerConfirm
+      heading="Сбросить забег?"
+      i18n-actionLabel="@@timer.resetAction"
+      i18n-heading="@@timer.resetHeading"
+      [note]="note"
+      (closed)="resetAsk.set(null)"
+      (confirmed)="onReset()"
+    ></dialog>
+  }
+} @else {
+  <main class="timer" id="main" tabindex="-1">
+    <div class="timer__home">
+      <h1 class="timer__title" i18n="@@timer.homeTitle">Секундомер забега</h1>
+
+      <p class="timer__lead" i18n="@@timer.homeLead">Соберите состав, нажмите «Старт» и тапайте по фамилиям на финише.</p>
+
+      <app-timer-sessions (open)="onOpenSession($event)" />
+
+      <app-timer-install class="timer__offline" />
+    </div>
+  </main>
+}

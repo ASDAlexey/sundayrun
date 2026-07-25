@@ -1,0 +1,194 @@
+<div aria-modal="true" class="timer-picker" role="dialog" [attr.aria-labelledby]="titleId" (keydown.escape)="close.emit()">
+  <button
+    aria-label="Закрыть состав"
+    class="timer-picker__scrim"
+    i18n-aria-label="@@timerPicker.scrimLabel"
+    type="button"
+    (click)="close.emit()"
+  ></button>
+
+  <div class="timer-picker__sheet">
+    <span aria-hidden="true" class="timer-picker__handle"></span>
+
+    <div class="timer-picker__head">
+      <h2 class="timer-picker__title" i18n="@@timerPicker.title" [id]="titleId">Кто бежит</h2>
+
+      <button
+        aria-label="Закрыть"
+        class="timer-picker__close"
+        i18n-aria-label="@@timerPicker.closeLabel"
+        type="button"
+        (click)="close.emit()"
+      >
+        ×
+      </button>
+    </div>
+
+    <input
+      #pickerSearch
+      aria-label="Фамилия и имя: найдите в справочнике или добавьте нового"
+      class="timer-picker__search"
+      i18n-aria-label="@@timerPicker.searchLabel"
+      i18n-placeholder="@@timerPicker.searchPlaceholder"
+      placeholder="Фамилия Имя"
+      type="search"
+      [value]="query()"
+      (input)="query.set(pickerSearch.value)"
+    />
+
+    <div aria-live="polite" class="timer-picker__status" role="status">
+      @switch (status()) {
+        @case (statuses.loading) {
+          <span i18n="@@timerPicker.loading">Обновляем справочник…</span>
+        }
+        @case (statuses.error) {
+          <span i18n="@@timerPicker.error">Сети нет — работаем по сохранённому справочнику.</span>
+        }
+      }
+    </div>
+
+    @if (suggestions().length > 0) {
+      <ul class="timer-picker__list">
+        @for (option of suggestions(); track option.key) {
+          <li>
+            <button class="timer-picker__item" type="button" (click)="pick(option)">
+              <span class="timer-picker__item-name">{{ option.displayName }}</span>
+
+              <span class="timer-picker__item-meta">{{ option.metaText }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (showNewcomer()) {
+      <section class="timer-picker__section">
+        <h3 class="timer-picker__section-title" i18n="@@timerPicker.newcomerTitle">Новый участник</h3>
+
+        @if (newcomerKnown()) {
+          <p class="timer-picker__known" i18n="@@timerPicker.newcomerKnown">
+            Такой уже есть в справочнике — возьмите его из списка выше, если это он.
+          </p>
+        }
+
+        <div class="timer-picker__newcomer">
+          <span class="timer-picker__gender">
+            @for (option of genderOptions; track option.gender) {
+              <button
+                class="timer-picker__gender-option"
+                type="button"
+                [attr.aria-label]="option.ariaLabel"
+                [attr.aria-pressed]="newGender() === option.gender"
+                [class.timer-picker__gender-option_on]="newGender() === option.gender"
+                (click)="newGender.set(option.gender)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </span>
+
+          <button
+            class="timer-picker__quick-button"
+            i18n="@@timerPicker.addNewcomer"
+            type="button"
+            [disabled]="!canAddNewcomer()"
+            (click)="addNewcomer()"
+          >
+            Добавить «{{ newcomerName() }}»
+          </button>
+        </div>
+
+        @if (!canAddNewcomer()) {
+          <p class="timer-picker__hint" i18n="@@timerPicker.newcomerHint">Нужны фамилия и имя — например «Тестов Тест».</p>
+        }
+      </section>
+    }
+
+    @if (previousCount() > 0) {
+      <div class="timer-picker__quick">
+        <button class="timer-picker__quick-button" i18n="@@timerPicker.previous" type="button" (click)="addPrevious()">
+          Как в прошлый раз · {{ previousCount() }}
+        </button>
+      </div>
+    }
+
+    <section class="timer-picker__section">
+      <h3 class="timer-picker__section-title" i18n="@@timerPicker.regularsTitle">Постоянные участники</h3>
+
+      @if (regulars().length > 0) {
+        <ul class="timer-picker__list">
+          @for (option of regulars(); track option.key) {
+            <li>
+              <label class="timer-picker__item" [class.timer-picker__item_picked]="option.checked">
+                <input class="timer-picker__check" type="checkbox" [checked]="option.checked" (change)="toggleRegular(option)" />
+
+                <span class="timer-picker__item-name">{{ option.displayName }}</span>
+
+                <span class="timer-picker__item-meta">{{ option.metaText }}</span>
+              </label>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="timer-picker__empty" i18n="@@timerPicker.regularsEmpty">Справочник пока пуст — впишите участника в поле поиска.</p>
+      }
+    </section>
+
+    <section class="timer-picker__section">
+      <h3 class="timer-picker__section-title" i18n="@@timerPicker.rosterTitle">В составе · {{ runnerCount() }}</h3>
+
+      @if (runners().length > 0) {
+        <ul class="timer-picker__list">
+          @for (runner of runners(); track runner.id) {
+            <li class="timer-picker__runner">
+              <span class="timer-picker__item-name">{{ runner.fullName }}</span>
+
+              <span class="timer-picker__gender">
+                @for (option of genderOptions; track option.gender) {
+                  <button
+                    class="timer-picker__gender-option"
+                    type="button"
+                    [attr.aria-label]="option.ariaLabel"
+                    [attr.aria-pressed]="runner.gender === option.gender"
+                    [class.timer-picker__gender-option_on]="runner.gender === option.gender"
+                    (click)="setGender(runner, option.gender)"
+                  >
+                    {{ option.label }}
+                  </button>
+                }
+              </span>
+
+              <button
+                aria-label="Убрать из состава"
+                class="timer-picker__remove"
+                i18n-aria-label="@@timerPicker.removeLabel"
+                type="button"
+                (click)="remove(runner)"
+              >
+                ×
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="timer-picker__empty" i18n="@@timerPicker.rosterEmpty">Пока никого — найдите первого в справочнике.</p>
+      }
+    </section>
+
+    @if (warningSurname(); as surname) {
+      <p class="timer-picker__warning" i18n="@@timerPicker.duplicateSurname" role="status">В составе уже есть {{ surname }}</p>
+    }
+
+    @if (rosterAgeText(); as ageText) {
+      <p class="timer-picker__roster-age">{{ ageText }}</p>
+    }
+
+    <div class="timer-picker__footer">
+      @if (genderPending()) {
+        <p class="timer-picker__missing" role="alert">{{ missingGenderText() }}</p>
+      }
+
+      <button class="timer-picker__done" type="button" [disabled]="genderPending()" (click)="commit()">{{ doneText() }}</button>
+    </div>
+  </div>
+</div>

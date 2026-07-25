@@ -218,3 +218,48 @@
   line-height: 1;
   font-family: var(--font);
 }
+
+// The instrument figure of the race stopwatch: monospaced, tabular, sized so the full
+// MM:SS.d line spans a 390px phone without wrapping. None of the eight text() pairs reaches
+// this size — the largest, mono-value-large, tops out at 2.85rem.
+@mixin timer-figure {
+  font-weight: 600;
+  // Width alone is not enough: in landscape 14vw of an 844px phone is a 118px figure with 390px of
+  // screen to put it in. `min()` lets whichever axis is scarce decide, and the 2.4rem floor keeps
+  // MM:SS.d legible at arm's length even on a 320 × 568 phone lying on its side.
+  font-size: clamp(2.4rem, min(14vw, 9dvh), 5rem);
+  line-height: 1;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+// The hundredths riding alongside the figure. Half its size on purpose: the digits that matter are
+// the minutes and seconds, and a spinning field as tall as they are would drag the eye off them.
+@mixin timer-fraction {
+  font-weight: 600;
+  font-size: clamp(1.2rem, min(7vw, 4.5dvh), 2.5rem);
+  line-height: 1;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+// A tile's recorded time: one notch above mono-caption so it reads at arm's length.
+@mixin timer-tile-time {
+  font-weight: 600;
+  font-size: 0.8rem;
+  line-height: 1.1;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+// The lettered label of the big «ОТСЕЧКА» key — instrument marking, wide tracking.
+@mixin timer-action-label {
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1;
+  font-family: var(--mono);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}

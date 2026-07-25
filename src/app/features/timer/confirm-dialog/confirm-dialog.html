@@ -1,0 +1,11 @@
+<div class="timer-confirm__body">
+  <h2 class="timer-confirm__title" [id]="titleId">{{ heading() }}</h2>
+
+  <p class="timer-confirm__note">{{ note() }}</p>
+
+  <div class="timer-confirm__keys">
+    <button class="timer-confirm__cancel" i18n="@@timerConfirm.cancel" type="button" (click)="onDismiss()">Отмена</button>
+
+    <button class="timer-confirm__action" type="button" (click)="onConfirm()">{{ actionLabel() }}</button>
+  </div>
+</div>

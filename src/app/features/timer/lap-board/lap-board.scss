@@ -1,0 +1,110 @@
+@use 'styles/typography' as t;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+// The two heights of this table are declared once, here, and nowhere else. The FLIP move used to be
+// computed in pixels in TypeScript from copies of these numbers, which meant a row could be resized
+// in the stylesheet and the overtakes would land in the wrong place with nothing to warn anybody.
+// Now the component emits only *how many rows and how many marked rows* a line has to travel, and
+// the browser multiplies that by the heights below — one source of truth, and the arithmetic stays
+// a pure function of the session with no element ever measured.
+.timer-lap-board {
+  --timer-lap-row-h: 46px;
+  --timer-lap-note-h: 20px;
+
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+
+  // The row keeps its place in the DOM and travels by `translateY` instead: an overtake slides the
+  // two rows past each other rather than making Angular rebuild them.
+  &__row {
+    display: grid;
+    position: relative;
+    grid-template-columns: 28px minmax(0, 1fr) auto auto;
+    align-items: baseline;
+    height: var(--timer-lap-row-h);
+    padding: 10px 4px;
+    gap: 3px 10px;
+    transform: translateY(calc(var(--timer-lap-rows, 0) * var(--timer-lap-row-h) + var(--timer-lap-notes, 0) * var(--timer-lap-note-h)));
+    border-bottom: 1px solid var(--border-soft);
+    transition: transform var(--transition-time) var(--ease);
+  }
+
+  &__row_noted {
+    height: calc(var(--timer-lap-row-h) + var(--timer-lap-note-h));
+  }
+
+  // A travelling row draws above the ones it passes, so the two never look welded together.
+  &__row_moved {
+    z-index: 1;
+  }
+
+  &__place {
+    @include t.podium-rank;
+
+    color: var(--text-muted);
+  }
+
+  &__name {
+    @include t.text('body', 'medium');
+
+    overflow: hidden;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__time {
+    @include t.mono-value;
+
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__gap {
+    @include t.mono-meta;
+
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__note {
+    @include t.mono-meta;
+
+    grid-column: 1 / -1;
+    overflow: hidden;
+    color: var(--accent-light);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__pending,
+  &__empty {
+    @include t.text('body', 'medium');
+
+    padding: 12px 4px;
+    color: var(--text-secondary);
+  }
+
+  &__caveat {
+    @include t.mono-caption;
+
+    padding: 0 4px 12px;
+    color: var(--text-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__row {
+      transition: none;
+    }
+  }
+}

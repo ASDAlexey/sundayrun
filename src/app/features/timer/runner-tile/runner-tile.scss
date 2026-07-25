@@ -1,0 +1,254 @@
+@use 'styles/typography' as t;
+
+// The cell decides how tall a tile is, and the tile asks it back: with the grid now fluid, one and
+// the same `_medium` tile is 60 px tall on a small phone and 92 px on a tablet, and a surname set
+// for the small one looks lost in the large. A size container is the only way to ask, because the
+// density modifier lives on the grid, in another component.
+:host {
+  container-name: timer-tile;
+  container-type: size;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.timer-tile {
+  --timer-tile-ink: var(--chart-13);
+  --timer-tile-press: 0.91;
+  --timer-tile-tap-x: 50%;
+  --timer-tile-tap-y: 50%;
+
+  display: grid;
+  position: relative;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'surname surname'
+    'given time';
+  align-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 6px 10px 6px 14px;
+  overflow: hidden;
+  gap: 1px 8px;
+  transform: scale(1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform var(--time-spring) var(--spring-tap),
+    opacity var(--transition-time) var(--ease);
+  user-select: none;
+
+  // The personal ink stripe: an opacity-only layer, so «the edge brightens under the finger»
+  // costs no repaint of the border box.
+  &::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--timer-tile-ink);
+    content: '';
+    opacity: 0.65;
+    transition: opacity var(--time-tap) var(--ease);
+  }
+
+  &:active {
+    transform: scale(var(--timer-tile-press));
+    transition: transform var(--time-press) var(--ease);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  // A finger must not leave a ring behind; the keyboard cut has to be visible.
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  // Children never receive the pointer: `pointerdown.offsetX/Y` must stay relative
+  // to the tile itself, otherwise the ripple starts from the wrong origin.
+  &__surname,
+  &__given,
+  &__time,
+  &__ripple {
+    pointer-events: none;
+  }
+
+  &__surname {
+    @include t.text('body', 'medium');
+    @include t.semibold;
+    @include t.line-height(1.15);
+
+    grid-area: surname;
+    overflow: hidden;
+    color: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__given {
+    @include t.text('label', 'small');
+    @include t.line-height(1.1);
+
+    grid-area: given;
+    overflow: hidden;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__time {
+    @include t.timer-tile-time;
+
+    grid-area: time;
+    align-self: baseline;
+    justify-self: end;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    animation: timer-tile-time-in var(--time-tap) var(--ease);
+  }
+
+  &__ripple {
+    position: absolute;
+    top: var(--timer-tile-tap-y);
+    left: var(--timer-tile-tap-x);
+    width: 220px;
+    height: 220px;
+    margin: -110px 0 0 -110px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: timer-tile-ripple var(--time-tap) var(--ease) forwards;
+    pointer-events: none;
+  }
+
+  &_lap {
+    border-color: var(--border);
+
+    .timer-tile__time {
+      color: var(--text);
+    }
+  }
+
+  &_soon::after {
+    position: absolute;
+    right: 8px;
+    bottom: 0;
+    left: 14px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--accent);
+    content: '';
+    animation: timer-tile-soon var(--time-breathe) var(--ease) infinite;
+  }
+
+  &_done {
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    opacity: 0.55;
+
+    &::before {
+      opacity: 0.3;
+    }
+  }
+
+  &_out {
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    opacity: 0.4;
+
+    .timer-tile__surname {
+      text-decoration: line-through;
+    }
+  }
+
+  &_me {
+    border-style: dashed;
+    border-color: var(--accent-line);
+  }
+
+  &_undo {
+    border-color: var(--accent-warm);
+  }
+
+  // 15 explicit ink modifiers instead of an inline style binding: no sanitiser surprises,
+  // no `[style.--x]`, and the palette stays greppable.
+  @for $ink from 1 through 15 {
+    &_ink-#{$ink} {
+      --timer-tile-ink: var(--chart-#{$ink});
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:active {
+      transform: none;
+    }
+
+    &__time,
+    &_soon::after {
+      animation: none;
+    }
+
+    // The wave is off, but its node is removed by its own `animationend` — so it keeps a motionless,
+    // invisible frame instead of no animation at all. What stays is the ink stripe brightening under
+    // the finger: that is the confirmation of the split, and it is never taken away (design §4).
+    &__ripple {
+      animation-name: timer-tile-ripple-mute;
+    }
+  }
+}
+
+// A tile with room to breathe says the surname louder. One step only: two would turn the grid into
+// a set of unrelated typefaces, and the eye finds a person by position and ink long before it reads.
+@container timer-tile (height >= 76px) {
+  .timer-tile__surname {
+    @include t.text('body', 'large');
+    @include t.semibold;
+    @include t.line-height(1.15);
+  }
+}
+
+@keyframes timer-tile-time-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
+@keyframes timer-tile-ripple {
+  from {
+    transform: scale(0.2);
+    opacity: 0.28;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes timer-tile-ripple-mute {
+  from,
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes timer-tile-soon {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

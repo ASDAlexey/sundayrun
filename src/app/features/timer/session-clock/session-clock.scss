@@ -1,0 +1,284 @@
+@use 'styles/buttons' as b;
+@use 'styles/typography' as t;
+
+:host {
+  display: block;
+  flex: none;
+}
+
+// The cockpit hands the block its horizontal rule, so only the vertical rhythm is decided here.
+.timer-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 4px 11px;
+  gap: 6px;
+
+  &__row {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    gap: 12px;
+  }
+
+  &__figure {
+    @include t.timer-figure;
+
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Its own span rather than part of the line: the hundredths spin all race and must not compete
+  // with the seconds — half the size, muted, riding the same baseline.
+  &__fraction {
+    @include t.timer-fraction;
+
+    margin-left: 2px;
+    color: var(--text-muted);
+  }
+
+  &__figure_idle {
+    animation: timer-clock-breathe var(--time-breathe) var(--ease) infinite;
+  }
+
+  &__figure_wake {
+    animation: timer-clock-wake var(--transition-time) var(--ease) backwards;
+  }
+
+  &__control {
+    @include b.button-accent;
+
+    flex: none;
+    height: 48px;
+    padding: 0 18px;
+    touch-action: manipulation;
+    transition: transform var(--time-spring) var(--spring-tap);
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform var(--time-press) var(--ease);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__control:disabled {
+    background: var(--surface-hover);
+    color: var(--text-muted);
+    cursor: default;
+  }
+
+  // The reason «Старт» is dead is also the way to fix it: one tap into «Кто бежит».
+  &__roster-call {
+    @include t.text('label', 'small');
+
+    align-self: start;
+    padding: 6px 10px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-xs);
+    background: var(--accent-glow);
+    color: var(--accent-light);
+    text-align: left;
+    cursor: pointer;
+    touch-action: manipulation;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__control_stop {
+    @include b.button-outline;
+
+    border-color: var(--accent-warm);
+    color: var(--accent-warm);
+  }
+
+  // --text-secondary, not muted: on direct sunlight muted drops to 3.8 : 1 and stops being read.
+  &__counters {
+    @include t.mono-caption;
+
+    display: flex;
+    align-items: center;
+    min-height: 16px;
+    margin: 0;
+    gap: 10px;
+    color: var(--text-secondary);
+  }
+
+  &__counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__counter-value {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // The farewell line takes the place of the counters, arriving from just below them: the digits
+  // and «Стоп» must not move, so this is the only part of the clock that changes (design §4).
+  &__summary {
+    @include t.mono-caption;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 16px;
+    margin: 0;
+    gap: 4px 10px;
+    color: var(--text-secondary);
+    animation: timer-clock-summary-in var(--transition-time) var(--ease) backwards;
+  }
+
+  &__summary-value {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Shown only where the platform has no wake lock to give; --text-secondary because it is read
+  // in daylight, and it is the one line here that asks the organiser to do something.
+  &__wake {
+    @include t.mono-caption;
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__progress {
+    position: relative;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--border-soft);
+  }
+
+  // `scaleX`, not `width`: a composited property, so ten repaints a second cost no layout.
+  &__progress-fill {
+    position: absolute;
+    inset: 0;
+    transform: scaleX(var(--timer-progress, 0));
+    transform-origin: left center;
+    background: var(--accent-gradient);
+    transition: transform var(--transition-time) var(--ease);
+  }
+
+  // The veil belongs to the clock, not to the page: it is the ceremony of this one control, and the
+  // keyframes of the design spec are named after this block.
+  &__countdown {
+    display: grid;
+    z-index: 50;
+    position: fixed;
+    place-items: center;
+    inset: 0;
+    background: var(--accent-atmosphere);
+    animation: timer-clock-countdown-veil var(--transition-time) var(--ease) backwards;
+  }
+
+  &__countdown-figure {
+    @include t.text('display', 'large');
+
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    animation: timer-clock-countdown var(--transition-time) var(--spring-tap) backwards;
+  }
+
+  // ------------------------------------------------------------------------------------------
+  //  A phone on its side. The figure has already shrunk on its own — `t.timer-figure` is clamped
+  //  against `dvh` as well as `vw` — and the block now folds sideways: the digits and «Стоп» keep
+  //  the left, the counters move up beside them instead of costing a line of their own, and only
+  //  the progress rule still spans the width. The clock gives back ~40 px and the grid takes them.
+  // ------------------------------------------------------------------------------------------
+  @media (height <= 560px) {
+    flex-flow: row wrap;
+    align-items: center;
+    padding: 0 4px 4px;
+    gap: 2px 12px;
+
+    &__row {
+      flex: 0 1 auto;
+    }
+
+    &__counters,
+    &__summary {
+      flex: 1 1 auto;
+      justify-content: flex-end;
+    }
+
+    &__control {
+      height: 44px;
+      padding: 0 14px;
+    }
+
+    &__roster-call,
+    &__wake,
+    &__progress {
+      flex: 1 0 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__figure_idle,
+    &__figure_wake,
+    &__countdown,
+    &__countdown-figure,
+    &__summary {
+      animation: none;
+    }
+
+    &__control {
+      transition: none;
+    }
+
+    &__progress-fill {
+      transition: none;
+    }
+  }
+}
+
+@keyframes timer-clock-breathe {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes timer-clock-wake {
+  from {
+    transform: scale(0.96);
+    opacity: 0.4;
+  }
+}
+
+@keyframes timer-clock-countdown {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+@keyframes timer-clock-countdown-veil {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes timer-clock-summary-in {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+}

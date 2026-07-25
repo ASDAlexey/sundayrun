@@ -1,0 +1,60 @@
+<!-- The density modifier lives on the wrapper: the shelf is a second grid of the same columns and has
+to read the same three numbers, and it is no longer a cell of the first one — a row of the tile grid
+is now sized like a tile, which is not what a list of finishers needs. -->
+<div
+  class="timer-grid-field"
+  [class.timer-grid_dense]="resolvedDensity() === densities.dense"
+  [class.timer-grid_medium]="resolvedDensity() === densities.medium"
+  [class.timer-grid_small]="resolvedDensity() === densities.small"
+>
+  <div
+    aria-label="Участники забега"
+    cdkDropList
+    cdkDropListOrientation="mixed"
+    class="timer-grid"
+    i18n-aria-label="@@timer.gridLabel"
+    role="group"
+    [class.timer-grid_farewell]="farewell()"
+    [class.timer-grid_scroll]="scrolling()"
+    (cdkDropListDropped)="onDropped($event)"
+  >
+    @for (view of tiles(); track view.runner.id) {
+      <div cdkDrag class="timer-grid__cell" [cdkDragDisabled]="!draggable()" [cdkDragStartDelay]="dragStartDelayMs">
+        <app-timer-tile
+          [accentIndex]="view.accentIndex"
+          [givenName]="view.givenName"
+          [runner]="view.runner"
+          [stage]="view.stage"
+          [surname]="view.surname"
+          [timeText]="view.timeText"
+          (details)="onDetails(view)"
+          (retire)="onRetire(view)"
+          (tap)="onTap(view)"
+          (undo)="onUndo(view)"
+        />
+
+        <ng-template cdkDragPlaceholder>
+          <span class="timer-grid__placeholder"></span>
+        </ng-template>
+      </div>
+    }
+  </div>
+
+  @if (shelfTiles().length > 0) {
+    <div class="timer-grid__shelf">
+      <span class="timer-grid__shelf-title">
+        <ng-container i18n="@@timer.shelfTitle">финишировали</ng-container>
+
+        {{ shelfTiles().length }}
+      </span>
+
+      @for (view of shelfTiles(); track view.runner.id) {
+        <button class="timer-grid__shelf-item" type="button" [attr.aria-label]="view.runner.fullName" (click)="onUndo(view)">
+          <span class="timer-grid__shelf-name">{{ view.surname }}</span>
+
+          <span class="timer-grid__shelf-time">{{ view.timeText }}</span>
+        </button>
+      }
+    </div>
+  }
+</div>

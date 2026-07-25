@@ -1,0 +1,106 @@
+<div class="timer-runner-card" role="group" tabindex="-1" [attr.aria-label]="fullName()" (keydown.escape)="onClose()">
+  <div class="timer-runner-card__head">
+    <span class="timer-runner-card__name">{{ fullName() }}</span>
+
+    <button
+      aria-label="Закрыть карточку"
+      class="timer-runner-card__close"
+      i18n-aria-label="@@timer.cardCloseLabel"
+      type="button"
+      (click)="onClose()"
+    >
+      <span aria-hidden="true" i18n="@@timer.cardCloseGlyph">×</span>
+    </button>
+  </div>
+
+  <dl class="timer-runner-card__times">
+    <div class="timer-runner-card__time">
+      <dt class="timer-runner-card__time-label" i18n="@@timer.cardLap">круг</dt>
+
+      <dd class="timer-runner-card__time-value">{{ lapText() }}</dd>
+    </div>
+
+    <div class="timer-runner-card__time">
+      <dt class="timer-runner-card__time-label" i18n="@@timer.cardFinish">финиш</dt>
+
+      <dd class="timer-runner-card__time-value">{{ finishText() }}</dd>
+    </div>
+  </dl>
+
+  <div class="timer-runner-card__outcomes">
+    <button
+      class="timer-runner-card__outcome"
+      i18n="@@timer.cardOutcomeActive"
+      type="button"
+      [attr.aria-pressed]="outcome() === outcomes.active"
+      [class.timer-runner-card__outcome_on]="outcome() === outcomes.active"
+      (click)="onOutcome(outcomes.active)"
+    >
+      бежит
+    </button>
+
+    <button
+      class="timer-runner-card__outcome"
+      i18n="@@timer.cardOutcomeLapOnly"
+      type="button"
+      [attr.aria-pressed]="outcome() === outcomes.lapOnly"
+      [class.timer-runner-card__outcome_on]="outcome() === outcomes.lapOnly"
+      (click)="onOutcome(outcomes.lapOnly)"
+    >
+      только круг
+    </button>
+
+    <button
+      class="timer-runner-card__outcome"
+      i18n="@@timer.cardOutcomeDnf"
+      type="button"
+      [attr.aria-pressed]="outcome() === outcomes.dnf"
+      [class.timer-runner-card__outcome_on]="outcome() === outcomes.dnf"
+      (click)="onOutcome(outcomes.dnf)"
+    >
+      сошёл
+    </button>
+  </div>
+
+  <button class="timer-runner-card__swap" i18n="@@timer.cardSwap" type="button" [attr.aria-expanded]="swapping()" (click)="onToggleSwap()">
+    Поменять местами с…
+  </button>
+
+  @if (swapping()) {
+    <ul class="timer-runner-card__list">
+      @for (other of others(); track other.id) {
+        <li class="timer-runner-card__item">
+          <button class="timer-runner-card__pick" type="button" (click)="onSwap(other.id)">
+            <span class="timer-runner-card__pick-name">{{ other.fullName }}</span>
+
+            <span class="timer-runner-card__pick-times">{{ other.timesText }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <button
+    aria-label="Убрать участника из забега"
+    class="timer-runner-card__remove"
+    i18n="@@timer.cardRemove"
+    i18n-aria-label="@@timer.cardRemoveLabel"
+    type="button"
+    (click)="onRemoveAsk()"
+  >
+    Убрать из состава
+  </button>
+
+  @if (removeAsk(); as note) {
+    <dialog
+      actionLabel="Убрать из состава"
+      appTimerConfirm
+      heading="Убрать участника?"
+      i18n-actionLabel="@@timer.cardRemoveAction"
+      i18n-heading="@@timer.cardRemoveHeading"
+      [note]="note"
+      (closed)="removeAsk.set(null)"
+      (confirmed)="onRemove()"
+    ></dialog>
+  }
+</div>

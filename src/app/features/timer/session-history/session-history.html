@@ -1,0 +1,134 @@
+<div
+  aria-label="История отсечек"
+  class="timer-history"
+  i18n-aria-label="@@timerHistory.dialogLabel"
+  role="dialog"
+  tabindex="-1"
+  (keydown.escape)="onClose()"
+>
+  <header class="timer-history__head">
+    <h2 class="timer-history__title" i18n="@@timerHistory.title">История отсечек</h2>
+
+    <button
+      aria-label="Закрыть историю"
+      class="timer-history__close"
+      i18n-aria-label="@@timerHistory.closeLabel"
+      type="button"
+      (click)="onClose()"
+    >
+      ✕
+    </button>
+  </header>
+
+  <p class="timer-history__hint" i18n="@@timerHistory.hint">Журнал — первоисточник: правьте здесь, пока замер не сохранён.</p>
+
+  @if (hasEntries()) {
+    <ol class="timer-history__list">
+      @for (entry of entries(); track entry.id) {
+        <li class="timer-history__row" [class.timer-history__row_edited]="entry.edited" [class.timer-history__row_orphan]="entry.orphan">
+          <span class="timer-history__index">{{ entry.index }}</span>
+
+          <span class="timer-history__time">{{ entry.timeText }}</span>
+
+          <button class="timer-history__owner" type="button" [attr.aria-expanded]="expandedId() === entry.id" (click)="onExpand(entry.id)">
+            @if (entry.ownerName; as name) {
+              {{ name }}
+            } @else {
+              <span class="timer-history__nobody" i18n="@@timerHistory.orphan">без имени</span>
+            }
+          </button>
+
+          <div class="timer-history__actions">
+            @if (!entry.orphan) {
+              <button class="timer-history__action" i18n="@@timerHistory.unassign" type="button" (click)="onUnassign(entry.id)">
+                в очередь
+              </button>
+            }
+
+            <button
+              aria-label="Удалить отсечку"
+              class="timer-history__action timer-history__action_danger"
+              i18n="@@timerHistory.delete"
+              i18n-aria-label="@@timerHistory.deleteLabel"
+              type="button"
+              (click)="onRemoveAsk(entry)"
+            >
+              удалить
+            </button>
+          </div>
+
+          @if (expandedId() === entry.id) {
+            <ul class="timer-history__picker">
+              @for (runner of runners(); track runner.id) {
+                <li class="timer-history__picker-item">
+                  <button class="timer-history__pick" type="button" (click)="onReassign(entry.id, runner.id)">
+                    {{ runner.fullName }}
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+    </ol>
+  } @else {
+    <p class="timer-history__empty" i18n="@@timerHistory.empty">Журнал пуст: ни одной отсечки.</p>
+  }
+
+  @if (runners().length > 0) {
+    <section class="timer-history__outcomes">
+      <h3 class="timer-history__outcomes-title" i18n="@@timerHistory.outcomesTitle">Кто как закончил</h3>
+
+      @for (runner of runners(); track runner.id) {
+        <div class="timer-history__runner">
+          <span class="timer-history__runner-name">{{ runner.fullName }}</span>
+
+          <div class="timer-history__outcome-keys">
+            <button
+              class="timer-history__outcome"
+              i18n="@@timerHistory.outcomeActive"
+              type="button"
+              [class.timer-history__outcome_on]="runner.outcome === outcomes.active"
+              (click)="onOutcome(runner.id, outcomes.active)"
+            >
+              бежит
+            </button>
+
+            <button
+              class="timer-history__outcome"
+              i18n="@@timerHistory.outcomeLapOnly"
+              type="button"
+              [class.timer-history__outcome_on]="runner.outcome === outcomes.lapOnly"
+              (click)="onOutcome(runner.id, outcomes.lapOnly)"
+            >
+              только круг
+            </button>
+
+            <button
+              class="timer-history__outcome"
+              i18n="@@timerHistory.outcomeDnf"
+              type="button"
+              [class.timer-history__outcome_on]="runner.outcome === outcomes.dnf"
+              (click)="onOutcome(runner.id, outcomes.dnf)"
+            >
+              сошёл
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  }
+</div>
+
+@if (removeAsk(); as ask) {
+  <dialog
+    actionLabel="Удалить отсечку"
+    appTimerConfirm
+    heading="Удалить отсечку?"
+    i18n-actionLabel="@@timerHistory.removeAction"
+    i18n-heading="@@timerHistory.removeHeading"
+    [note]="ask.note"
+    (closed)="removeAsk.set(null)"
+    (confirmed)="onRemove(ask.id)"
+  ></dialog>
+}

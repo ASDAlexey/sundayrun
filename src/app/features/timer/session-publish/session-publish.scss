@@ -1,0 +1,238 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/status' as st;
+@use 'styles/typography' as t;
+
+// ===========================================================
+//  The end of the race: one «Сохранить», the progress of the
+//  publication, and the two things that must be said before
+//  it — unnamed times and runners without a gender.
+// ===========================================================
+
+.timer-publish {
+  @include c.card;
+
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+
+  &__blocked {
+    @include st.error-text;
+
+    margin: 0;
+  }
+
+  &__unnamed {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    gap: 8px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: var(--accent-glow);
+  }
+
+  &__unnamed-text {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--accent-light);
+  }
+
+  &__unnamed-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__unnamed-resolve {
+    @include b.button-outline;
+
+    flex: 1;
+    padding: 8px 12px;
+  }
+
+  &__unnamed-drop {
+    @include t.text('label', 'medium');
+
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+
+  &__save {
+    @include b.button-accent;
+
+    height: 52px;
+  }
+
+  &__saved {
+    @include st.status-text;
+
+    margin: 0;
+  }
+
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 6px;
+    list-style: none;
+  }
+
+  &__step {
+    @include st.status-text;
+
+    color: var(--text-muted);
+
+    &_active {
+      color: var(--accent);
+    }
+
+    &_done {
+      color: var(--green);
+    }
+  }
+
+  &__error {
+    @include st.error-text;
+
+    margin: 0;
+  }
+
+  &__online {
+    @include st.status-text;
+
+    margin: 0;
+  }
+
+  &__retry {
+    @include b.button-outline;
+
+    align-self: start;
+  }
+
+  &__success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__success-title {
+    @include t.text('title', 'medium');
+
+    margin: 0;
+    color: var(--text);
+  }
+
+  &__open {
+    @include b.button-accent;
+  }
+
+  &__check-mark {
+    fill: none;
+    stroke: var(--green);
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke-linecap: round;
+    stroke-width: 3;
+    animation: timer-publish-check var(--transition-time) var(--ease) forwards;
+  }
+
+  &__preview-link,
+  &__admin-link {
+    @include t.text('label', 'small');
+
+    align-self: start;
+    color: var(--accent-light);
+    text-decoration: none;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__note,
+  &__remove-hint {
+    @include t.mono-caption;
+
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  // Set apart by a rule, not by a colour block: the weight of the deed belongs to the question.
+  &__danger {
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    gap: 6px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  &__remove {
+    @include t.text('label', 'medium');
+
+    align-self: start;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--accent-warm);
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--accent-warm);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background var(--transition-time) var(--ease);
+
+    &:hover {
+      background: color-mix(in srgb, var(--accent-warm) 12%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &_done {
+    animation: timer-publish-glow var(--time-breathe) var(--ease);
+  }
+
+  &_failed {
+    border-color: var(--accent-warm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__check-mark {
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+
+    &_done {
+      animation: none;
+    }
+  }
+}
+
+@keyframes timer-publish-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes timer-publish-glow {
+  50% {
+    opacity: 0.72;
+  }
+}

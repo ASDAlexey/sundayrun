@@ -1,0 +1,166 @@
+@use 'styles/typography' as t;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+// The gutter belongs to `.timer__body` now, so the protocol can sit in the narrow second column of a
+// tablet without paying twice for the same 8 px.
+.timer-finish-board {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  gap: 12px;
+  // The protocol comes up from below — the last step of «последний финишировавший» (design §4). It
+  // plays on any switch to this tab, because the arrival reads the same whoever asked for it.
+  animation: timer-finish-board-in var(--transition-time) var(--ease) backwards;
+
+  // `table-layout: fixed` is what makes the ellipsis on a `td` work at all: with the automatic
+  // algorithm a long surname widens its column and pushes the times off a 320 px screen.
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  // With `table-layout: fixed` it is the first row that sets the columns, and the first row is this
+  // one — so the widths live here and the name column takes whatever is left. Without them all five
+  // columns would come out equal and «Романенко» would be cut to fit next to a three-character pace.
+  &__head th {
+    @include t.mono-caption;
+
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    text-align: right;
+
+    &:first-child {
+      width: 34px;
+    }
+
+    &:nth-child(2) {
+      text-align: left;
+    }
+
+    &:nth-child(3),
+    &:nth-child(4) {
+      width: 58px;
+    }
+
+    &:last-child {
+      width: 52px;
+    }
+  }
+
+  &__row td {
+    padding: 9px 4px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  // A DNF and a 2.3 km runner keep their line in the protocol, dimmed but never dropped.
+  &__row_out td {
+    color: var(--text-secondary);
+    opacity: 0.75;
+  }
+
+  &__place {
+    @include t.podium-rank;
+
+    width: 34px;
+    color: var(--text);
+    text-align: right;
+  }
+
+  &__name {
+    @include t.text('body', 'medium');
+
+    overflow: hidden;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__value {
+    @include t.mono-value;
+
+    width: 58px;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  &__pace {
+    @include t.mono-meta;
+
+    width: 52px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  &__empty {
+    @include t.text('body', 'medium');
+
+    padding: 12px 4px;
+    color: var(--text-secondary);
+  }
+
+  &__unassigned {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 8px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: var(--accent-glow);
+  }
+
+  &__unassigned-title {
+    @include t.text('body', 'medium');
+    @include t.semibold;
+
+    color: var(--accent-light);
+  }
+
+  &__unassigned-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__unassigned-time {
+    @include t.mono-meta;
+    @include t.pill;
+
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid var(--accent-line);
+    color: var(--accent-light);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__unassigned-hint {
+    @include t.mono-caption;
+
+    color: var(--text-secondary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes timer-finish-board-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}

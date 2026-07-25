@@ -26,6 +26,13 @@
     background: var(--accent-light);
   }
 
+  // Keyboard only: a finger must not leave a ring behind, a Tab must. Declared once here so that
+  // every accent, outline and toggle key on the site answers the keyboard the same way.
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
   &:disabled {
     background: var(--surface-hover);
     color: var(--text-muted);
@@ -51,6 +58,13 @@
   &:hover {
     border-color: var(--border-hover);
   }
+
+  // Keyboard only: a finger must not leave a ring behind, a Tab must. Declared once here so that
+  // every accent, outline and toggle key on the site answers the keyboard the same way.
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 // A small pressable toggle (sort switches); pair with button-toggle-active. --
@@ -70,6 +84,13 @@
 
   &:hover {
     border-color: var(--border-hover);
+  }
+
+  // Keyboard only: a finger must not leave a ring behind, a Tab must. Declared once here so that
+  // every accent, outline and toggle key on the site answers the keyboard the same way.
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 

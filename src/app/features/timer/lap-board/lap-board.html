@@ -1,0 +1,41 @@
+<div aria-label="Первый круг" class="timer-lap-board" i18n-aria-label="@@timer.lapTableLabel" role="table">
+  @if (hasRows()) {
+    @for (row of rows(); track row.runnerId) {
+      <div
+        class="timer-lap-board__row"
+        role="row"
+        [class.timer-lap-board__row_moved]="row.moved"
+        [class.timer-lap-board__row_noted]="row.mark !== null"
+        [style.--timer-lap-notes]="row.noteSteps"
+        [style.--timer-lap-rows]="row.rowSteps"
+      >
+        <span class="timer-lap-board__place" role="cell">{{ row.place }}</span>
+
+        <span class="timer-lap-board__name" role="cell">{{ row.fullName }}</span>
+
+        <span class="timer-lap-board__time" role="cell">{{ row.timeText }}</span>
+
+        <span class="timer-lap-board__gap" role="cell">{{ row.gapText }}</span>
+
+        @switch (row.mark) {
+          @case (marks.courseRecord) {
+            <span class="timer-lap-board__note" i18n="@@timer.lapNoteRecord" role="cell">● идёт на рекорд трассы на первом круге</span>
+          }
+          @case (marks.personalBest) {
+            <span class="timer-lap-board__note" i18n="@@timer.lapNoteBest" role="cell">● быстрее своего лучшего круга</span>
+          }
+        }
+      </div>
+    }
+
+    @if (pendingText(); as pending) {
+      <p class="timer-lap-board__pending">{{ pending }}</p>
+    }
+
+    <p class="timer-lap-board__caveat" i18n="@@timer.lapCaveat">
+      Сплит первого круга записан примерно у 70 % архивных финишей — с остальными сравнивать не с чем, и отметок у них не будет.
+    </p>
+  } @else {
+    <p class="timer-lap-board__empty" i18n="@@timer.lapEmpty">Ещё никто не прошёл круг.</p>
+  }
+</div>
