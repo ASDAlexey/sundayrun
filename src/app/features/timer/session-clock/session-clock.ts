@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, output, signal } from '@angular/core';
 
 import { formatRussianDateChip } from '../../../core/time/russian-date';
 import { startSession, stopSession } from '../../../core/timer/session-actions';
@@ -15,7 +15,6 @@ import { formatTimerFigure, formatTimerFraction } from './clock-figure';
 import { TIMER_PROGRESS_EMPTY } from './session-clock.constant';
 import { TimerSummaryView } from './session-clock.interface';
 import { bestFinishText, finishedCountText } from './session-clock.text';
-import { TimerCountdownService } from './timer-countdown.service';
 
 /**
  * The single light source of the cockpit: the figure, one key, the two counters and the live bar of
@@ -31,23 +30,15 @@ import { TimerCountdownService } from './timer-countdown.service';
 export class TimerClock implements OnInit {
   readonly #sessions = inject(TimerSessionService);
   readonly #clock = inject(TimerClockService);
-  readonly #countdown = inject(TimerCountdownService);
   readonly #haptics = inject(HapticsService);
   readonly #wakeLock = inject(WakeLockService);
   readonly #farewell = inject(TimerFarewellService);
-
-  /**
-   * The 3-2-1 ceremony. Off unless the «⋮» menu asks for it: at the start line the organiser wants
-   * the clock to run from the tap, not a second later — «сразу запускай секундомер».
-   */
-  readonly countdownEnabled = input(false);
 
   /** «Сначала соберите состав» — the clock cannot open the roster sheet, the page can. */
   readonly roster = output<void>();
 
   protected readonly statuses = TimerStatus;
   protected readonly session = this.#sessions.active;
-  protected readonly countdownValue = this.#countdown.value;
   protected readonly figure = computed(() => formatTimerFigure(this.#clock.elapsedMs()));
   /** Drawn as its own span: same figure, half the size, so the seconds keep the eye. */
   protected readonly fraction = computed(() => formatTimerFraction(this.#clock.elapsedMs()));
@@ -123,18 +114,10 @@ export class TimerClock implements OnInit {
     }
 
     this.#haptics.play(TimerFeedback.start);
-
-    if (this.countdownEnabled()) {
-      this.#countdown.run(() => this.#launch(session));
-
-      return;
-    }
-
     this.#launch(session);
   }
 
   protected onStop(session: TimerSession): void {
-    this.#countdown.cancel();
     this.#sessions.updateActive(() => stopSession(session, this.#clock.elapsedMs()));
     this.#clock.stop();
     this.#wakeLock.release();
@@ -144,8 +127,8 @@ export class TimerClock implements OnInit {
   /**
    * The wall clock is read exactly here and only to anchor the date; every split is measured against
    * the monotonic base the clock service sets up from this same stamp. The stamp is handed to the
-   * clock inside a fresh copy rather than read back from the store, so a roster change made during
-   * the countdown is not overwritten by a session captured before it.
+   * clock inside a fresh copy rather than read back from the store, so a roster change made just
+   * before the tap is not overwritten by a session captured earlier.
    */
   #launch(session: TimerSession): void {
     const startedAtEpochMs = Date.now();

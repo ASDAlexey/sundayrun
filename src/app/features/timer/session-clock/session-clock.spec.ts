@@ -34,14 +34,11 @@ import {
   CLOCK_SUMMARY_BEST_TEXT,
   CLOCK_TOTAL_COUNT,
 } from './session-clock.mock';
-import { TimerCountdownService } from './timer-countdown.service';
-import { TimerCountdownServiceMock, timerCountdownServiceMock } from './timer-countdown.service.mock';
 
 describe('TimerClock', () => {
   let fixture: ComponentFixture<TimerClock>;
   let sessions: TimerSessionServiceMock;
   let clock: TimerClockServiceMock;
-  let countdown: TimerCountdownServiceMock;
   let haptics: HapticsServiceMock;
   let wakeLock: WakeLockServiceMock;
   let farewell: TimerFarewellServiceMock;
@@ -51,7 +48,6 @@ describe('TimerClock', () => {
     vi.setSystemTime(CLOCK_START_EPOCH_MS);
     sessions = timerSessionServiceMock();
     clock = timerClockServiceMock();
-    countdown = timerCountdownServiceMock();
     haptics = hapticsServiceMock();
     wakeLock = wakeLockServiceMock();
     farewell = timerFarewellServiceMock();
@@ -59,7 +55,6 @@ describe('TimerClock', () => {
       providers: [
         { provide: TimerSessionService, useValue: sessions },
         { provide: TimerClockService, useValue: clock },
-        { provide: TimerCountdownService, useValue: countdown },
         { provide: HapticsService, useValue: haptics },
         { provide: WakeLockService, useValue: wakeLock },
         { provide: TimerFarewellService, useValue: farewell },
@@ -100,7 +95,6 @@ describe('TimerClock', () => {
 
     control?.click();
 
-    expect(countdown.cancel).toHaveBeenCalledOnce();
     expect(clock.stop).toHaveBeenCalledOnce();
     expect(wakeLock.request, 'a race picked up mid-flight keeps the screen lit too').toHaveBeenCalledOnce();
     expect(wakeLock.release, 'a stopped clock gives the screen back to the phone').toHaveBeenCalledOnce();
@@ -110,38 +104,6 @@ describe('TimerClock', () => {
       status: TimerStatus.finished,
       stoppedAtMs: CLOCK_ELAPSED_MS,
     });
-  });
-
-  it('runs the ceremony before the start and launches the race when it ends', async () => {
-    sessions.active.set(TIMER_SESSION_IDLE);
-    fixture = TestBed.createComponent(TimerClock);
-    fixture.componentRef.setInput('countdownEnabled', true);
-    await fixture.whenStable();
-
-    const element: HTMLElement = fixture.nativeElement;
-    const control: HTMLElement | null = element.querySelector('.timer-clock__control');
-
-    expect(clock.start, 'nothing ticks before the key is pressed').not.toHaveBeenCalled();
-
-    control?.click();
-
-    expect(haptics.play, 'three ticks and a long «пуск» — the countdown is felt, not only seen').toHaveBeenCalledExactlyOnceWith(
-      TimerFeedback.start,
-    );
-    expect(countdown.run).toHaveBeenCalledOnce();
-    expect(sessions.updateActive).not.toHaveBeenCalled();
-
-    countdown.run.mock.calls[0][0]();
-    await fixture.whenStable();
-
-    expect(sessions.updateActive.mock.calls[0][0](TIMER_SESSION_IDLE)).toEqual({
-      ...TIMER_SESSION_IDLE,
-      status: TimerStatus.running,
-      startedAtEpochMs: CLOCK_START_EPOCH_MS,
-    });
-    expect(clock.start).toHaveBeenCalledWith({ ...TIMER_SESSION_IDLE, startedAtEpochMs: CLOCK_START_EPOCH_MS });
-    expect(wakeLock.request, 'the screen is held from the mass start, not from the page opening').toHaveBeenCalledOnce();
-    expect(element.querySelector('.timer-clock__figure_wake'), 'the digits wake up once').not.toBeNull();
   });
 
   it('turns the counters into the result of the race, and asks for a longer auto-lock where it must', async () => {
@@ -173,7 +135,7 @@ describe('TimerClock', () => {
     expect(element.querySelector('.timer-clock__wake')?.textContent?.trim()).not.toBe('');
   });
 
-  it('starts at once by default, and refuses to start a race nobody is running', async () => {
+  it('starts the race from the tap, and refuses to start a race nobody is running', async () => {
     sessions.active.set(TIMER_SESSION_IDLE);
     fixture = TestBed.createComponent(TimerClock);
     await fixture.whenStable();
@@ -181,11 +143,20 @@ describe('TimerClock', () => {
     const element: HTMLElement = fixture.nativeElement;
 
     expect(element.querySelector('.timer-clock__roster-call'), 'a roster is standing there, so nothing has to be asked for').toBeNull();
+    expect(clock.start, 'nothing ticks before the key is pressed').not.toHaveBeenCalled();
 
     element.querySelector<HTMLElement>('.timer-clock__control')?.click();
+    await fixture.whenStable();
 
-    expect(countdown.run, 'no ceremony unless the menu asks for one').not.toHaveBeenCalled();
+    expect(haptics.play, 'the long «пуск» is felt at the mass start').toHaveBeenCalledExactlyOnceWith(TimerFeedback.start);
+    expect(sessions.updateActive.mock.calls[0][0](TIMER_SESSION_IDLE)).toEqual({
+      ...TIMER_SESSION_IDLE,
+      status: TimerStatus.running,
+      startedAtEpochMs: CLOCK_START_EPOCH_MS,
+    });
     expect(clock.start).toHaveBeenCalledWith({ ...TIMER_SESSION_IDLE, startedAtEpochMs: CLOCK_START_EPOCH_MS });
+    expect(wakeLock.request, 'the screen is held from the mass start, not from the page opening').toHaveBeenCalledOnce();
+    expect(element.querySelector('.timer-clock__figure_wake'), 'the digits wake up once').not.toBeNull();
 
     const asked = vi.fn();
 
@@ -208,8 +179,7 @@ describe('TimerClock', () => {
     expect(asked, 'the reason is also the way to fix it').toHaveBeenCalledOnce();
   });
 
-  it('shows the veil while it counts, and stands at zero with nothing open or nothing left to do', async () => {
-    countdown.value.set(1);
+  it('stands at zero with nothing open, and offers no key once there is nothing left to do', async () => {
     fixture = TestBed.createComponent(TimerClock);
     await fixture.whenStable();
 
@@ -217,7 +187,6 @@ describe('TimerClock', () => {
     const values = [...element.querySelectorAll('.timer-clock__counter-value')];
     const fill: HTMLElement | null = element.querySelector('.timer-clock__progress-fill');
 
-    expect(element.querySelector('.timer-clock__countdown-figure')?.textContent?.trim()).toBe('1');
     expect(values.map((value) => value.textContent?.trim())).toEqual([
       CLOCK_EMPTY_COUNT_TEXT,
       CLOCK_EMPTY_COUNT_TEXT,

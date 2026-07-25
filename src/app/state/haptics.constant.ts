@@ -15,8 +15,8 @@ export const TIMER_VIBRATION: Record<TimerFeedbackType, readonly number[]> = {
   finish: [10, 40, 10],
   /** The lap is recorded — the shortest possible «принял». */
   lap: [10],
-  /** The countdown: three ticks 310 ms apart, then the long «пуск». */
-  start: [10, 310, 10, 310, 10, 310, 60],
+  /** The mass start — one long «пуск», the moment the clock takes off. */
+  start: [60],
 };
 
 /**
@@ -52,12 +52,7 @@ export const TIMER_CLICK_VOICES: Record<TimerFeedbackType, readonly TimerClickVo
     { atMs: 40, hz: 2400 },
   ],
   lap: [{ atMs: 0, hz: 1200 }],
-  start: [
-    { atMs: 0, hz: 900 },
-    { atMs: 320, hz: 900 },
-    { atMs: 640, hz: 900 },
-    { atMs: 960, hz: 480 },
-  ],
+  start: [{ atMs: 0, hz: 480 }],
 };
 
 /** The method every Android browser has and no iOS one does; checked by feature, never by user agent. */

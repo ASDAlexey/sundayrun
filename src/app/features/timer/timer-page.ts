@@ -38,10 +38,10 @@ import { buildTimerHeader } from './timer-page.view';
  * grid arithmetic gets all 844 px of the phone it was calculated for (design spec §2.1). That makes
  * «←» the only way out, which is why it is the first control in the tab order and never disabled.
  *
- * All UI state of the screen lives here — the open tab, the density choice, the countdown switch, the
- * «⋮» menu, the roster sheet, the journal and which runner's card is up — while every fact about the
- * race stays in `TimerSessionService`. The density in particular has to live here and not in the grid,
- * or the menu and the grid would disagree.
+ * All UI state of the screen lives here — the open tab, the density choice, the «⋮» menu, the roster
+ * sheet, the journal and which runner's card is up — while every fact about the race stays in
+ * `TimerSessionService`. The density in particular has to live here and not in the grid, or the menu
+ * and the grid would disagree.
  */
 @Component({
   selector: 'app-timer',
@@ -93,12 +93,6 @@ export class TimerPage {
   });
 
   protected readonly density = signal<TimerDensityChoiceType>(TimerDensityChoice.auto);
-  /**
-   * The 3-2-1 ceremony is off out of the box: «когда делает старт не нужно 1 2 3, сразу запускай
-   * секундомер». It stays in the menu for whoever wants the drum roll, and says so in words.
-   */
-  protected readonly countdownEnabled = signal(false);
-  protected readonly countdownStateText = computed(() => toggleStateText(this.countdownEnabled()));
   protected readonly soundStateText = computed(() => toggleStateText(this.soundEnabled()));
 
   /** The «Сбросить забег?» question in flight — the words are built while the race is in hand. */
@@ -160,10 +154,6 @@ export class TimerPage {
 
   protected onDensity(choice: TimerDensityChoiceType): void {
     this.density.set(choice);
-  }
-
-  protected onToggleCountdown(): void {
-    this.countdownEnabled.update((enabled) => !enabled);
   }
 
   /**

@@ -172,26 +172,6 @@
     transition: transform var(--transition-time) var(--ease);
   }
 
-  // The veil belongs to the clock, not to the page: it is the ceremony of this one control, and the
-  // keyframes of the design spec are named after this block.
-  &__countdown {
-    display: grid;
-    z-index: 50;
-    position: fixed;
-    place-items: center;
-    inset: 0;
-    background: var(--accent-atmosphere);
-    animation: timer-clock-countdown-veil var(--transition-time) var(--ease) backwards;
-  }
-
-  &__countdown-figure {
-    @include t.text('display', 'large');
-
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-    animation: timer-clock-countdown var(--transition-time) var(--spring-tap) backwards;
-  }
-
   // ------------------------------------------------------------------------------------------
   //  A phone on its side. The figure has already shrunk on its own — `t.timer-figure` is clamped
   //  against `dvh` as well as `vw` — and the block now folds sideways: the digits and «Стоп» keep
@@ -229,8 +209,6 @@
   @media (prefers-reduced-motion: reduce) {
     &__figure_idle,
     &__figure_wake,
-    &__countdown,
-    &__countdown-figure,
     &__summary {
       animation: none;
     }
@@ -260,19 +238,6 @@
   from {
     transform: scale(0.96);
     opacity: 0.4;
-  }
-}
-
-@keyframes timer-clock-countdown {
-  from {
-    transform: scale(0.4);
-    opacity: 0;
-  }
-}
-
-@keyframes timer-clock-countdown-veil {
-  from {
-    opacity: 0;
   }
 }
 

@@ -31,8 +31,6 @@ import {
   PLAIN_LEADER_ID,
 } from './runner-grid/runner-grid.mock';
 import { TILE_DOWN, TILE_UP_LONG, tilePointerEvent } from './runner-tile/runner-tile.mock';
-import { TimerCountdownService } from './session-clock/timer-countdown.service';
-import { TimerCountdownServiceMock, timerCountdownServiceMock } from './session-clock/timer-countdown.service.mock';
 import { WakeLockService } from '../../state/wake-lock.service';
 import { wakeLockServiceMock } from '../../state/wake-lock.service.mock';
 import { TimerFarewellService } from './timer-farewell.service';
@@ -54,7 +52,6 @@ describe('TimerPage', () => {
   let sessions: TimerSessionServiceMock;
   let roster: TimerRosterServiceMock;
   let clock: TimerClockServiceMock;
-  let countdown: TimerCountdownServiceMock;
   let publish: TimerPublishServiceMock;
   let haptics: HapticsServiceMock;
   let raceGuard: RaceGuardServiceMock;
@@ -91,7 +88,6 @@ describe('TimerPage', () => {
     sessions = timerSessionServiceMock();
     roster = timerRosterServiceMock();
     clock = timerClockServiceMock();
-    countdown = timerCountdownServiceMock();
     publish = timerPublishServiceMock();
     haptics = hapticsServiceMock();
     raceGuard = raceGuardServiceMock();
@@ -102,7 +98,6 @@ describe('TimerPage', () => {
         { provide: TimerSessionService, useValue: sessions },
         { provide: TimerRosterService, useValue: roster },
         { provide: TimerClockService, useValue: clock },
-        { provide: TimerCountdownService, useValue: countdown },
         { provide: TimerPublishService, useValue: publish },
         { provide: HapticsService, useValue: haptics },
         { provide: RaceGuardService, useValue: raceGuard },
@@ -212,7 +207,7 @@ describe('TimerPage', () => {
 
     click('.timer__menu');
     await fixture.whenStable();
-    menuItem(3);
+    menuItem(2);
     await fixture.whenStable();
 
     expect(element().querySelector('app-timer-history'), 'the journal is reachable, not «скоро»').not.toBeNull();
@@ -224,7 +219,7 @@ describe('TimerPage', () => {
     expect(element().querySelector('app-timer-finish-board')).not.toBeNull();
   });
 
-  it('hands the density down to the grid and switches the ceremony off from the menu', async () => {
+  it('hands the density down to the grid and arms the click from the menu', async () => {
     sessions.active.set(TIMER_SESSION_IDLE);
     await create();
 
@@ -240,21 +235,19 @@ describe('TimerPage', () => {
 
     expect(
       element().querySelectorAll('.timer__menu-item')[0].getAttribute('aria-pressed'),
-      'the ceremony is off out of the box — «Старт» starts the clock',
+      'the click is off out of the box — a park is not where everybody wants sound',
     ).toBe('false');
     expect(textOf('.timer__menu-state')[0], 'and the item says so in words').toBe('выкл');
 
     menuItem(0);
+    haptics.soundEnabled.set(true);
     await fixture.whenStable();
 
+    expect(haptics.toggleSound, 'the click is armed from the one gesture that is not a split').toHaveBeenCalledOnce();
     expect(element().querySelectorAll('.timer__menu-item')[0].getAttribute('aria-pressed')).toBe('true');
     expect(textOf('.timer__menu-state')[0]).toBe('вкл');
 
     menuItem(1);
-
-    expect(haptics.toggleSound, 'the click is armed from the one gesture that is not a split').toHaveBeenCalledOnce();
-
-    menuItem(2);
     await fixture.whenStable();
 
     expect(element().querySelector('app-timer-picker'), 'the roster sheet is reachable mid-race too').not.toBeNull();
@@ -324,8 +317,7 @@ describe('TimerPage', () => {
 
     click('.timer-clock__control');
 
-    expect(countdown.run, '«Старт» runs the clock at once, without the ceremony').not.toHaveBeenCalled();
-    expect(clock.start).toHaveBeenCalledOnce();
+    expect(clock.start, '«Старт» runs the clock at once').toHaveBeenCalledOnce();
 
     sessions.active.set(GRID_PLAIN_RUNNING);
     await fixture.whenStable();

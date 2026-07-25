@@ -78,12 +78,6 @@
           </button>
         </div>
 
-        <button class="timer__menu-item" type="button" [attr.aria-pressed]="countdownEnabled()" (click)="onToggleCountdown()">
-          <ng-container i18n="@@timer.countdownToggle">Обратный отсчёт 3-2-1</ng-container>
-
-          <span class="timer__menu-state">{{ countdownStateText() }}</span>
-        </button>
-
         <button class="timer__menu-item" type="button" [attr.aria-pressed]="soundEnabled()" (click)="onToggleSound()">
           <ng-container i18n="@@timer.soundToggle">Щелчок на отсечку</ng-container>
 
@@ -100,7 +94,7 @@
       </div>
     }
 
-    <app-timer-clock [countdownEnabled]="countdownEnabled()" (roster)="onPicker()" />
+    <app-timer-clock (roster)="onPicker()" />
 
     <div class="timer__tabs" role="tablist">
       <button

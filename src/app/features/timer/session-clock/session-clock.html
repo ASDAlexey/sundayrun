@@ -73,9 +73,3 @@
     <span class="timer-clock__progress-fill" [style.--timer-progress]="progress()"></span>
   </div>
 </div>
-
-@if (countdownValue(); as step) {
-  <div class="timer-clock__countdown" role="alert">
-    <span class="timer-clock__countdown-figure">{{ step }}</span>
-  </div>
-}
