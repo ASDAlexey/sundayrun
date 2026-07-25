@@ -1,9 +1,10 @@
 <div aria-label="Первый круг" class="timer-lap-board" i18n-aria-label="@@timer.lapTableLabel" role="table">
   @if (hasRows()) {
-    @for (row of rows(); track row.runnerId) {
+    @for (row of rows(); track row.id) {
       <div
         class="timer-lap-board__row"
         role="row"
+        [class.timer-lap-board__row_blank]="!row.named"
         [class.timer-lap-board__row_moved]="row.moved"
         [class.timer-lap-board__row_noted]="row.mark !== null"
         [style.--timer-lap-notes]="row.noteSteps"
@@ -11,7 +12,7 @@
       >
         <span class="timer-lap-board__place" role="cell">{{ row.place }}</span>
 
-        <span class="timer-lap-board__name" role="cell">{{ row.fullName }}</span>
+        <span class="timer-lap-board__name" role="cell" [class.timer-lap-board__name_blank]="!row.named">{{ row.fullName }}</span>
 
         <span class="timer-lap-board__time" role="cell">{{ row.timeText }}</span>
 

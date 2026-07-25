@@ -5,6 +5,7 @@ import { TimerRunner } from '../../../core/timer/timer-session.interface';
 import { TIMER_LAP_GAP_PREFIX, TIMER_LAP_NO_GAP_TEXT, TIMER_LAP_NO_STEPS, TIMER_LAP_ONE_STEP } from './lap-board.constant';
 import { TimerLapMark, TimerLapMarkType } from './lap-board.enum';
 import { MarkedLapRow, TimerLapRow, TimerLapRowsInput } from './lap-board.interface';
+import { unnamedLapText } from './lap-board.text';
 
 /**
  * The live «Первый круг» table as the template renders it.
@@ -21,11 +22,16 @@ import { MarkedLapRow, TimerLapRow, TimerLapRowsInput } from './lap-board.interf
  */
 export function buildLapRows(input: TimerLapRowsInput): TimerLapRow[] {
   const byRunner = new Map(input.board.map((row) => [row.runnerId, row]));
-  const flow = input.runners.reduce<MarkedLapRow[]>((rows, runner) => {
+  const named = input.runners.reduce<MarkedLapRow[]>((rows, runner) => {
     const row = byRunner.get(runner.id);
 
     return row === undefined ? rows : [...rows, { mark: markOf(row, runner, input), row }];
   }, []);
+
+  // The queued times have no place in the roster, so they close the DOM order and travel to their
+  // places like everybody else. The archive says nothing about a line with no name on it.
+  const queued = input.board.reduce<MarkedLapRow[]>((rows, row) => (row.runnerId === null ? [...rows, { mark: null, row }] : rows), []);
+  const flow = [...named, ...queued];
 
   const byPlace = [...flow].sort((left, right) => left.row.position - right.row.position);
   const placeNotes = cumulativeNotes(byPlace);
@@ -79,9 +85,11 @@ function toLapRow(entry: MarkedLapRow, rowSteps: number, noteSteps: number): Tim
   const { row } = entry;
 
   return {
-    fullName: row.fullName,
+    fullName: row.fullName ?? unnamedLapText(),
     gapText: row.gapMs === NO_GAP_MS ? TIMER_LAP_NO_GAP_TEXT : `${TIMER_LAP_GAP_PREFIX}${formatDuration(row.gapMs)}`,
+    id: row.splitId,
     mark: entry.mark,
+    named: row.fullName !== null,
     moved: rowSteps !== TIMER_LAP_NO_STEPS || noteSteps !== TIMER_LAP_NO_STEPS,
     noteSteps,
     place: row.position,

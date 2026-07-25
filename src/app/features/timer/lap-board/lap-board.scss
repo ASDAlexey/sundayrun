@@ -48,6 +48,12 @@
     z-index: 1;
   }
 
+  // A place held by a time nobody has claimed yet: the line is there, the person is not. Quiet on
+  // purpose — it is a gap to be filled from the queue, not an event.
+  &__row_blank {
+    border-bottom-style: dashed;
+  }
+
   &__place {
     @include t.podium-rank;
 
@@ -61,6 +67,10 @@
     color: var(--text);
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  &__name_blank {
+    color: var(--text-muted);
   }
 
   &__time {

@@ -65,6 +65,19 @@ export const LAP_BOARD_SESSION: TimerSession = {
 /** The same roster before anybody was tapped — the «Ещё никто не прошёл круг» state. */
 export const LAP_BOARD_SESSION_WITHOUT_SPLITS: TimerSession = { ...LAP_BOARD_SESSION, splits: [] };
 
+/** The queued time of a pack: recorded between two laps, still nobody's, and Зайцев is untapped. */
+export const LAP_QUEUED_SPLIT_ID = 'lap-split-queued';
+
+export const LAP_BOARD_SESSION_QUEUED: TimerSession = {
+  ...LAP_BOARD_SESSION,
+  splits: [...LAP_SPLITS, { id: LAP_QUEUED_SPLIT_ID, atMs: 800_000, runnerId: null }],
+};
+
+/** It stands fourth — behind the 700 000 lap, ahead of the 900 000 one — and carries no surname. */
+export const LAP_QUEUED_PLACE = 4;
+export const LAP_QUEUED_NAME = 'без имени';
+export const LAP_QUEUED_TIME_TEXT = '13:20';
+
 /** The fastest first lap of the archive per gender: the male one is beaten, the female one is not. */
 export const LAP_COURSE_RECORD_LAP_MS: Readonly<Record<GenderType, number | null>> = {
   [Gender.male]: 560_000,

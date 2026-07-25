@@ -13,6 +13,9 @@ export const FINISH_SPLIT_INDEX = 1;
 /** How many splits mean "the lap is behind him". */
 export const LAP_DONE_MIN_SPLITS = 1;
 
+/** An empty count: nobody tapped, nothing recorded, nothing waiting. */
+export const NOTHING_RECORDED = 0;
+
 /** Fields the timer never fills in: the note is computed on publish, the club is not asked for. */
 export const EMPTY_TEXT = '';
 

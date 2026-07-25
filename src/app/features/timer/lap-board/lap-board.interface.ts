@@ -8,6 +8,10 @@ export interface TimerLapRow {
   fullName: string;
   /** «+1:42» to the leader of the lap; empty for the leader himself. */
   gapText: string;
+  /** The split behind the line — its key in the template, stable for a nameless time too. */
+  id: string;
+  /** Whether the place already belongs to somebody; a queued time holds it without a surname. */
+  named: boolean;
   /** What the archive says about this lap, or null for a newcomer and for anybody without history. */
   mark: TimerLapMarkType | null;
   /** Whether the row had to travel to reach its place — the FLIP move rather than a repaint. */
@@ -17,7 +21,7 @@ export interface TimerLapRow {
   place: number;
   /** How many rows up (negative) or down the line travels; the rows themselves stay in roster order. */
   rowSteps: number;
-  runnerId: string;
+  runnerId: string | null;
   timeText: string;
 }
 

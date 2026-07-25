@@ -8,6 +8,7 @@ import { TimerLapBoard } from './lap-board';
 import {
   LAP_BEST_LAP_MS,
   LAP_BOARD_SESSION,
+  LAP_BOARD_SESSION_QUEUED,
   LAP_BOARD_SESSION_WITHOUT_SPLITS,
   LAP_COURSE_RECORD_LAP_MS,
   LAP_EXPECTED_GAP_TEXTS,
@@ -19,6 +20,9 @@ import {
   LAP_EXPECTED_PLACES,
   LAP_EXPECTED_ROW_STEPS,
   LAP_EXPECTED_TIME_TEXTS,
+  LAP_QUEUED_NAME,
+  LAP_QUEUED_PLACE,
+  LAP_QUEUED_TIME_TEXT,
 } from './lap-board.mock';
 
 describe('TimerLapBoard', () => {
@@ -89,6 +93,22 @@ describe('TimerLapBoard', () => {
       board.rows().every((row) => row.mark === null),
       'an empty archive says nothing about anybody',
     ).toBe(true);
+  });
+
+  it('holds a place for a time nobody has claimed yet, and says so in the row', async () => {
+    sessions.active.set(LAP_BOARD_SESSION_QUEUED);
+    await fixture.whenStable();
+
+    const queued = board.rows().find((row) => !row.named);
+
+    expect(queued?.place, 'the queued time stands where it was recorded, not at the end').toBe(LAP_QUEUED_PLACE);
+    expect(queued?.timeText).toBe(LAP_QUEUED_TIME_TEXT);
+    expect(queued?.fullName, 'the place is held, the surname comes from the queue').toBe(LAP_QUEUED_NAME);
+    expect(queued?.mark, 'the archive knows nothing about a line with no name on it').toBeNull();
+    expect(board.rows().filter((row) => row.named).length, 'every runner through the lap is still there, one place lower').toBe(
+      LAP_EXPECTED_PLACES.length,
+    );
+    expect(fixture.nativeElement.querySelectorAll('.timer-lap-board__name_blank')).toHaveLength(1);
   });
 
   it('renders the marks, the caveat and the empty state', () => {
