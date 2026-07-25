@@ -12,6 +12,7 @@
 - [docs/ADMIN_TOKEN.md](docs/ADMIN_TOKEN.md) — как организатору создать GitHub-токен (пошагово)
 - [docs/SEO.md](docs/SEO.md) — что сделано для SEO и ручные шаги после деплоя (Search Console, Яндекс Вебмастер)
 - [docs/BACKEND_HOSTING.md](docs/BACKEND_HOSTING.md) — варианты бэкенда, если бесплатной схемы однажды перестанет хватать
+- [docs/TIMER.md](docs/TIMER.md) — план собственного секундомера `/timer` (замена стороннего приложения; ещё не реализован)
 - [docs/IDEAS.md](docs/IDEAS.md) — банк идей на будущее (исследование аналогов, статистика, геймификация, аналитика)
 
 Английское имя проекта и публичного репозитория — **sundayrun** (бренд SundayRUN используется сообществом пробега); URL деплоя `https://asdalexey.github.io/sundayrun/` захардкожен в `src/index.html`, `public/sitemap.xml` и `TOKEN_HELP_URL` — при другом имени репозитория обновить их.
