@@ -68,28 +68,26 @@ export async function readIndexFile(db: ProtocolDrizzle): Promise<ArchiveIndexFi
 
   return {
     schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION,
-    events: rows.map(
-      (row): ArchiveIndexEntry => ({
-        slug: row.slug,
-        dateIso: row.dateIso,
-        number: row.number,
-        legacyNumber: row.legacyNumber,
-        city: row.city,
-        park: row.park,
-        participantCount: row.participantCount,
-        finisherCount: row.finisherCount,
-        medianTimeMs: row.medianTimeMs,
-        medianMaleMs: row.medianMaleMs,
-        medianFemaleMs: row.medianFemaleMs,
-        bestMaleMs: row.bestMaleMs,
-        bestFemaleMs: row.bestFemaleMs,
-        newcomerCount: row.newcomerCount,
-        personalRecordCount: row.personalRecordCount,
-        // The rollup this feeds never reads weather; it lives in its own table, untouched by the rewrite.
-        weather: null,
-        files: eventFilePaths(row.dateIso),
-      }),
-    ),
+    events: rows.map((row): ArchiveIndexEntry => ({
+      slug: row.slug,
+      dateIso: row.dateIso,
+      number: row.number,
+      legacyNumber: row.legacyNumber,
+      city: row.city,
+      park: row.park,
+      participantCount: row.participantCount,
+      finisherCount: row.finisherCount,
+      medianTimeMs: row.medianTimeMs,
+      medianMaleMs: row.medianMaleMs,
+      medianFemaleMs: row.medianFemaleMs,
+      bestMaleMs: row.bestMaleMs,
+      bestFemaleMs: row.bestFemaleMs,
+      newcomerCount: row.newcomerCount,
+      personalRecordCount: row.personalRecordCount,
+      // The rollup this feeds never reads weather; it lives in its own table, untouched by the rewrite.
+      weather: null,
+      files: eventFilePaths(row.dateIso),
+    })),
   };
 }
 

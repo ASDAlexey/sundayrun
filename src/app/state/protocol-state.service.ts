@@ -82,15 +82,13 @@ export class ProtocolStateService {
 
   /** Imports the whole drop as drafts, ordered by the date parsed from the file name (undated last). */
   importFiles(files: SourceFile[]): void {
-    const drafts = files.map(
-      (file): ProtocolDraft => ({
-        participants: importParticipants(file.bytes),
-        event: null,
-        sourceFile: file,
-        suggestedDateIso: parseDateFromFileName(file.name, isoToday()),
-        notesApplied: false,
-      }),
-    );
+    const drafts = files.map((file): ProtocolDraft => ({
+      participants: importParticipants(file.bytes),
+      event: null,
+      sourceFile: file,
+      suggestedDateIso: parseDateFromFileName(file.name, isoToday()),
+      notesApplied: false,
+    }));
 
     drafts.sort(byDraftDate);
     this.#drafts.set(drafts);
