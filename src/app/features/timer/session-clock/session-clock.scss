@@ -75,7 +75,7 @@
     cursor: default;
   }
 
-  // The reason «Старт» is dead is also the way to fix it: one tap into «Кто бежит».
+  // The reason «Старт» is dead is also the way to fix it: one tap into «Атлеты».
   &__roster-call {
     @include t.text('label', 'small');
 

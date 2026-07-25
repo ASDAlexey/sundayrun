@@ -2,7 +2,7 @@ import { Gender, GenderType } from '../core/models/gender.enum';
 import { TimerRosterCache } from './timer-roster.interface';
 import { TimerStorage } from './timer-storage.type';
 
-/** localStorage key of the cached athlete directory — what makes «Кто бежит» work offline (docs/TIMER.md §5). */
+/** localStorage key of the cached athlete directory — what makes «Атлеты» work offline (docs/TIMER.md §5). */
 export const TIMER_ROSTER_STORAGE_KEY = 'sundayrun.timer.roster.v1';
 
 /** Version of the cached payload; anything else was written by another release and is ignored. */

@@ -10,7 +10,7 @@ import { readTimerRosterCache, serializeTimerRosterCache } from './timer-roster.
 import { TimerStorage } from './timer-storage.type';
 
 /**
- * The athlete directory behind the «Кто бежит» sheet, kept warm for a park with no signal. The
+ * The athlete directory behind the «Атлеты» sheet, kept warm for a park with no signal. The
  * constructor starts from the localStorage cache, so the sheet has names the moment the page opens;
  * `load` then refreshes it from the archive db and writes the cache back. A failed read leaves both
  * the records and the cached date alone and only raises `error` — offline is a normal Sunday, not a

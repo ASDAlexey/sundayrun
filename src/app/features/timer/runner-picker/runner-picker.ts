@@ -33,7 +33,7 @@ import {
 import { TimerGenderOption, TimerPickerCandidate, TimerPickerOption } from './runner-picker.interface';
 
 /**
- * The «Кто бежит» sheet — the whole roster job in one self-contained panel (docs/TIMER.md §5):
+ * The «Атлеты» sheet — the whole roster job in one self-contained panel (docs/TIMER.md §5):
  * search the archive, pull last Sunday's line-up or the regulars in one tap, add a newcomer with a
  * gender the organiser confirms, and answer for anybody still missing one.
  *

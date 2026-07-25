@@ -283,7 +283,7 @@ describe('TimerPicker', () => {
 
     const element = fixture.nativeElement;
 
-    expect(element.querySelector('.timer-picker__title').textContent.trim()).toBe('Кто бежит');
+    expect(element.querySelector('.timer-picker__title').textContent.trim()).toBe('Атлеты');
     expect(element.querySelectorAll('.timer-picker__runner').length).toBe(2);
     expect(element.querySelector('.timer-picker__quick-button')).not.toBeNull();
     expect(element.querySelector('.timer-picker__missing').textContent.trim()).toBe(PICKER_MISSING_GENDER_TEXT);

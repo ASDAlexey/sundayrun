@@ -26,7 +26,7 @@ import { buildTimerSessionRows } from './session-list.view';
  *
  * The actions of a row live in a bottom sheet over the screen rather than inside the card: unfolded
  * in place they pushed the measurement off the top of the phone and turned a five-row list into a
- * scroll. The sheet is the same surface «Кто бежит» uses (`styles/sheet`), because two languages of
+ * scroll. The sheet is the same surface «Атлеты» uses (`styles/sheet`), because two languages of
  * surface in one feature is one too many.
  *
  * The workbook of «Экспорт в Excel» and «Поделиться» is built at the press and kept nowhere — the
