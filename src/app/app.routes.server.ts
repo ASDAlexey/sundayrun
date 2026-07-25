@@ -17,6 +17,9 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'year', renderMode: RenderMode.Prerender },
   { path: 'vs', renderMode: RenderMode.Prerender },
   { path: 'guide', renderMode: RenderMode.Prerender },
+  // Prerendered on purpose: the service worker can only guarantee an offline cold start from the
+  // home screen if there is a static document for /timer to cache (docs/TIMER.md §12).
+  { path: 'timer', renderMode: RenderMode.Prerender },
   { path: 'admin', renderMode: RenderMode.Prerender },
   {
     path: 'races/:slug',

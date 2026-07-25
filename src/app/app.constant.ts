@@ -18,3 +18,6 @@ export const HOME_PAGE_LINK = '/';
 
 /** The full race list, linked from the header navigation. */
 export const RACES_LIST_PAGE_LINK = '/races';
+
+/** The stopwatch page («Секундомер»), linked from the header navigation for everybody. */
+export const TIMER_PAGE_LINK = '/timer';

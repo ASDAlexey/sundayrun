@@ -5,7 +5,7 @@ import { suggestAthletes } from '../../core/history/athlete-suggest';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
-import { ATHLETES_PAGE_LINK } from '../../app.constant';
+import { ATHLETES_PAGE_LINK, TIMER_PAGE_LINK } from '../../app.constant';
 import { SELF_SUGGESTION_LIMIT } from './self-picker.constant';
 import { SelfPickerStatus, SelfPickerStatusType } from './self-picker.enum';
 
@@ -39,6 +39,9 @@ export class SelfPicker {
   readonly suggestions = computed(() => suggestAthletes(this.#options(), this.query(), [], SELF_SUGGESTION_LIMIT));
 
   protected readonly statuses = SelfPickerStatus;
+
+  /** «Мои замеры» — the personal corner of the site is where a device-local list belongs (docs/TIMER.md §8). */
+  protected readonly timerLink = TIMER_PAGE_LINK;
 
   toggle(): void {
     const opening = !this.open();

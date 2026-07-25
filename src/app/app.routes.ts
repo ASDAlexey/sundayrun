@@ -7,12 +7,14 @@ import { HomePage } from './features/home/home-page';
 import { RacePage } from './features/race/race-page';
 import { RecordsPage } from './features/records/records-page';
 import { RacesPage } from './features/races/races-page';
+import { TimerPage } from './features/timer/timer-page';
 import { VersusPage } from './features/versus/versus-page';
 import { YearPage } from './features/year/year-page';
 
 import { adminGuard } from './features/admin/admin.guard';
 import { previewGuard } from './features/preview/preview.guard';
 import { resultGuard } from './features/result/result.guard';
+import { timerLeaveGuard } from './features/timer/timer.guard';
 
 // Public pages are bundled eagerly: a lazy chunk would repaint the shell and shift the footer (CLS).
 // The organiser wizard (upload/preview/result) stays lazy — it pulls xlsx/pdf machinery.
@@ -63,6 +65,15 @@ export const routes: Routes = [
     path: 'guide',
     title: $localize`:@@title.guide:Фишки пробега — Воскресный парковый пробег`,
     component: GuidePage,
+  },
+  // Public and deliberately NOT lazy: in a park with a weak signal a lazy chunk may simply never
+  // arrive, and the stopwatch has to start from the home screen offline (docs/TIMER.md §11).
+  {
+    path: 'timer',
+    title: $localize`:@@title.timer:Секундомер забега — Воскресный парковый пробег`,
+    component: TimerPage,
+    // The cockpit hides the site header, so the system «назад» is the exit nobody sees coming.
+    canDeactivate: [timerLeaveGuard],
   },
   {
     path: 'admin',

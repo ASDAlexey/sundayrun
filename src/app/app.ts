@@ -8,6 +8,7 @@ import {
   HOME_PAGE_LINK,
   MAIN_CONTENT_ID,
   RACES_LIST_PAGE_LINK,
+  TIMER_PAGE_LINK,
   VERSUS_PAGE_LINK,
   VK_COMMUNITY_URL,
 } from './app.constant';
@@ -36,6 +37,7 @@ export class App {
   protected readonly versusLink = VERSUS_PAGE_LINK;
   protected readonly yearLink = YEAR_PAGE_BASE_LINK;
   protected readonly guideLink = GUIDE_PAGE_LINK;
+  protected readonly timerLink = TIMER_PAGE_LINK;
   protected readonly adminLink = ADMIN_PAGE_LINK;
   protected readonly creatorUrl = CREATOR_SITE_URL;
   protected readonly vkUrl = VK_COMMUNITY_URL;

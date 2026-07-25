@@ -68,6 +68,23 @@
     }
   }
 
+  // «Мои замеры» — the middle segment of the chip, so the stopwatch list sits where the visitor
+  // already looks for their own things; the caps stay on the name and the reset.
+  &__timer {
+    @include t.text('label', 'small');
+
+    padding: 7px 10px;
+    border-left: 1px solid var(--accent-line);
+    color: var(--text-secondary);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--accent-light);
+    }
+  }
+
   &__clear {
     @include t.text('label', 'medium');
 

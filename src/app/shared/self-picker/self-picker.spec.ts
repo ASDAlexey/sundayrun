@@ -2,7 +2,7 @@ import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { ATHLETES_PAGE_LINK } from '../../app.constant';
+import { ATHLETES_PAGE_LINK, TIMER_PAGE_LINK } from '../../app.constant';
 import { AthletesService } from '../../github/athletes.service';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
@@ -93,6 +93,9 @@ describe('SelfPicker', () => {
     expect(element.querySelector('.self-picker__toggle'), 'a picked self replaces the toggle').toBeNull();
     expect(link.textContent.trim()).toBe(PICKED_SELF.displayName);
     expect(link.getAttribute('href')).toBe(`${ATHLETES_PAGE_LINK}/${encodeURIComponent(PICKED_SELF.key)}`);
+    expect(element.querySelector('.self-picker__timer').getAttribute('href'), 'the personal corner holds «Мои замеры»').toBe(
+      TIMER_PAGE_LINK,
+    );
 
     element.querySelector('.self-picker__clear').click();
 

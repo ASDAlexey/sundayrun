@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { RACES_LIST_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
+import { RACES_LIST_PAGE_LINK, TIMER_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { RECORDS_PAGE_LINK } from '../records/records-page.constant';
 import { YEAR_PAGE_BASE_LINK } from '../year/year-page.constant';
 import { GuidePage } from './guide-page';
@@ -45,6 +45,7 @@ describe('GuidePage', () => {
       YEAR_PAGE_BASE_LINK,
       YEAR_PAGE_BASE_LINK,
       VERSUS_PAGE_LINK,
+      TIMER_PAGE_LINK,
     ]);
   });
 });

@@ -140,10 +140,20 @@
     opacity: 0.75;
   }
 
+  // Sections and self-pick together, so the pick sits beside the rail rather than inside it: a
+  // scroll container clips the card that opens under «Выбери себя».
+  &__controls {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 6px;
+  }
+
   &__nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    min-width: 0;
     gap: 6px;
   }
 
@@ -202,24 +212,35 @@
       padding: 14px 16px;
     }
 
-    // The nav spans the full width below the brand so its links + self-pick wrap
-    // onto their own lines instead of overflowing off the right edge.
-    &__nav {
+    // One rail instead of three rows. Six sections plus the self-pick used to wrap onto their own
+    // lines and ate a third of a phone screen before the page even started — on the timer route the
+    // header was taller than the thing it was heading. The rail keeps every link on one line and
+    // lets the finger push the tail into view; nothing is hidden behind a burger, and the order of
+    // the sections is still the order of the site.
+    &__controls {
       width: 100%;
-      gap: 4px;
+    }
+
+    &__nav {
+      flex: 1;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 2px;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
     }
 
     &__nav-link {
-      padding: 8px 10px;
+      flex: none;
+      padding: 8px 9px;
+      white-space: nowrap;
+      scroll-snap-align: start;
     }
 
-    // Break the self-pick onto its own full-width row under the links, set off by a
-    // hairline — reads as a deliberate «this is you» zone instead of a stray gap.
+    // The self-pick rides at the end of the same rail: it is one more chip, not a second header.
     &__self {
-      width: 100%;
-      margin-top: 8px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border-soft);
+      flex: none;
+      margin-left: 4px;
     }
   }
 }
