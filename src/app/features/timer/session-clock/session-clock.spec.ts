@@ -106,6 +106,28 @@ describe('TimerClock', () => {
     });
   });
 
+  it('stops itself the moment the last runner is home', async () => {
+    sessions.active.set(TIMER_SESSION);
+    clock.elapsedMs.set(CLOCK_ELAPSED_MS);
+    fixture = TestBed.createComponent(TimerClock);
+    await fixture.whenStable();
+
+    expect(sessions.updateActive, 'somebody is still out on the course — nothing is stopped').not.toHaveBeenCalled();
+    expect(clock.stop).not.toHaveBeenCalled();
+
+    sessions.active.set(COMPLETE_SESSION);
+    await fixture.whenStable();
+
+    expect(sessions.updateActive.mock.calls[0][0](COMPLETE_SESSION), 'the stop is the same one the key does').toEqual({
+      ...COMPLETE_SESSION,
+      status: TimerStatus.finished,
+      stoppedAtMs: CLOCK_ELAPSED_MS,
+    });
+    expect(clock.stop, 'the digits stop with the race, not when somebody remembers the key').toHaveBeenCalledOnce();
+    expect(wakeLock.release, 'and the screen goes back to the phone').toHaveBeenCalledOnce();
+    expect(haptics.play).toHaveBeenLastCalledWith(TimerFeedback.finish);
+  });
+
   it('turns the counters into the result of the race, and asks for a longer auto-lock where it must', async () => {
     sessions.active.set(TIMER_SESSION);
     fixture = TestBed.createComponent(TimerClock);

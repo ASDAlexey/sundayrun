@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, output, signal } from '@angular/core';
 
 import { formatRussianDateChip } from '../../../core/time/russian-date';
 import { startSession, stopSession } from '../../../core/timer/session-actions';
-import { bestFinishMs, finishDoneCount, lapDoneCount } from '../../../core/timer/session-splits';
+import { bestFinishMs, finishDoneCount, isRaceComplete, lapDoneCount } from '../../../core/timer/session-splits';
 import { TimerStatus } from '../../../core/timer/timer-session.enum';
 import { TimerSession } from '../../../core/timer/timer-session.interface';
 import { TimerFeedback } from '../../../state/haptics.enum';
@@ -27,7 +27,7 @@ import { bestFinishText, finishedCountText } from './session-clock.text';
   styleUrl: './session-clock.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimerClock implements OnInit {
+export class TimerClock {
   readonly #sessions = inject(TimerSessionService);
   readonly #clock = inject(TimerClockService);
   readonly #haptics = inject(HapticsService);
@@ -97,14 +97,37 @@ export class TimerClock implements OnInit {
   /** Set once the race is under way, so the figure plays its «просыпается» animation exactly once. */
   protected readonly woke = signal(false);
 
-  /** A race restored from localStorage is already running — the digits have to catch up with it. */
-  ngOnInit(): void {
-    const session = this.session();
+  /** Whether the interval is running right now, so a tap does not restart the tick on every split. */
+  #ticking = false;
 
-    if (session?.status === TimerStatus.running) {
-      this.#clock.start(session);
-      this.#wakeLock.request();
-    }
+  /**
+   * The digits follow the status of the measurement rather than a sequence of calls: a race restored
+   * from localStorage picks its tick up on its own, and a race resumed by «Отменить» after the
+   * automatic stop does too.
+   *
+   * And the stop itself lives here: the moment every runner is home or retired there is nothing left
+   * to time, so the clock stops itself instead of running on over a finished race until somebody
+   * remembers the key (docs/TIMER.md §14). It stays reversible — undoing the last tap puts the race
+   * back on the clock.
+   */
+  constructor() {
+    effect(() => {
+      const session = this.#sessions.active();
+
+      if (session?.status !== TimerStatus.running) {
+        this.#idle();
+
+        return;
+      }
+
+      if (isRaceComplete(session)) {
+        this.#finish(session);
+
+        return;
+      }
+
+      this.#run(session);
+    });
   }
 
   /** Public for the specs: a disabled key cannot be clicked, and the refusal has to be provable. */
@@ -118,10 +141,36 @@ export class TimerClock implements OnInit {
   }
 
   protected onStop(session: TimerSession): void {
-    this.#sessions.updateActive(() => stopSession(session, this.#clock.elapsedMs()));
+    this.#finish(session);
+  }
+
+  /** The race is over — by the key or by the last runner. Same three things happen either way. */
+  #finish(session: TimerSession): void {
+    const stoppedAtMs = this.#clock.elapsedMs();
+
+    this.#idle();
+    this.#sessions.updateActive(() => stopSession(session, stoppedAtMs));
+    this.#haptics.play(TimerFeedback.finish);
+  }
+
+  #run(session: TimerSession): void {
+    if (this.#ticking) {
+      return;
+    }
+
+    this.#ticking = true;
+    this.#clock.start(session);
+    this.#wakeLock.request();
+  }
+
+  #idle(): void {
+    if (!this.#ticking) {
+      return;
+    }
+
+    this.#ticking = false;
     this.#clock.stop();
     this.#wakeLock.release();
-    this.#haptics.play(TimerFeedback.finish);
   }
 
   /**
@@ -133,6 +182,7 @@ export class TimerClock implements OnInit {
   #launch(session: TimerSession): void {
     const startedAtEpochMs = Date.now();
 
+    this.#ticking = true;
     this.#sessions.updateActive((current) => startSession(current, startedAtEpochMs));
     this.#clock.start({ ...session, startedAtEpochMs });
     this.#wakeLock.request();

@@ -1,13 +1,7 @@
 import { GenderType } from '../models/gender.enum';
 import { CreateSessionInput, NewTimerRunner } from './session-actions.interface';
 import { runnerSplits, unassignedSplits } from './session-splits';
-import {
-  EMPTY_ROSTER,
-  INITIAL_PUBLISH_STATUS,
-  LAST_ENTRY_INDEX,
-  MAX_SPLITS_PER_RUNNER,
-  WITHOUT_LAST_ENTRY,
-} from './timer-session.constant';
+import { EMPTY_ROSTER, INITIAL_PUBLISH_STATUS, MAX_SPLITS_PER_RUNNER, WITHOUT_LAST_ENTRY } from './timer-session.constant';
 import { TimerRole, TimerRunnerOutcome, TimerRunnerOutcomeType, TimerStatus } from './timer-session.enum';
 import { TimerPublishStatus, TimerRunner, TimerSession, TimerSplit } from './timer-session.interface';
 
@@ -179,11 +173,19 @@ export function undoLastSplit(session: TimerSession): TimerSession {
   return session.splits.length === 0 ? session : { ...session, splits: session.splits.slice(0, WITHOUT_LAST_ENTRY) };
 }
 
-/** «+ ещё один»: hangs the newest recorded time on one more runner — they came in chest to chest. */
-export function repeatLastSplitFor(session: TimerSession, runnerId: string, splitId: string): TimerSession {
-  const last = session.splits.at(LAST_ENTRY_INDEX);
+/**
+ * Puts a stopped race back on the clock. The stopwatch stops itself the moment the last runner is
+ * home (docs/TIMER.md §14), and a stop that nobody asked for has to be as undoable as the tap that
+ * caused it — «Отменить» takes the tap back, this takes the finish back with it. The start stamp is
+ * untouched, so the digits resume where the wall clock says they should be, and every recorded `atMs`
+ * keeps its meaning.
+ */
+export function resumeSession(session: TimerSession): TimerSession {
+  if (session.status !== TimerStatus.finished) {
+    return session;
+  }
 
-  return last === undefined ? session : recordSplit(session, runnerId, last.atMs, splitId);
+  return { ...session, status: TimerStatus.running, stoppedAtMs: null };
 }
 
 /** Records the outcome of a publish attempt; an identical status keeps the session reference. */

@@ -10,7 +10,7 @@ import {
   removeRunner,
   removeSplit,
   renameRunner,
-  repeatLastSplitFor,
+  resumeSession,
   setPublishStatus,
   setRunnerGender,
   setRunnerOutcome,
@@ -51,7 +51,6 @@ import {
   POPOV_IGOR_RUNNER_ID,
   ROMANENKO_RUNNER_ID,
   SECOND_UNNAMED_SPLIT_ID,
-  SECOND_UNNAMED_SPLIT_MS,
   SOKOLOVA_RUNNER_ID,
   TIMER_SESSION,
   TIMER_SESSION_IDLE,
@@ -109,6 +108,14 @@ describe('clock actions', () => {
     expect(stopped.status).toBe(TimerStatus.finished);
     expect(stopped.stoppedAtMs).toBe(STOP_ELAPSED_MS);
     expect(stopSession(TIMER_SESSION_IDLE, STOP_ELAPSED_MS), 'a race that never started cannot be stopped').toBe(TIMER_SESSION_IDLE);
+
+    const resumed = resumeSession(stopped);
+
+    expect(resumed.status, 'the automatic stop is undoable — the race goes back on the clock').toBe(TimerStatus.running);
+    expect(resumed.stoppedAtMs).toBeNull();
+    expect(resumed.startedAtEpochMs, 'and the digits resume where the wall clock says they should').toBe(stopped.startedAtEpochMs);
+    expect(resumeSession(TIMER_SESSION), 'a race already running is left alone').toBe(TIMER_SESSION);
+    expect(resumeSession(TIMER_SESSION_IDLE), 'and one that never started has nothing to resume').toBe(TIMER_SESSION_IDLE);
   });
 });
 
@@ -116,7 +123,6 @@ describe('recording actions', () => {
   it('records named and unnamed taps only while the clock runs, and undoes the newest entry', () => {
     const recorded = recordSplit(TIMER_SESSION, KUZNETSOV_RUNNER_ID, RECORDED_SPLIT_AT_MS, RECORDED_SPLIT_ID);
     const unnamed = recordUnnamedSplit(TIMER_SESSION, RECORDED_SPLIT_AT_MS, RECORDED_SPLIT_ID);
-    const repeated = repeatLastSplitFor(TIMER_SESSION, KUZNETSOV_RUNNER_ID, RECORDED_SPLIT_ID);
 
     expect(recorded.splits.at(-1)).toEqual({ id: RECORDED_SPLIT_ID, atMs: RECORDED_SPLIT_AT_MS, runnerId: KUZNETSOV_RUNNER_ID });
     expect(recordSplit(TIMER_SESSION_IDLE, KUZNETSOV_RUNNER_ID, RECORDED_SPLIT_AT_MS, RECORDED_SPLIT_ID), 'the clock must run').toBe(
@@ -130,12 +136,6 @@ describe('recording actions', () => {
     expect(unnamed.splits.at(-1)).toEqual({ id: RECORDED_SPLIT_ID, atMs: RECORDED_SPLIT_AT_MS, runnerId: null });
     expect(recordUnnamedSplit(TIMER_SESSION_IDLE, RECORDED_SPLIT_AT_MS, RECORDED_SPLIT_ID), 'the clock must run here too').toBe(
       TIMER_SESSION_IDLE,
-    );
-    expect(runnerSplitTimesMs(repeated, KUZNETSOV_RUNNER_ID), 'chest to chest: the newest time is reused').toEqual([
-      SECOND_UNNAMED_SPLIT_MS,
-    ]);
-    expect(repeatLastSplitFor(TIMER_SESSION_WITHOUT_SPLITS, KUZNETSOV_RUNNER_ID, RECORDED_SPLIT_ID), 'an empty journal').toBe(
-      TIMER_SESSION_WITHOUT_SPLITS,
     );
     expect(undoLastSplit(TIMER_SESSION).splits).toEqual(TIMER_SESSION.splits.slice(0, -1));
     expect(undoLastSplit(TIMER_SESSION_WITHOUT_SPLITS), 'nothing to undo').toBe(TIMER_SESSION_WITHOUT_SPLITS);
