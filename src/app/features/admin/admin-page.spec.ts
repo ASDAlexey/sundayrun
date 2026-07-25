@@ -1,6 +1,6 @@
 import { DOCUMENT, PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, Params, Router, provideRouter } from '@angular/router';
 
 import { FIRST_ARCHIVE_EVENT_NUMBER } from '../../core/github/archive-index.constant';
 import { EMPTY_INDEX, EXISTING_INDEX, NEWER_ENTRY, OLDER_ENTRY } from '../../core/github/archive-index.mock';
@@ -25,11 +25,13 @@ import { SITE_META_CDN_ERROR_MESSAGE } from '../../github/site-meta.service.mock
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { BROWSER_PLATFORM_ID, SERVER_PLATFORM_ID } from '../spec-utils/platform.mock';
 import { settle } from '../spec-utils/settle';
+import { activatedRouteQueryStub } from '../spec-utils/activated-route-stub';
 import { AdminPage } from './admin-page';
-import { DELETE_TICK_INTERVAL_MS } from './admin-page.constant';
+import { ADMIN_RETURN_PARAM, DELETE_TICK_INTERVAL_MS } from './admin-page.constant';
 import { RaceListStatus, TokenSaveStatus } from './admin-page.enum';
 import {
   ADMIN_RACES_LOAD_ERROR_MESSAGE,
+  ADMIN_RETURN_TO_TIMER,
   EXPECTED_ADMIN_RACES,
   EXPECTED_NEXT_NUMBER,
   MONTH_QUERY,
@@ -56,6 +58,8 @@ describe('AdminPage', () => {
   /** Same mocked surface as the publish history — the delete history mirrors it. */
   const deleteDuration = publishDurationServiceMock();
   const freshness = dbFreshnessServiceMock();
+  /** The query string the page is opened with; `?return=` sends the organiser back after the check. */
+  const route: { query: Params } = { query: {} };
 
   let platformId = BROWSER_PLATFORM_ID;
   let fixture: ComponentFixture<AdminPage>;
@@ -64,6 +68,7 @@ describe('AdminPage', () => {
     vi.clearAllMocks();
     isAdmin.set(false);
     platformId = BROWSER_PLATFORM_ID;
+    route.query = {};
     metaState.set(PublishState.idle);
     deleteState.set(PublishState.idle);
     pendingArchive.uploads.set([]);
@@ -89,6 +94,7 @@ describe('AdminPage', () => {
         { provide: DbFreshnessService, useValue: freshness },
         { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
         { provide: PLATFORM_ID, useFactory: () => platformId },
+        { provide: ActivatedRoute, useFactory: () => activatedRouteQueryStub(route.query) },
       ],
     });
   });
@@ -129,6 +135,22 @@ describe('AdminPage', () => {
     expect(save).toHaveBeenCalledWith(ADMIN_TOKEN_MOCK);
     expect(fixture.componentInstance.status()).toBe(TokenSaveStatus.valid);
     expect(loadMeta, 'the panel opens right away, so the editor prefill loads after saving').toHaveBeenCalled();
+  });
+
+  it('returns to the page that asked for the key once the token is accepted', async () => {
+    route.query = { [ADMIN_RETURN_PARAM]: ADMIN_RETURN_TO_TIMER };
+    fixture = await createPage();
+
+    const navigateByUrl = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    const element = fixture.nativeElement;
+
+    element.querySelector('.admin__input').value = ADMIN_TOKEN_MOCK;
+    element.querySelector('.admin__save').click();
+    await settle();
+
+    expect(navigateByUrl, 'the stopwatch sent the organiser here, so it gets them back').toHaveBeenCalledExactlyOnceWith(
+      ADMIN_RETURN_TO_TIMER,
+    );
   });
 
   it('shows empty, unauthorized and generic error messages without saving the token', async () => {
@@ -180,6 +202,7 @@ describe('AdminPage', () => {
     expect(element.querySelector('.admin__races-total').textContent).toContain(String(EXPECTED_ADMIN_RACES.length));
     expect(element.querySelector('.admin__viewport'), 'the races list virtualizes its rows').not.toBeNull();
     expect(element.querySelector('.admin__races-note')).not.toBeNull();
+    expect(element.querySelector('.admin__timer').getAttribute('href'), 'the stopwatch is one press away').toBe(ADMIN_RETURN_TO_TIMER);
 
     element.querySelector('.admin__clear').click();
 

@@ -40,6 +40,9 @@ export const POST_METHOD = 'POST';
 
 export const PATCH_METHOD = 'PATCH';
 
+/** Cheapest way to probe a path: the Contents API answers a HEAD without sending the file. */
+export const HEAD_METHOD = 'HEAD';
+
 export const HTTP_UNAUTHORIZED = 401;
 
 export const HTTP_FORBIDDEN = 403;

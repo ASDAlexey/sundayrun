@@ -13,6 +13,16 @@
     <div class="admin__grid">
       <div class="admin__column">
         <section class="admin__card">
+          <h2 class="admin__subtitle" i18n="@@admin.timerTitle">Секундомер</h2>
+
+          <p class="admin__hint" i18n="@@admin.timerHint">
+            Отсечки по фамилиям прямо на финише — потом одна кнопка «Сохранить», и забег уедет в архив сам.
+          </p>
+
+          <a class="admin__timer" i18n="@@admin.timerLink" [routerLink]="timerLink">Засечь забег</a>
+        </section>
+
+        <section class="admin__card">
           <h2 class="admin__subtitle" i18n="@@admin.uploadTitle">Загрузить забег</h2>
 
           <p class="admin__hint" i18n="@@admin.uploadHint">Протокол нового забега — результаты и рекорды пересчитаются автоматически.</p>

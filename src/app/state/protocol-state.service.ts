@@ -19,13 +19,14 @@ import { parseDateFromFileName } from '../core/time/file-name-date';
 import { isoToday } from '../core/time/iso-today';
 import { importParticipants } from '../core/xlsx/import-participants';
 import { ProtocolDraft } from './protocol-draft.interface';
-import { SourceFile } from './source-file.interface';
+import { DatedSourceFile, SourceFile } from './source-file.interface';
 
 /**
  * Single source of truth for the imported race protocols. A drop can carry several workbooks at
  * once; each becomes a draft, the pages page through them via `activeIndex`, and the whole batch is
- * published together. The single-draft accessors (`participants`, `event`, …) always read the
- * active draft, so the editing components stay draft-agnostic.
+ * published together. A race timed by the built-in stopwatch enters the same pipeline through
+ * `importSession`, only without a workbook behind it. The single-draft accessors (`participants`,
+ * `event`, …) always read the active draft, so the editing components stay draft-agnostic.
  */
 @Injectable({ providedIn: 'root' })
 export class ProtocolStateService {
@@ -82,16 +83,35 @@ export class ProtocolStateService {
 
   /** Imports the whole drop as drafts, ordered by the date parsed from the file name (undated last). */
   importFiles(files: SourceFile[]): void {
-    const drafts = files.map((file): ProtocolDraft => ({
-      participants: importParticipants(file.bytes),
-      event: null,
-      sourceFile: file,
-      suggestedDateIso: parseDateFromFileName(file.name, isoToday()),
-      notesApplied: false,
-    }));
+    const todayIso = isoToday();
+    const dated = files.map((file): DatedSourceFile => ({ dateIso: parseDateFromFileName(file.name, todayIso), file }));
 
-    drafts.sort(byDraftDate);
-    this.#drafts.set(drafts);
+    dated.sort(byFileDate);
+    this.#drafts.set(
+      dated.map(({ dateIso, file }): ProtocolDraft => ({
+        participants: importParticipants(file.bytes),
+        event: null,
+        sourceFile: file,
+        suggestedDateIso: dateIso,
+        notesApplied: false,
+      })),
+    );
+    this.#activeIndex.set(0);
+    this.#autoFillEvents();
+  }
+
+  /**
+   * Imports a race timed by the built-in stopwatch as the batch's only draft, replacing whatever
+   * was imported before. There is no workbook to parse and none to publish (`sourceFile` stays
+   * null), the date comes from the session instead of a file name, and the genders are already
+   * confirmed by the organiser. Everything downstream is the ordinary upload path:
+   * `setPublishedEventDates` fills the requisites and the race number in, `applyAutoNotes` builds
+   * the notes and `buildPublishInputs` assembles the payload — just with no `source.xlsx` in the
+   * commit (docs/TIMER.md §3). The draft carries no file name; the only place that shows one is
+   * the pager, which renders exclusively for multi-draft uploads, so nothing is left blank on screen.
+   */
+  importSession(participants: Participant[], dateIso: string): void {
+    this.#drafts.set([{ participants, event: null, sourceFile: null, suggestedDateIso: dateIso, notesApplied: false }]);
     this.#activeIndex.set(0);
     this.#autoFillEvents();
   }
@@ -191,7 +211,7 @@ export class ProtocolStateService {
     return this.#drafts().flatMap((draft) =>
       draft.event === null
         ? []
-        : [{ event: draft.event, rows: buildProtocolRows(draft.participants), sourceXlsxBytes: draft.sourceFile.bytes }],
+        : [{ event: draft.event, rows: buildProtocolRows(draft.participants), sourceXlsxBytes: draft.sourceFile?.bytes ?? null }],
     );
   }
 
@@ -294,17 +314,17 @@ function isDraftReady(draft: ProtocolDraft): boolean {
   return draft.participants.length > 0 && draft.event !== null && draft.participants.every((participant) => participant.gender !== null);
 }
 
-/** Dated drafts first in chronological order, undated ones last by file name — the paging order. */
-function byDraftDate(left: ProtocolDraft, right: ProtocolDraft): number {
-  if (left.suggestedDateIso === null || right.suggestedDateIso === null) {
-    if (left.suggestedDateIso === right.suggestedDateIso) {
-      return left.sourceFile.name.localeCompare(right.sourceFile.name);
+/** Dated files first in chronological order, undated ones last by file name — the paging order. */
+function byFileDate(left: DatedSourceFile, right: DatedSourceFile): number {
+  if (left.dateIso === null || right.dateIso === null) {
+    if (left.dateIso === right.dateIso) {
+      return left.file.name.localeCompare(right.file.name);
     }
 
-    return left.suggestedDateIso === null ? 1 : -1;
+    return left.dateIso === null ? 1 : -1;
   }
 
-  return left.suggestedDateIso.localeCompare(right.suggestedDateIso);
+  return left.dateIso.localeCompare(right.dateIso);
 }
 
 /** The published dates plus the other drafts' dates, deduplicated — `draftIndex`'s own date stays out. */

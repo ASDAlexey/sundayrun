@@ -45,6 +45,22 @@ export const EARLIER_PUBLISH_INPUT: PublishEventInput = {
 /** Given newest first, so `publishEvents` must sort before slugging and committing. */
 export const BATCH_PUBLISH_INPUTS: PublishEventInput[] = [PUBLISH_INPUT, EARLIER_PUBLISH_INPUT];
 
+/** Between the two dated batch inputs, so the skipped workbook sits in the middle once sorted. */
+const TIMER_EVENT_DATE_ISO = '2026-06-24';
+
+/** An event timed by the built-in stopwatch: there is no workbook behind it. */
+export const TIMER_PUBLISH_INPUT: PublishEventInput = {
+  event: { ...RACE_EVENT, dateIso: TIMER_EVENT_DATE_ISO },
+  rows: PROTOCOL_ROWS,
+  sourceXlsxBytes: null,
+};
+
+/** A stopwatch-timed publication commits the db alone. */
+export const EXPECTED_TIMER_COMMIT_PATHS = [PROTOCOL_DB_PATH];
+
+/** The batch above plus a stopwatch-timed event in the middle, still given out of date order. */
+export const MIXED_BATCH_PUBLISH_INPUTS: PublishEventInput[] = [PUBLISH_INPUT, TIMER_PUBLISH_INPUT, EARLIER_PUBLISH_INPUT];
+
 /** A batch commits every workbook date-ordered plus the ONE db carrying all the events. */
 export const EXPECTED_BATCH_COMMIT_PATHS = ['data/events/2026-06-21/source.xlsx', 'data/events/2026-06-28/source.xlsx', PROTOCOL_DB_PATH];
 

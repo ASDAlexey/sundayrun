@@ -70,7 +70,11 @@ function batchSlug(ordered: PublishEventInput[]): string {
     : `${first}${BATCH_SLUG_RANGE_SEPARATOR}${last}${BATCH_SLUG_SUFFIX_OPEN}${ordered.length}${BATCH_SLUG_SUFFIX_CLOSE}`;
 }
 
-/** Re-downloads `sundayrun.db`, rolls every event onto it and pairs it with the source workbooks; once per attempt. */
+/**
+ * Re-downloads `sundayrun.db`, rolls every event onto it and pairs it with the source workbooks;
+ * once per attempt. An event without a workbook (timed by the built-in stopwatch) contributes no
+ * file at all, so a mixed batch commits only the workbooks it actually has.
+ */
 async function buildCommitFiles(
   fetchFn: GithubFetchFn,
   token: string,
@@ -87,11 +91,12 @@ async function buildCommitFiles(
     fetchFn,
   );
 
-  return [
-    ...ordered.map((input) => ({
-      path: eventFilePaths(input.event.dateIso).sourceXlsx,
-      base64Content: bytesToBase64(input.sourceXlsxBytes),
-    })),
-    dbFile,
-  ];
+  return [...ordered.flatMap(sourceXlsxCommitFile), dbFile];
+}
+
+/** The event's workbook as a commit file, or nothing when it was timed by the stopwatch. */
+function sourceXlsxCommitFile(input: PublishEventInput): CommitFile[] {
+  const bytes = input.sourceXlsxBytes;
+
+  return bytes === null ? [] : [{ path: eventFilePaths(input.event.dateIso).sourceXlsx, base64Content: bytesToBase64(bytes) }];
 }

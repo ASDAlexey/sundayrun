@@ -34,10 +34,13 @@ import {
   EXPECTED_BATCH_VERSION_COMMIT_MESSAGE,
   EXPECTED_COMMIT_MESSAGE,
   EXPECTED_COMMIT_PATHS,
+  EXPECTED_TIMER_COMMIT_PATHS,
+  MIXED_BATCH_PUBLISH_INPUTS,
   PUBLISH_INPUT,
   PUBLISH_SHAS,
   PUBLISH_TOKEN,
   SOURCE_XLSX_BYTES,
+  TIMER_PUBLISH_INPUT,
 } from './publish-event.mock';
 import { createGitDataRoutes } from './spec-utils/git-data-routes';
 import {
@@ -150,6 +153,41 @@ describe('publishEvent', () => {
     expect(eventsInsert?.bind, 'both events land in the rebuilt db').toEqual(
       expect.arrayContaining([EARLIER_EVENT_DATE_ISO, PUBLISH_INPUT.event.dateIso]),
     );
+  });
+
+  it('commits the db alone for a stopwatch-timed event, which has no workbook to publish', async () => {
+    const fetchFn = createPublishFetch();
+
+    await expect(publishEvent(PUBLISH_TOKEN, TIMER_PUBLISH_INPUT, fetchFn)).resolves.toEqual({ commitSha: PUBLISH_SHAS.newCommitSha });
+
+    const contents = blobContents(fetchFn);
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+
+    expect(
+      treeBodies[0].tree.map((entry) => entry.path),
+      'no source.xlsx entry at all',
+    ).toEqual(EXPECTED_TIMER_COMMIT_PATHS);
+    expect(contents, 'one blob for the db, then the pointer').toHaveLength(EXPECTED_TIMER_COMMIT_PATHS.length + 1);
+    expect(decodeBase64Bytes(contents[0])).toEqual(FAKE_EXPORTED_BYTES);
+  });
+
+  it('skips only the missing workbook in a mixed batch, keeping the remaining ones date-ordered', async () => {
+    const fetchFn = createPublishFetch();
+
+    await expect(publishEvents(PUBLISH_TOKEN, MIXED_BATCH_PUBLISH_INPUTS, fetchFn)).resolves.toEqual({
+      commitSha: PUBLISH_SHAS.newCommitSha,
+    });
+
+    const contents = blobContents(fetchFn);
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+
+    expect(
+      treeBodies[0].tree.map((entry) => entry.path),
+      'the stopwatch-timed event contributes nothing, the two workbooks stay sorted around the ONE db',
+    ).toEqual(EXPECTED_BATCH_COMMIT_PATHS);
+    expect(decodeBase64Bytes(contents[0])).toEqual(EARLIER_SOURCE_XLSX_BYTES);
+    expect(decodeBase64Bytes(contents[1])).toEqual(SOURCE_XLSX_BYTES);
+    expect(decodeBase64Bytes(contents[2]), 'a single db carries the whole batch').toEqual(FAKE_EXPORTED_BYTES);
   });
 
   it('creates a fresh db from scratch when none is published yet', async () => {

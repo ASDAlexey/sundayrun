@@ -1,8 +1,10 @@
 import { strToU8, zipSync } from 'fflate';
 
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
+import { EMPTY_NOTE } from '../core/history/notes-builder.constant';
 import { AthletesHistory } from '../core/models/athletes-history.type';
-import { Gender } from '../core/models/gender.enum';
+import { Gender, GenderConfidence, GenderSource } from '../core/models/gender.enum';
+import { Participant } from '../core/models/participant.interface';
 import { RaceEvent } from '../core/models/race-event.interface';
 import { RACE_EVENT_DEFAULTS } from '../core/protocol/race-event-defaults.constant';
 import { WORKBOOK_PATH, WORKBOOK_RELS_PATH, XL_ROOT } from '../core/xlsx/xlsx-reader.constant';
@@ -36,6 +38,8 @@ export const KNOWN_FEMALE_NAME = 'Хандыга Наталья';
 export const UNKNOWN_GENDER_NAME = 'Инкогнито';
 
 export const KNOWN_MALE_ID = 1;
+
+const KNOWN_FEMALE_ID = 2;
 
 export const UNKNOWN_GENDER_ID = 3;
 
@@ -94,6 +98,56 @@ export const EXPECTED_AUTO_FILLED_EVENT: RaceEvent = {
 const KNOWN_FEMALE_TOTAL_MS = 1260000;
 
 const UNKNOWN_GENDER_TOTAL_MS = 1500000;
+
+const KNOWN_MALE_LAPS_MS = [509705, 633323];
+
+const KNOWN_FEMALE_LAPS_MS = [600000, 660000];
+
+const UNKNOWN_GENDER_LAPS_MS = [720000, 780000];
+
+const NO_CLUB = '';
+
+/**
+ * The same three athletes as `IMPORT_XLSX_BYTES`, in the shape `sessionToParticipants` hands over:
+ * the organiser confirmed each gender by hand while adding the person, the unresolvable one is
+ * still open. Times match the workbook to the millisecond, so a session draft must earn exactly
+ * the notes the workbook draft earns.
+ */
+export const SESSION_PARTICIPANTS: Participant[] = [
+  {
+    id: KNOWN_MALE_ID,
+    fullName: KNOWN_MALE_NAME,
+    totalMs: EXPECTED_MALE_TOTAL_MS,
+    lapsMs: KNOWN_MALE_LAPS_MS,
+    gender: Gender.male,
+    genderConfidence: GenderConfidence.high,
+    genderSource: GenderSource.manual,
+    note: EMPTY_NOTE,
+    club: NO_CLUB,
+  },
+  {
+    id: KNOWN_FEMALE_ID,
+    fullName: KNOWN_FEMALE_NAME,
+    totalMs: KNOWN_FEMALE_TOTAL_MS,
+    lapsMs: KNOWN_FEMALE_LAPS_MS,
+    gender: Gender.female,
+    genderConfidence: GenderConfidence.high,
+    genderSource: GenderSource.manual,
+    note: EMPTY_NOTE,
+    club: NO_CLUB,
+  },
+  {
+    id: UNKNOWN_GENDER_ID,
+    fullName: UNKNOWN_GENDER_NAME,
+    totalMs: UNKNOWN_GENDER_TOTAL_MS,
+    lapsMs: UNKNOWN_GENDER_LAPS_MS,
+    gender: null,
+    genderConfidence: GenderConfidence.unknown,
+    genderSource: GenderSource.unknown,
+    note: EMPTY_NOTE,
+    club: NO_CLUB,
+  },
+];
 
 /**
  * `IMPORT_HISTORY` after the imported event (2026-06-14) has already been published once:

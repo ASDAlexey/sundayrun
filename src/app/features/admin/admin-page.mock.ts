@@ -45,3 +45,7 @@ export const MONTH_QUERY = 'июн';
 export const YEAR_QUERY = ' 2026';
 
 export const NO_MATCH_QUERY = 'марафон';
+
+/** `?return=` values: the stopwatch's own path is followed, everything that leaves the site is not. */
+export const ADMIN_RETURN_TO_TIMER = '/timer';
+export const ADMIN_RETURN_OFF_SITE_VALUES = ['//evil.example', 'https://evil.example', 'timer'];

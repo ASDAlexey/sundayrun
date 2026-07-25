@@ -159,6 +159,15 @@
     @include b.button-outline;
   }
 
+  // «Засечь забег» — the organiser presses this standing at the start line, so it is the one
+  // control on the panel sized for a thumb rather than a mouse.
+  &__timer {
+    @include b.button-accent;
+
+    align-self: stretch;
+    height: 56px;
+  }
+
   &__progress {
     display: flex;
     align-items: center;

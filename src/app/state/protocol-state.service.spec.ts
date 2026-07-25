@@ -27,6 +27,7 @@ import {
   REPUBLISHED_HISTORY,
   REVERSED_NAME_XLSX_BYTES,
   SECOND_UNDATED_FILE_NAME,
+  SESSION_PARTICIPANTS,
   UNDATED_FILE_NAME,
   UNKNOWN_GENDER_ID,
   UNKNOWN_GENDER_NAME,
@@ -168,7 +169,7 @@ describe('ProtocolStateService', () => {
     ]);
 
     expect(
-      service.drafts().map((draft) => draft.sourceFile.name),
+      service.drafts().map((draft) => draft.sourceFile?.name),
       'two undated files order by name',
     ).toEqual([SECOND_UNDATED_FILE_NAME, UNDATED_FILE_NAME]);
 
@@ -179,7 +180,7 @@ describe('ProtocolStateService', () => {
     ]);
 
     expect(
-      service.drafts().map((draft) => draft.sourceFile.name),
+      service.drafts().map((draft) => draft.sourceFile?.name),
       'dated drafts sort chronologically, undated go last',
     ).toEqual([BATCH_FIRST_FILE_NAME, IMPORT_FILE_NAME, UNDATED_FILE_NAME]);
     expect(service.draftCount()).toBe(3);
@@ -262,5 +263,52 @@ describe('ProtocolStateService', () => {
       service.draftRowsBefore(FUTURE_DATE_ISO).map((draft) => draft.dateIso),
       'a date after the whole batch collects every draft, oldest first',
     ).toEqual([BATCH_FIRST_DATE_ISO, EXPECTED_SUGGESTED_DATE_ISO, BATCH_LATE_DATE_ISO]);
+  });
+
+  it('imports a stopwatch session as one workbook-less draft: auto requisites, the same notes, no source bytes', () => {
+    service.setPublishedEventDates(PUBLISHED_EVENT_DATES);
+    service.importSession(SESSION_PARTICIPANTS, EXPECTED_SUGGESTED_DATE_ISO);
+
+    expect(service.draftCount(), 'a session is always a batch of one').toBe(1);
+    expect(service.activeIndex()).toBe(0);
+    expect(service.participants()).toEqual(SESSION_PARTICIPANTS);
+    expect(service.sourceFile(), 'the session itself is the source — there is no workbook').toBeNull();
+    expect(service.suggestedDateIso(), 'the date comes from the session, not from a file name').toBe(EXPECTED_SUGGESTED_DATE_ISO);
+    expect(service.event(), 'the archive dates fill the requisites and the positional number in').toEqual(EXPECTED_AUTO_FILLED_EVENT);
+    expect(service.activeNumberingDates()).toEqual(PUBLISHED_EVENT_DATES);
+    expect(service.canGenerate(), 'the unresolved gender still blocks the batch').toBe(false);
+
+    service.setGender(UNKNOWN_GENDER_ID, Gender.female);
+
+    expect(service.unknownGenderCount()).toBe(0);
+    expect(service.canGenerate()).toBe(true);
+
+    service.applyAutoNotes(IMPORT_HISTORY);
+
+    const noted = service.participants();
+
+    expect(noted[0].note, 'a session draft earns exactly the notes the same workbook earns').toBe(EXPECTED_PR_NOTE);
+    expect(noted[1].note).toBe(FIRST_PARTICIPATION_NOTE);
+    expect(noted[2].note).toBe(FIRST_PARTICIPATION_NOTE);
+    expect(service.draftRowsBefore(FUTURE_DATE_ISO), 'a workbook-less draft feeds the PDF priors like any other').toMatchObject([
+      { dateIso: EXPECTED_SUGGESTED_DATE_ISO },
+    ]);
+
+    const [sessionInput] = service.buildPublishInputs();
+
+    expect(sessionInput.sourceXlsxBytes, 'no source.xlsx goes into the commit').toBeNull();
+    expect(sessionInput.rows).toHaveLength(EXPECTED_PARTICIPANT_COUNT);
+
+    service.importFiles([{ name: IMPORT_FILE_NAME, bytes: IMPORT_XLSX_BYTES }]);
+
+    expect(service.draftCount(), 'a file import replaces the session draft entirely').toBe(1);
+    expect(service.sourceFile()).toEqual({ name: IMPORT_FILE_NAME, bytes: IMPORT_XLSX_BYTES });
+    expect(service.buildPublishInputs()[0].sourceXlsxBytes, 'an uploaded workbook still travels with its event').toBe(IMPORT_XLSX_BYTES);
+
+    service.importSession(SESSION_PARTICIPANTS, BATCH_LATE_DATE_ISO);
+
+    expect(service.draftCount(), 'and a session import replaces the file draft back').toBe(1);
+    expect(service.sourceFile()).toBeNull();
+    expect(service.event()).toMatchObject({ dateIso: BATCH_LATE_DATE_ISO, number: 3 });
   });
 });

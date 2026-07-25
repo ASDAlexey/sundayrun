@@ -9,13 +9,14 @@ import { GithubAuthError } from './github-errors';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
 import { GithubFetchFn } from './github-fetch.type';
 import { buildProtocolDbCommitFile } from './protocol-db-file';
+import { repoFileExists } from './repo-contents';
 import { publishVersionPointer } from './version-pointer';
 import { DEFAULT_SLEEP } from './version-pointer.constant';
 import { SleepFn } from './version-pointer.type';
 
 /**
  * The mirror of `publishEvent`: removes one published event from the protocols repository as a
- * single atomic commit — the `source.xlsx` workbook is deleted and the derived `sundayrun.db` is
+ * single atomic commit — the `source.xlsx` workbook is deleted (when the event has one) and the derived `sundayrun.db` is
  * rewritten without the event's entry, rollup contribution and results rows. The db is downloaded
  * fresh on every commit attempt (a concurrent publication is merged, not overwritten) and is the
  * single source of truth, so a rebuild failure fails the deletion. Once that data commit lands the
@@ -52,9 +53,17 @@ export async function deleteEvent(
   }
 }
 
-/** Re-downloads `sundayrun.db`, drops the slug from it and deletes the source workbook; once per attempt. */
+/**
+ * Re-downloads `sundayrun.db`, drops the slug from it and deletes the source workbook; once per
+ * attempt. An event timed by the built-in stopwatch never had a workbook, and the Git Data API
+ * rejects a deletion of a path that is not there, so the workbook is probed (per attempt too — the
+ * repository can move between attempts) and only an existing one joins the commit.
+ */
 async function buildCommitFiles(fetchFn: GithubFetchFn, token: string, slug: string, paths: EventFilePaths): Promise<CommitFile[]> {
-  const dbFile = await buildProtocolDbCommitFile(token, (dbBytes) => removeEventFromDb(dbBytes, { slug }), fetchFn);
+  const [dbFile, sourceXlsxExists] = await Promise.all([
+    buildProtocolDbCommitFile(token, (dbBytes) => removeEventFromDb(dbBytes, { slug }), fetchFn),
+    repoFileExists(token, paths.sourceXlsx, fetchFn),
+  ]);
 
-  return [{ path: paths.sourceXlsx, base64Content: null }, dbFile];
+  return sourceXlsxExists ? [{ path: paths.sourceXlsx, base64Content: null }, dbFile] : [dbFile];
 }

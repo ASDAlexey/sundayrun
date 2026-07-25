@@ -3,7 +3,9 @@ import {
   CONTENTS_REF_QUERY,
   GITHUB_API_VERSION,
   GITHUB_API_VERSION_HEADER,
+  GITHUB_JSON_ACCEPT,
   GITHUB_RAW_ACCEPT,
+  HEAD_METHOD,
   REPO_CONTENTS_URL,
 } from './github-api.constant';
 import { PROTOCOL_DB_PATH, VERSION_JSON_PATH } from './protocols-repo.constant';
@@ -23,6 +25,16 @@ export const EXPECTED_DB_CONTENTS_URL = `${REPO_CONTENTS_URL}${PROTOCOL_DB_PATH}
 export const EXPECTED_RAW_INIT = {
   headers: {
     Accept: GITHUB_RAW_ACCEPT,
+    Authorization: `${BEARER_PREFIX}${CONTENTS_TOKEN}`,
+    [GITHUB_API_VERSION_HEADER]: GITHUB_API_VERSION,
+  },
+};
+
+/** The existence probe asks for metadata it never reads, so it goes out as a headers-only HEAD. */
+export const EXPECTED_HEAD_INIT = {
+  method: HEAD_METHOD,
+  headers: {
+    Accept: GITHUB_JSON_ACCEPT,
     Authorization: `${BEARER_PREFIX}${CONTENTS_TOKEN}`,
     [GITHUB_API_VERSION_HEADER]: GITHUB_API_VERSION,
   },

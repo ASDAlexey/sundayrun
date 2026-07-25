@@ -12,6 +12,15 @@ export const TOKEN_HELP_URL = 'https://github.com/ASDAlexey/sundayrun/blob/main/
 /** Prefix of the public race page, joined with the event slug for the «протокол» link. */
 export const RACE_PAGE_PREFIX = '/races/';
 
+/**
+ * `?return=` sends the organiser back where the key was asked for — the stopwatch links here from
+ * «Я организатор — опубликовать» and expects to be reopened after the token check (docs/TIMER.md §9).
+ * Only in-app paths are followed, so the parameter can never carry the visitor off the site.
+ */
+export const ADMIN_RETURN_PARAM = 'return';
+export const ADMIN_RETURN_PREFIX = '/';
+export const ADMIN_RETURN_FORBIDDEN_PREFIX = '//';
+
 /** `max()` seed one below the first number, so an empty archive suggests № 1. */
 export const NEXT_NUMBER_SEED = FIRST_ARCHIVE_EVENT_NUMBER - 1;
 

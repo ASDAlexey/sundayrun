@@ -2,8 +2,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { TIMER_PAGE_LINK } from '../../app.constant';
 import { ArchiveIndexEntry } from '../../core/github/archive-index.interface';
 import { buildSiteMeta } from '../../core/github/site-meta';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
@@ -26,6 +27,7 @@ import { bindSearchQueryParam } from '../../shared/search-query-param/search-que
 import { ProtocolDropzone } from '../upload/protocol-dropzone/protocol-dropzone';
 import {
   ADMIN_RACE_ROW_HEIGHT_PX,
+  ADMIN_RETURN_PARAM,
   DELETE_TICK_INTERVAL_MS,
   EMPTY_QUERY,
   EMPTY_TOKEN,
@@ -35,6 +37,7 @@ import {
 } from './admin-page.constant';
 import { RaceListStatus, RaceListStatusType, TokenSaveStatus, TokenSaveStatusType } from './admin-page.enum';
 import { AdminRaceItem } from './admin-page.interface';
+import { resolveAdminReturnUrl } from './admin-return';
 
 /**
  * The /admin page: the organiser pastes a fine-grained GitHub PAT; a valid one unlocks the
@@ -58,6 +61,8 @@ export class AdminPage {
   readonly #publishDuration = inject(PublishDurationService);
   readonly #deleteDuration = inject(DeleteDurationService);
   readonly #dbFreshness = inject(DbFreshnessService);
+  readonly #router = inject(Router);
+  readonly #route = inject(ActivatedRoute);
   readonly #deleteElapsedMs = signal(0);
 
   /** The deletion whose deploy this session is timing; null once the archive stops serving it. */
@@ -159,6 +164,7 @@ export class AdminPage {
   protected readonly raceStatuses = RaceListStatus;
   protected readonly tokenHelpUrl = TOKEN_HELP_URL;
   protected readonly rowHeightPx = ADMIN_RACE_ROW_HEIGHT_PX;
+  protected readonly timerLink = TIMER_PAGE_LINK;
 
   /** When the «Точно удалить» click happened; meaningful only while a deletion is being timed. */
   #deleteStartedAtMs = 0;
@@ -215,6 +221,13 @@ export class AdminPage {
       this.#adminToken.save(token);
       // The page swaps to the panel right away, so the editor prefill and the race list load now.
       await Promise.all([this.#loadMeta(), this.#loadRaces()]);
+
+      // Whoever sent the organiser here for a key gets them back (`?return=/timer`, docs/TIMER.md §9).
+      const returnUrl = resolveAdminReturnUrl(this.#route.snapshot.queryParamMap.get(ADMIN_RETURN_PARAM));
+
+      if (returnUrl !== null) {
+        await this.#router.navigateByUrl(returnUrl);
+      }
 
       return;
     }

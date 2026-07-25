@@ -8,7 +8,15 @@ import {
   resetFakeSqlite3,
 } from '../sqlite/spec-utils/fake-sqlite3';
 import { deleteEvent } from './delete-event';
-import { DELETE_SHAS, DELETE_SLUG, DELETE_TOKEN, EXPECTED_DELETE_COMMIT_MESSAGE, EXPECTED_DELETE_TREE_ENTRIES } from './delete-event.mock';
+import {
+  DELETE_SHAS,
+  DELETE_SLUG,
+  DELETE_TOKEN,
+  EXPECTED_DB_ONLY_DELETE_TREE_ENTRIES,
+  EXPECTED_DELETE_COMMIT_MESSAGE,
+  EXPECTED_DELETE_TREE_ENTRIES,
+  SOURCE_XLSX_HEAD_KEY,
+} from './delete-event.mock';
 import {
   GIT_BLOBS_URL,
   GIT_COMMITS_URL,
@@ -51,6 +59,7 @@ function createDeleteFetch(overrides: Record<string, RouteHandler> = {}): Mock<G
       ...createGitDataRoutes(DELETE_SHAS),
       [`GET ${EXPECTED_VERSION_PURGE_URL}`]: () => statusResponse(OK_STATUS),
       [DB_CONTENTS_KEY]: () => new Response(CURRENT_DB_BYTES),
+      [SOURCE_XLSX_HEAD_KEY]: () => statusResponse(OK_STATUS),
       ...overrides,
     }),
   );
@@ -102,6 +111,19 @@ describe('deleteEvent', () => {
       calledUrls.filter((url) => url.startsWith(JSDELIVR_PURGE_BASE_URL)),
       'sha-pinned data urls never need a purge',
     ).toEqual([EXPECTED_VERSION_PURGE_URL]);
+  });
+
+  it('commits the rewritten db alone when the event has no published workbook to delete', async () => {
+    const fetchFn = createDeleteFetch({ [SOURCE_XLSX_HEAD_KEY]: () => statusResponse(HTTP_NOT_FOUND) });
+
+    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn)).resolves.toEqual({
+      commitSha: DELETE_SHAS.newCommitSha,
+      pointerPublished: true,
+    });
+
+    const treeBodies = requestBodiesOf<{ tree: GitTreeEntry[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+
+    expect(treeBodies[0].tree, 'deleting a path that is not there would fail the commit').toEqual(EXPECTED_DB_ONLY_DELETE_TREE_ENTRIES);
   });
 
   it('still succeeds when no db is published yet, rewriting it from scratch', async () => {

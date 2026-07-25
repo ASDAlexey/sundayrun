@@ -2,7 +2,7 @@ import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
 import { EXPECTED_EVENT_PATHS } from './event-paths.mock';
-import { GIT_TREE_BLOB_TYPE, GIT_TREE_FILE_MODE } from './github-api.constant';
+import { CONTENTS_REF_QUERY, GIT_TREE_BLOB_TYPE, GIT_TREE_FILE_MODE, HEAD_METHOD, REPO_CONTENTS_URL } from './github-api.constant';
 import { GitTreeEntry } from './github-api.interface';
 import { PROTOCOL_DB_PATH } from './protocols-repo.constant';
 import { GitDataShas } from './spec-utils/git-data-routes';
@@ -25,6 +25,14 @@ export const EXPECTED_DELETE_COMMIT_MESSAGE = `Удаление протокол
 /** The deletion tree: the source workbook is removed (`sha: null`) and the rewritten db follows it. */
 export const EXPECTED_DELETE_TREE_ENTRIES: GitTreeEntry[] = [
   { path: EXPECTED_EVENT_PATHS.sourceXlsx, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: null },
+  { path: PROTOCOL_DB_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}0` },
+];
+
+/** Fetch-router key of the workbook existence probe the deletion runs before touching the path. */
+export const SOURCE_XLSX_HEAD_KEY = `${HEAD_METHOD} ${REPO_CONTENTS_URL}${EXPECTED_EVENT_PATHS.sourceXlsx}${CONTENTS_REF_QUERY}`;
+
+/** A stopwatch-timed event never had a workbook, so its deletion tree carries the rewritten db alone. */
+export const EXPECTED_DB_ONLY_DELETE_TREE_ENTRIES: GitTreeEntry[] = [
   { path: PROTOCOL_DB_PATH, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha: `${DELETE_SHAS.blobShaPrefix}0` },
 ];
 
