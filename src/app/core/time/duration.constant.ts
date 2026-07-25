@@ -6,6 +6,9 @@ export const DURATION_SHORT_PATTERN = /^(\d+):(\d{1,2})(?:[,.](\d{1,3}))?$/;
 
 export const MS_IN_SECOND = 1000;
 
+/** The finest unit any screen shows: the race clock draws hundredths, the journal keeps the rest. */
+export const MS_IN_HUNDREDTH = 10;
+
 export const SECONDS_IN_MINUTE = 60;
 
 export const MINUTES_IN_HOUR = 60;
@@ -17,3 +20,6 @@ export const FRACTION_LENGTH = 3;
 export const TIME_UNIT_LENGTH = 2;
 
 export const PAD_CHAR = '0';
+
+/** Separator before the fractional part when formatting; the timer exports use a comma. */
+export const FRACTION_SEPARATOR = ',';

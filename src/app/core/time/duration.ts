@@ -2,6 +2,7 @@ import {
   DURATION_FULL_PATTERN,
   DURATION_SHORT_PATTERN,
   FRACTION_LENGTH,
+  FRACTION_SEPARATOR,
   MINUTES_IN_HOUR,
   MS_IN_SECOND,
   PAD_CHAR,
@@ -50,6 +51,31 @@ export function formatDuration(ms: number): string {
   const paddedMinutes = String(minutes).padStart(TIME_UNIT_LENGTH, PAD_CHAR);
 
   return `${hours}:${paddedMinutes}:${paddedSeconds}`;
+}
+
+/**
+ * Formats milliseconds as 'm:ss,mmm' or 'h:mm:ss,mmm' (>= 1 hour), keeping every millisecond.
+ * The result is exactly what `parseDuration` reads back, so it is the lossless form used by
+ * the xlsx export; fractional input is rounded to whole milliseconds first.
+ */
+export function formatDurationPrecise(ms: number): string {
+  const totalMs = Math.round(ms);
+  const milliseconds = totalMs % MS_IN_SECOND;
+  const totalSeconds = (totalMs - milliseconds) / MS_IN_SECOND;
+  const seconds = totalSeconds % SECONDS_IN_MINUTE;
+  const totalMinutes = (totalSeconds - seconds) / SECONDS_IN_MINUTE;
+  const fraction = `${FRACTION_SEPARATOR}${String(milliseconds).padStart(FRACTION_LENGTH, PAD_CHAR)}`;
+  const paddedSeconds = String(seconds).padStart(TIME_UNIT_LENGTH, PAD_CHAR);
+
+  if (totalMinutes < MINUTES_IN_HOUR) {
+    return `${totalMinutes}:${paddedSeconds}${fraction}`;
+  }
+
+  const minutes = totalMinutes % MINUTES_IN_HOUR;
+  const hours = (totalMinutes - minutes) / MINUTES_IN_HOUR;
+  const paddedMinutes = String(minutes).padStart(TIME_UNIT_LENGTH, PAD_CHAR);
+
+  return `${hours}:${paddedMinutes}:${paddedSeconds}${fraction}`;
 }
 
 function toMs(totalMinutes: number, seconds: string, fraction: string | undefined): number {

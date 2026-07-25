@@ -43,3 +43,22 @@ export const FORMAT_DURATION_CASES: readonly (readonly [string, number, string])
   ['h:mm:ss zero-pads minutes and seconds', 3723000, '1:02:03'],
   ['multi-hour', 36610000, '10:10:10'],
 ];
+
+/** [label, integer milliseconds, expected lossless string]; every case must survive `parseDuration`. */
+export const FORMAT_DURATION_PRECISE_CASES: readonly (readonly [string, number, string])[] = [
+  ['zero', 0, '0:00,000'],
+  ['milliseconds keep their leading zeros', 7, '0:00,007'],
+  ['tens of milliseconds keep one leading zero', 20, '0:00,020'],
+  ['whole seconds still get a fraction', 60000, '1:00,000'],
+  ['m:ss,mmm', 1143028, '19:03,028'],
+  ['just below one hour', 3599999, '59:59,999'],
+  ['exactly one hour', 3600000, '1:00:00,000'],
+  ['h:mm:ss,mmm zero-pads minutes and seconds', 3723028, '1:02:03,028'],
+  ['multi-hour', 36610500, '10:10:10,500'],
+];
+
+/** [label, fractional milliseconds (an average), expected string]: rounded to whole milliseconds first. */
+export const FORMAT_DURATION_PRECISE_ROUNDING_CASES: readonly (readonly [string, number, string])[] = [
+  ['rounds half up', 1143027.5, '19:03,028'],
+  ['rounds down', 1143027.4, '19:03,027'],
+];
