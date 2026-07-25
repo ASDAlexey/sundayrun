@@ -8,6 +8,10 @@ import { PtSerifFonts } from './pdf-fonts.interface';
 
 export const CREATE_PDF_MOCK = vi.fn();
 
+export const SET_FONTS_MOCK = vi.fn();
+
+export const ADD_VIRTUAL_FILE_SYSTEM_MOCK = vi.fn();
+
 export const LOAD_FONTS_MOCK = vi.fn();
 
 /** Toggles the fake pdfmake module between the default-export and the namespace shapes. */
@@ -20,6 +24,6 @@ export const FONTS_MOCK: PtSerifFonts = {
   fonts: { [PDF_FONT_FAMILY]: { normal: PT_SERIF_REGULAR_FILE, bold: PT_SERIF_BOLD_FILE } },
 };
 
-export const PDF_DOCUMENT_MOCK: PdfDocument = { getBlob: (callback) => callback(PDF_BLOB_MOCK) };
+export const PDF_DOCUMENT_MOCK: PdfDocument = { getBlob: () => Promise.resolve(PDF_BLOB_MOCK) };
 
 export const EXPECTED_FILE_NAME = 'protokol-2020-09-20.pdf';

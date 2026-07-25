@@ -22,9 +22,11 @@ export class PdfService {
     previousBests: Record<string, PreviousBest>,
   ): Promise<Blob> {
     const [{ fonts, vfs }, pdfMake] = await Promise.all([this.#fonts.load(), loadPdfMake()]);
-    const createdPdf = pdfMake.createPdf(buildProtocolDocDefinition(event, rows, finishCounts, previousBests), undefined, fonts, vfs);
 
-    return new Promise((resolve) => createdPdf.getBlob(resolve));
+    pdfMake.addVirtualFileSystem(vfs);
+    pdfMake.setFonts(fonts);
+
+    return pdfMake.createPdf(buildProtocolDocDefinition(event, rows, finishCounts, previousBests)).getBlob();
   }
 
   /** 'protokol-2026-06-14.pdf' straight from the event ISO date. */

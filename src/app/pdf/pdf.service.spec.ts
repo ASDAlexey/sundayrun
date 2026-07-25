@@ -5,6 +5,7 @@ import { PDF_EVENT_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK, PDF_RO
 import { PdfFontsService } from './pdf-fonts.service';
 import { PdfService } from './pdf.service';
 import {
+  ADD_VIRTUAL_FILE_SYSTEM_MOCK,
   CREATE_PDF_MOCK,
   EXPECTED_FILE_NAME,
   FONTS_MOCK,
@@ -12,15 +13,22 @@ import {
   PDF_BLOB_MOCK,
   PDF_DOCUMENT_MOCK,
   PDF_MAKE_SHAPE,
+  SET_FONTS_MOCK,
 } from './pdf.service.mock';
 
 vi.mock('pdfmake/build/pdfmake', async () => {
   const mock = await import('./pdf.service.mock');
 
-  return {
+  const pdfMake = {
     createPdf: mock.CREATE_PDF_MOCK,
+    setFonts: mock.SET_FONTS_MOCK,
+    addVirtualFileSystem: mock.ADD_VIRTUAL_FILE_SYSTEM_MOCK,
+  };
+
+  return {
+    ...pdfMake,
     get default() {
-      return mock.PDF_MAKE_SHAPE.useDefault ? { createPdf: mock.CREATE_PDF_MOCK } : undefined;
+      return mock.PDF_MAKE_SHAPE.useDefault ? pdfMake : undefined;
     },
   };
 });
@@ -50,10 +58,9 @@ describe('PdfService', () => {
     expect(CREATE_PDF_MOCK).toHaveBeenCalledTimes(2);
     expect(CREATE_PDF_MOCK).toHaveBeenCalledWith(
       buildProtocolDocDefinition(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK),
-      undefined,
-      FONTS_MOCK.fonts,
-      FONTS_MOCK.vfs,
     );
+    expect(ADD_VIRTUAL_FILE_SYSTEM_MOCK).toHaveBeenCalledWith(FONTS_MOCK.vfs);
+    expect(SET_FONTS_MOCK).toHaveBeenCalledWith(FONTS_MOCK.fonts);
     expect(service.suggestedFileName(PDF_EVENT_MOCK)).toBe(EXPECTED_FILE_NAME);
   });
 });
