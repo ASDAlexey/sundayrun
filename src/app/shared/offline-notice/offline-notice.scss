@@ -1,0 +1,25 @@
+@use 'styles/buttons' as b;
+@use 'styles/typography' as t;
+
+// ===========================================================
+//  «Нет интернета» on a data page: one sentence and the one
+//  route that survives a park with no signal.
+// ===========================================================
+
+.offline-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+
+  &__text {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__action {
+    @include b.button-accent;
+  }
+}

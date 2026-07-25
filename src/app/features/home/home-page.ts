@@ -27,6 +27,7 @@ import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { ScrollReveal } from '../../shared/directives/scroll-reveal/scroll-reveal';
+import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
@@ -62,7 +63,7 @@ import {
 /** The landing page: hero with a live "next start" countdown, the latest races preview and the course card. */
 @Component({
   selector: 'app-home-page',
-  imports: [MatButtonModule, MatProgressSpinnerModule, RaceCard, ReloadButton, RouterLink, ScrollReveal],
+  imports: [MatButtonModule, MatProgressSpinnerModule, OfflineNotice, RaceCard, ReloadButton, RouterLink, ScrollReveal],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

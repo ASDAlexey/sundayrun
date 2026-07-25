@@ -34,6 +34,7 @@
     "@angular/material": "^22.0.6",
     "@angular/platform-browser": "^22.0.8",
     "@angular/router": "^22.0.8",
+    "@angular/service-worker": "^22.0.8",
     "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
     "chart.js": "^4.5.1",
     "chartjs-plugin-zoom": "^2.2.0",

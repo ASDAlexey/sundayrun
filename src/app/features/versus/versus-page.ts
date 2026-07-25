@@ -16,6 +16,7 @@ import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
+import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
 import { SelfAthleteService } from '../../state/self-athlete.service';
@@ -33,7 +34,7 @@ import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from '.
  */
 @Component({
   selector: 'app-versus-page',
-  imports: [MatButtonModule, MatProgressSpinnerModule, ReloadButton, RouterLink],
+  imports: [MatButtonModule, MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink],
   templateUrl: './versus-page.html',
   styleUrl: './versus-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

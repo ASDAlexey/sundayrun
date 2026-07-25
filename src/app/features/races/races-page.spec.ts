@@ -192,6 +192,10 @@ describe('RacesPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.races__error').getAttribute('role')).toBe('alert');
+    expect(
+      fixture.nativeElement.querySelector('app-offline-notice'),
+      'with a network the failure keeps its own text; without one the notice takes the same slot',
+    ).not.toBeNull();
   });
 
   it('prerender fetches the list, renders the ready state and bakes it into the transfer state', async () => {

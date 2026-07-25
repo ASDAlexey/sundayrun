@@ -381,9 +381,11 @@
       </div>
     }
     @case (statuses.error) {
-      <p class="athlete__error" i18n="@@athlete.error" role="alert">Не удалось загрузить историю атлета.</p>
+      <app-offline-notice>
+        <p class="athlete__error" i18n="@@athlete.error" role="alert">Не удалось загрузить историю атлета.</p>
 
-      <app-reload-button />
+        <app-reload-button />
+      </app-offline-notice>
     }
   }
 </main>

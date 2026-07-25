@@ -10,11 +10,14 @@ import {
 } from '@angular/core';
 import { provideClientHydration, withEventReplay, withI18nSupport } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 
+import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { NotifyingErrorHandler } from './core/error/notifying-error-handler';
 import { RouteErrorNotifier } from './core/error/route-error-notifier';
 import { CanonicalLinkService } from './shared/seo/canonical-link.service';
+import { AppUpdateService } from './state/app-update.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,9 +32,21 @@ export const appConfig: ApplicationConfig = {
       // The route-error watcher (stale-chunk reload + toasts) only makes sense in the browser.
       if (isPlatformBrowser(inject(PLATFORM_ID))) {
         inject(RouteErrorNotifier);
+        // The same goes for the update gate: it holds a new release back until the race is over.
+        inject(AppUpdateService);
       }
     }),
     // Public pages are prerendered (see app.routes.server.ts); hydration reuses that HTML.
     provideClientHydration(withEventReplay(), withI18nSupport()),
+    // Offline shell for the race stopwatch (docs/TIMER.md §12). `ngsw-config.json` is wired into
+    // the production build only, so `ngsw-worker.js` simply does not exist in dev — hence the
+    // `production` gate. Being browser-only needs no extra guard here: this config is shared with
+    // `app.config.server.ts`, but Angular's own registration initializer and comm channel bail out
+    // under `ngServerMode`, so nothing touches `navigator` while prerendering. Registration waits
+    // for app stability (30s cap) to keep the precache off the critical path of the first paint.
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: environment.production,
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };

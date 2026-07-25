@@ -1,13 +1,18 @@
 {
   "background_color": "#060607",
+  "categories": ["sports", "health", "fitness"],
   "description": "Результаты и протоколы Воскресного паркового пробега в Таганроге",
   "display": "standalone",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
+  "id": "/sundayrun/",
   "lang": "ru",
   "name": "Воскресный парковый пробег в Таганроге",
+  "orientation": "portrait",
+  "scope": "./",
   "short_name": "Пробег",
   "start_url": "./",
   "theme_color": "#060607"

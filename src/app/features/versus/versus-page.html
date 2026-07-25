@@ -106,9 +106,11 @@
         }
       }
       @case (statuses.error) {
-        <p class="versus__error" i18n="@@versus.error" role="alert">Не удалось загрузить список атлетов.</p>
+        <app-offline-notice>
+          <p class="versus__error" i18n="@@versus.error" role="alert">Не удалось загрузить список атлетов.</p>
 
-        <app-reload-button />
+          <app-reload-button />
+        </app-offline-notice>
       }
     }
   </section>
@@ -233,9 +235,11 @@
       </div>
     }
     @case (duelStatuses.error) {
-      <p class="versus__error" i18n="@@versus.duelError" role="alert">Не удалось загрузить историю атлетов.</p>
+      <app-offline-notice>
+        <p class="versus__error" i18n="@@versus.duelError" role="alert">Не удалось загрузить историю атлетов.</p>
 
-      <app-reload-button />
+        <app-reload-button />
+      </app-offline-notice>
     }
   }
 </main>

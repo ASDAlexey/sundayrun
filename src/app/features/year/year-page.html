@@ -161,8 +161,10 @@
   }
 
   @if (status() === statuses.error) {
-    <p class="year__error" i18n="@@year.error" role="alert">Не удалось загрузить итоги года.</p>
+    <app-offline-notice>
+      <p class="year__error" i18n="@@year.error" role="alert">Не удалось загрузить итоги года.</p>
 
-    <app-reload-button />
+      <app-reload-button />
+    </app-offline-notice>
   }
 </main>

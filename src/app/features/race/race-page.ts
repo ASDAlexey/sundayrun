@@ -41,6 +41,7 @@ import { AthletesService } from '../../github/athletes.service';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
+import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import {
@@ -70,6 +71,7 @@ import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    OfflineNotice,
     ReloadButton,
     RouterLink,
     ScrollingModule,

@@ -9,6 +9,7 @@ import { YearBestResult, YearReview } from '../../core/history/year-review.inter
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { YearReviewService } from '../../github/year-review.service';
+import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
@@ -28,7 +29,7 @@ import {
 /** «Итоги года»: the year's totals, best results, most active finishers and badge holders. */
 @Component({
   selector: 'app-year-page',
-  imports: [MatProgressSpinnerModule, ReloadButton, RouterLink, YearBadgeChip],
+  imports: [MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink, YearBadgeChip],
   templateUrl: './year-page.html',
   styleUrl: './year-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

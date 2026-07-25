@@ -1,0 +1,41 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/index.html",
+          "/index.csr.html",
+          "/site.webmanifest",
+          "/*.css",
+          "/*.js",
+          "!/ngsw-worker.js",
+          "!/safety-worker.js",
+          "!/worker-basic.min.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/favicon.svg",
+          "/apple-touch-icon.png",
+          "/icon-192.png",
+          "/icon-512.png",
+          "/og-image.jpg",
+          "/course-5k.avif",
+          "/course-5k.webp",
+          "/fonts/*.woff2"
+        ]
+      }
+    }
+  ],
+  "index": "/index.html",
+  "navigationUrls": ["/", "/timer", "!/**/*.*", "!/**/*__*", "!/**/*__*/**", "!/data/**", "!/sqlite-http/**", "!/pdf/**"]
+}

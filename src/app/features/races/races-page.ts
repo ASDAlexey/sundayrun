@@ -5,6 +5,7 @@ import { isoYear } from '../../core/history/iso-year';
 import { pluralText } from '../../core/i18n/plural-text';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
+import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { toRaceListItems } from './race-list-item';
 import { RaceCard } from './race-card/race-card';
@@ -15,7 +16,7 @@ import { RaceListItem, RaceYearGroup } from './races-page.interface';
 /** The full race list (newest first — `parseArchiveIndex` guarantees the order), filtered by year chips and grouped under year dividers. */
 @Component({
   selector: 'app-races-page',
-  imports: [MatProgressSpinnerModule, RaceCard, ReloadButton],
+  imports: [MatProgressSpinnerModule, OfflineNotice, RaceCard, ReloadButton],
   templateUrl: './races-page.html',
   styleUrl: './races-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

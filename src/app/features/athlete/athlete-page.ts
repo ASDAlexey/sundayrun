@@ -45,6 +45,7 @@ import { MS_IN_SECOND } from '../../core/time/duration.constant';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
+import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
@@ -92,6 +93,7 @@ import { WeatherCard } from './weather-card';
     MatButtonToggleModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    OfflineNotice,
     PacingCard,
     ProgressChart,
     RatingCard,

@@ -15,6 +15,7 @@
         "@angular/material": "^22.0.6",
         "@angular/platform-browser": "^22.0.8",
         "@angular/router": "^22.0.8",
+        "@angular/service-worker": "^22.0.8",
         "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
         "chart.js": "^4.5.1",
         "chartjs-plugin-zoom": "^2.2.0",
@@ -148,6 +149,8 @@
     "@angular/platform-server": ["@angular/platform-server@22.0.8", "", { "dependencies": { "tslib": "^2.3.0", "xhr2": "^0.2.0" }, "peerDependencies": { "@angular/common": "22.0.8", "@angular/compiler": "22.0.8", "@angular/core": "22.0.8", "@angular/platform-browser": "22.0.8", "rxjs": "^6.5.3 || ^7.4.0" } }, "sha512-uG2/7vqb4hKnGVYN0khcA0W46AssKnYEa2l1kYoKcjz6JH/3ExHJohY3mgH5gwkpJCXT/xePv9S9AQsvwluh6w=="],
 
     "@angular/router": ["@angular/router@22.0.8", "", { "dependencies": { "tslib": "^2.3.0" }, "peerDependencies": { "@angular/common": "22.0.8", "@angular/core": "22.0.8", "@angular/platform-browser": "22.0.8", "rxjs": "^6.5.3 || ^7.4.0" } }, "sha512-9NO5K03QqfWMWWZ+Uu4WqBSLw/YAot918cBUFdgl6mTUOfoHi/xWO5pAt0SEpbXMHmWafJBdb99GRlAGybGSTg=="],
+
+    "@angular/service-worker": ["@angular/service-worker@22.0.8", "", { "dependencies": { "tslib": "^2.3.0" }, "peerDependencies": { "@angular/core": "22.0.8", "rxjs": "^6.5.3 || ^7.4.0" }, "bin": { "ngsw-config": "ngsw-config.js" } }, "sha512-Vf97d5CqZzqZpSEyXey5HxIsmo7QsRlgkP6aC9wXasYxQiHeI1iO2CRF4mbSr58F6OqjaH/ReljsEBgbV5bgpw=="],
 
     "@angular/ssr": ["@angular/ssr@22.0.8", "", { "dependencies": { "tslib": "^2.3.0" }, "peerDependencies": { "@angular/common": "^22.0.0", "@angular/core": "^22.0.0", "@angular/platform-server": "^22.0.0", "@angular/router": "^22.0.0" }, "optionalPeers": ["@angular/platform-server"] }, "sha512-T3N0w40R7rQQ3oBhkbupNf0g6Vt1F1huQqNgdblImdOFAt05nXPlrwjV37MJ78vYpJnAjNSuGmqIfnm3OyflhQ=="],
 

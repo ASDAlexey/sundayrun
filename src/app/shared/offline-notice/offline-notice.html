@@ -1,0 +1,9 @@
+@if (offline()) {
+  <div class="offline-notice" role="status">
+    <p class="offline-notice__text" i18n="@@timerOffline.noticeText">Нет интернета — результаты подгрузятся позже</p>
+
+    <a class="offline-notice__action" i18n="@@timerOffline.noticeAction" [routerLink]="timerLink">Открыть секундомер</a>
+  </div>
+} @else {
+  <ng-content />
+}

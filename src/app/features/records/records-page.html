@@ -587,9 +587,11 @@
               </div>
             }
             @case (statuses.error) {
-              <p class="records__error" i18n="@@records.chartError" role="alert">Не удалось загрузить забеги сезона.</p>
+              <app-offline-notice>
+                <p class="records__error" i18n="@@records.chartError" role="alert">Не удалось загрузить забеги сезона.</p>
 
-              <app-reload-button />
+                <app-reload-button />
+              </app-offline-notice>
             }
             @case (statuses.ready) {
               <div class="records__chart-picker">
@@ -696,9 +698,11 @@
       }
     }
     @case (statuses.error) {
-      <p class="records__error" i18n="@@records.error" role="alert">Не удалось загрузить историю результатов.</p>
+      <app-offline-notice>
+        <p class="records__error" i18n="@@records.error" role="alert">Не удалось загрузить историю результатов.</p>
 
-      <app-reload-button />
+        <app-reload-button />
+      </app-offline-notice>
     }
   }
 </main>

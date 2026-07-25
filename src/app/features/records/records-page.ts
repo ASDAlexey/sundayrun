@@ -35,6 +35,7 @@ import { formatRussianDateShort } from '../../core/time/russian-date';
 import { temperatureText } from '../../core/weather/temperature-text';
 import { weatherIconOf } from '../../core/weather/weather-icon';
 import { AthletesService } from '../../github/athletes.service';
+import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
 import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
@@ -95,7 +96,7 @@ import {
  */
 @Component({
   selector: 'app-records-page',
-  imports: [BumpChart, MatProgressSpinnerModule, ReloadButton, RouterLink, ScrollingModule],
+  imports: [BumpChart, MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink, ScrollingModule],
   templateUrl: './records-page.html',
   styleUrl: './records-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
