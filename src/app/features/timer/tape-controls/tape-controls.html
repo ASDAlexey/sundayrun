@@ -19,11 +19,39 @@
         <span aria-hidden="true" class="timer-tape__chip timer-tape__chip_flying" (animationend)="onFlyEnd()">{{ text }}</span>
       }
 
-      <button class="timer-tape__toggle" i18n="@@timer.tapeToggle" type="button" [attr.aria-expanded]="open()" (click)="onToggle()">
-        Разобрать
+      <span class="timer-tape__count">{{ queueCount() }}</span>
+    </div>
+
+    <!-- Two keys instead of one: a queued time is either somebody's lap or somebody's finish, and the
+    list below has to know which question it is answering before a surname is tapped. -->
+    <div class="timer-tape__modes">
+      <button
+        class="timer-tape__toggle"
+        i18n="@@timer.tapeToggleLap"
+        type="button"
+        [attr.aria-expanded]="mode() === modes.lap"
+        [class.timer-tape__toggle_on]="mode() === modes.lap"
+        [disabled]="lapWaiting() === 0"
+        (click)="onToggle(modes.lap)"
+      >
+        Разобрать круг
+
+        <span class="timer-tape__toggle-count">{{ lapWaiting() }}</span>
       </button>
 
-      <span class="timer-tape__count">{{ queueCount() }}</span>
+      <button
+        class="timer-tape__toggle"
+        i18n="@@timer.tapeToggleFinish"
+        type="button"
+        [attr.aria-expanded]="mode() === modes.finish"
+        [class.timer-tape__toggle_on]="mode() === modes.finish"
+        [disabled]="finishWaiting() === 0"
+        (click)="onToggle(modes.finish)"
+      >
+        Разобрать финиш
+
+        <span class="timer-tape__toggle-count">{{ finishWaiting() }}</span>
+      </button>
     </div>
 
     <p class="timer-tape__hint" i18n="@@timer.tapeHint">тапайте фамилии по порядку</p>
@@ -50,17 +78,13 @@
         </div>
       }
 
-      @if (hasQueue()) {
+      @if (emptyText(); as empty) {
+        <p class="timer-tape__done">{{ empty }}</p>
+      } @else {
         <ul class="timer-tape__list">
           @for (runner of runners(); track runner.id) {
             <li class="timer-tape__item">
-              <button
-                class="timer-tape__runner"
-                type="button"
-                [class.timer-tape__runner_taken]="runner.taken"
-                [disabled]="runner.taken"
-                (click)="onAssign(runner.id)"
-              >
+              <button class="timer-tape__runner" type="button" (click)="onAssign(runner.id)">
                 <span class="timer-tape__runner-name">{{ runner.fullName }}</span>
 
                 <span class="timer-tape__runner-meta">{{ runner.metaText }}</span>
@@ -68,8 +92,6 @@
             </li>
           }
         </ul>
-      } @else {
-        <p class="timer-tape__done" i18n="@@timer.tapeQueueDone">Очередь разобрана.</p>
       }
     </div>
   }
@@ -90,18 +112,6 @@
         (pointerdown)="onCut()"
       >
         Отсечка
-      </button>
-
-      <button
-        aria-label="Ещё одна отсечка на то же время"
-        class="timer-tape__more"
-        i18n="@@timer.tapeMore"
-        i18n-aria-label="@@timer.tapeMoreLabel"
-        type="button"
-        [disabled]="!canRepeat()"
-        (click)="onRepeat()"
-      >
-        + ещё один
       </button>
     </div>
   }

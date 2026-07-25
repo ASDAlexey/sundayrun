@@ -1,26 +1,26 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output, signal, untracked } from '@angular/core';
 
 import { formatDuration } from '../../../core/time/duration';
 import { assignNextUnnamed, assignSplit, recordUnnamedSplit, removeSplit } from '../../../core/timer/session-actions';
-import { runnerSplits, unassignedSplits } from '../../../core/timer/session-splits';
+import { runnerSplitTimesMs, runnerStage, unassignedSplits } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
 import { TIMER_ID_RANDOM_RANGE } from '../../../core/timer/timer-id.constant';
-import { LAST_ENTRY_INDEX, MAX_SPLITS_PER_RUNNER } from '../../../core/timer/timer-session.constant';
+import { LAP_SPLIT_INDEX } from '../../../core/timer/timer-session.constant';
 import { TimerStatus } from '../../../core/timer/timer-session.enum';
 import { TimerFeedback } from '../../../state/haptics.enum';
 import { HapticsService } from '../../../state/haptics.service';
 import { TimerClockService } from '../../../state/timer-clock.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
-import { TIMER_TAPE_NEXT_INDEX, TIMER_TAPE_NO_REQUEST } from './tape-controls.constant';
+import { STAGE_OF_MODE, TIMER_TAPE_NEXT_INDEX, TIMER_TAPE_NOBODY_WAITING, TIMER_TAPE_NO_REQUEST } from './tape-controls.constant';
+import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
 import { TimerTapeChip, TimerTapeDiscard, TimerTapeRunner } from './tape-controls.interface';
-import { tapeDiscardNoteText, tapeKeysHintText, tapeRunnerMetaText } from './tape-controls.text';
+import { tapeDiscardNoteText, tapeKeysHintText, tapeNobodyWaitingText, tapeQueueDoneText, tapeRunnerMetaText } from './tape-controls.text';
 
 /**
  * The safety net for a pack on the first lap (docs/TIMER.md §4): the big «ОТСЕЧКА» key writes a time
- * with no name on it, «+ ещё один» hangs one more on the very same time for a chest-to-chest pair,
- * and the queue of nameless times is handed out afterwards — a tapped surname takes the earliest one,
- * or the chip the organiser picked by hand.
+ * with no name on it, and the queue of nameless times is handed out afterwards — a tapped surname
+ * takes the earliest one, or the chip the organiser picked by hand.
  *
  * The component owns no session state: it reads the active measurement out of `TimerSessionService`
  * and pushes every change back through the pure core, so the journal stays the single source of truth
@@ -49,10 +49,22 @@ export class TimerTape {
   /** The open queue panel eats a row of the tile grid, so the page is told when it opens (design §2.2). */
   readonly panelOpen = output<boolean>();
 
-  readonly open = linkedSignal<number, boolean>({
+  /**
+   * Which half of the handout is open, or `null` for a closed panel. A queued time is either somebody's
+   * lap or somebody's finish, and mixing both groups in one list is how a time ends up on the wrong
+   * person: mid-race the same surname is a legitimate target for one of the two and a misstap for the
+   * other. The two keys ask the question once, and the list below answers only it.
+   *
+   * An outside «Разобрать» opens the group that still has people waiting — the lap while anybody is
+   * out on it, the finish afterwards.
+   */
+  readonly mode = linkedSignal<number, TimerTapeModeType | null>({
     source: () => this.openRequest(),
-    computation: (request) => request > TIMER_TAPE_NO_REQUEST,
+    computation: (request, previous) =>
+      request > TIMER_TAPE_NO_REQUEST ? (previous?.value ?? untracked(() => this.#defaultMode())) : null,
   });
+
+  readonly open = computed(() => this.mode() !== null);
 
   readonly pickedId = signal<string | null>(null);
   /** The time text of a chip that has just been handed out — a ghost that flies away and dies. */
@@ -87,34 +99,59 @@ export class TimerTape {
   /** The queue row survives an emptied queue for as long as the ghost of the last chip is still flying. */
   readonly showQueue = computed(() => this.hasQueue() || this.flyingText() !== null);
   readonly pickedChip = computed(() => this.queue().find((chip) => chip.selected) ?? null);
-  readonly canRepeat = computed(() => this.#lastSplitAtMs() !== null);
-  /** The core refuses every split until the mass start, so both keys say so instead of pretending. */
+  /** The core refuses every split until the mass start, so the key says so instead of pretending. */
   readonly canCut = computed(() => this.#sessions.active()?.status === TimerStatus.running);
   /**
-   * A stopped race has nothing left to cut, and the core would refuse anyway. The keys go rather
-   * than go grey: past the finish the panel exists only to hand out the times still without a name.
+   * A stopped race has nothing left to cut, and the core would refuse anyway. The key goes rather
+   * than goes grey: past the finish the panel exists only to hand out the times still without a name.
    */
   readonly finished = computed(() => this.#sessions.active()?.status === TimerStatus.finished);
-  readonly keysHint = computed(() => (this.finished() ? null : tapeKeysHintText(this.canCut(), this.canRepeat())));
+  readonly keysHint = computed(() => (this.finished() ? null : tapeKeysHintText(this.canCut())));
 
+  /** How many people the lap key has to offer, and how many the finish key has. */
+  readonly lapWaiting = computed(() => this.#waitingCount(TimerTapeMode.lap));
+  readonly finishWaiting = computed(() => this.#waitingCount(TimerTapeMode.finish));
+
+  /**
+   * Whom the open half can hand a time to. Only people the core would actually accept it for: a runner
+   * who is done and a runner who was retired are not greyed out at the bottom of the list any more,
+   * they are simply not in it — the list is a list of targets, not of the roster.
+   */
   readonly runners = computed<TimerTapeRunner[]>(() => {
     const session = this.#sessions.active();
+    const mode = this.mode();
 
-    if (session === null) {
+    if (session === null || mode === null) {
       return [];
     }
 
-    return session.runners.map((runner) => {
-      const splitCount = runnerSplits(session, runner.id).length;
+    return session.runners.reduce<TimerTapeRunner[]>((rows, runner) => {
+      if (runnerStage(session, runner.id) !== STAGE_OF_MODE[mode]) {
+        return rows;
+      }
 
-      return {
-        fullName: runner.fullName,
-        id: runner.id,
-        metaText: tapeRunnerMetaText(splitCount),
-        taken: splitCount >= MAX_SPLITS_PER_RUNNER,
-      };
-    });
+      const metaText = tapeRunnerMetaText(mode, runnerSplitTimesMs(session, runner.id)[LAP_SPLIT_INDEX]);
+
+      return [...rows, { fullName: runner.fullName, id: runner.id, metaText }];
+    }, []);
   });
+
+  /** Why the open half shows no names: an emptied queue first of all, then an emptied group. */
+  readonly emptyText = computed(() => {
+    const mode = this.mode();
+
+    if (mode === null) {
+      return null;
+    }
+
+    if (!this.hasQueue()) {
+      return tapeQueueDoneText();
+    }
+
+    return this.runners().length > 0 ? null : tapeNobodyWaitingText(mode);
+  });
+
+  protected readonly modes = TimerTapeMode;
 
   #issued = 0;
 
@@ -136,27 +173,13 @@ export class TimerTape {
     this.onCut();
   }
 
-  /** «+ ещё один»: one more nameless time on the newest journal entry — they came in chest to chest. */
-  onRepeat(): void {
-    const atMs = this.#lastSplitAtMs();
+  /** The same key twice closes the panel; the other key swaps the group without closing anything. */
+  onToggle(mode: TimerTapeModeType): void {
+    const next = this.mode() === mode ? null : mode;
 
-    if (atMs === null) {
-      return;
-    }
-
-    this.#sessions.updateActive((session) => recordUnnamedSplit(session, atMs, this.#nextId(atMs)));
-    this.#haptics.play(TimerFeedback.lap);
-  }
-
-  onToggle(): void {
-    const open = !this.open();
-
-    this.open.set(open);
-    this.panelOpen.emit(open);
-
-    if (!open) {
-      this.#reset();
-    }
+    this.mode.set(next);
+    this.panelOpen.emit(next !== null);
+    this.#reset();
   }
 
   /** Picking a chip twice puts the queue back in order — the head chip is next again. */
@@ -201,8 +224,19 @@ export class TimerTape {
     this.pickedId.set(null);
   }
 
-  #lastSplitAtMs(): number | null {
-    return this.#sessions.active()?.splits.at(LAST_ENTRY_INDEX)?.atMs ?? null;
+  /** Where an outside «Разобрать» lands: the lap while anybody is still out on it, the finish after. */
+  #defaultMode(): TimerTapeModeType {
+    return this.lapWaiting() > TIMER_TAPE_NOBODY_WAITING ? TimerTapeMode.lap : TimerTapeMode.finish;
+  }
+
+  #waitingCount(mode: TimerTapeModeType): number {
+    const session = this.#sessions.active();
+
+    if (session === null) {
+      return TIMER_TAPE_NOBODY_WAITING;
+    }
+
+    return session.runners.filter((runner) => runnerStage(session, runner.id) === STAGE_OF_MODE[mode]).length;
   }
 
   /**

@@ -14,12 +14,10 @@ export interface TimerTapeDiscard {
   note: string;
 }
 
-/** One row of the handout list. */
+/** One row of the handout list — always a runner the open half can actually give the time to. */
 export interface TimerTapeRunner {
   fullName: string;
   id: string;
-  /** What is already written down for him — so a dead row explains itself instead of just refusing. */
+  /** «круг 11:41» while handing out finishes: the time he already has, to recognise him by. */
   metaText: string;
-  /** Both of his times are recorded: the core would refuse the handout, so the row is disabled. */
-  taken: boolean;
 }

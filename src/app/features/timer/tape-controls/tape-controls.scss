@@ -8,7 +8,7 @@
 // desk reads as a banner, not as an instrument.
 //
 // Centring is left to the bar itself (`.timer__actions`): an auto margin here would centre the keys
-// inside their own slot and push the pair off the middle whenever «Кто бежит» stands beside them.
+// inside their own slot and push the pair off the middle whenever the roster key stands beside them.
 :host {
   display: flex;
   flex: 1;
@@ -74,16 +74,46 @@
     }
   }
 
+  // The two halves of the handout share the row evenly: on a phone «Разобрать финиш» is as far from
+  // the thumb as «Разобрать круг», and neither of them may be the one that is easier to hit.
+  &__modes {
+    display: flex;
+    flex: none;
+    align-items: stretch;
+    gap: 6px;
+  }
+
   &__toggle {
     @include b.button-outline;
     @include t.mono-meta;
 
     display: inline-flex;
-    flex: none;
+    flex: 1;
     align-items: center;
+    justify-content: center;
+    min-width: 0;
     min-height: 44px;
-    margin-left: auto;
-    padding: 0 12px;
+    padding: 0 10px;
+    gap: 6px;
+    white-space: nowrap;
+
+    &_on {
+      @include b.button-toggle-active;
+    }
+
+    &:disabled {
+      color: var(--text-muted);
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  // How many people this half can still hand a time to — the number decides which key to press.
+  &__toggle-count {
+    @include t.mono-caption;
+
+    color: var(--accent-light);
+    font-variant-numeric: tabular-nums;
   }
 
   &__count {
@@ -194,12 +224,6 @@
       transform: scale(0.97);
       transition: transform var(--time-press) var(--ease);
     }
-
-    &_taken {
-      background: var(--bg-subtle);
-      cursor: default;
-      opacity: 0.5;
-    }
   }
 
   &__runner-name {
@@ -245,11 +269,13 @@
     text-wrap: balance;
   }
 
+  // The only key of the row now, so it takes the whole width: a lone half-width key reads as if
+  // something next to it failed to draw.
   &__cut {
     @include b.button-accent;
     @include t.timer-action-label;
 
-    flex: 2;
+    flex: 1;
     padding: 0 12px;
     transition: transform var(--time-spring) var(--spring-tap);
 
@@ -270,36 +296,8 @@
     }
   }
 
-  // One line, always: «+ ещё один» broken into «+ ещё / один» reads as two dead keys in a row.
-  &__more {
-    @include b.button-outline;
-    @include t.mono-value;
-
-    flex: 1;
-    padding: 0 10px;
-    white-space: nowrap;
-    transition: transform var(--time-spring) var(--spring-tap);
-
-    &:active {
-      transform: scale(0.97);
-      transition: transform var(--time-press) var(--ease);
-    }
-
-    &:disabled {
-      background: none;
-      color: var(--text-muted);
-      cursor: default;
-      opacity: 0.5;
-    }
-
-    &:disabled:active {
-      transform: none;
-    }
-  }
-
   // A finger must not leave a ring behind; a keyboard cut has to be visible.
   &__cut:focus-visible,
-  &__more:focus-visible,
   &__chip:focus-visible,
   &__discard:focus-visible,
   &__runner:focus-visible,

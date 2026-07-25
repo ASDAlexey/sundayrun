@@ -1,20 +1,12 @@
-import { MAX_SPLITS_PER_RUNNER } from '../../../core/timer/timer-session.constant';
+import { formatDuration } from '../../../core/time/duration';
+import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
 
 /**
- * Why a key of the panel is dead, said out loud right above it. A grey «ОТСЕЧКА» before the start
- * and a grey «+ ещё один» over an empty journal are both correct and both look broken in silence —
- * so the line either names the missing precondition or explains what the second key is even for.
+ * Why the key is dead, said out loud right above it. A grey «ОТСЕЧКА» before the start is correct
+ * and looks broken in silence — so the line names the precondition that is missing.
  */
-export function tapeKeysHintText(canCut: boolean, canRepeat: boolean): string | null {
-  if (!canCut) {
-    return $localize`:@@timer.tapeHintIdle:Нажмите «Старт» — до старта отсечки не пишутся`;
-  }
-
-  if (canRepeat) {
-    return null;
-  }
-
-  return $localize`:@@timer.tapeHintRepeat:«+ ещё один» вешает вторую отсечку на то же время — для тех, кто финишировал грудь в грудь`;
+export function tapeKeysHintText(canCut: boolean): string | null {
+  return canCut ? null : $localize`:@@timer.tapeHintIdle:Нажмите «Старт» — до старта отсечки не пишутся`;
 }
 
 /** «Выбросить время?» spells out which time — a queue of four looks the same from a metre away. */
@@ -23,13 +15,26 @@ export function tapeDiscardNoteText(timeText: string): string {
 }
 
 /**
- * What the handout row says about a runner. A row the core would refuse says so in words rather than
- * only by going grey — «плитка молчит», but the queue has to explain itself (docs/TIMER.md §4).
+ * What a row of the handout says about a runner. Handing out laps it says nothing: everybody in that
+ * list is in the same state, and «плитка молчит» goes for a list of surnames too. Handing out finishes
+ * it shows the lap he already has — the one fact that tells two similar names apart.
  */
-export function tapeRunnerMetaText(splitCount: number): string {
-  if (splitCount >= MAX_SPLITS_PER_RUNNER) {
-    return $localize`:@@timer.tapeRunnerFull:круг и финиш записаны`;
+export function tapeRunnerMetaText(mode: TimerTapeModeType, lapMs: number | undefined): string {
+  if (mode === TimerTapeMode.lap || lapMs === undefined) {
+    return '';
   }
 
-  return splitCount === 0 ? $localize`:@@timer.tapeRunnerEmpty:ждёт круг` : $localize`:@@timer.tapeRunnerLap:круг записан, ждёт финиш`;
+  return $localize`:@@timer.tapeRunnerLap:круг ${formatDuration(lapMs)}:lap:`;
+}
+
+/** The queue is empty — everything recorded has a name on it now. */
+export function tapeQueueDoneText(): string {
+  return $localize`:@@timer.tapeQueueDone:Очередь разобрана.`;
+}
+
+/** The queue is not empty, but this half of it has nobody left to give a time to. */
+export function tapeNobodyWaitingText(mode: TimerTapeModeType): string {
+  return mode === TimerTapeMode.lap
+    ? $localize`:@@timer.tapeNobodyLap:Круг прошли все — время уходит в финиш.`
+    : $localize`:@@timer.tapeNobodyFinish:Финишировали все — время уходит в круг.`;
 }
