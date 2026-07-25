@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { Service, computed, effect, inject, signal } from '@angular/core';
 
 import { PublishEventInput } from '../core/github/publish-event.interface';
 import { eventDatesFromHistory } from '../core/history/event-dates';
@@ -36,7 +36,7 @@ import { TimerSessionService } from './timer-session.service';
  * The promise never rejects: a failure becomes a `failed` status with a sentence the card can show,
  * the measurement stays untouched in localStorage, and pressing «Повторить» replays the same flow.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TimerPublishService {
   readonly #sessions = inject(TimerSessionService);
   readonly #store = inject(ProtocolStateService);

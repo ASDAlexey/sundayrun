@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Service, computed, signal } from '@angular/core';
 
 import { eventNumberForDate } from '../core/github/archive-index';
 import { PublishEventInput } from '../core/github/publish-event.interface';
@@ -28,7 +28,7 @@ import { DatedSourceFile, SourceFile } from './source-file.interface';
  * `importSession`, only without a workbook behind it. The single-draft accessors (`participants`,
  * `event`, …) always read the active draft, so the editing components stay draft-agnostic.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProtocolStateService {
   readonly #drafts = signal<ProtocolDraft[]>([]);
   readonly #activeIndex = signal(0);

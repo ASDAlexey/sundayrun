@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Service, computed, signal } from '@angular/core';
 
 import { readStoredDurations } from './duration-history';
 import {
@@ -13,7 +13,7 @@ import { PublishDurationStorage } from './publish-duration.type';
  * on the site, so the waiting hints can promise a measured average instead of a hardcoded
  * «~2–3 минуты». localStorage-backed: the history belongs to the organiser's device.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PublishDurationService {
   readonly #durations = signal<number[]>(
     readStoredDurations(this.#storage.getItem(PUBLISH_DURATIONS_STORAGE_KEY), PUBLISH_DURATIONS_MAX_ENTRIES),

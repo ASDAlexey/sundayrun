@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Service, computed, signal } from '@angular/core';
 
 import {
   EMPTY_PENDING_ARCHIVE_CHANGES,
@@ -17,7 +17,7 @@ import { PendingArchiveStorage } from './pending-archive.type';
  * localStorage-backed, so a reload inside the ~2–3 minute window keeps the corrected view, and both
  * are dropped by `reconcile` once a reloaded archive agrees (or they age out).
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PendingArchiveService {
   readonly #changes = signal<PendingArchiveChanges>(readStored(this.#storage.getItem(PENDING_ARCHIVE_STORAGE_KEY)));
 

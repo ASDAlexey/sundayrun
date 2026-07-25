@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, OnDestroy, Service, computed, effect, inject, signal } from '@angular/core';
 
 import { isRaceComplete } from '../../core/timer/session-splits';
 import { TimerSessionService } from '../../state/timer-session.service';
@@ -19,7 +19,7 @@ import { TimerFarewellPhase, TimerFarewellPhaseType } from './timer-farewell.enu
  *
  * Undoing the last split puts the race back in progress, and the ceremony is armed again with it.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TimerFarewellService implements OnDestroy {
   readonly #view = inject(DOCUMENT).defaultView;
   readonly #sessions = inject(TimerSessionService);

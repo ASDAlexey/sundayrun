@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 
 import {
   MAX_SHARE_URL_BASE,
@@ -11,7 +11,7 @@ import {
 } from './share-urls.constant';
 
 /** Thin wrapper over the Web Share / Clipboard APIs and the social share URL templates. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ShareService {
   canShareFile(file: File): boolean {
     return this.canShareFiles([file]);

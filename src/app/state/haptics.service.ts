@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, inject, signal } from '@angular/core';
+import { DOCUMENT, Service, inject, signal } from '@angular/core';
 
 import { MS_IN_SECOND } from '../core/time/duration.constant';
 import {
@@ -31,7 +31,7 @@ import { TimerStorage } from './timer-storage.type';
  * Everything here is best-effort by design. A platform without vibration, without WebAudio, or a
  * prerender without a window at all, simply gets a quieter instrument — never an error.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HapticsService {
   readonly #view = inject(DOCUMENT).defaultView;
   readonly #sound = signal(this.#storage.getItem(TIMER_SOUND_STORAGE_KEY) === TIMER_SOUND_ON);

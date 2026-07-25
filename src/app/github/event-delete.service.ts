@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 
 import { deleteEvent } from '../core/github/delete-event';
 import { GithubAuthError } from '../core/github/github-errors';
@@ -8,7 +8,7 @@ import { DbFreshnessService } from './db-freshness.service';
 import { PublishState, PublishStateType } from './github-storage.enum';
 
 /** Deletes one published event from the protocols repository, exposing the flow state. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class EventDeleteService {
   readonly #adminToken = inject(AdminTokenService);
   readonly #cdnRef = inject(CdnRefService);

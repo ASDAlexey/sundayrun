@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, effect, inject } from '@angular/core';
+import { DOCUMENT, Service, effect, inject } from '@angular/core';
 
 import { TimerStatus } from '../core/timer/timer-session.enum';
 import { BEFORE_UNLOAD_EVENT, TIMER_LEAVE_CONFIRM } from './race-guard.constant';
@@ -16,7 +16,7 @@ import { TimerSessionService } from './timer-session.service';
  * and a reopened measurement resumes with the clock still running. What it protects is the judge's
  * attention — coming back to the screen costs seconds that the pack does not wait out.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RaceGuardService {
   readonly #view = inject(DOCUMENT).defaultView;
   readonly #sessions = inject(TimerSessionService);

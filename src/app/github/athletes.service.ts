@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
 import { YearBadgeRarity } from '../core/history/badge-rarity.type';
 import { CourseRecordHistory } from '../core/history/course-records.type';
@@ -45,7 +45,7 @@ import { PROTOCOL_DB } from './protocol-db.token';
  * aggregates; the db service retries a transient range failure, and a persistent one rejects so the
  * page shows its error state with a reload. There is no JSON mirror to fall back to.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AthletesService {
   readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
   // Reads memoized for the session: soft navigation carries no baked value, so without this every

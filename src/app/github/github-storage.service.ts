@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 
 import { GithubAuthError } from '../core/github/github-errors';
 import { publishEvents } from '../core/github/publish-event';
@@ -9,7 +9,7 @@ import { DbFreshnessService } from './db-freshness.service';
 import { PublishState, PublishStateType } from './github-storage.enum';
 
 /** Publishes an upload batch (one event or many, always one commit) into the protocols repository, exposing the flow state. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GithubStorageService {
   readonly #adminToken = inject(AdminTokenService);
   readonly #cdnRef = inject(CdnRefService);

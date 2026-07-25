@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { DOCUMENT, Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { DOCUMENT, PLATFORM_ID, Service, inject } from '@angular/core';
 
 import type { SQLiteHTTPPool } from 'sqlite-wasm-http';
 
@@ -38,7 +38,7 @@ import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
  * the deploy bundles a copy named by the data commit (see `pinnedProtocolDbPath`), and the plain
  * name is the fallback read while `DbFreshnessService` reports that copy's deploy still in flight.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProtocolDbService {
   readonly #cdnRef = inject(CdnRefService);
   readonly #freshness = inject(DbFreshnessService);

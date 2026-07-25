@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, inject } from '@angular/core';
+import { DOCUMENT, Service, inject } from '@angular/core';
 
 import { fetchBranchHeadSha } from '../core/github/branch-head';
 import { DEFAULT_GITHUB_FETCH } from '../core/github/github-fetch.constant';
@@ -25,7 +25,7 @@ import { FRESH_SHA_STORAGE_KEY, FRESH_SHA_TTL_MS } from './cdn-ref.service.const
  * kept in sessionStorage and wins for a few minutes — the session after the banner's reload
  * must not fall back to the very raw read whose staleness triggered the banner.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CdnRefService {
   readonly #storage = inject(DOCUMENT).defaultView?.sessionStorage ?? null;
 

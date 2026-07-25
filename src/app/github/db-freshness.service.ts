@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { DOCUMENT, Injectable, PLATFORM_ID, Signal, inject, signal } from '@angular/core';
+import { DOCUMENT, PLATFORM_ID, Service, Signal, inject, signal } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import { pinnedProtocolDbPath } from '../core/github/protocol-db-path';
@@ -33,7 +33,7 @@ import {
  * opinion: the pointer is re-read with a cache-busting query, and a newer sha found there drives
  * the same Updating → Updated flow (and is remembered for the reload via `CdnRefService`).
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DbFreshnessService {
   readonly #cdnRef = inject(CdnRefService);
   readonly #document = inject(DOCUMENT);

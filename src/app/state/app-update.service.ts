@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, Service, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SwUpdate } from '@angular/service-worker';
 import { filter } from 'rxjs';
@@ -17,7 +17,7 @@ import { TimerSessionService } from './timer-session.service';
  * Browser-only and eagerly created from an app initializer. Without a registered worker
  * (`ng serve`, prerender, an unsupported browser) `isEnabled` is false and this is a no-op.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppUpdateService {
   readonly #swUpdate = inject(SwUpdate);
   readonly #sessions = inject(TimerSessionService);

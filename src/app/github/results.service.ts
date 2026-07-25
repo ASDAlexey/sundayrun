@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
 import { EventResultsFile } from '../core/github/results-file.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
@@ -20,7 +20,7 @@ import { PROTOCOL_DB } from './protocol-db.token';
  * the db service retries a transient range failure, and a persistent one rejects so the page can
  * distinguish "not found" from "could not be loaded". Loads are cached per slug for the session.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ResultsService {
   readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
   readonly #results = new Map<string, Promise<EventResultsFile | null>>();

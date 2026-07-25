@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, inject } from '@angular/core';
+import { DOCUMENT, Service, inject } from '@angular/core';
 
 import { finishCountsAt } from '../core/history/finish-counts';
 import { buildPreviousBests } from '../core/history/previous-bests';
@@ -12,7 +12,7 @@ import { PROTOCOL_PDF_NOT_FOUND_ERROR } from './protocol-pdf.service.constant';
  * event's `results.json` feeds the same pdfmake pipeline used at publish time, so the file is
  * always in sync with the stored data and nothing has to be pre-rendered or hosted in the repo.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProtocolPdfService {
   readonly #results = inject(ResultsService);
   readonly #pdf = inject(PdfService);

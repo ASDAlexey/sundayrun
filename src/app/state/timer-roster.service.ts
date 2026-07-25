@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, inject, signal } from '@angular/core';
+import { DOCUMENT, Service, inject, signal } from '@angular/core';
 
 import { GenderType } from '../core/models/gender.enum';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
@@ -16,7 +16,7 @@ import { TimerStorage } from './timer-storage.type';
  * the records and the cached date alone and only raises `error` — offline is a normal Sunday, not a
  * broken screen. `load` never rejects, and a second call while one is in flight joins the first.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TimerRosterService {
   readonly #athletes = inject(AthletesService);
   readonly #view = inject(DOCUMENT).defaultView;

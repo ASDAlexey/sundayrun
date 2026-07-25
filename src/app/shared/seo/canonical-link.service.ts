@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, inject } from '@angular/core';
+import { DOCUMENT, Service, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
@@ -10,7 +10,7 @@ import { CANONICAL_SITE_BASE_URL } from './canonical-link.constant';
  * every page to this origin and rank scraped mirrors below it as duplicates. Instantiated by an
  * app initializer; during prerender the tag is baked into each page's static HTML.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CanonicalLinkService {
   readonly #document = inject(DOCUMENT);
 

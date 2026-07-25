@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { DOCUMENT, OnDestroy, Service, inject, signal } from '@angular/core';
 
 import { DOCUMENT_VISIBLE, VISIBILITY_CHANGE_EVENT, WAKE_LOCK_SCREEN } from './wake-lock.constant';
 
@@ -16,7 +16,7 @@ import { DOCUMENT_VISIBLE, VISIBILITY_CHANGE_EVENT, WAKE_LOCK_SCREEN } from './w
  * throws and nothing retries: `unsupported` goes up and the race screen quietly asks for a longer
  * auto-lock instead.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class WakeLockService implements OnDestroy {
   readonly #document = inject(DOCUMENT);
   readonly #view = inject(DOCUMENT).defaultView;

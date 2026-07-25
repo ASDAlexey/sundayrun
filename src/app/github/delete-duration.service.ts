@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Service, computed, signal } from '@angular/core';
 
 import { DELETE_DURATIONS_STORAGE_KEY } from './delete-duration.constant';
 import { readStoredDurations } from './duration-history';
@@ -10,7 +10,7 @@ import { PublishDurationStorage } from './publish-duration.type';
  * dropping the event, so the admin hints can promise a measured average instead of a hardcoded
  * «~2–3 минуты». localStorage-backed, mirroring `PublishDurationService`.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DeleteDurationService {
   readonly #durations = signal<number[]>(
     readStoredDurations(this.#storage.getItem(DELETE_DURATIONS_STORAGE_KEY), PUBLISH_DURATIONS_MAX_ENTRIES),

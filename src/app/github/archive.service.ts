@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
 import { createQueryCache } from '../core/cache/query-cache';
 import { ARCHIVE_INDEX_SCHEMA_VERSION } from '../core/github/archive-index.constant';
@@ -13,7 +13,7 @@ import { PROTOCOL_DB } from './protocol-db.token';
  * rejects, so the page shows its error state with a reload. An empty archive is simply the db
  * returning no rows, which stays distinct from a load failure.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ArchiveService {
   readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
   // Session memo: the full index is the races list's whole payload, re-read on every soft return.

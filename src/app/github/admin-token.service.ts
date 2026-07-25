@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Service, computed, signal } from '@angular/core';
 
 import { checkGithubToken } from '../core/github/token-check';
 import { TokenCheckType } from '../core/github/token-check.enum';
@@ -6,7 +6,7 @@ import { ADMIN_TOKEN_STORAGE_KEY, SSR_NOOP_STORAGE } from './admin-token.constan
 import { AdminTokenStorage } from './admin-token.type';
 
 /** Keeps the organiser's GitHub PAT in localStorage; a stored token IS the admin role. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AdminTokenService {
   readonly #token = signal<string | null>(this.#storage.getItem(ADMIN_TOKEN_STORAGE_KEY));
 

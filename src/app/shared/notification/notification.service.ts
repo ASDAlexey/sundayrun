@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import {
@@ -10,7 +10,7 @@ import {
 } from './notification.constant';
 
 /** One-off Material toasts (MatSnackBar) for surfacing errors and short status notices app-wide. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NotificationService {
   readonly #snackBar = inject(MatSnackBar);
 

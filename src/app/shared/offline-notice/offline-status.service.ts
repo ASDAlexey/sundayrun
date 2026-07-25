@@ -1,4 +1,4 @@
-import { DOCUMENT, DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { DOCUMENT, DestroyRef, Service, inject, signal } from '@angular/core';
 
 import { OFFLINE_EVENT, ONLINE_EVENT } from './offline-notice.constant';
 
@@ -9,7 +9,7 @@ import { OFFLINE_EVENT, ONLINE_EVENT } from './offline-notice.constant';
  * with no signal or by something that deserves the page's real error text (docs/TIMER.md §12).
  * Prerender has no window, so the static HTML is always built as «online».
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class OfflineStatusService {
   readonly #view = inject(DOCUMENT).defaultView;
   readonly #offline = signal(this.#view?.navigator.onLine === false);

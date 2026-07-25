@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { DOCUMENT, OnDestroy, Service, inject, signal } from '@angular/core';
 
 import { TimerSession } from '../core/timer/timer-session.interface';
 import { TIMER_CLOCK_IDLE_MS, TIMER_TICK_INTERVAL_MS } from './timer-clock.constant';
@@ -11,7 +11,7 @@ import { TIMER_CLOCK_IDLE_MS, TIMER_TICK_INTERVAL_MS } from './timer-clock.const
  * `performance.now() - (Date.now() - startedAtEpochMs)`, so the digits continue where the dropped tab
  * left them while every recorded `atMs` keeps its meaning.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TimerClockService implements OnDestroy {
   readonly #view = inject(DOCUMENT).defaultView;
   readonly #elapsedMs = signal(TIMER_CLOCK_IDLE_MS);

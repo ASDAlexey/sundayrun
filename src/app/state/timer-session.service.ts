@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, computed, inject, signal } from '@angular/core';
+import { DOCUMENT, Service, computed, inject, signal } from '@angular/core';
 
 import { createSession } from '../core/timer/session-actions';
 import { createTimerId } from '../core/timer/timer-id';
@@ -21,7 +21,7 @@ import { TimerStorage } from './timer-storage.type';
  * only supplies the ids and the clock, applies the returned session and writes it down. A callback
  * that returns the very same session (a refused tap) writes nothing at all.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TimerSessionService {
   readonly #view = inject(DOCUMENT).defaultView;
   readonly #state = signal<TimerSessionState>(readTimerSessionState(this.#storage.getItem(TIMER_SESSION_STORAGE_KEY)));

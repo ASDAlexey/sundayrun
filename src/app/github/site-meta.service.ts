@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 
 import { GithubAuthError } from '../core/github/github-errors';
 import { HTTP_FORBIDDEN, HTTP_NOT_FOUND } from '../core/github/github-api.constant';
@@ -18,7 +18,7 @@ import { SITE_META_LOAD_ERROR_PREFIX } from './site-meta.service.constant';
  * organiser publish a new version. A 404/403 means the file has never been published and
  * yields the empty meta; any other non-OK response or a network failure rejects.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SiteMetaService {
   readonly #adminToken = inject(AdminTokenService);
   readonly #cdnRef = inject(CdnRefService);

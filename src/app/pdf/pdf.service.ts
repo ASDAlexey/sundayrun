@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
 import type { PdfMakeStatic } from 'pdfmake/build/pdfmake';
 
@@ -10,7 +10,7 @@ import { PdfFontsService } from './pdf-fonts.service';
 import { PDF_FILE_EXTENSION, PROTOCOL_FILE_PREFIX } from './pdf.service.constant';
 
 /** Renders the race protocol into a PDF blob through a lazily imported pdfmake. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PdfService {
   readonly #fonts = inject(PdfFontsService);
 

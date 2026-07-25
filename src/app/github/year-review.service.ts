@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
 import { createQueryCache } from '../core/cache/query-cache';
 import { YearReview } from '../core/history/year-review.interface';
@@ -7,7 +7,7 @@ import { selectFirstEventDateByYear, selectYearReview } from './protocol-db-quer
 import { PROTOCOL_DB } from './protocol-db.token';
 
 /** Anonymous reads behind the «Итоги года» page, over the same HTTP-range db as the other pages. */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class YearReviewService {
   readonly #db = createProtocolDrizzle(inject(PROTOCOL_DB));
   // Session memo: a soft-navigated review carries no baked value and would re-run its selects.

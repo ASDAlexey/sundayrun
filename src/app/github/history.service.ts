@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
 import { GithubAuthError } from '../core/github/github-errors';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
@@ -14,7 +14,7 @@ import { HISTORY_MISSING_TOKEN_MESSAGE } from './history.service.constant';
  * data the last deploy shipped, so a back-to-back import of old events would keep computing notes
  * against a stale copy. The whole file is downloaded and reassembled in memory instead.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HistoryService {
   readonly #adminToken = inject(AdminTokenService);
 

@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, inject } from '@angular/core';
+import { DOCUMENT, Service, inject } from '@angular/core';
 
 import {
   PDF_WORKER_PUBLIC_PATH,
@@ -14,7 +14,7 @@ import {
  * attachment. Browser-only: renders onto a detached `<canvas>` from the injected DOCUMENT; the
  * heavy pdf.js bytes and its worker stay out of the initial bundle.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProtocolImageService {
   readonly #document = inject(DOCUMENT);
 

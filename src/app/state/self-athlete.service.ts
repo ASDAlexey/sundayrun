@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 
 import { SELF_ATHLETE_STORAGE_KEY, SELF_SSR_NOOP_STORAGE } from './self-athlete.constant';
 import { SelfAthlete } from './self-athlete.interface';
@@ -9,7 +9,7 @@ import { SelfAthleteStorage } from './self-athlete.type';
  * The pick is pure device-local personalisation — highlighted protocol rows, a prefilled duel
  * slot, the personal card on the home page — never an identity claim the site verifies.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SelfAthleteService {
   readonly #self = signal<SelfAthlete | null>(readStored(this.#storage.getItem(SELF_ATHLETE_STORAGE_KEY)));
 

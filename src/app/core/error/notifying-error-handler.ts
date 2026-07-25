@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ErrorHandler, Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
+import { ErrorHandler, Injector, PLATFORM_ID, Service, inject } from '@angular/core';
 
 import { NotificationService } from '../../shared/notification/notification.service';
 import { UNEXPECTED_ERROR_MESSAGE } from './notifying-error-handler.constant';
@@ -10,7 +10,7 @@ import { UNEXPECTED_ERROR_MESSAGE } from './notifying-error-handler.constant';
  * still logs to the console for debugging; the toast is browser-only, so NotificationService (and its
  * MatSnackBar) is resolved lazily, never constructed during prerender.
  */
-@Injectable()
+@Service({ autoProvided: false })
 export class NotifyingErrorHandler implements ErrorHandler {
   readonly #base = new ErrorHandler();
   readonly #injector = inject(Injector);

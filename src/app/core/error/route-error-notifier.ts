@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationError, Router } from '@angular/router';
 import { filter } from 'rxjs';
@@ -12,7 +12,7 @@ import { NAVIGATION_ERROR_MESSAGE, STALE_CHUNK_RELOAD_FAILED_MESSAGE } from './r
  * triggers a one-time reload to recover the current shell (see [[lazy-chunk-reload]]); any other
  * navigation error surfaces as a Material toast. Eagerly created from an app initializer, browser-only.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RouteErrorNotifier {
   readonly #notification = inject(NotificationService);
 
