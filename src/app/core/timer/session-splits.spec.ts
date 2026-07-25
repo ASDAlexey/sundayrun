@@ -11,6 +11,7 @@ import {
   unassignedSplits,
 } from './session-splits';
 import {
+  COMPLETE_BY_QUEUE_SESSION,
   COMPLETE_SESSION,
   EXPECTED_BEST_FINISH_MS,
   EXPECTED_FINISH_DONE_COUNT,
@@ -64,9 +65,10 @@ describe('session splits selectors', () => {
   });
 
   it('knows when nobody is left to tap and what the fastest 5 km of the race was', () => {
-    expect(isRaceComplete(TIMER_SESSION), 'Попов Игорь is still out on the course').toBe(false);
+    expect(isRaceComplete(TIMER_SESSION), 'three taps are owed and the queue holds two of them').toBe(false);
     expect(isRaceComplete(TIMER_SESSION_WITHOUT_SPLITS), 'a race nobody has run is not a finished one').toBe(false);
     expect(isRaceComplete(COMPLETE_SESSION), 'everyone is home or retired').toBe(true);
+    expect(isRaceComplete(COMPLETE_BY_QUEUE_SESSION), 'the same taps count with no surnames on them').toBe(true);
     expect(bestFinishMs(TIMER_SESSION)).toBe(EXPECTED_BEST_FINISH_MS);
     expect(bestFinishMs(TIMER_SESSION_WITHOUT_SPLITS), 'nobody home, nothing to show').toBeNull();
   });

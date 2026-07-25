@@ -1,9 +1,11 @@
 import { normalizeAthleteKey } from '../history/athlete-key';
 import {
+  EMPTY_ROSTER,
   FINISH_SPLIT_INDEX,
   LAP_DONE_MIN_SPLITS,
   MAX_SPLITS_PER_RUNNER,
   NAME_PART_SEPARATOR,
+  NOTHING_RECORDED,
   SURNAME_INDEX,
 } from './timer-session.constant';
 import { TimerRunnerOutcome, TimerRunnerStage, TimerRunnerStageType } from './timer-session.enum';
@@ -53,13 +55,24 @@ export function finishDoneCount(session: TimerSession): number {
 }
 
 /**
- * Nobody is left to tap: every single runner on the roster is either home or retired, and at least
- * one of them actually finished. This is «последний финишировавший» (docs/TIMER.md §10) — the one
- * moment of the race that is allowed an orchestrated animation. An empty roster is never it, and
- * neither is a field where everyone was retired without a time.
+ * Nobody is left to tap. This is «последний финишировавший» (docs/TIMER.md §10) — the one moment of
+ * the race that is allowed an orchestrated animation, and the moment the clock stops itself (§14).
+ *
+ * It counts **taps, not names**: fifteen people are done at thirty times whether the organiser put a
+ * surname on every one of them or hit «ОТСЕЧКА» into the queue. A queued time belongs to somebody,
+ * so it covers one of the taps still owed — the race is over when the queue covers every one of them.
+ * Waiting for the handout instead would leave the stopwatch running over a finished race for as long
+ * as it takes to give out the last surname, which is exactly what it must not do.
+ *
+ * A retired runner owes nothing: he is not coming round. An empty roster is never it, and neither is
+ * a field where nothing was recorded at all.
  */
 export function isRaceComplete(session: TimerSession): boolean {
-  return finishDoneCount(session) > 0 && session.runners.every((runner) => isRunnerDone(session, runner));
+  if (session.runners.length === EMPTY_ROSTER || session.splits.length === NOTHING_RECORDED) {
+    return false;
+  }
+
+  return tapsOwed(session) <= unassignedSplits(session).length;
 }
 
 /**
@@ -95,10 +108,15 @@ export function runnersWithoutGender(session: TimerSession): TimerRunner[] {
   return session.runners.filter((runner) => runner.gender === null);
 }
 
-function isRunnerDone(session: TimerSession, runner: TimerRunner): boolean {
-  const stage = stageOf(runner, runnerSplits(session, runner.id).length);
+/** How many taps the field still owes: two per active runner, less whatever he already has. */
+function tapsOwed(session: TimerSession): number {
+  return session.runners.reduce<number>((owed, runner) => {
+    if (runner.outcome !== TimerRunnerOutcome.active) {
+      return owed;
+    }
 
-  return stage === TimerRunnerStage.finished || stage === TimerRunnerStage.retired;
+    return owed + Math.max(NOTHING_RECORDED, MAX_SPLITS_PER_RUNNER - runnerSplits(session, runner.id).length);
+  }, NOTHING_RECORDED);
 }
 
 function stageOf(runner: TimerRunner, splitCount: number): TimerRunnerStageType {

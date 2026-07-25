@@ -69,6 +69,21 @@ export const COMPLETE_SESSION: TimerSession = {
   ],
 };
 
+/**
+ * The same three taps that finish the race, only nobody has been named yet: the organiser hit
+ * «ОТСЕЧКА» three times into the queue. The field owes exactly three taps, the queue holds five —
+ * so there is nothing left to time, however many surnames are still missing.
+ */
+export const COMPLETE_BY_QUEUE_SESSION: TimerSession = {
+  ...TIMER_SESSION,
+  splits: [
+    ...TIMER_SESSION.splits,
+    { id: 'split-queued-first', atMs: POPOV_IGOR_FINISH_MS, runnerId: null },
+    { id: 'split-queued-second', atMs: KUZNETSOV_LAP_MS, runnerId: null },
+    { id: 'split-queued-third', atMs: KUZNETSOV_FINISH_MS, runnerId: null },
+  ],
+};
+
 /** Троилин came home first, and nobody who finished later took that away from him. */
 export const EXPECTED_BEST_FINISH_MS = TROILIN_FINISH_MS;
 
