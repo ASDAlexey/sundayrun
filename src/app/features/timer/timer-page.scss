@@ -155,32 +155,6 @@
     gap: 8px;
   }
 
-  &__menu-title {
-    @include t.mono-caption;
-
-    margin: 0;
-    color: var(--text-muted);
-  }
-
-  &__menu-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    gap: 6px;
-  }
-
-  &__menu-toggle {
-    @include b.button-toggle;
-
-    flex: 1 1 64px;
-    height: 44px;
-    touch-action: manipulation;
-
-    &_on {
-      @include b.button-toggle-active;
-    }
-  }
-
   &__menu-item {
     @include b.button-outline;
 
@@ -255,12 +229,15 @@
   // A grid and not a flex column: the panes are grid items, so they inherit a definite height from
   // the row and can scroll inside themselves. It is also what lets the second column appear on a
   // wide screen without the template knowing anything about the screen.
+  // The tiles start a breath below the tabs: with the two rows touching, the first row of the grid
+  // read as a fourth tab, and the eye had to work out where the filter ended and the field began.
   &__body {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: minmax(0, 1fr);
     flex: 1;
     min-height: 0;
+    padding-top: 8px;
     padding-inline: var(--timer-inline);
     gap: 8px;
   }
@@ -290,7 +267,7 @@
     overflow: hidden auto;
   }
 
-  // The instrument bar. Centred as one group and not as two: «Кто бежит» pinned to the left edge of a
+  // The instrument bar. Centred as one group and not as two: «Добавить атлета» pinned to the left of a
   // 1120 px column with «ОТСЕЧКА» centred in what was left read as two unrelated panels. The pair now
   // sits together under the figure, which is where the thumb and the eye both already are.
   //
@@ -302,7 +279,7 @@
     bottom: 0;
     flex: none;
     // Bottom-aligned, not stretched: the tape carries a hint line above its keys, so a stretched
-    // «Кто бежит» started at the hint and ended twenty pixels above «ОТСЕЧКА». The keys of a cockpit
+    // roster key started at the hint and ended twenty pixels above «ОТСЕЧКА». The keys of a cockpit
     // share one floor — whatever stands over them is the tape's business.
     align-items: flex-end;
     justify-content: center;
@@ -368,6 +345,9 @@
     height: 56px;
     padding: 0 12px;
     gap: 6px;
+    // Two words on one line: the tape beside it is `flex: 1; min-width: 0` and gives the width up,
+    // so «ОТСЕЧКА» narrows instead of this key breaking in half over the count.
+    white-space: nowrap;
     touch-action: manipulation;
 
     // Nobody in the line-up yet: this key is the only thing on screen worth pressing, so it says so.
@@ -400,6 +380,11 @@
 
     &__actions {
       padding-top: 6px;
+    }
+
+    // A phone on its side pays for that breath in tile height, so it gets the smaller one.
+    &__body {
+      padding-top: 4px;
     }
 
     &__roster {
