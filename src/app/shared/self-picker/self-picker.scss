@@ -83,6 +83,13 @@
     &:hover {
       color: var(--accent-light);
     }
+
+    // On a phone the chip shares the brand line and every pixel of it is taken from the wordmark.
+    // This segment points at the same `/timer` as the «Секундомер» section on the rail below, so
+    // it is the one part of the chip that costs nothing to drop.
+    @media (width <= 560px) {
+      display: none;
+    }
   }
 
   &__clear {

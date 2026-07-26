@@ -19,73 +19,79 @@
       </span>
     </a>
 
-    <!-- The rail and the self-pick are one block: on a phone the links scroll sideways inside the
-    nav, and the «Выбери себя» card must not be clipped by that scroll container. -->
-    <div class="shell-header__controls">
-      <nav aria-label="Основные разделы" class="shell-header__nav" i18n-aria-label="@@app.navLabel">
-        <a
-          class="shell-header__nav-link"
-          i18n="@@app.navRaces"
-          matButton
-          routerLinkActive="shell-header__nav-link_active"
-          [routerLink]="racesLink"
-        >
-          Забеги
-        </a>
+    <!-- On a phone the sections drop onto a full-width rail of their own and the self-pick moves up
+    beside the brand: sharing one line left the rail about half a screen and chopped the labels
+    mid-word. The pick stays outside the rail, so its dropdown card is never clipped by the scroll
+    container, and `appNavRail` keeps the current section on screen after a reload or a deep link. -->
+    <nav appNavRail aria-label="Основные разделы" class="shell-header__nav" i18n-aria-label="@@app.navLabel">
+      <a
+        ariaCurrentWhenActive="page"
+        class="shell-header__nav-link"
+        i18n="@@app.navRaces"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="racesLink"
+      >
+        Забеги
+      </a>
 
-        <a
-          class="shell-header__nav-link"
-          i18n="@@app.navRecords"
-          matButton
-          routerLinkActive="shell-header__nav-link_active"
-          [routerLink]="recordsLink"
-        >
-          Рекорды
-        </a>
+      <a
+        ariaCurrentWhenActive="page"
+        class="shell-header__nav-link"
+        i18n="@@app.navRecords"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="recordsLink"
+      >
+        Рекорды
+      </a>
 
-        <a
-          class="shell-header__nav-link"
-          i18n="@@app.navVersus"
-          matButton
-          routerLinkActive="shell-header__nav-link_active"
-          [routerLink]="versusLink"
-        >
-          Дуэли
-        </a>
+      <a
+        ariaCurrentWhenActive="page"
+        class="shell-header__nav-link"
+        i18n="@@app.navVersus"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="versusLink"
+      >
+        Дуэли
+      </a>
 
-        <a
-          class="shell-header__nav-link"
-          i18n="@@app.navYear"
-          matButton
-          routerLinkActive="shell-header__nav-link_active"
-          [routerLink]="yearLink"
-        >
-          Итоги
-        </a>
+      <a
+        ariaCurrentWhenActive="page"
+        class="shell-header__nav-link"
+        i18n="@@app.navYear"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="yearLink"
+      >
+        Итоги
+      </a>
 
-        <a
-          class="shell-header__nav-link"
-          i18n="@@app.navGuide"
-          matButton
-          routerLinkActive="shell-header__nav-link_active"
-          [routerLink]="guideLink"
-        >
-          Фишки
-        </a>
+      <a
+        ariaCurrentWhenActive="page"
+        class="shell-header__nav-link"
+        i18n="@@app.navGuide"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="guideLink"
+      >
+        Фишки
+      </a>
 
-        <a
-          class="shell-header__nav-link"
-          i18n="@@app.navTimer"
-          matButton
-          routerLinkActive="shell-header__nav-link_active"
-          [routerLink]="timerLink"
-        >
-          Секундомер
-        </a>
-      </nav>
+      <a
+        ariaCurrentWhenActive="page"
+        class="shell-header__nav-link"
+        i18n="@@app.navTimer"
+        matButton
+        routerLinkActive="shell-header__nav-link_active"
+        [routerLink]="timerLink"
+      >
+        Секундомер
+      </a>
+    </nav>
 
-      <app-self-picker class="shell-header__self" />
-    </div>
+    <app-self-picker class="shell-header__self" />
   </mat-toolbar>
 </header>
 

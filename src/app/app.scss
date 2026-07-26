@@ -135,18 +135,12 @@
   &__version {
     @include t.mono-caption;
 
+    // Never broken up: on a phone the wordmark wraps beside it, and a version split over
+    // two lines reads as a second title.
+    flex: none;
     margin-top: -1px;
     color: var(--text-muted);
     opacity: 0.75;
-  }
-
-  // Sections and self-pick together, so the pick sits beside the rail rather than inside it: a
-  // scroll container clips the card that opens under «Выбери себя».
-  &__controls {
-    display: flex;
-    align-items: center;
-    min-width: 0;
-    gap: 6px;
   }
 
   &__nav {
@@ -155,6 +149,12 @@
     align-items: center;
     min-width: 0;
     gap: 6px;
+  }
+
+  // The pick sits beside the rail, never inside it: a scroll container would clip the card
+  // that opens under «Выбери себя».
+  &__self {
+    flex: none;
   }
 
   // Material anchor buttons — brand paddings, radius and colors
@@ -210,37 +210,73 @@
   @media (width <= 560px) {
     &__inner {
       padding: 14px 16px;
+      gap: 12px;
     }
 
-    // One rail instead of three rows. Six sections plus the self-pick used to wrap onto their own
-    // lines and ate a third of a phone screen before the page even started — on the timer route the
-    // header was taller than the thing it was heading. The rail keeps every link on one line and
-    // lets the finger push the tail into view; nothing is hidden behind a burger, and the order of
-    // the sections is still the order of the site.
-    &__controls {
-      width: 100%;
+    // A flex line wraps on the items' *unshrunk* widths, so the brand has to start from nothing
+    // and grow into what the chip leaves: at its natural width it would push the chip onto a row
+    // of its own and hand the phone a three-row header again.
+    &__brand {
+      flex: 1;
+      min-width: 0;
+      margin-right: 0;
+      gap: 12px;
+    }
+
+    &__titles {
+      min-width: 0;
+      padding-left: 12px;
+    }
+
+    // With the chip on its line the wordmark wraps three ways, and the location line on top of
+    // that pushed the header past a third of the screen. It is also the one part of the lockup
+    // the page below repeats anyway — every protocol is headed by the park and the town.
+    &__place {
+      display: none;
+    }
+
+    // Two rows instead of three. Six sections plus the self-pick used to wrap onto their own lines
+    // and ate a third of a phone screen before the page even started; sharing one line after that
+    // left the sections about half a screen and chopped their labels mid-word. Now the pick rides
+    // the brand line and the sections get a rail of their own, full width, that the finger pushes
+    // along; nothing is hidden behind a burger, and the order of the sections is still the order
+    // of the site.
+    &__self {
+      order: 1;
     }
 
     &__nav {
-      flex: 1;
+      flex: none;
       flex-wrap: nowrap;
+      order: 2;
+      // Full bleed: `width` counts the header padding back in, so the fades below eat that padding
+      // at either end of the scroll instead of biting into the first and last labels.
+      width: calc(100% + 32px);
+      margin: 0 -16px;
+      padding: 0 16px;
       overflow-x: auto;
       gap: 2px;
+      // The soft edges are the whole affordance — they say «there is more this way» where a cut-off
+      // label only says «broken».
+      mask-image: linear-gradient(90deg, transparent 0, var(--black) 16px, var(--black) calc(100% - 16px), transparent 100%);
+      scroll-padding: 0 16px;
       scroll-snap-type: x proximity;
       scrollbar-width: none;
     }
 
+    // One notch down in type and padding is what the six sections need to stand on a 390px screen
+    // without the last one hanging off the edge. Below that the rail still scrolls — that is what
+    // the fades are for — but on the phones people actually hold, «Секундомер» ends on screen.
     &__nav-link {
+      @include t.text('label', 'small');
+
       flex: none;
-      padding: 8px 9px;
+      // Material pads every button out to 64px, which on a rail buys «Итоги» air it does not
+      // need and costs the next section its place on screen.
+      min-width: 0;
+      padding: 8px 7px;
       white-space: nowrap;
       scroll-snap-align: start;
-    }
-
-    // The self-pick rides at the end of the same rail: it is one more chip, not a second header.
-    &__self {
-      flex: none;
-      margin-left: 4px;
     }
   }
 }
