@@ -5,8 +5,11 @@ export const PDF_PAGE_SIZE: PageSize = 'A4';
 
 export const PDF_PAGE_ORIENTATION: PageOrientation = 'portrait';
 
-/** [left, top, right, bottom] in points. */
-export const PDF_PAGE_MARGINS: Margins = [40, 50, 40, 50];
+/**
+ * [left, top, right, bottom] in points. The bottom band holds the signature (see `SIGNATURE_MARGIN`),
+ * so it is deeper than the top one.
+ */
+export const PDF_PAGE_MARGINS: Margins = [40, 50, 40, 64];
 
 export const PDF_FONT_FAMILY = 'PTSerif';
 
@@ -105,4 +108,11 @@ export const ABBREVIATIONS_MARGIN: Margins = [0, 16, 0, 0];
 
 export const SIGNATURE_PREFIX = 'Председатель ';
 
-export const SIGNATURE_MARGIN: Margins = [0, 48, 0, 0];
+/**
+ * The signature is drawn in the bottom margin band, so its left and right margins repeat the page
+ * ones to line up with the body; the top one lifts it off the last row of content.
+ */
+export const SIGNATURE_MARGIN: Margins = [40, 16, 40, 0];
+
+/** Every page but the last carries no footer at all. */
+export const EMPTY_FOOTER = '';

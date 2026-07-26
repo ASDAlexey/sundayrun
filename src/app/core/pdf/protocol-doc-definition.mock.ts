@@ -1,7 +1,7 @@
-import type { Content, TableCell } from 'pdfmake/interfaces';
+import type { Content, ContextPageSize, TableCell } from 'pdfmake/interfaces';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { PreviousBest } from '../history/previous-bests.interface';
-import { Gender } from '../models/gender.enum';
+import { Gender, GenderType } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
 import {
@@ -34,6 +34,7 @@ import {
   PDF_ALIGN_CENTER,
   PDF_ALIGN_JUSTIFY,
   PDF_ALIGN_RIGHT,
+  PDF_PAGE_ORIENTATION,
   PROTOCOL_TITLE,
   PROTOCOL_TITLE_MARGIN,
   SIGNATURE_MARGIN,
@@ -218,7 +219,7 @@ export const EXPECTED_DNF_ROW_CELLS: TableCell[] = [
   { text: DNF_ROW_MOCK.note },
 ];
 
-/** The whole document body: page header, title, intro, participants table, abbreviations, signature. */
+/** The whole document body: page header, title, intro, participants table, abbreviations (the signature is a footer). */
 export const EXPECTED_DOC_CONTENT: Content[] = [
   {
     columns: [
@@ -246,11 +247,79 @@ export const EXPECTED_DOC_CONTENT: Content[] = [
   { text: ABBREVIATIONS_TITLE, margin: ABBREVIATIONS_MARGIN },
   { text: ABBREVIATION_DNF },
   { text: ABBREVIATION_DSQ },
-  {
-    columns: [
-      { width: FLEX_COLUMN_WIDTH, text: EXPECTED_SIGNATURE_LEFT },
-      { width: FLEX_COLUMN_WIDTH, text: PDF_EVENT_MOCK.chairman, alignment: PDF_ALIGN_RIGHT },
-    ],
-    margin: SIGNATURE_MARGIN,
-  },
 ];
+
+/** The last page's footer: club chairman on the left, name on the right. */
+export const EXPECTED_SIGNATURE_FOOTER: Content = {
+  columns: [
+    { width: FLEX_COLUMN_WIDTH, text: EXPECTED_SIGNATURE_LEFT },
+    { width: FLEX_COLUMN_WIDTH, text: PDF_EVENT_MOCK.chairman, alignment: PDF_ALIGN_RIGHT },
+  ],
+  margin: SIGNATURE_MARGIN,
+};
+
+/** A protocol of this many pages, so the signature falls on page 2 and page 1 stays bare. */
+export const EXPECTED_FOOTER_PAGE_COUNT = 2;
+
+/** The page whose footer must stay empty in a two-page protocol. */
+export const FIRST_PAGE = 1;
+
+/** The third argument pdfmake hands a footer builder; this one ignores it, so any A4 page will do. */
+export const FOOTER_PAGE_SIZE_MOCK: ContextPageSize = { width: 595.28, height: 841.89, orientation: PDF_PAGE_ORIENTATION };
+
+/**
+ * A real full-size protocol (26.06.2026, 15 rows, three of them with a wrapping «ЛР» note) — the
+ * one that used to spill its signature alone onto a second page. The integration spec renders it
+ * to guard the single-page fit, which only the real layout engine can tell.
+ */
+export const FULL_PAGE_EVENT_MOCK: RaceEvent = {
+  number: 266,
+  legacyNumber: '',
+  dateIso: '2026-06-26',
+  city: 'г. Таганрог',
+  park: 'ПКиО им. Горького',
+  clubName: 'КЛБ «Легенда»',
+  chairman: 'В.С. Хахуцкий',
+};
+
+/** [name, 2.3 km, 5 km, gender, place M, place F, finishes, note]; an empty 5 km time is a DNF row. */
+const FULL_PAGE_RAW_ROWS: readonly [string, string, string, GenderType, number | null, number | null, number, string][] = [
+  ['Хахуцкий Виктор', '8:05', '17:31', Gender.male, 1, null, 62, 'Лучший результат 2026 г.'],
+  ['Кияшко Дмитрий', '8:17', '18:35', Gender.male, 2, null, 57, ''],
+  ['Троилин Антон', '8:19', '18:47', Gender.male, 3, null, 131, ''],
+  ['Альшаков Сергей', '10:36', '22:52', Gender.male, 4, null, 1, 'Первое участие'],
+  ['Новиков Сергей', '10:35', '22:53', Gender.male, 5, null, 41, ''],
+  ['Загребельный Роман', '10:39', '24:00', Gender.male, 6, null, 6, 'ЛР (было 24:34 · 11 июн 2023)'],
+  ['Зубкова Наталья', '11:18', '25:23', Gender.female, null, 1, 53, ''],
+  ['Дзюбак Сергей', '12:22', '26:35', Gender.male, 7, null, 186, ''],
+  ['Дорожкина Надежда', '12:23', '26:45', Gender.female, null, 2, 1, 'Первое участие'],
+  ['Шевердина Алена', '12:15', '26:49', Gender.female, null, 3, 1, 'Первое участие'],
+  ['Ширшов Денис', '12:17', '26:50', Gender.male, 8, null, 76, ''],
+  ['Курганская Марина', '12:43', '28:58', Gender.female, null, 4, 2, 'ЛР (было 30:49 · 26 апр 2026)'],
+  ['Шалак Федор', '13:10', '31:00', Gender.male, 9, null, 2, 'ЛР (было 33:56 · 21 июн 2026)'],
+  ['Парфенова Яна', '', '', Gender.female, null, null, 3, ''],
+  ['Бобнева Оксана', '', '', Gender.female, null, null, 5, ''],
+];
+
+/** Any positive total: the doc definition only reads it to tell a finisher from a DNF row. */
+const FULL_PAGE_TOTAL_MS = 1000;
+
+export const FULL_PAGE_ROWS_MOCK: ProtocolRow[] = FULL_PAGE_RAW_ROWS.map(
+  ([fullName, time23, time5, gender, placeM, placeF, , note], index): ProtocolRow => ({
+    index: index + 1,
+    fullName,
+    time23,
+    time5,
+    totalMs: time5 === EMPTY_CELL ? null : FULL_PAGE_TOTAL_MS,
+    distanceKm: time5 === EMPTY_CELL ? null : FIVE_KM_DISTANCE_KM,
+    gender,
+    placeM,
+    placeF,
+    club: EMPTY_CELL,
+    note,
+  }),
+);
+
+export const FULL_PAGE_FINISH_COUNTS_MOCK: Record<string, number> = Object.fromEntries(
+  FULL_PAGE_RAW_ROWS.map(([fullName, , , , , , finishes]) => [fullName.toLowerCase(), finishes]),
+);

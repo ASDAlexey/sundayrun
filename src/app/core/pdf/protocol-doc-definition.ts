@@ -1,4 +1,4 @@
-import type { ContentColumns, ContentTable, ContentText, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
+import type { Content, ContentColumns, ContentTable, ContentText, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { formatRaceNumber } from '../github/race-number';
 import { normalizeAthleteKey } from '../history/athlete-key';
 import { prNoteWithDate } from '../history/pr-note';
@@ -14,6 +14,7 @@ import {
   ABBREVIATIONS_TITLE,
   DNF_LABEL,
   EMPTY_CELL,
+  EMPTY_FOOTER,
   EVENT_TITLE_PREFIX,
   FLEX_COLUMN_WIDTH,
   GENDER_LABELS,
@@ -60,6 +61,10 @@ import {
  * pdfmake document definition of the one-page A4 race protocol
  * (mirrors the reference TCPDF sample): page header, 'ПРОТОКОЛ' title,
  * justified intro, participants table, abbreviations and signature.
+ * The signature sits in the bottom margin band of the LAST page instead of the flow: in the flow it
+ * carried a fixed gap above it and a protocol whose table ended a few points too low spilled the
+ * signature — and only the signature — onto a second page. As a footer it costs the body nothing and
+ * a protocol that fits by its table fits as a whole.
  * `finishCounts` (athleteKey → 5 km finishes as of the event, this one included)
  * feeds the «Участий» column; athletes outside the map get a blank cell.
  * `previousBests` (athleteKey → the best run before the event) dates the «ЛР (было X)»
@@ -83,8 +88,8 @@ export function buildProtocolDocDefinition(
       buildParticipantsTitle(),
       buildParticipantsTable(rows, finishCounts, previousBests),
       ...buildAbbreviations(),
-      buildSignature(event),
     ],
+    footer: (currentPage: number, pageCount: number): Content => (currentPage === pageCount ? buildSignature(event) : EMPTY_FOOTER),
   };
 }
 

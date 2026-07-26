@@ -56,8 +56,11 @@ describe('PdfService', () => {
     expect(second).toBe(PDF_BLOB_MOCK);
     expect(LOAD_FONTS_MOCK).toHaveBeenCalledTimes(2);
     expect(CREATE_PDF_MOCK).toHaveBeenCalledTimes(2);
+    // The signature footer is a freshly built closure per call, so the definitions are compared by content.
     expect(CREATE_PDF_MOCK).toHaveBeenCalledWith(
-      buildProtocolDocDefinition(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK),
+      expect.objectContaining({
+        content: buildProtocolDocDefinition(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK).content,
+      }),
     );
     expect(ADD_VIRTUAL_FILE_SYSTEM_MOCK).toHaveBeenCalledWith(FONTS_MOCK.vfs);
     expect(SET_FONTS_MOCK).toHaveBeenCalledWith(FONTS_MOCK.fonts);

@@ -5,6 +5,9 @@ import { TestBed } from '@angular/core/testing';
 
 import {
   EXPECTED_LONG_DATE,
+  FULL_PAGE_EVENT_MOCK,
+  FULL_PAGE_FINISH_COUNTS_MOCK,
+  FULL_PAGE_ROWS_MOCK,
   PDF_EVENT_MOCK,
   PDF_FINISH_COUNTS_MOCK,
   PDF_PREVIOUS_BESTS_MOCK,
@@ -84,6 +87,26 @@ describe('PdfService against the real pdfmake bundle', () => {
       expect(Math.round(viewport.height)).toBe(A4_PORTRAIT_HEIGHT_PT);
       // Readable Cyrillic proves the subset carries a ToUnicode map rather than blank glyph boxes.
       expect(await pageText(page)).toContain(EXPECTED_LONG_DATE);
+    },
+    RENDER_TIMEOUT_MS,
+  );
+
+  it(
+    'keeps a full-size protocol — table, notes and signature — on that single page',
+    async () => {
+      installPdfJsBrowserApis();
+
+      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+      const blob = await TestBed.inject(PdfService).generateProtocolBlob(
+        FULL_PAGE_EVENT_MOCK,
+        FULL_PAGE_ROWS_MOCK,
+        FULL_PAGE_FINISH_COUNTS_MOCK,
+        {},
+      );
+      const document = await pdfjs.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+
+      expect(document.numPages).toBe(EXPECTED_PAGE_COUNT);
+      expect(await pageText(await document.getPage(PROTOCOL_IMAGE_PAGE))).toContain(FULL_PAGE_EVENT_MOCK.chairman);
     },
     RENDER_TIMEOUT_MS,
   );
