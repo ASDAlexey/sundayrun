@@ -40,30 +40,87 @@ export async function fetchEventWeather(
   todayIso: string,
   fetchFn: WeatherFetchFn = DEFAULT_WEATHER_FETCH,
 ): Promise<EventWeather | null> {
-  try {
-    const response = await fetchFn(weatherRequestUrl(dateIso, todayIso));
+  const [weather] = await fetchEventsWeather([dateIso], todayIso, fetchFn);
 
-    if (!response.ok) {
-      return null;
+  return weather;
+}
+
+/**
+ * The batch form, in the input's order. A multi-protocol publication used to fire one request per
+ * date at once and Open-Meteo answered the tail of the burst with 429, publishing those events
+ * without weather. Instead the dates are covered by ONE request per endpoint — a single date range
+ * whose hourly rows every event then reads its 9:00 from — so a batch of any size costs at most two
+ * requests, sent one after the other.
+ */
+export async function fetchEventsWeather(dateIsos: string[], todayIso: string, fetchFn: WeatherFetchFn): Promise<(EventWeather | null)[]> {
+  const weatherByDate = new Map<string, EventWeather | null>();
+
+  for (const [baseUrl, dates] of groupDatesByEndpoint(dateIsos, todayIso)) {
+    const hourly = await fetchHourly(baseUrl, dates, fetchFn);
+
+    for (const dateIso of dates) {
+      weatherByDate.set(dateIso, extractStartHour(hourly, dateIso));
     }
-
-    const body: OpenMeteoResponse = await response.json();
-
-    return extractStartHour(body.hourly, dateIso);
-  } catch {
-    return null;
   }
+
+  return dateIsos.map((dateIso) => weatherByDate.get(dateIso) ?? null);
 }
 
 /** One-day hourly request for the event date, against the endpoint that actually has the date. */
 export function weatherRequestUrl(dateIso: string, todayIso: string): string {
+  return hourlyRangeUrl(endpointForDate(dateIso, todayIso), dateIso, dateIso);
+}
+
+/** Dates split by the endpoint that serves them, each group keeping the order it arrived in. */
+function groupDatesByEndpoint(dateIsos: string[], todayIso: string): Map<string, string[]> {
+  const groups = new Map<string, string[]>();
+
+  for (const dateIso of dateIsos) {
+    const baseUrl = endpointForDate(dateIso, todayIso);
+    const group = groups.get(baseUrl);
+
+    if (group === undefined) {
+      groups.set(baseUrl, [dateIso]);
+    } else {
+      group.push(dateIso);
+    }
+  }
+
+  return groups;
+}
+
+/** ERA5 only reaches back-dated events; anything younger than the lag lives on the forecast endpoint. */
+function endpointForDate(dateIso: string, todayIso: string): string {
   const ageDays = (Date.parse(todayIso) - Date.parse(dateIso)) / MS_PER_DAY;
-  const baseUrl = ageDays >= WEATHER_ARCHIVE_LAG_DAYS ? WEATHER_ARCHIVE_API_URL : WEATHER_FORECAST_API_URL;
+
+  return ageDays >= WEATHER_ARCHIVE_LAG_DAYS ? WEATHER_ARCHIVE_API_URL : WEATHER_FORECAST_API_URL;
+}
+
+/** The hourly rows spanning the group's dates; a network, HTTP or JSON failure is simply no weather. */
+async function fetchHourly(baseUrl: string, dates: string[], fetchFn: WeatherFetchFn): Promise<OpenMeteoHourly | undefined> {
+  const sorted = [...dates].sort();
+
+  try {
+    const response = await fetchFn(hourlyRangeUrl(baseUrl, sorted[0], sorted[sorted.length - 1]));
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const body: OpenMeteoResponse = await response.json();
+
+    return body.hourly;
+  } catch {
+    return undefined;
+  }
+}
+
+function hourlyRangeUrl(baseUrl: string, startDateIso: string, endDateIso: string): string {
   const params = new URLSearchParams({
     latitude: String(WEATHER_LATITUDE),
     longitude: String(WEATHER_LONGITUDE),
-    start_date: dateIso,
-    end_date: dateIso,
+    start_date: startDateIso,
+    end_date: endDateIso,
     hourly: WEATHER_HOURLY_PARAMS,
     timezone: WEATHER_TIMEZONE,
   });

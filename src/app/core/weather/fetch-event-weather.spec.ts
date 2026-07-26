@@ -1,12 +1,15 @@
 import { Mock } from 'vitest';
 
-import { fetchEventWeather, weatherRequestUrl } from './fetch-event-weather';
+import { fetchEventWeather, fetchEventsWeather, weatherRequestUrl } from './fetch-event-weather';
 import {
   ARCHIVE_DATE_ISO,
   FRESH_DATE_ISO,
   OPEN_METEO_BARE_HOUR_BODY_MOCK,
   OPEN_METEO_BODY_MOCK,
   OPEN_METEO_MISSING_HOUR_BODY_MOCK,
+  OPEN_METEO_RANGE_BODY_MOCK,
+  SECOND_ARCHIVE_DATE_ISO,
+  SECOND_WEATHER_MOCK,
   TODAY_ISO,
   WEATHER_MOCK,
 } from './fetch-event-weather.mock';
@@ -37,6 +40,21 @@ describe('fetchEventWeather', () => {
       fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, jsonFetch(OPEN_METEO_BARE_HOUR_BODY_MOCK)),
       'a 9:00 row without readings is no weather at all',
     ).resolves.toBeNull();
+  });
+
+  it('covers a whole batch with one range request per endpoint, answering in the input order', async () => {
+    const fetchFn = vi.fn<WeatherFetchFn>((url) =>
+      Promise.resolve(new Response(JSON.stringify(url.startsWith(WEATHER_ARCHIVE_API_URL) ? OPEN_METEO_RANGE_BODY_MOCK : {}))),
+    );
+
+    await expect(fetchEventsWeather([SECOND_ARCHIVE_DATE_ISO, FRESH_DATE_ISO, ARCHIVE_DATE_ISO], TODAY_ISO, fetchFn)).resolves.toEqual([
+      SECOND_WEATHER_MOCK,
+      null,
+      WEATHER_MOCK,
+    ]);
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+    expect(fetchFn.mock.calls[0][0]).toContain(`start_date=${ARCHIVE_DATE_ISO}&end_date=${SECOND_ARCHIVE_DATE_ISO}`);
+    expect(fetchFn.mock.calls[1][0]).toContain(`${WEATHER_FORECAST_API_URL}?`);
   });
 
   it('wraps the global fetch by default', async () => {

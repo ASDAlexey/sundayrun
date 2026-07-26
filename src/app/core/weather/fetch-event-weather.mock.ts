@@ -29,6 +29,29 @@ export const OPEN_METEO_BODY_MOCK = {
   },
 };
 
+/** A second archive-aged date, a week after `ARCHIVE_DATE_ISO` — the two share one range request. */
+export const SECOND_ARCHIVE_DATE_ISO = '2019-08-04';
+
+export const SECOND_WEATHER_MOCK: EventWeather = {
+  temperatureC: 19.4,
+  apparentC: 18.9,
+  precipitationMm: 1.2,
+  windKmh: 14.6,
+  weatherCode: 61,
+};
+
+/** One range body covering both archive dates at 9:00, as the batched request receives it. */
+export const OPEN_METEO_RANGE_BODY_MOCK = {
+  hourly: {
+    time: [`${ARCHIVE_DATE_ISO}T${RACE_START_HOUR}`, `${SECOND_ARCHIVE_DATE_ISO}T${RACE_START_HOUR}`],
+    temperature_2m: [WEATHER_MOCK.temperatureC, SECOND_WEATHER_MOCK.temperatureC],
+    apparent_temperature: [WEATHER_MOCK.apparentC, SECOND_WEATHER_MOCK.apparentC],
+    precipitation: [WEATHER_MOCK.precipitationMm, SECOND_WEATHER_MOCK.precipitationMm],
+    wind_speed_10m: [WEATHER_MOCK.windKmh, SECOND_WEATHER_MOCK.windKmh],
+    weather_code: [WEATHER_MOCK.weatherCode, SECOND_WEATHER_MOCK.weatherCode],
+  },
+};
+
 /** The same body without the 9:00 row, so the start-hour lookup misses. */
 export const OPEN_METEO_MISSING_HOUR_BODY_MOCK = {
   hourly: {

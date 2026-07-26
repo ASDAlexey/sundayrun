@@ -2,7 +2,7 @@ import { bytesToBase64 } from '../encoding/base64';
 import { applyEventsToDb } from '../sqlite/protocol-db-write';
 import { isoToday } from '../time/iso-today';
 import { EventWeather } from '../weather/event-weather.interface';
-import { fetchEventWeather } from '../weather/fetch-event-weather';
+import { fetchEventsWeather } from '../weather/fetch-event-weather';
 import { eventFilePaths } from './event-paths';
 import { COMMIT_MESSAGE_PREFIX } from './github-api.constant';
 import { CommitFile } from './github-api.interface';
@@ -24,7 +24,8 @@ import { publishVersionPointer } from './version-pointer';
  * data commit; the protocol PDF is generated on the fly from the results, never stored.
  *
  * The event date's 9:00 course weather rides along into the db; it is fetched once per publication
- * (not per commit attempt — the readings cannot change) and a failed fetch publishes without it.
+ * (not per commit attempt — the readings cannot change), for the whole batch in a single request
+ * per endpoint (see `fetchEventsWeather`), and a failed fetch publishes without it.
  */
 export function publishEvent(
   token: string,
@@ -46,7 +47,11 @@ export async function publishEvents(
 ): Promise<PublishEventResult> {
   const ordered = [...inputs].sort((left, right) => left.event.dateIso.localeCompare(right.event.dateIso));
   const todayIso = isoToday();
-  const weathers = await Promise.all(ordered.map((input) => fetchEventWeather(input.event.dateIso, todayIso, fetchFn)));
+  const weathers = await fetchEventsWeather(
+    ordered.map((input) => input.event.dateIso),
+    todayIso,
+    fetchFn,
+  );
   const slug = batchSlug(ordered);
   const commitSha = await commitFilesAtomically(
     token,
