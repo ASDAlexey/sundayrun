@@ -3,7 +3,12 @@ import { RouterLink } from '@angular/router';
 
 import { LEGEND_WINDOW_DAYS } from '../../core/history/legend.constant';
 import { RACES_LIST_PAGE_LINK, TIMER_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
-import { RECORDS_CHART_QUERY_PARAMS, RECORDS_PAGE_LINK, RECORDS_RATING_QUERY_PARAMS } from '../records/records-page.constant';
+import {
+  RECORDS_ATTENDANCE_QUERY_PARAMS,
+  RECORDS_CHART_QUERY_PARAMS,
+  RECORDS_PAGE_LINK,
+  RECORDS_RATING_QUERY_PARAMS,
+} from '../records/records-page.constant';
 import { YEAR_PAGE_BASE_LINK } from '../year/year-page.constant';
 
 /** The tour of the site's game layer: what every title, streak and badge means and where it lives. */
@@ -17,6 +22,7 @@ export class GuidePage {
   protected readonly recordsLink = RECORDS_PAGE_LINK;
   protected readonly chartQueryParams = RECORDS_CHART_QUERY_PARAMS;
   protected readonly ratingQueryParams = RECORDS_RATING_QUERY_PARAMS;
+  protected readonly attendanceQueryParams = RECORDS_ATTENDANCE_QUERY_PARAMS;
   protected readonly racesLink = RACES_LIST_PAGE_LINK;
   protected readonly yearLink = YEAR_PAGE_BASE_LINK;
   protected readonly versusLink = VERSUS_PAGE_LINK;

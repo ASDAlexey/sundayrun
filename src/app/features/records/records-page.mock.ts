@@ -1,4 +1,4 @@
-import { LEADERBOARD_RECORDS } from '../../core/history/best-results.mock';
+import { LEADERBOARD_RECORDS, LEADERBOARD_YEAR } from '../../core/history/best-results.mock';
 import { EXPECTED_COURSE_RECORD_HISTORY } from '../../core/history/course-records.mock';
 import { CourseRecordHistory } from '../../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
@@ -8,11 +8,14 @@ import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { EventWeatherRow } from '../../core/history/weather-records.interface';
 import { WEATHER_ROWS_MOCK } from '../../core/history/weather-records.mock';
 import { SeasonRun } from '../../core/history/season-positions.interface';
+import { Season } from '../../core/history/seasons.enum';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import {
+  ATTENDANCE_ALL_TIME_SCOPE,
+  ATTENDANCE_MEDALS,
   DECIMAL_COMMA,
   EVENEST_FEMALE_LABEL,
   EVENEST_MALE_LABEL,
@@ -21,13 +24,24 @@ import {
   PACING_DEVIATION_PREFIX,
   PACING_PERCENT_BASE,
   RECORD_DELTA_SIGN,
+  SEASON_LABELS,
   SECOND_HALF_FEMALE_LABEL,
   SECOND_HALF_MALE_LABEL,
+  UNKNOWN_GENDER_TEXT,
   WEATHER_COLDEST_LABEL,
   WEATHER_HOTTEST_LABEL,
   WEATHER_WINDIEST_LABEL,
 } from './records-page.constant';
-import { ChartPick, FirstLapRecordView, PacingNomineeView, RatingRowView, RecordsData, WeatherExtremeView } from './records-page.interface';
+import {
+  AttendanceRowView,
+  ChartPick,
+  FirstLapRecordView,
+  PacingNomineeView,
+  RatingRowView,
+  RecordsData,
+  SeasonAttendanceView,
+  WeatherExtremeView,
+} from './records-page.interface';
 
 export const HISTORY_LOAD_ERROR_MESSAGE = 'history load failed';
 
@@ -188,6 +202,71 @@ export const EXPECTED_RATING_ROWS: RatingRowView[] = [
   ratingRow(4, 'тихонов трофим', 'Тихонов Трофим', Gender.male, '90', '90', '63,3'),
 ];
 
+const attendanceRow = (
+  place: number,
+  medal: string | null,
+  key: string,
+  displayName: string,
+  gender: GenderType,
+  finishes: number,
+  countText: string,
+  lastSlug: string,
+  dateShort: string,
+): AttendanceRowView => ({
+  place,
+  medal,
+  key,
+  athleteLink: [ATHLETES_PAGE_LINK, key],
+  displayName,
+  gender,
+  genderText: gender === Gender.male ? MALE_GENDER_TEXT : FEMALE_GENDER_TEXT,
+  finishesText: String(finishes),
+  countText,
+  dateShort,
+  raceLink: [RACE_PAGE_BASE_LINK, lastSlug],
+});
+
+/**
+ * `LEADERBOARD_RECORDS` counted by 5 km finishes: Быстров's six starts take gold, and the three
+ * one-start athletes all share silver — a shared place shares its medal, so nobody wears bronze.
+ */
+export const EXPECTED_ATTENDANCE_ROWS: AttendanceRowView[] = [
+  attendanceRow(1, ATTENDANCE_MEDALS[0], 'быстров борис', 'Быстров Борис', Gender.male, 6, '6 финишей', '2025-03-30', '30.03.2025 г.'),
+  attendanceRow(2, ATTENDANCE_MEDALS[1], 'азбукин андрей', 'Азбукин Андрей', Gender.male, 1, '1 финиш', '2025-04-06', '06.04.2025 г.'),
+  attendanceRow(2, ATTENDANCE_MEDALS[1], 'ланская лидия', 'Ланская Лидия', Gender.female, 1, '1 финиш', '2025-05-11', '11.05.2025 г.'),
+  attendanceRow(2, ATTENDANCE_MEDALS[1], 'тихонов трофим', 'Тихонов Трофим', Gender.male, 1, '1 финиш', '2025-05-04', '04.05.2025 г.'),
+];
+
+/** Every archived run falls in March–May, so spring is the only season card of the whole archive. */
+export const EXPECTED_ATTENDANCE_PODIUMS: SeasonAttendanceView[] = [
+  { title: `${SEASON_LABELS[Season.spring]} ${ATTENDANCE_ALL_TIME_SCOPE}`, rows: EXPECTED_ATTENDANCE_ROWS },
+];
+
+/** The 2024 cut leaves Быстров's lone March start, and the card titles itself with the year. */
+export const EXPECTED_2024_ATTENDANCE_PODIUMS: SeasonAttendanceView[] = [
+  {
+    title: `${SEASON_LABELS[Season.spring]} ${LEADERBOARD_YEAR}`,
+    rows: [
+      attendanceRow(1, ATTENDANCE_MEDALS[0], 'быстров борис', 'Быстров Борис', Gender.male, 1, '1 финиш', '2024-03-10', '10.03.2024 г.'),
+    ],
+  },
+];
+
+/** `ATTENDANCE_RECORDS` viewed: the place past the medals, the genderless dash, all plural forms. */
+export const EXPECTED_ATTENDANCE_TAIL = [
+  [1, ATTENDANCE_MEDALS[0], MALE_GENDER_TEXT, '5 финишей'],
+  [2, ATTENDANCE_MEDALS[1], MALE_GENDER_TEXT, '3 финиша'],
+  [2, ATTENDANCE_MEDALS[1], FEMALE_GENDER_TEXT, '3 финиша'],
+  [4, null, UNKNOWN_GENDER_TEXT, '1 финиш'],
+];
+
+/** The season cards of `ATTENDANCE_RECORDS` over the whole archive; spring stays empty. */
+export const EXPECTED_ATTENDANCE_SEASON_TITLES = [
+  `${SEASON_LABELS[Season.winter]} ${ATTENDANCE_ALL_TIME_SCOPE}`,
+  `${SEASON_LABELS[Season.summer]} ${ATTENDANCE_ALL_TIME_SCOPE}`,
+  `${SEASON_LABELS[Season.autumn]} ${ATTENDANCE_ALL_TIME_SCOPE}`,
+];
+
 /** Быстров's 2024 record run, reachable through the year filter. */
 export const EXPECTED_YEAR_RACE_SLUG = '2024-03-10';
 
@@ -262,8 +341,24 @@ export const EXPECTED_2025_COLDEST_VIEW: WeatherExtremeView = {
 
 /** Two events with a temperature but no stored wind — the extremes drop the windiest card. */
 export const WINDLESS_WEATHER_ROWS: EventWeatherRow[] = [
-  { slug: '2024-02-11', temperatureC: -8, apparentC: null, precipitationMm: null, windKmh: null, weatherCode: 71 },
-  { slug: '2024-07-14', temperatureC: 29, apparentC: null, precipitationMm: null, windKmh: null, weatherCode: 0 },
+  {
+    slug: '2024-02-11',
+    temperatureC: -8,
+    apparentC: null,
+    precipitationMm: null,
+    windKmh: null,
+    weatherCode: 71,
+    recentPrecipitationMm: null,
+  },
+  {
+    slug: '2024-07-14',
+    temperatureC: 29,
+    apparentC: null,
+    precipitationMm: null,
+    windKmh: null,
+    weatherCode: 0,
+    recentPrecipitationMm: null,
+  },
 ];
 
 /** `WINDLESS_WEATHER_ROWS` prepared for the template: only the cold and hot cards, no wind card. */

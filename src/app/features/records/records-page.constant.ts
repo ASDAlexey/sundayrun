@@ -1,3 +1,4 @@
+import { SEASON_ORDER } from '../../core/history/seasons.constant';
 import { Season, SeasonType } from '../../core/history/seasons.enum';
 import { RecordsView } from './records-page.enum';
 
@@ -11,6 +12,9 @@ export const RECORDS_CHART_QUERY_PARAMS = { [RECORDS_VIEW_QUERY_PARAM]: RecordsV
 
 /** `/records?view=rating` opens the page straight on the combined М+Ж rating board. */
 export const RECORDS_RATING_QUERY_PARAMS = { [RECORDS_VIEW_QUERY_PARAM]: RecordsView.rating };
+
+/** `/records?view=attendance` opens the page straight on the «Кто чаще всех» board. */
+export const RECORDS_ATTENDANCE_QUERY_PARAMS = { [RECORDS_VIEW_QUERY_PARAM]: RecordsView.attendance };
 
 /** The dash a rating row without an own-gender course record grades on. */
 export const NO_GRADE_TEXT = '—';
@@ -42,13 +46,19 @@ export const QUEEN_YEAR_PREFIX = $localize`:@@records.queenYear:Королева
 /** The season toggle value that disables filtering, like `ALL_GENDERS_VALUE`. */
 export const ALL_SEASONS_VALUE = 'all';
 
+/** The nominative season names: the filter chips and the «Кто чаще всех» podium titles share them. */
+export const SEASON_LABELS: Record<SeasonType, string> = {
+  [Season.winter]: $localize`:@@records.seasonWinter:Зима`,
+  [Season.spring]: $localize`:@@records.seasonSpring:Весна`,
+  [Season.summer]: $localize`:@@records.seasonSummer:Лето`,
+  [Season.autumn]: $localize`:@@records.seasonAutumn:Осень`,
+};
+
 /** The season filter chips in calendar order; shown once a specific year is chosen. */
-export const SEASON_FILTER_OPTIONS: readonly { value: SeasonType; label: string }[] = [
-  { value: Season.winter, label: $localize`:@@records.seasonWinter:Зима` },
-  { value: Season.spring, label: $localize`:@@records.seasonSpring:Весна` },
-  { value: Season.summer, label: $localize`:@@records.seasonSummer:Лето` },
-  { value: Season.autumn, label: $localize`:@@records.seasonAutumn:Осень` },
-];
+export const SEASON_FILTER_OPTIONS: readonly { value: SeasonType; label: string }[] = SEASON_ORDER.map((value) => ({
+  value,
+  label: SEASON_LABELS[value],
+}));
 
 /** The genitive season names the crown labels are built from: «Король лета 2026». */
 export const SEASON_GENITIVE_LABELS: Record<SeasonType, string> = {
@@ -57,6 +67,15 @@ export const SEASON_GENITIVE_LABELS: Record<SeasonType, string> = {
   [Season.summer]: $localize`:@@records.seasonOfSummer:лета`,
   [Season.autumn]: $localize`:@@records.seasonOfAutumn:осени`,
 };
+
+/** The «Кто чаще всех» medals by place; the fourth place and beyond keeps its plain number. */
+export const ATTENDANCE_MEDALS: readonly string[] = ['🥇', '🥈', '🥉'];
+
+/** «Лето за всё время» — the season podium title while the year filter says «Все годы». */
+export const ATTENDANCE_ALL_TIME_SCOPE = $localize`:@@records.attendanceAllTimeScope:за всё время`;
+
+/** The gender cell of an athlete the archive never gendered; the board still counts their starts. */
+export const UNKNOWN_GENDER_TEXT = '—';
 
 /** Prepended to the formatted gain of each record-beating run («−0:12»). */
 export const RECORD_DELTA_SIGN = '−';

@@ -9,6 +9,7 @@ export type RecordsStatusType = (typeof RecordsStatus)[keyof typeof RecordsStatu
 
 export const RecordsView = {
   table: 'table',
+  attendance: 'attendance',
   chart: 'chart',
   rating: 'rating',
 } as const;

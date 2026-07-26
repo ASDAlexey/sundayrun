@@ -12,9 +12,7 @@
   <div aria-live="polite" class="records__status" role="status">
     @switch (status()) {
       @case (statuses.loading) {
-        <mat-progress-spinner class="records__spinner" mode="indeterminate" [diameter]="24" />
-
-        <span i18n="@@records.loading">Загружаем историю результатов…</span>
+        <app-loading-state i18n-label="@@records.loading" label="Загружаем историю результатов…" />
       }
       @case (statuses.empty) {
         <span i18n="@@records.empty">Рекорды появятся после первых опубликованных протоколов.</span>
@@ -25,7 +23,7 @@
   @switch (status()) {
     @case (statuses.ready) {
       <div class="records__controls">
-        <div aria-label="Вид" class="records__seg" i18n-aria-label="@@records.viewLabel" role="group">
+        <div aria-label="Вид" class="records__seg records__seg_view" i18n-aria-label="@@records.viewLabel" role="group">
           <button
             class="records__seg-option"
             i18n="@@records.viewTable"
@@ -35,6 +33,17 @@
             (click)="onViewChange(views.table)"
           >
             Таблица
+          </button>
+
+          <button
+            class="records__seg-option"
+            i18n="@@records.viewAttendance"
+            type="button"
+            [attr.aria-pressed]="view() === views.attendance"
+            [class.records__seg-option_active]="view() === views.attendance"
+            (click)="onViewChange(views.attendance)"
+          >
+            Кто чаще всех
           </button>
 
           <button
@@ -94,7 +103,7 @@
         <div class="records__filter-row">
           @if (view() !== views.rating) {
             <div aria-label="Год" class="records__seg" i18n-aria-label="@@records.yearLabel" role="group">
-              @if (view() === views.table) {
+              @if (view() !== views.chart) {
                 <button
                   class="records__seg-option"
                   i18n="@@records.allYears"
@@ -157,7 +166,7 @@
           </div>
         </div>
 
-        @if (view() === views.table && year() !== null) {
+        @if (view() !== views.chart && view() !== views.rating && year() !== null) {
           <div aria-label="Сезон" class="records__seg" i18n-aria-label="@@records.seasonFilterLabel" role="group">
             <button
               class="records__seg-option"
@@ -508,6 +517,94 @@
         <p class="records__note" i18n="@@records.note">
           Дата — забег, на котором установлен личный рекорд. Имя ведёт на страницу участника.
         </p>
+      } @else if (view() === views.attendance) {
+        <section class="records__attendance">
+          <h2 class="records__history-title" i18n="@@records.attendanceTitle">Кто чаще всех</h2>
+
+          <p class="records__history-tagline" i18n="@@records.attendanceTagline">
+            Зачёт постоянства: здесь важно не время, а сколько раз вы добежали пятёрку. Медали — за первые три места в каждом сезоне; при
+            равном числе финишей место общее, и золото делят все. Фильтры сужают зачёт до года и сезона, «Все годы» считают за всю историю.
+          </p>
+
+          @if (attendancePodiums().length > 0) {
+            <div class="records__boards">
+              @for (podium of attendancePodiums(); track podium.title) {
+                <section class="records__board">
+                  <div class="records__board-head">
+                    <h3 class="records__board-title">{{ podium.title }}</h3>
+                  </div>
+
+                  <ol class="records__podium">
+                    @for (row of podium.rows; track row.key) {
+                      <li class="records__podium-row">
+                        <span class="records__medal">{{ row.medal }}</span>
+
+                        <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                        <span class="records__podium-count">{{ row.countText }}</span>
+                      </li>
+                    }
+                  </ol>
+                </section>
+              }
+            </div>
+          }
+
+          <div class="records__board-head">
+            <h3 class="records__board-title" i18n="@@records.attendanceTableTitle">Общий зачёт</h3>
+
+            <span class="records__board-count" i18n="@@records.attendanceCount">Участников: {{ attendanceCount() }}</span>
+          </div>
+
+          <p class="records__board-hint" i18n="@@records.attendanceTableHint">
+            Все, кто финишировал на пятёрке в выбранном срезе, — от самых частых к редким.
+          </p>
+
+          @if (attendanceRows().length > 0) {
+            <div aria-hidden="true" class="records__attendance-row records__attendance-row_head">
+              <span></span>
+
+              <span></span>
+
+              <span class="records__attendance-col" i18n="@@records.attendanceColFinishes">Финишей</span>
+
+              <span class="records__attendance-col" i18n="@@records.attendanceColLast">Последний старт</span>
+            </div>
+
+            <cdk-virtual-scroll-viewport class="records__viewport" scrollWindow [itemSize]="rowHeightPx">
+              <ol class="records__list">
+                <li
+                  *cdkVirtualFor="let row of attendanceRows()"
+                  class="records__attendance-row"
+                  [class.records__attendance-row_podium]="row.medal !== null"
+                >
+                  @if (row.medal !== null) {
+                    <span class="records__medal">{{ row.medal }}</span>
+                  } @else {
+                    <span class="records__place">{{ row.place }}</span>
+                  }
+
+                  <span class="records__athlete-cell">
+                    <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
+
+                    <span
+                      class="records__attendance-gender"
+                      [class.records__attendance-gender_female]="row.gender === genders.female"
+                      [class.records__attendance-gender_male]="row.gender === genders.male"
+                      >{{ row.genderText }}</span
+                    >
+                  </span>
+
+                  <span class="records__attendance-value">{{ row.finishesText }}</span>
+
+                  <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
+                </li>
+              </ol>
+            </cdk-virtual-scroll-viewport>
+          } @else {
+            <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
+          }
+        </section>
       } @else if (view() === views.rating) {
         <section class="records__rating">
           <h2 class="records__history-title" i18n="@@records.ratingTitle">Рейтинг</h2>
@@ -547,7 +644,12 @@
                   <span class="records__athlete-cell">
                     <a class="records__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
 
-                    <span class="records__rating-gender">{{ row.genderText }}</span>
+                    <span
+                      class="records__rating-gender"
+                      [class.records__rating-gender_female]="row.gender === genders.female"
+                      [class.records__rating-gender_male]="row.gender === genders.male"
+                      >{{ row.genderText }}</span
+                    >
                   </span>
 
                   <span class="records__rating-value records__rating-value_form">{{ row.formText }}</span>
@@ -581,9 +683,7 @@
           @switch (chartStatus()) {
             @case (statuses.loading) {
               <div class="records__status" role="status">
-                <mat-progress-spinner class="records__spinner" mode="indeterminate" [diameter]="24" />
-
-                <span i18n="@@records.chartLoading">Считаем позиции сезона…</span>
+                <app-loading-state i18n-label="@@records.chartLoading" label="Считаем позиции сезона…" />
               </div>
             }
             @case (statuses.error) {

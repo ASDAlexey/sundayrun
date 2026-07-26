@@ -2,6 +2,7 @@ import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
+import { ATTENDANCE_RECORDS } from '../../core/history/attendance.mock';
 import { EXPECTED_YEARS, LEADERBOARD_RECORDS, LEADERBOARD_YEAR } from '../../core/history/best-results.mock';
 import { EXPECTED_COURSE_RECORD_HISTORY } from '../../core/history/course-records.mock';
 import { EMPTY_FIRST_LAP_RECORDS } from '../../core/history/first-lap.constant';
@@ -29,6 +30,7 @@ import {
   KING_ALL_TIME_TEXT,
   KING_YEAR_PREFIX,
   QUEEN_ALL_TIME_TEXT,
+  RECORDS_ATTENDANCE_QUERY_PARAMS,
   RECORDS_CHART_QUERY_PARAMS,
   RECORDS_RATING_QUERY_PARAMS,
   RECORDS_TRANSFER_KEY,
@@ -50,6 +52,11 @@ import {
   EXPECTED_MEN_NAMES,
   EXPECTED_MEN_TIMELINE_DELTAS,
   EXPECTED_MEN_TIMELINE_TIMES,
+  EXPECTED_ATTENDANCE_PODIUMS,
+  EXPECTED_ATTENDANCE_ROWS,
+  EXPECTED_ATTENDANCE_SEASON_TITLES,
+  EXPECTED_ATTENDANCE_TAIL,
+  EXPECTED_2024_ATTENDANCE_PODIUMS,
   EXPECTED_RATING_ROWS,
   EXPECTED_SEARCH_PLACE,
   EXPECTED_TIE_CROWNED_KEY,
@@ -364,6 +371,81 @@ describe('RecordsPage', () => {
       'the search keeps the combined place too',
     ).toEqual([1]);
     expect(page.ratingCount(), 'the counter ignores the search box').toBe(EXPECTED_RATING_ROWS.length);
+  });
+
+  it('opens «Кто чаще всех» from the deep link, ranking finishes with shared medals and season podiums', async () => {
+    queryParams = RECORDS_ATTENDANCE_QUERY_PARAMS;
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.view()).toBe(RecordsView.attendance);
+    expect(page.attendanceRows(), 'six starts take gold, the three one-start athletes share silver').toEqual(EXPECTED_ATTENDANCE_ROWS);
+    expect(page.attendanceCount()).toBe(EXPECTED_ATTENDANCE_ROWS.length);
+    expect(page.attendancePodiums(), 'every archived run falls in spring — one card, titled all-time').toEqual(EXPECTED_ATTENDANCE_PODIUMS);
+
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement;
+
+    // Four athletes plus the header row above them, and the whole podium inside the spring card.
+    expect(element.querySelectorAll('.records__attendance-row').length).toBe(EXPECTED_ATTENDANCE_ROWS.length + 1);
+    expect(element.querySelectorAll('.records__podium-row').length).toBe(EXPECTED_ATTENDANCE_ROWS.length);
+    expect(element.querySelector('#records-search'), 'the loyalty board shares the table name search').not.toBeNull();
+
+    page.setGender(Gender.female);
+
+    expect(
+      page.attendanceRows().map((row) => [row.displayName, row.place]),
+      'the gender cut keeps the shared place',
+    ).toEqual([['Ланская Лидия', 2]]);
+
+    page.setGender(null);
+    page.onQueryChange(SEARCH_QUERY);
+
+    expect(
+      page.attendanceRows().map((row) => row.place),
+      'the search keeps the real place',
+    ).toEqual([1]);
+    expect(page.attendanceCount(), 'the counter ignores the search box').toBe(EXPECTED_ATTENDANCE_ROWS.length);
+
+    page.onQueryChange(NO_MATCH_QUERY);
+    fixture.detectChanges();
+
+    expect(element.querySelector('.records__board-empty'), 'an unmatched query falls back to the board note').not.toBeNull();
+
+    page.onQueryChange('');
+    page.onYearChange(LEADERBOARD_YEAR);
+    page.onSeasonChange(Season.spring);
+
+    expect(
+      page.attendanceRows().map((row) => row.finishesText),
+      'the 2024 spring cut leaves the lone March start',
+    ).toEqual(['1']);
+    expect(page.attendancePodiums(), 'the card titles itself with the chosen year').toEqual(EXPECTED_2024_ATTENDANCE_PODIUMS);
+
+    page.onSeasonChange(Season.winter);
+
+    expect(page.attendanceRows(), 'nobody ran that 2024 winter').toEqual([]);
+
+    fixture.detectChanges();
+
+    // The loyalty board keeps the season chips of a chosen year, like the table view.
+    expect(element.querySelector('.records__seg[aria-label="Сезон"]')).not.toBeNull();
+  });
+
+  it('numbers the places past the medals and dashes an ungendered row', async () => {
+    queryParams = RECORDS_ATTENDANCE_QUERY_PARAMS;
+    loadRecords.mockResolvedValue(ATTENDANCE_RECORDS);
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.attendanceRows().map((row) => [row.place, row.medal, row.genderText, row.countText])).toEqual(EXPECTED_ATTENDANCE_TAIL);
+    expect(
+      page.attendancePodiums().map((podium) => podium.title),
+      'spring stays empty, so three season cards survive',
+    ).toEqual(EXPECTED_ATTENDANCE_SEASON_TITLES);
   });
 
   it('chart view loads seasons lazily with a cache, hides the search, and a failed season shows the chart error', async () => {

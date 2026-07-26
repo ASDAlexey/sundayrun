@@ -1,6 +1,5 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { Component, computed, inject, signal } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
@@ -8,6 +7,7 @@ import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { NAME_COLLATION_LOCALE } from '../../core/history/athletes-list.constant';
+import { attendanceBoard, seasonAttendance } from '../../core/history/attendance';
 import { bestResults, bestResultYears, bestSeasonResults } from '../../core/history/best-results';
 import { BestResult } from '../../core/history/best-results.interface';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
@@ -35,12 +35,14 @@ import { formatRussianDateShort } from '../../core/time/russian-date';
 import { temperatureText } from '../../core/weather/temperature-text';
 import { weatherIconOf } from '../../core/weather/weather-icon';
 import { AthletesService } from '../../github/athletes.service';
+import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
 import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { BumpChart } from './bump-chart/bump-chart';
+import { toAttendanceViews, toSeasonAttendanceViews } from './records-attendance';
 import {
   ALL_GENDERS_VALUE,
   ALL_SEASONS_VALUE,
@@ -92,11 +94,12 @@ import {
  * says «Все годы»), loaded lazily per season, with its own «find yourself» picker that keeps the
  * chosen athletes' lines lit on both charts. The «Рейтинг» view (`/records?view=rating`) shows the
  * combined М+Ж board of runner scores: who is in form right now, sorted by the weighted top-5 of
- * the last year.
+ * the last year. The «Кто чаще всех» view (`/records?view=attendance`) ranks the same archive by
+ * loyalty instead of speed: 5 km finishes inside the chosen scope, with a medal podium per season.
  */
 @Component({
   selector: 'app-records-page',
-  imports: [BumpChart, MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink, ScrollingModule],
+  imports: [BumpChart, LoadingState, OfflineNotice, ReloadButton, RouterLink, ScrollingModule],
   templateUrl: './records-page.html',
   styleUrl: './records-page.scss',
 })
@@ -118,6 +121,9 @@ export class RecordsPage {
       toRatingRowView,
     ),
   );
+
+  /** The «Кто чаще всех» board of the chosen scope; ties share a place, so a medal can be shared. */
+  readonly #attendanceBoard = computed(() => toAttendanceViews(attendanceBoard(this.#records(), this.year(), this.season())));
 
   readonly #seasonRuns = signal<ReadonlyMap<string, SeasonRun[]>>(new Map());
   readonly #chartRuns = computed(() => {
@@ -153,15 +159,14 @@ export class RecordsPage {
   readonly men = computed(() => searchRows(this.#menBoard(), this.query()));
   readonly women = computed(() => searchRows(this.#womenBoard(), this.query()));
   /** The visible rating rows: the search and the gender filter never move the fixed places. */
-  readonly ratingRows = computed(() => {
-    const gender = this.gender();
-    const rows = searchRows(this.#ratingBoard(), this.query());
-
-    return gender === null ? rows : rows.filter((row) => row.gender === gender);
-  });
-
-  /** How many athletes the full rating board ranks, ignoring the search and the filters. */
+  readonly ratingRows = computed(() => filterRows(this.#ratingBoard(), this.query(), this.gender()));
+  /** The visible «Кто чаще всех» rows; like the rating, the cuts keep every row's real place. */
+  readonly attendanceRows = computed(() => filterRows(this.#attendanceBoard(), this.query(), this.gender()));
+  /** The season medal podiums of the chosen year, or of the whole archive under «Все годы». */
+  readonly attendancePodiums = computed(() => toSeasonAttendanceViews(seasonAttendance(this.#records(), this.year()), this.year()));
+  /** How many athletes each full board ranks, ignoring the search and the filters. */
   readonly ratingCount = computed(() => this.#ratingBoard().length);
+  readonly attendanceCount = computed(() => this.#attendanceBoard().length);
   /** Board sizes ignore the search box: the badge always shows how many athletes the board ranks. */
   readonly menCount = computed(() => this.#menBoard().length);
   readonly womenCount = computed(() => this.#womenBoard().length);
@@ -258,11 +263,11 @@ export class RecordsPage {
     this.chartPicks.update((picks) => picks.filter((pick) => pick.key !== key));
   }
 
-  /** `?view=chart` and `?view=rating` (the guide's deep links) open the page straight on that view. */
+  /** `?view=` (the guide's deep links) opens the page straight on the named view. */
   #initialView(): RecordsViewType {
     const param = this.#route.snapshot.queryParamMap.get(RECORDS_VIEW_QUERY_PARAM);
 
-    if (param === RecordsView.chart || param === RecordsView.rating) {
+    if (param === RecordsView.chart || param === RecordsView.rating || param === RecordsView.attendance) {
       return param;
     }
 
@@ -373,6 +378,13 @@ function suggestChartPicks(lines: SeasonPositionLine[], query: string, picks: Ch
     .sort((left, right) => left.displayName.localeCompare(right.displayName, NAME_COLLATION_LOCALE))
     .slice(0, CHART_SUGGESTION_LIMIT)
     .map((line) => ({ key: line.key, displayName: line.displayName }));
+}
+
+/** The search box and the gender toggle applied to a fixed-place board; the places never move. */
+function filterRows<T extends { gender: GenderType | null; key: string }>(rows: T[], query: string, gender: GenderType | null): T[] {
+  const found = searchRows(rows, query);
+
+  return gender === null ? found : found.filter((row) => row.gender === gender);
 }
 
 /** Name search keeps each row's place from the full board, so a found athlete shows their real rank. */

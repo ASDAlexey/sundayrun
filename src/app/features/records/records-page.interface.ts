@@ -70,6 +70,36 @@ export interface RatingRowView {
   gradeText: string;
 }
 
+/**
+ * One row of the «Кто чаще всех» board prepared for the template. `medal` carries 🥇🥈🥉 for the
+ * top three places (a shared place shares its medal) and is null below them, where the row falls
+ * back to its plain number.
+ */
+export interface AttendanceRowView {
+  place: number;
+  medal: string | null;
+  key: string;
+  athleteLink: string[];
+  displayName: string;
+  /** The row's gender — the page-level filter cuts the mixed board by it; null stays out of both cuts. */
+  gender: GenderType | null;
+  /** «М»/«Ж», or a dash for an athlete the archive never gendered. */
+  genderText: string;
+  /** «41» — the finish tally the board ranks by, for the table column. */
+  finishesText: string;
+  /** «41 финиш» — the same tally spelled out for the season podium cards. */
+  countText: string;
+  /** The newest scoped finish: «12.07.2026 г.» linking to that race. */
+  dateShort: string;
+  raceLink: string[];
+}
+
+/** One season podium card: «Лето 2026» over the athletes who ran it most. */
+export interface SeasonAttendanceView {
+  title: string;
+  rows: AttendanceRowView[];
+}
+
 /** One weather extreme prepared for the template: «❄️ −14°» plus the wind detail and the race link. */
 export interface WeatherExtremeView {
   label: string;

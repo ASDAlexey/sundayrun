@@ -16,6 +16,9 @@ export const MONTH_SEASONS: Record<string, SeasonType> = {
   '12': Season.winter,
 };
 
+/** The seasons in calendar order — the order the filter chips and the season podiums follow. */
+export const SEASON_ORDER: readonly SeasonType[] = [Season.winter, Season.spring, Season.summer, Season.autumn];
+
 /** The 'MM' slice bounds of an ISO 'YYYY-MM-DD' date. */
 export const ISO_MONTH_START = 5;
 

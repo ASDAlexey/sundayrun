@@ -1,4 +1,5 @@
 @use 'styles/card' as c;
+@use 'styles/protocol-cells' as pc;
 @use 'styles/section' as s;
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
@@ -87,7 +88,8 @@
   // athlete name keeps a readable width beside the fixed score columns.
   @media (width <= 560px) {
     &__row,
-    &__rating-row {
+    &__rating-row,
+    &__attendance-row {
       padding-inline: 0;
       gap: 8px;
     }
@@ -100,11 +102,20 @@
       grid-template-columns: 28px 1fr 56px 56px 56px;
     }
 
+    &__attendance-row {
+      grid-template-columns: 28px 1fr 48px auto;
+    }
+
     // Even three-up columns so «Рейтинг» never drops onto a lonely second row;
     // the grid keeps all options the same height even when «Гонка за сезон» wraps.
     &__seg {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+    }
+
+    // Four tabs never fit that three-up row: the view switcher takes two even columns.
+    &__seg_view {
+      grid-template-columns: repeat(2, 1fr);
     }
 
     &__seg-option {
@@ -189,12 +200,6 @@
     }
   }
 
-  &__spinner {
-    display: inline-block;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
-
   &__boards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -270,9 +275,10 @@
     color: var(--text-muted);
   }
 
-  &__rating-row {
+  // The rating and the «Кто чаще всех» boards share the row frame; only their columns differ.
+  &__rating-row,
+  &__attendance-row {
     display: grid;
-    grid-template-columns: 40px 1fr 56px 56px 56px;
     align-items: center;
 
     // Must match RECORDS_ROW_HEIGHT_PX — the virtual scroll strategy assumes this exact height.
@@ -298,22 +304,50 @@
     }
   }
 
+  &__rating-row {
+    grid-template-columns: 40px 1fr 56px 56px 56px;
+  }
+
+  &__attendance-row {
+    grid-template-columns: 40px 1fr 72px auto;
+  }
+
   &__rating-row_podium &__place {
     @include t.podium-rank;
     @include t.gradient-text;
   }
 
-  &__rating-col {
+  &__rating-col,
+  &__attendance-col {
     @include t.text('label', 'small');
 
     color: var(--text-muted);
     text-align: right;
   }
 
-  &__rating-gender {
-    @include t.text('label', 'small');
+  // The «Пол» chip of the protocol, worn by the two boards that mix the genders in one table:
+  // a grey letter beside a name reads as a typo, the same wash beside it reads as a column.
+  &__rating-gender,
+  &__attendance-gender {
+    @include pc.gender-chip-base;
+  }
 
-    color: var(--text-muted);
+  &__rating-gender_male,
+  &__attendance-gender_male {
+    @include pc.gender-chip-male;
+  }
+
+  &__rating-gender_female,
+  &__attendance-gender_female {
+    @include pc.gender-chip-female;
+  }
+
+  // The finish tally is the whole point of the board — it wears the accent, like a record time.
+  &__attendance-value {
+    @include t.mono-value;
+
+    color: var(--accent-light);
+    text-align: right;
   }
 
   &__rating-value {
@@ -536,6 +570,47 @@
     @include t.text('label', 'small');
 
     color: var(--text-muted);
+  }
+
+  &__attendance {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // The season podium inside a card: the medal, the name, the tally.
+  &__podium {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__podium-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    padding: 8px 4px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-soft);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__podium-count {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__medal {
+    @include t.text('body', 'medium');
+
+    text-align: center;
   }
 
   &__chart {
