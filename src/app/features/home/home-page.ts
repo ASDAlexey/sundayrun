@@ -1,16 +1,4 @@
-import {
-  Component,
-  DOCUMENT,
-  DestroyRef,
-  ElementRef,
-  afterNextRender,
-  computed,
-  effect,
-  inject,
-  signal,
-  untracked,
-  viewChild,
-} from '@angular/core';
+import { Component, DOCUMENT, DestroyRef, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
@@ -31,6 +19,7 @@ import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { RollNumber } from '../../shared/roll-number/roll-number';
+import { CourseTrack } from './course-track/course-track';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
@@ -66,7 +55,18 @@ import {
 /** The landing page: hero with a live "next start" countdown, the latest races preview and the course card. */
 @Component({
   selector: 'app-home-page',
-  imports: [CountUp, LoadingState, MatButtonModule, OfflineNotice, RaceCard, ReloadButton, RollNumber, RouterLink, ScrollReveal],
+  imports: [
+    CountUp,
+    CourseTrack,
+    LoadingState,
+    MatButtonModule,
+    OfflineNotice,
+    RaceCard,
+    ReloadButton,
+    RollNumber,
+    RouterLink,
+    ScrollReveal,
+  ],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
 })
@@ -97,9 +97,6 @@ export class HomePage {
 
   // Rendered only before the first scroll of the session; see the constructor.
   readonly scrollHintVisible = signal(false);
-
-  // A signal query may not sit on an ES-private (#) member — Angular needs the runtime name.
-  protected readonly courseMapDialog = viewChild.required<ElementRef<HTMLDialogElement>>('courseMapDialog');
 
   protected readonly statuses = RacesStatus;
   protected readonly numberFormat = STATS_NUMBER_FORMAT.format;
@@ -156,21 +153,6 @@ export class HomePage {
       this.#destroyRef.onDestroy(() => clearInterval(timer));
       this.#armScrollHint();
     });
-  }
-
-  protected openCourseMap(): void {
-    this.courseMapDialog().nativeElement.showModal();
-  }
-
-  protected closeCourseMap(): void {
-    this.courseMapDialog().nativeElement.close();
-  }
-
-  /** Clicks on the dialog element itself land on the backdrop area — the frame swallows inner ones. */
-  protected onCourseMapClick(event: MouseEvent): void {
-    if (event.target === this.courseMapDialog().nativeElement) {
-      this.closeCourseMap();
-    }
   }
 
   /**

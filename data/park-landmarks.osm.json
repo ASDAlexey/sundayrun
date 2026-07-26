@@ -1,0 +1,1411 @@
+{
+  "elements": [
+    {
+      "type": "node",
+      "id": 800235949,
+      "lat": 47.2178418,
+      "lon": 38.9245104,
+      "tags": {
+        "amenity": "fast_food",
+        "brand": "Бургер Кинг",
+        "brand:en": "Burger King",
+        "brand:ru": "Бургер Кинг",
+        "brand:wikidata": "Q177054",
+        "brand:wikipedia": "ru:Burger King",
+        "contact:email": "info@burgerkingrus.ru",
+        "contact:phone": "+7 495 5445000",
+        "contact:telegram": "https://t.me/burgerkingrf",
+        "contact:vk": "https://vk.com/burgerking",
+        "contact:website": "https://burgerkingrus.ru/",
+        "cuisine": "burger",
+        "name": "Бургер Кинг",
+        "name:en": "Burger King",
+        "name:ru": "Бургер Кинг",
+        "opening_hours": "Mo-Su 09:00-23:00",
+        "operator": "ООО \"Бургер Рус\"",
+        "takeaway": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 800236950,
+      "lat": 47.2173797,
+      "lon": 38.9268884,
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "100",
+        "addr:street": "Петровская улица",
+        "amenity": "cafe",
+        "name": "Ассорти",
+        "name:ru": "Ассорти",
+        "name:uk": "Асорті",
+        "opening_hours": "11:00-2:00",
+        "phone": "+7 (8634) 61-46-15",
+        "smoking": "yes",
+        "website": "http://assorticafe.ru"
+      }
+    },
+    {
+      "type": "node",
+      "id": 804248947,
+      "lat": 47.2172783,
+      "lon": 38.9231181,
+      "tags": {
+        "addr:city": "Таганрог",
+        "brand": "Магнит",
+        "brand:en": "Magnit",
+        "brand:wikidata": "Q940518",
+        "brand:wikipedia": "ru:Магнит (сеть магазинов)",
+        "name": "Магнит",
+        "name:de": "Magnit",
+        "name:en": "Magnit",
+        "name:ru": "Магнит",
+        "shop": "supermarket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 804249146,
+      "lat": 47.2185751,
+      "lon": 38.924393,
+      "tags": {
+        "addr:housenumber": "104А",
+        "addr:street": "Петровская улица",
+        "amenity": "restaurant",
+        "cuisine": "japanese",
+        "name": "Панорама",
+        "name:de": "Panorama",
+        "name:en": "Panorama",
+        "name:ru": "Панорама"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1182830177,
+      "lat": 47.217371,
+      "lon": 38.9221978,
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:street": "улица Фрунзе",
+        "amenity": "clinic",
+        "healthcare": "clinic",
+        "name": "Городская поликлиника № 2 филиал № 4"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1919124667,
+      "lat": 47.2218487,
+      "lon": 38.9219407,
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "2-1",
+        "addr:postcode": "347905",
+        "addr:street": "Сенной переулок",
+        "amenity": "dentist",
+        "healthcare": "dentist",
+        "healthcare:speciality": "stomatology",
+        "name": "Профистом",
+        "opening_hours": "Mo-Th 09:00-19:00,Fr 09:00-14:00",
+        "phone": "+7 8634 620-919",
+        "source": "rosreestr",
+        "start_date": "04.09.2006",
+        "website": "profistom.pro"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3431807867,
+      "lat": 47.2178609,
+      "lon": 38.923857,
+      "tags": {
+        "addr:housenumber": "4",
+        "addr:street": "Спартаковский переулок",
+        "name": "Оптик Центр",
+        "opening_hours": "10:00-19:00",
+        "shop": "optician"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3431807868,
+      "lat": 47.2177174,
+      "lon": 38.9236603,
+      "tags": {
+        "name": "Еврообувь",
+        "shop": "shoes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3801153280,
+      "lat": 47.2210954,
+      "lon": 38.9215158,
+      "tags": {
+        "name": "Продукты",
+        "name:ru": "Продукты",
+        "name:uk": "Продукти",
+        "shop": "convenience"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3801153281,
+      "lat": 47.2212369,
+      "lon": 38.9216687,
+      "tags": {
+        "name": "Шиномонтаж",
+        "shop": "car_repair"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4051183411,
+      "lat": 47.2170358,
+      "lon": 38.9269966,
+      "tags": {
+        "amenity": "biergarten",
+        "name": "Доберман"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4054233547,
+      "lat": 47.2174121,
+      "lon": 38.925625,
+      "tags": {
+        "amenity": "fast_food",
+        "name": "Дружба"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4054233549,
+      "lat": 47.2171814,
+      "lon": 38.9236441,
+      "tags": {
+        "amenity": "pharmacy",
+        "healthcare": "pharmacy",
+        "name": "Социальная аптека",
+        "opening_hours": "Mo-Su 08:00-21:00",
+        "phone": "+78001000103"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4054492370,
+      "lat": 47.2170386,
+      "lon": 38.9261963,
+      "tags": {
+        "name": "Юта",
+        "name:ru": "Юта",
+        "shop": "convenience"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4417403143,
+      "lat": 47.22028,
+      "lon": 38.9205495,
+      "tags": {
+        "amenity": "cinema",
+        "name": "КиноНЕО"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4429591020,
+      "lat": 47.2187812,
+      "lon": 38.928255,
+      "tags": {
+        "attraction": "big_wheel",
+        "name": "Колесо обозрения"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442088189,
+      "lat": 47.2173334,
+      "lon": 38.9231182,
+      "tags": {
+        "brand": "Магнит Косметик",
+        "brand:en": "Magnit Cosmetics",
+        "brand:ru": "Магнит Косметик",
+        "brand:wikidata": "Q940518",
+        "brand:wikipedia": "ru:Магнит (сеть магазинов)",
+        "name": "Магнит Косметик",
+        "name:en": "Magnit Cosmetics",
+        "name:ru": "Магнит Косметик",
+        "shop": "chemist"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109819107,
+      "lat": 47.2198431,
+      "lon": 38.9252629,
+      "tags": {
+        "historic": "memorial",
+        "memorial": "statue",
+        "name": "А. М. Горькому",
+        "subject:wikidata": "Q12706",
+        "subject:wikipedia": "ru:Максим Горький"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109828269,
+      "lat": 47.2207274,
+      "lon": 38.9250712,
+      "tags": {
+        "denotation": "natural_monument",
+        "leaf_cycle": "deciduous",
+        "leaf_type": "broadleaved",
+        "name": "Гинкго",
+        "natural": "tree"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109828270,
+      "lat": 47.2194745,
+      "lon": 38.9250548,
+      "tags": {
+        "denotation": "natural_monument",
+        "leaf_cycle": "deciduous",
+        "leaf_type": "broadleaved",
+        "name": "Древний Дуб",
+        "natural": "tree"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109839530,
+      "lat": 47.2189432,
+      "lon": 38.9270629,
+      "tags": {
+        "historic": "memorial",
+        "inscription": "Место митинга 31.08.1943 в честь освобождения Таганрога от немецко-фашистских захватчиков",
+        "name": "Памятный знак"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109839531,
+      "lat": 47.2183802,
+      "lon": 38.9260215,
+      "tags": {
+        "historic": "tomb",
+        "inscription": "Место погребения летного экипажа погибшего в Великою Отечественную войну 1941-1945гг.",
+        "name": "Могила летчиков"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109842889,
+      "lat": 47.2204295,
+      "lon": 38.9267293,
+      "tags": {
+        "leaf_cycle": "deciduous",
+        "leaf_type": "broadleaved",
+        "name": "Редкое дерево",
+        "natural": "tree"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109845985,
+      "lat": 47.2213015,
+      "lon": 38.9288875,
+      "tags": {
+        "charge": "250 RUB",
+        "fee": "yes",
+        "name": "Террариум",
+        "tourism": "zoo"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5109852647,
+      "lat": 47.2205217,
+      "lon": 38.9251302,
+      "tags": {
+        "historic": "memorial",
+        "memorial": "bust",
+        "name": "Литвинову"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110453042,
+      "lat": 47.2189031,
+      "lon": 38.9252141,
+      "tags": {
+        "amenity": "bench",
+        "name": "Скамья примерения",
+        "tourism": "artwork"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110454653,
+      "lat": 47.2203789,
+      "lon": 38.9278613,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Орбита"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110455520,
+      "lat": 47.2190106,
+      "lon": 38.9285276,
+      "tags": {
+        "amenity": "ice_cream",
+        "name": "Мороженное"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110455799,
+      "lat": 47.2197948,
+      "lon": 38.9262616,
+      "tags": {
+        "amenity": "food_court",
+        "name": "Акация"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110458303,
+      "lat": 47.2186332,
+      "lon": 38.9279368,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Вихрь"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110459225,
+      "lat": 47.2196593,
+      "lon": 38.927799,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Аэротрек"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110459226,
+      "lat": 47.2200716,
+      "lon": 38.9280465,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Весёлые горки"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110461434,
+      "lat": 47.2182256,
+      "lon": 38.9271312,
+      "tags": {
+        "name": "Касса №1",
+        "shop": "ticket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110462328,
+      "lat": 47.2184825,
+      "lon": 38.9272176,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Саффари"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110497973,
+      "lat": 47.2187664,
+      "lon": 38.9279391,
+      "tags": {
+        "name": "Касса №2",
+        "shop": "ticket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110506135,
+      "lat": 47.2194721,
+      "lon": 38.9268557,
+      "tags": {
+        "amenity": "ice_cream",
+        "name": "Мороженное"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110506136,
+      "lat": 47.2197243,
+      "lon": 38.926879,
+      "tags": {
+        "amenity": "ice_cream",
+        "name": "Мороженное"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110506137,
+      "lat": 47.2199653,
+      "lon": 38.9280185,
+      "tags": {
+        "amenity": "ice_cream",
+        "name": "Мороженное"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110510627,
+      "lat": 47.2189313,
+      "lon": 38.9280769,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Фонарик"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110510628,
+      "lat": 47.2190931,
+      "lon": 38.928245,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Емеля"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110510629,
+      "lat": 47.2184984,
+      "lon": 38.9277593,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Колесо"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110510630,
+      "lat": 47.2190328,
+      "lon": 38.9288918,
+      "tags": {
+        "attraction": "carousel",
+        "name": "Карусель"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110510631,
+      "lat": 47.2192818,
+      "lon": 38.9292047,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Комната смеха"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110510632,
+      "lat": 47.2191851,
+      "lon": 38.9288615,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Ассорти"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110510633,
+      "lat": 47.219166,
+      "lon": 38.9286957,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Червячок"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110513244,
+      "lat": 47.2187934,
+      "lon": 38.9286452,
+      "tags": {
+        "name": "Касса №3",
+        "shop": "ticket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110513245,
+      "lat": 47.2202151,
+      "lon": 38.9278548,
+      "tags": {
+        "name": "Касса №4",
+        "shop": "ticket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5135079596,
+      "lat": 47.2188042,
+      "lon": 38.927792,
+      "tags": {
+        "name": "Касса №5",
+        "shop": "ticket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5135079597,
+      "lat": 47.2189284,
+      "lon": 38.9283591,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Колокольчик"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5138029921,
+      "lat": 47.2192463,
+      "lon": 38.9286794,
+      "tags": {
+        "attraction": "amusement_ride",
+        "name": "Солнышко"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5138032918,
+      "lat": 47.221437,
+      "lon": 38.928662,
+      "tags": {
+        "name": "Паравозик",
+        "tourism": "theme_park"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5140722235,
+      "lat": 47.2189696,
+      "lon": 38.9256372,
+      "tags": {
+        "amenity": "cafe",
+        "name": "Огонёк",
+        "name:ru": "Огонёк"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5140729039,
+      "lat": 47.2184287,
+      "lon": 38.9247005,
+      "tags": {
+        "addr:street": "Петровская улица",
+        "fee": "no",
+        "name": "Солнечные часы",
+        "tourism": "attraction"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5181497122,
+      "lat": 47.2174468,
+      "lon": 38.9274556,
+      "tags": {
+        "name": "\"Спектр\" автозапчасти",
+        "opening_hours": "Mo-Fr 10:00-18:00; Sa 10:00-16:00",
+        "phone": "+7 863 432-34-33",
+        "shop": "car_parts"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5597198795,
+      "lat": 47.2190668,
+      "lon": 38.9230321,
+      "tags": {
+        "amenity": "bar",
+        "contact:instagram": "https://instagram.com/pinta_rnd/",
+        "contact:vk": "https://vk.com/pinta_rnd",
+        "internet_access": "wlan",
+        "internet_access:fee": "no",
+        "name": "Пинта",
+        "opening_hours": "Su-Th 12:00-02:00; Fr-Sa 12:00-03:00",
+        "phone": "+7 8634 32 94 52",
+        "website": "https://www.pinta-sport.ru/",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5975615572,
+      "lat": 47.218638,
+      "lon": 38.92348,
+      "tags": {
+        "amenity": "cafe",
+        "contact:email": "uk@takeandwake.ru",
+        "contact:instagram": "https://instagram.com/takeandwake",
+        "contact:phone": "+7 800 707-35-49",
+        "contact:vk": "https://vk.com/takeandwake",
+        "contact:website": "http://гдекофе.рф",
+        "name": "Take and Wake",
+        "opening_hours": "Mo-Sa 08:00-00:00; Su 09:00-00:00",
+        "operator": "Империя кофе"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6313826986,
+      "lat": 47.2176154,
+      "lon": 38.9261381,
+      "tags": {
+        "historic": "memorial",
+        "name": "Скульптура \"Каштанка\""
+      }
+    },
+    {
+      "type": "node",
+      "id": 6313839787,
+      "lat": 47.2202465,
+      "lon": 38.9263483,
+      "tags": {
+        "name": "Дуб 1865 г. #1",
+        "natural": "tree",
+        "tourism": "attraction"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7058664846,
+      "lat": 47.2201781,
+      "lon": 38.9206966,
+      "tags": {
+        "amenity": "bank",
+        "branch": "Таганрог-Чеховский",
+        "brand": "Альфа-Банк",
+        "brand:en": "Alfa-Bank",
+        "brand:ru": "Альфа-Банк",
+        "brand:wikidata": "Q1377835",
+        "brand:wikipedia": "ru:Альфа-банк",
+        "contact:phone": "+7 495 7888878",
+        "contact:website": "https://alfabank.ru",
+        "name": "Альфа-Банк",
+        "name:en": "Alfa-Bank",
+        "name:ru": "Альфа-Банк",
+        "opening_hours": "Mo-Fr 09:00-20:00; Sa 10:00-18:00; Su off",
+        "operator": "АО \"Альфа-Банк\"",
+        "ref": "0714"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7196435285,
+      "lat": 47.2177316,
+      "lon": 38.9250867,
+      "tags": {
+        "internet_access": "wlan",
+        "name": "Наша пекарня",
+        "name:en": "Nasha Pekarnya",
+        "opening_hours": "Mo-Su 08:00-20:00",
+        "shop": "bakery"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7208585685,
+      "lat": 47.218872,
+      "lon": 38.920768,
+      "tags": {
+        "amenity": "fast_food",
+        "brand": "Coffee Like",
+        "brand:wikidata": "Q55662627",
+        "brand:wikipedia": "ru:Coffee Like",
+        "contact:email": "hotline@coffee-like.com",
+        "contact:phone": "+7 341 2908292;+7 800 3334130",
+        "contact:website": "https://coffee-like.com/",
+        "cuisine": "coffee_shop",
+        "name": "Coffee Like",
+        "opening_hours": "Mo-Fr 07:30-22:00;Sa-Su 08:00-22:00",
+        "operator": "Покровская Ю.П.",
+        "takeaway": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7405004959,
+      "lat": 47.2176261,
+      "lon": 38.9225757,
+      "tags": {
+        "amenity": "clinic",
+        "email": "info@ldcbiomed.ru",
+        "healthcare": "clinic",
+        "name": "Биомед",
+        "opening_hours": "Mo-Fr 07:30-19:30; Sa 08:00-18:00; Su 08:00-14:00",
+        "phone": "+78002340112; +78634391501; +78634314911",
+        "website": "https://biomed-ldc.ru/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7405004960,
+      "lat": 47.2171219,
+      "lon": 38.9235353,
+      "tags": {
+        "brand": "Tele2",
+        "brand:wikidata": "Q309865",
+        "brand:wikipedia": "en:Tele2",
+        "contact:facebook": "https://www.facebook.com/Tele2Russia",
+        "contact:ok": "https://ok.ru/tele2",
+        "contact:telegram": "https://telegram.me/Tele2_bot",
+        "contact:twitter": "https://twitter.com/Tele2Russia",
+        "contact:vk": "https://vk.com/tele2",
+        "contact:website": "https://tele2.ru",
+        "contact:youtube": "https://www.youtube.com/user/AfishaTele2",
+        "name": "Tele2",
+        "name:en": "Tele2",
+        "shop": "mobile_phone"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8194766447,
+      "lat": 47.2199088,
+      "lon": 38.9208654,
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "2",
+        "addr:street": "Гоголевский переулок",
+        "contact:facebook": "https://www.facebook.com/miroptikirostov",
+        "contact:instagram": "https://www.instagram.com/mir_optik.ru/",
+        "contact:vk": "https://vk.com/mir.optik",
+        "name": "Мир оптики",
+        "opening_hours": "Mo-Su 10:00-21:00",
+        "phone": "+7 8634 456506",
+        "shop": "optician",
+        "website": "https://mir-optik.ru/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8752589062,
+      "lat": 47.2182929,
+      "lon": 38.9206767,
+      "tags": {
+        "contact:email": "info@bistrodengi.ru",
+        "contact:phone": "+7 800 7004344",
+        "contact:website": "https://bistrodengi.ru/",
+        "name": "Быстроденьги",
+        "opening_hours": "Mo 09:00-20:00;Sa-Su 10:00-19:00;Tu-Fr 08:00 - 20:00",
+        "shop": "money_lender"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9076613008,
+      "lat": 47.2177681,
+      "lon": 38.9207625,
+      "tags": {
+        "brand": "Ozon",
+        "brand:wikidata": "Q2365235",
+        "contact:phone": "+7 495 2321000",
+        "contact:website": "https://www.ozon.ru/",
+        "name": "Ozon",
+        "opening_hours": "Mo-Su 09:00-21:00",
+        "shop": "outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9612450189,
+      "lat": 47.2188922,
+      "lon": 38.9208376,
+      "tags": {
+        "contact:phone": "+7 800 2500890",
+        "contact:website": "https://rnd.mts.ru/",
+        "name": "МТС",
+        "office": "telecommunication",
+        "opening_hours": "Mo-Su 08:00-20:00",
+        "shop": "mobile_phone"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9648067806,
+      "lat": 47.2187101,
+      "lon": 38.9207143,
+      "tags": {
+        "amenity": "bank",
+        "contact:phone": "+7 800 1000006",
+        "contact:website": "https://sovcombank.ru/",
+        "name": "Совкомбанк",
+        "opening_hours": "Mo-Fr 09:00-18:00;Sa 10:00-16:00"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9680623103,
+      "lat": 47.2213097,
+      "lon": 38.9215752,
+      "tags": {
+        "amenity": "pharmacy",
+        "contact:phone": "+7 800 7550003",
+        "contact:website": "https://vitaexpress.ru/",
+        "healthcare": "pharmacy",
+        "name": "Вита Экспресс",
+        "opening_hours": "Mo-Su 08:00-21:00"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10576367136,
+      "lat": 47.2196118,
+      "lon": 38.9220607,
+      "tags": {
+        "contact:email": "taganrog@warpoint.ru",
+        "contact:phone": "+7 989 5007779",
+        "contact:website": "https://taganrog.warpoint.ru/",
+        "leisure": "amusement_arcade",
+        "name": "Warpoint",
+        "opening_hours": "Mo-Su 10:00-22:00"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10670012585,
+      "lat": 47.219893,
+      "lon": 38.921612,
+      "tags": {
+        "contact:email": "onlineshop@mozart-house.com",
+        "contact:phone": "+7 863 2061515;+7 905 4786663",
+        "contact:website": "https://mozarthouse-shop.ru",
+        "name": "Mozart House",
+        "opening_hours": "Mo-Su 09:00-19:00",
+        "shop": "cosmetics"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11169673578,
+      "lat": 47.2176589,
+      "lon": 38.9251963,
+      "tags": {
+        "brand": "Ozon",
+        "brand:wikidata": "Q2365235",
+        "contact:phone": "+7 495 2321000",
+        "contact:website": "https://www.ozon.ru",
+        "name": "Ozon",
+        "opening_hours": "Mo-Su 09:00-21:00",
+        "shop": "outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11414695913,
+      "lat": 47.2220784,
+      "lon": 38.9223316,
+      "tags": {
+        "amenity": "bank",
+        "contact:email": "taganrog@invb.ru",
+        "contact:phone": "+7 863 4320100;+7 863 4324423",
+        "contact:website": "https://invb.ru",
+        "name": "Юг-Инвестбанк",
+        "name:ru": "Юг-Инвестбанк",
+        "opening_hours": "Fr 09:00-16:00; Mo-Th 09:00-17:00"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12905524810,
+      "lat": 47.2168555,
+      "lon": 38.9264998,
+      "tags": {
+        "contact:phone": "+7 800 5559090;+7 863 4615000",
+        "contact:website": "https://www.pac.ru",
+        "name": "Pac Group",
+        "opening_hours": "Mo-Fr 09:00-19:00; Sa-Su 10:00-18:00",
+        "shop": "travel_agency"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13485113380,
+      "lat": 47.218495,
+      "lon": 38.9256263,
+      "tags": {
+        "historic": "railway_car",
+        "name": "Трамвай",
+        "tourism": "attraction"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13499269825,
+      "lat": 47.2179091,
+      "lon": 38.9247088,
+      "tags": {
+        "brand": "Пятёрочка",
+        "brand:en": "Pyaterochka",
+        "brand:ru": "Пятёрочка",
+        "brand:wikidata": "Q1768969",
+        "name": "Пятёрочка",
+        "name:en": "Pyaterochka",
+        "name:ru": "Пятёрочка",
+        "shop": "supermarket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13604847401,
+      "lat": 47.2187976,
+      "lon": 38.923428,
+      "tags": {
+        "amenity": "cafe",
+        "check_date": "2026-02-27",
+        "check_date:opening_hours": "2026-02-27",
+        "cuisine": "coffee_shop",
+        "name": "Кофе кот",
+        "opening_hours": "Mo-Su 08:00-22:00"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13617493216,
+      "lat": 47.2188513,
+      "lon": 38.9254745,
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "104",
+        "addr:street": "Петровская",
+        "amenity": "restaurant",
+        "cuisine": "georgian",
+        "name": "Старик Хинкалыч",
+        "official_name": "Старик Хинкалыч",
+        "opening_hours": "Mo-Su 10:00-22:00",
+        "outdoor_seating": "yes",
+        "takeaway": "yes",
+        "website": "https://хинкалыч.рф"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13645839101,
+      "lat": 47.2183139,
+      "lon": 38.924289,
+      "tags": {
+        "addr:housenumber": "93",
+        "addr:street": "Петровская улица",
+        "check_date": "2026-03-13",
+        "check_date:opening_hours": "2026-03-13",
+        "contact:vk": "bestflowershop_tag",
+        "level": "-1",
+        "name": "Цветочная лавка",
+        "opening_hours": "Mo-Su 10:00-19:00",
+        "phone": "+7 (919) 888-09-39",
+        "shop": "florist"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13868256116,
+      "lat": 47.2183437,
+      "lon": 38.9242337,
+      "tags": {
+        "name": "Цимлянские Вина",
+        "shop": "alcohol"
+      }
+    },
+    {
+      "type": "way",
+      "id": 34376326,
+      "center": {
+        "lat": 47.22005,
+        "lon": 38.9255579
+      },
+      "tags": {
+        "barrier": "wall",
+        "leisure": "park",
+        "name": "Центральный парк им. Горького",
+        "name:ru": "Центральный парк им. Горького",
+        "name:uk": "Центральний парк ім. Горького",
+        "website": "https://park-taganrog.ru/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 90125467,
+      "center": {
+        "lat": 47.220039,
+        "lon": 38.9206239
+      },
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:country": "RU",
+        "addr:housenumber": "107",
+        "addr:street": "Петровская улица",
+        "amenity": "community_centre",
+        "building": "yes",
+        "building:architecture": "constructivism",
+        "internet_access": "wlan",
+        "name": "Дворец молодёжи",
+        "name:en": "Dvorets Molodyozhi"
+      }
+    },
+    {
+      "type": "way",
+      "id": 129097238,
+      "center": {
+        "lat": 47.21664,
+        "lon": 38.9277273
+      },
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:country": "RU",
+        "addr:housenumber": "96",
+        "addr:postcode": "347900",
+        "addr:street": "Петровская улица",
+        "amenity": "library",
+        "building": "yes",
+        "building:levels": "3",
+        "email": "auto@taglib.ru",
+        "fax": "(8634) 340-312",
+        "name": "Центральная городская публичная библиотека им. А. П. Чехова",
+        "name:ru": "Центральная городская публичная библиотека им. А. П. Чехова",
+        "name:uk": "Центральна міська публічна бібліотека ім. А. П. Чехова",
+        "opening_hours": "Mo-Th 10:00-19:00; Sa-Su 11:00-18:00",
+        "phone": "(8634) 340-312;(8634) 340-314;(8634) 383-230",
+        "website": "https://www.taglib.ru/",
+        "wikidata": "Q4449554",
+        "wikipedia": "ru:Таганрогская городская публичная библиотека им. А. П. Чехова"
+      }
+    },
+    {
+      "type": "way",
+      "id": 222378070,
+      "center": {
+        "lat": 47.21812,
+        "lon": 38.9260165
+      },
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "104-1",
+        "addr:street": "Петровская улица",
+        "amenity": "theatre",
+        "building": "yes",
+        "building:levels": "2",
+        "name": "МАУ \"Городской дом культуры\"",
+        "start_date": "1962",
+        "website": "https://gdk-taganrog.ru/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 335705239,
+      "center": {
+        "lat": 47.2175193,
+        "lon": 38.9227878
+      },
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "66",
+        "addr:street": "улица Фрунзе",
+        "amenity": "clinic",
+        "building": "yes",
+        "building:levels": "2",
+        "healthcare": "clinic",
+        "name": "МБУЗ городская поликлиника № 1 Неврологическое отделение",
+        "operator": "МБУЗ городская поликлиника № 1 Неврологическое отделение"
+      }
+    },
+    {
+      "type": "way",
+      "id": 335748512,
+      "center": {
+        "lat": 47.2198716,
+        "lon": 38.9274261
+      },
+      "tags": {
+        "amenity": "theatre",
+        "building": "civic",
+        "name": "Зелёный театр"
+      }
+    },
+    {
+      "type": "way",
+      "id": 335753871,
+      "center": {
+        "lat": 47.2185782,
+        "lon": 38.9211241
+      },
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "80",
+        "addr:street": "улица Фрунзе",
+        "architect": "Ф. Шехтель",
+        "architect:wikipedia": "Шехтель,_Фёдор_Осипович",
+        "building": "yes",
+        "building:architecture": "modern",
+        "heritage": "2",
+        "historic": "building",
+        "name": "Музей Градостроительства",
+        "roof:colour": "darkgreen",
+        "start_date": "1912",
+        "tourism": "museum",
+        "wikidata": "Q4306253",
+        "wikipedia": "ru:Музей градостроительства и быта"
+      }
+    },
+    {
+      "type": "way",
+      "id": 336102586,
+      "center": {
+        "lat": 47.2187765,
+        "lon": 38.9288124
+      },
+      "tags": {
+        "building:levels": "1",
+        "leisure": "amusement_arcade",
+        "name": "Советские игровые автоматы"
+      }
+    },
+    {
+      "type": "way",
+      "id": 339411556,
+      "center": {
+        "lat": 47.2193732,
+        "lon": 38.9245837
+      },
+      "tags": {
+        "amenity": "shelter",
+        "building:levels": "1",
+        "name": "Шахматный павильон",
+        "shelter_type": "pavilion"
+      }
+    },
+    {
+      "type": "way",
+      "id": 381995038,
+      "center": {
+        "lat": 47.2192515,
+        "lon": 38.9261996
+      },
+      "tags": {
+        "amenity": "cafe",
+        "building": "yes",
+        "internet_access": "yes",
+        "name": "Терраса",
+        "opening_hours": "10:00-23:00",
+        "outdoor_seating": "yes",
+        "smoking": "separated"
+      }
+    },
+    {
+      "type": "way",
+      "id": 525216781,
+      "center": {
+        "lat": 47.2195665,
+        "lon": 38.9284919
+      },
+      "tags": {
+        "charge": "250 RUB",
+        "fee": "yes",
+        "name": "Живой уголок",
+        "tourism": "zoo"
+      }
+    },
+    {
+      "type": "way",
+      "id": 525217060,
+      "center": {
+        "lat": 47.2192081,
+        "lon": 38.925328
+      },
+      "tags": {
+        "leisure": "fitness_station",
+        "name": "Тренажеры",
+        "opening_hours": "24/7",
+        "sport": "fitness"
+      }
+    },
+    {
+      "type": "way",
+      "id": 525219278,
+      "center": {
+        "lat": 47.2207012,
+        "lon": 38.9256577
+      },
+      "tags": {
+        "leisure": "playground",
+        "name": "Веревочный парк"
+      }
+    },
+    {
+      "type": "way",
+      "id": 528798781,
+      "center": {
+        "lat": 47.2195476,
+        "lon": 38.9266243
+      },
+      "tags": {
+        "amenity": "cafe",
+        "building": "yes",
+        "name": "Три толстяка"
+      }
+    },
+    {
+      "type": "way",
+      "id": 528799776,
+      "center": {
+        "lat": 47.2192022,
+        "lon": 38.9272944
+      },
+      "tags": {
+        "amenity": "cafe",
+        "building": "yes",
+        "name": "Сказка"
+      }
+    },
+    {
+      "type": "way",
+      "id": 549967453,
+      "center": {
+        "lat": 47.2180064,
+        "lon": 38.9219139
+      },
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "70",
+        "addr:street": "улица Фрунзе",
+        "amenity": "hospital",
+        "building": "yes",
+        "building:architecture": "eclectic",
+        "building:levels": "2",
+        "emergency": "no",
+        "healthcare": "hospital",
+        "healthcare:speciality": "dermatovenereology",
+        "heritage": "4",
+        "historic": "building",
+        "name": "ТФ ГБУ РО Кожно-венерологический диспансера, стационар",
+        "start_date": "~1880",
+        "wikipedia": "ru:Дом Жеребцова"
+      }
+    },
+    {
+      "type": "way",
+      "id": 549967462,
+      "center": {
+        "lat": 47.2184682,
+        "lon": 38.9213034
+      },
+      "tags": {
+        "addr:city": "Таганрог",
+        "addr:housenumber": "78",
+        "addr:street": "улица Фрунзе",
+        "amenity": "bank",
+        "brand": "Сбербанк",
+        "brand:en": "Sberbank",
+        "brand:ru": "Сбербанк",
+        "brand:wikidata": "Q205012",
+        "brand:wikipedia": "en:Sberbank of Russia",
+        "building": "yes",
+        "name": "Сбербанк",
+        "name:en": "Sberbank",
+        "name:ru": "Сбербанк"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4429591021,
+      "lat": 47.2200569,
+      "lon": 38.9271492,
+      "tags": {
+        "attraction": "big_wheel"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5110462327,
+      "lat": 47.2183588,
+      "lon": 38.9271172,
+      "tags": {
+        "amenity": "fountain",
+        "description": "Детский фонтанчик"
+      }
+    },
+    {
+      "type": "way",
+      "id": 447086716,
+      "center": {
+        "lat": 47.220743,
+        "lon": 38.9275284
+      },
+      "tags": {
+        "historic": "memorial",
+        "memorial": "war_memorial",
+        "name": "Вечный Огонь"
+      }
+    },
+    {
+      "type": "way",
+      "id": 525216620,
+      "center": {
+        "lat": 47.2196017,
+        "lon": 38.9258113
+      },
+      "tags": {
+        "leisure": "playground"
+      }
+    },
+    {
+      "type": "way",
+      "id": 525218599,
+      "center": {
+        "lat": 47.2214228,
+        "lon": 38.9283845
+      },
+      "tags": {
+        "leisure": "playground"
+      }
+    },
+    {
+      "type": "way",
+      "id": 525298702,
+      "center": {
+        "lat": 47.2188718,
+        "lon": 38.9292012
+      },
+      "tags": {
+        "leisure": "playground"
+      }
+    },
+    {
+      "type": "way",
+      "id": 447077124,
+      "center": {
+        "lat": 47.2192329,
+        "lon": 38.9267957
+      },
+      "tags": {
+        "amenity": "fountain"
+      }
+    }
+  ],
+  "generator": "Overpass API 0.7.62.4 2390de5a",
+  "osm3s": {
+    "timestamp_osm_base": "2026-07-26T15:30:51Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "version": 0.6
+}

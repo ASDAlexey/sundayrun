@@ -1,0 +1,319 @@
+<!-- The play-through length lives on the root: the marker and the distance counter run for the
+same span but sit in different branches, and a custom property only travels downwards. -->
+<figure
+  class="course-track"
+  [class.course-track_playing]="playing()"
+  [class.course-track_take-b]="alternateTake()"
+  [style.--play-duration]="playSeconds"
+>
+  <!-- Decorative for a screen reader: the facts beside it already say where the course goes,
+  and a path element read aloud is noise. -->
+  <div class="course-track__frame">
+    <svg aria-hidden="true" class="course-track__map" [attr.viewBox]="viewBox">
+      <!-- Drawn glyphs rather than a row of identical dots: on a map this size a dot says
+    «something is here» and never says what. Stroked, so one CSS colour drives them all. -->
+      <defs>
+        <g fill="none" id="course-icon-flame" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+          <path d="M12 3c3 4 5 6.2 5 9a5 5 0 0 1-10 0c0-2 .9-3.2 2-4.2 0 1.2 1 2.2 2 2.2 0-3-1-5.2 1-7z" />
+        </g>
+
+        <g fill="none" id="course-icon-fountain" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+          <path d="M5 15h14l-2 5H7z" />
+
+          <path d="M12 4v7M8.5 8c0-2 1.6-3.4 3.5-3.4S15.5 6 15.5 8" />
+        </g>
+
+        <g fill="none" id="course-icon-monument" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+          <path d="M8.5 20.5h7M10.5 20.5V10M13.5 20.5V10" />
+
+          <circle cx="12" cy="6.5" r="3" />
+        </g>
+
+        <g fill="none" id="course-icon-playground" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+          <path d="M4.5 20.5 8 4.5l4 16M8 4.5h8l-2 16M8 10h6M8 15h5" />
+        </g>
+
+        <g fill="none" id="course-icon-sundial" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+          <path d="M4 19h16M12 19V5l6 14" />
+        </g>
+
+        <g fill="currentColor" id="course-icon-dot">
+          <circle cx="12" cy="12" r="3.2" />
+        </g>
+
+        <!-- Two uprights and a bar: the pull-up frame the runners gather at. -->
+        <g fill="none" id="course-icon-bars" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">
+          <path d="M5 5.5v13M19 5.5v13M5 7.5h14" />
+        </g>
+
+        <!-- The finish check, in map units. The disc is drawn about its own origin, so the tiling
+        starts from the same origin and the squares sit square to the page rather than to the map. -->
+        <pattern height="6.4" id="course-finish-check" patternUnits="userSpaceOnUse" width="6.4" x="-12.8" y="-12.8">
+          <rect class="course-track__check-light" height="6.4" width="6.4" x="0" y="0" />
+
+          <rect class="course-track__check-dark" height="3.2" width="3.2" x="0" y="0" />
+
+          <rect class="course-track__check-dark" height="3.2" width="3.2" x="3.2" y="3.2" />
+        </pattern>
+      </defs>
+      <!-- The park itself: greens and buildings drawn from the same OpenStreetMap extract, kept in
+    a separate file because three hundred building outlines have no business in the JS bundle. -->
+      <image class="course-track__basemap" height="100%" href="course-basemap.svg" width="100%" x="0" y="0" />
+
+      <path class="course-track__alley-casing" [attr.d]="alleyPath" />
+
+      <path class="course-track__alleys" [attr.d]="alleyPath" />
+
+      <!-- The course at rest, always whole: both laps as parallel ribbons plus the short one. -->
+      <path class="course-track__casing" [attr.d]="lapOnePath" />
+
+      <path class="course-track__casing" [attr.d]="lapTwoPath" />
+
+      <path class="course-track__casing" [attr.d]="finalLapPath" />
+
+      <path class="course-track__base" [attr.d]="lapOnePath" />
+
+      <path class="course-track__base" [attr.d]="lapTwoPath" />
+
+      <path class="course-track__base" [attr.d]="finalLapPath" />
+
+      <g class="course-track__run">
+        <path
+          class="course-track__trace course-track__trace_one"
+          pathLength="1"
+          [attr.d]="lapOnePath"
+          [style.--trace-delay]="lapOneTiming().delay"
+          [style.--trace-duration]="lapOneTiming().duration"
+        />
+
+        <path
+          class="course-track__trace course-track__trace_two"
+          pathLength="1"
+          [attr.d]="lapTwoPath"
+          [style.--trace-delay]="lapTwoTiming().delay"
+          [style.--trace-duration]="lapTwoTiming().duration"
+        />
+
+        <path
+          class="course-track__trace course-track__trace_final"
+          pathLength="1"
+          [attr.d]="finalLapPath"
+          [style.--trace-delay]="lapFinalTiming().delay"
+          [style.--trace-duration]="lapFinalTiming().duration"
+        />
+
+        <!-- The yellow core rides inside the orange body, the way the club has always drawn it. -->
+        <path
+          class="course-track__trace course-track__core"
+          pathLength="1"
+          [attr.d]="lapOnePath"
+          [style.--trace-delay]="lapOneTiming().delay"
+          [style.--trace-duration]="lapOneTiming().duration"
+        />
+
+        <path
+          class="course-track__trace course-track__core"
+          pathLength="1"
+          [attr.d]="lapTwoPath"
+          [style.--trace-delay]="lapTwoTiming().delay"
+          [style.--trace-duration]="lapTwoTiming().duration"
+        />
+
+        <path
+          class="course-track__trace course-track__core"
+          pathLength="1"
+          [attr.d]="finalLapPath"
+          [style.--trace-delay]="lapFinalTiming().delay"
+          [style.--trace-duration]="lapFinalTiming().duration"
+        />
+
+        <!-- Which way round. A route drawing cannot answer that on its own. -->
+        @for (arrow of arrows; track arrow.x) {
+          <path
+            class="course-track__arrow"
+            d="M-13 -11 13 0 -13 11 -6.5 0Z"
+            [attr.transform]="'translate(' + arrow.x + ' ' + arrow.y + ') rotate(' + arrow.angle + ')'"
+          />
+        }
+
+        <!-- The marker owns the end of the run, so it is the one element that reports the
+        finish; everything else is done by the time it gets there. -->
+        <circle class="course-track__runner" [attr.r]="runnerRadius" [style.offset-path]="runOffsetPath" (animationend)="onRunEnd()" />
+      </g>
+
+      @for (place of landmarks; track place.name) {
+        <g class="course-track__place">
+          <circle class="course-track__place-disc" [attr.cx]="place.x" [attr.cy]="place.y" [attr.r]="place.labelled ? 12 : 9" />
+
+          <use
+            [attr.height]="place.labelled ? 19 : 14"
+            [attr.href]="place.symbol"
+            [attr.width]="place.labelled ? 19 : 14"
+            [attr.x]="place.x - (place.labelled ? 9.5 : 7)"
+            [attr.y]="place.y - (place.labelled ? 9.5 : 7)"
+          />
+        </g>
+      }
+
+      <!-- Every kilometre, plus the two lap boundaries where the split is taken. -->
+      @for (mark of marks; track mark.x) {
+        <g class="course-track__mark" [class.course-track__mark_lap]="mark.lap > 0">
+          <circle class="course-track__balloon" r="15" [attr.cx]="mark.bx" [attr.cy]="mark.by" />
+
+          <text class="course-track__balloon-text" font-size="19" text-anchor="middle" [attr.x]="mark.bx" [attr.y]="mark.by + 7">
+            @if (mark.lap > 0) {
+              ⏱
+            } @else {
+              {{ mark.km }}
+            }
+          </text>
+        </g>
+      }
+
+      <!-- Where everyone gathers: the pull-up frame a few strides up the alley from the line, with
+      an arrow onto the line itself — the same pair the club's own schematic draws. -->
+      <g class="course-track__meeting" [attr.transform]="meetingTransform">
+        <circle class="course-track__meeting-disc" [attr.r]="meetingRadius" />
+
+        <use height="26" href="#course-icon-bars" width="26" x="-13" y="-13" />
+      </g>
+
+      <path class="course-track__meeting-arrow" [attr.d]="meetingArrow.shaft" />
+
+      <path class="course-track__meeting-arrow-head" d="M-5.5 -7.5 5.5 -7.5 0 0Z" [attr.transform]="meetingArrow.head" />
+
+      <!-- Start and finish: the two things every visitor looks for, so they are the largest marks on
+      the map. Red for the one, the chequer for the other — the pair the legend below spells out. -->
+      <circle
+        class="course-track__point course-track__point_start"
+        [attr.cx]="startPoint.x"
+        [attr.cy]="startPoint.y"
+        [attr.r]="pinRadius"
+      />
+
+      <circle
+        class="course-track__point course-track__point_finish"
+        fill="url(#course-finish-check)"
+        [attr.r]="pinRadius"
+        [attr.transform]="finishTransform"
+      />
+    </svg>
+
+    <!-- Names in HTML, not in the SVG: here a label is a real element at a real pixel size with a
+    real plate behind it, instead of stroked text that shrinks along with the viewBox. -->
+    <div aria-hidden="true" class="course-track__labels">
+      <span
+        class="course-track__chip course-track__chip_meeting"
+        i18n="@@course.meeting"
+        [style.left]="meetingLabel.left"
+        [style.top]="meetingLabel.top"
+        >Место сбора · турники</span
+      >
+
+      <span
+        class="course-track__chip course-track__chip_start"
+        i18n="@@course.start"
+        [style.left]="startLabel.left"
+        [style.top]="startLabel.top"
+        >Старт</span
+      >
+
+      <span
+        class="course-track__chip course-track__chip_finish"
+        i18n="@@course.finish"
+        [style.left]="finishLabel.left"
+        [style.top]="finishLabel.top"
+        >Финиш</span
+      >
+
+      @for (place of landmarks; track place.name) {
+        @if (place.labelled) {
+          <span
+            class="course-track__chip"
+            [class.course-track__chip_above]="place.above"
+            [style.left]="place.left"
+            [style.top]="place.top"
+            >{{ place.name }}</span
+          >
+        }
+      }
+    </div>
+  </div>
+
+  <figcaption class="course-track__bar">
+    <!-- The map carries signs; the legend carries their meaning. Captions floating beside every
+    badge turned the park into a noticeboard — and at this scale each one was eight muddy pixels. -->
+    <ul class="course-track__legend">
+      <li class="course-track__legend-item">
+        <span aria-hidden="true" class="course-track__key course-track__key_km">1</span>
+
+        <ng-container i18n="@@course.legendKm">километры</ng-container>
+      </li>
+
+      <li class="course-track__legend-item">
+        <span aria-hidden="true" class="course-track__key course-track__key_lap"></span>
+
+        <ng-container i18n="@@course.legendLap">отсечка круга · 2,3 км</ng-container>
+      </li>
+
+      <li class="course-track__legend-item">
+        <span aria-hidden="true" class="course-track__key course-track__key_start"></span>
+
+        <ng-container i18n="@@course.legendStart">старт</ng-container>
+      </li>
+
+      <li class="course-track__legend-item">
+        <span aria-hidden="true" class="course-track__key course-track__key_finish"></span>
+
+        <ng-container i18n="@@course.legendFinish">финиш</ng-container>
+      </li>
+    </ul>
+
+    <button class="course-track__play" type="button" (click)="play()">
+      @if (replayable()) {
+        <ng-container i18n="@@course.playAgain">Ещё раз</ng-container>
+      } @else {
+        <ng-container i18n="@@course.play">Посмотреть, как по ней бежать</ng-container>
+      }
+    </button>
+
+    <p class="course-track__readout">
+      <span class="course-track__meters"
+        ><span class="course-track__meters-static">{{ totalMeters }}</span></span
+      >
+
+      <span class="course-track__unit" i18n="@@course.metersUnit">м</span>
+
+      <span class="course-track__laps">
+        <span
+          class="course-track__lap course-track__lap_one"
+          i18n="@@course.lapOne"
+          [style.--trace-delay]="lapOneTiming().delay"
+          [style.--trace-duration]="lapOneTiming().duration"
+          >1-й круг</span
+        >
+
+        <span
+          class="course-track__lap course-track__lap_two"
+          i18n="@@course.lapTwo"
+          [style.--trace-delay]="lapTwoTiming().delay"
+          [style.--trace-duration]="lapTwoTiming().duration"
+          >2-й круг</span
+        >
+
+        <span
+          class="course-track__lap course-track__lap_final"
+          i18n="@@course.lapFinal"
+          [style.--trace-delay]="lapFinalTiming().delay"
+          [style.--trace-duration]="lapFinalTiming().duration"
+          >малый круг</span
+        >
+      </span>
+    </p>
+
+    <!-- A licence term, not a courtesy: the alleys are OpenStreetMap data under ODbL. -->
+    <p class="course-track__credit">
+      <span i18n="@@course.credit">Аллеи — © OpenStreetMap, трасса снята GPS-записью круга</span>
+    </p>
+  </figcaption>
+</figure>

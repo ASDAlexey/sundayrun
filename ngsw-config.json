@@ -29,8 +29,7 @@
           "/icon-192.png",
           "/icon-512.png",
           "/og-image.jpg",
-          "/course-5k.avif",
-          "/course-5k.webp",
+          "/course-basemap.svg",
           "/fonts/*.woff2"
         ]
       }

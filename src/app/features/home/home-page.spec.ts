@@ -151,32 +151,6 @@ describe('HomePage', () => {
     expect(fixture.componentInstance.status(), 'the race preview is unaffected by the meta failure').toBe(RacesStatus.ready);
   });
 
-  it('opens the course scheme in the lightbox and closes it from the button or the backdrop', async () => {
-    fixture = await createPage();
-
-    fixture.detectChanges();
-
-    const element = fixture.nativeElement;
-    const dialog = element.querySelector('.home__course-dialog');
-
-    element.querySelector('.home__course-figure').click();
-
-    expect(dialog.open, 'the map button opens the modal').toBe(true);
-
-    element.querySelector('.home__course-dialog-frame').click();
-
-    expect(dialog.open, 'a click inside the frame keeps it open').toBe(true);
-
-    dialog.click();
-
-    expect(dialog.open, 'a backdrop click dismisses it').toBe(false);
-
-    element.querySelector('.home__course-figure').click();
-    element.querySelector('.home__course-dialog-close').click();
-
-    expect(dialog.open, 'the close button dismisses it').toBe(false);
-  });
-
   it('shows the empty and error states of the race preview', async () => {
     loadLatest.mockResolvedValue([]);
     fixture = await createPage();

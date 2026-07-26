@@ -63,10 +63,11 @@
     <div class="home__course-info">
       <p appScrollReveal class="home__course-eyebrow" i18n="@@races.courseEyebrow" revealOnce>Трасса</p>
 
-      <h2 appScrollReveal class="home__course-title" i18n="@@races.courseTitle" revealOnce>5 км — два круга по парку</h2>
+      <h2 appScrollReveal class="home__course-title" i18n="@@races.courseTitle" revealOnce>5 км — два круга и малый круг</h2>
 
       <p appScrollReveal class="home__course-text" i18n="@@races.courseText" revealOnce>
-        Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
+        Маршрут проходит по аллеям ПКиО им. Горького. Два больших круга по 2,3 км и малый круг 400 м — вместе ровно 5 км. Старт и финиш
+        рядом, там же собираются участники.
       </p>
 
       <dl appScrollReveal class="home__course-facts" revealOnce>
@@ -98,70 +99,7 @@
       >
     </div>
 
-    <button
-      appScrollReveal
-      aria-haspopup="dialog"
-      aria-label="Открыть схему трассы в полном размере"
-      class="home__course-figure"
-      i18n-aria-label="@@races.courseZoomLabel"
-      revealOnce
-      type="button"
-      (click)="openCourseMap()"
-    >
-      <picture class="home__course-picture">
-        <source srcset="course-5k.avif" type="image/avif" />
-
-        <img
-          alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
-          class="home__course-map"
-          decoding="async"
-          height="962"
-          i18n-alt="@@races.courseAlt"
-          loading="lazy"
-          src="course-5k.webp"
-          width="962"
-        />
-      </picture>
-
-      <span aria-hidden="true" class="home__course-zoom" i18n="@@races.courseZoom">Открыть схему</span>
-    </button>
-
-    <dialog
-      #courseMapDialog
-      aria-label="Схема трассы 5 км — два круга по ПКиО им. Горького"
-      class="home__course-dialog"
-      i18n-aria-label="@@races.courseAlt"
-      (click)="onCourseMapClick($event)"
-    >
-      <div class="home__course-dialog-frame">
-        <header class="home__course-dialog-head">
-          <p class="home__course-dialog-title" i18n="@@races.courseDialogTitle">Схема трассы · 5 км</p>
-
-          <button
-            aria-label="Закрыть схему"
-            class="home__course-dialog-close"
-            i18n-aria-label="@@races.courseDialogClose"
-            type="button"
-            (click)="closeCourseMap()"
-          ></button>
-        </header>
-
-        <picture class="home__course-dialog-picture">
-          <source srcset="course-5k.avif" type="image/avif" />
-
-          <img
-            alt="Схема трассы 5 км — два круга по ПКиО им. Горького"
-            class="home__course-dialog-map"
-            decoding="async"
-            height="962"
-            i18n-alt="@@races.courseAlt"
-            loading="lazy"
-            src="course-5k.webp"
-            width="962"
-          />
-        </picture>
-      </div>
-    </dialog>
+    <app-course-track />
   </section>
 
   @if (selfView(); as self) {

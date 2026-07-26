@@ -96,6 +96,22 @@
   --time-hold: 0.6s; // long-press ring guarding a destructive action
   --time-breathe: 2s; // the only two infinite loops we allow
 
+  // Course map. An inset printed map on a dark page, so it carries a light palette of its own
+  // rather than the site's — white alleys on green read instantly, the same lines in grey on
+  // near-black do not. These are the only light tokens in the project and belong to that one card.
+  --map-ink: #1f2c1c;
+  --map-ink-soft: #56634f;
+  --map-paper: #f4f1ea;
+  --map-alley: #fff;
+  --map-alley-edge: #c6d5b8;
+  --map-route-casing: #fffdf7;
+  --map-route: #e2661a;
+  --map-route-core: #ffd23f;
+
+  // Start, finish and the gathering point. Red is the convention on course schematics and the
+  // club's own drawing uses it; the site's mint green read as a stray interface colour here.
+  --map-mark: #cf3a2a;
+
   // Scroll choreography — how the page behaves while it is being read.
   --time-reveal: 0.8s; // a block rising into view
   --time-count-up: 1.2s; // a big total running up from zero
