@@ -156,19 +156,6 @@
     color: var(--text-muted);
   }
 
-  &__next-link {
-    border-bottom: 1px solid var(--border);
-    color: var(--text-secondary);
-    transition:
-      color var(--transition-time) var(--ease),
-      border-color var(--transition-time) var(--ease);
-
-    &:hover {
-      border-color: var(--accent-line);
-      color: var(--accent-light);
-    }
-  }
-
   // The personal card («Выбери себя» in the header) — the visitor's own numbers over the shared ones.
   &__self {
     @include c.card;
