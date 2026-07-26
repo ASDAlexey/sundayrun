@@ -183,6 +183,17 @@
   font-variant-numeric: tabular-nums;
 }
 
+// A figure that shares a card with a hero one and must read as its junior — the athlete's
+// best first lap beside the 5 km record. Deliberately between mono-value and its large sibling.
+@mixin mono-value-secondary {
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+  line-height: 1;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
 // The oversized live countdown figure on the home hero.
 @mixin mono-value-large {
   font-weight: 600;

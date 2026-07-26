@@ -7,6 +7,10 @@
 // Rank · date · time · first lap · place — shared by the runs table's header and rows.
 $athlete-runs-columns: 40px minmax(0, 1fr) 68px 68px 76px;
 
+// Phones drop the rank column — the row order already says it — and tighten the rest, so the
+// four remaining columns fit a 375px screen instead of pushing the whole page sideways.
+$athlete-runs-columns-mobile: minmax(0, 1fr) 56px 48px 50px;
+
 .athlete {
   @include s.section;
 
@@ -78,9 +82,10 @@ $athlete-runs-columns: 40px minmax(0, 1fr) 68px 68px 76px;
     @include t.gradient-text;
   }
 
-  // The best first-lap split: the record's quieter sibling, linked to its protocol.
+  // The best first-lap split: the record's quieter sibling, linked to its protocol —
+  // one size below the 5 km figure so the two never read as a pair of equals.
   &__lap-value {
-    @include t.mono-value-large;
+    @include t.mono-value-secondary;
 
     color: var(--text);
     text-decoration: none;
@@ -324,8 +329,13 @@ $athlete-runs-columns: 40px minmax(0, 1fr) 68px 68px 76px;
     color: var(--text-muted);
   }
 
+  // Same story as the runs filter: the season strip scrolls rather than widening the card.
   &__rivals-years {
+    min-width: 0;
+    max-width: 100%;
     margin: 4px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
   &__rivals-empty {
@@ -560,10 +570,19 @@ $athlete-runs-columns: 40px minmax(0, 1fr) 68px 68px 76px;
     text-transform: uppercase;
   }
 
-  &__spinner {
-    display: inline-block;
-    margin-right: 8px;
-    vertical-align: middle;
+  // A toggle group never wraps, so nine seasons are wider than a phone. Let the strip
+  // scroll inside the card instead of stretching the page it sits on.
+  &__chips {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  // Without this the seasons squeeze themselves thin inside the scroll box instead of
+  // scrolling — a toggle is a flex item and shrinks before it overflows.
+  &__chip {
+    flex: none;
   }
 
   &__table {
@@ -642,5 +661,80 @@ $athlete-runs-columns: 40px minmax(0, 1fr) 68px 68px 76px;
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+
+  // Phones: a 375px screen has to hold the whole card, so the profile metrics stack into
+  // hairline-separated tiles and the runs table sheds everything it can spare. Nothing here
+  // may exceed the card's width — an overflowing grid drags the entire page sideways.
+  @media (width <= 560px) {
+    &__profile {
+      padding: 24px 18px 20px;
+    }
+
+    &__profile-top {
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+    }
+
+    // Hairlines under the record: without them the lone lap split hangs between the
+    // record and the counters with nothing to belong to.
+    &__pb:not(:first-child),
+    &__stats {
+      width: 100%;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    // Auto columns, not a fixed three: the «итоговых забегов» tile is optional and a
+    // missing one must not leave a hole in the row.
+    &__stats {
+      display: grid;
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+      gap: 8px;
+    }
+
+    &__stat {
+      text-align: center;
+    }
+
+    &__runs {
+      padding: 20px 16px;
+    }
+
+    &__table-head,
+    &__run {
+      grid-template-columns: $athlete-runs-columns-mobile;
+      padding-inline: 12px;
+      gap: 8px;
+    }
+
+    // The rank cell costs 40px — the exact width the place column was losing to the screen edge,
+    // and the rows are already ordered by time, so the number says nothing new.
+    &__table-hcell:first-child,
+    &__run-rank {
+      display: none;
+    }
+
+    &__table-hcell {
+      @include t.mono-caption;
+    }
+
+    // The date stacks over its «итоговый» badge instead of wrapping beside it — a wrapped
+    // line would spill out of the fixed 48px virtual-scroll row.
+    &__run-date {
+      @include t.mono-meta;
+
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    &__run-time,
+    &__run-lap,
+    &__run-place {
+      @include t.mono-meta;
+    }
   }
 }

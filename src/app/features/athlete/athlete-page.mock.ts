@@ -52,7 +52,7 @@ type RunViewBase = Omit<AthleteRunView, 'rank'>;
 const FIRST_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-1',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-1'],
-  dateShort: '27.12.2025 г.',
+  dateShort: '27.12.2025',
   timeText: '25:00',
   lapText: '11:50',
   // A stored place with no finisher tally renders bare, and 5th is off the podium.
@@ -64,7 +64,7 @@ const FIRST_RUN_BASE: RunViewBase = {
 const SECOND_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-2',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'],
-  dateShort: '03.01.2026 г.',
+  dateShort: '03.01.2026',
   timeText: '24:00',
   lapText: '11:00',
   placeText: '1/8',
@@ -75,7 +75,7 @@ const SECOND_RUN_BASE: RunViewBase = {
 const THIRD_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-3',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-3'],
-  dateShort: '10.01.2026 г.',
+  dateShort: '10.01.2026',
   timeText: '25:00',
   lapText: '11:40',
   placeText: '—',
@@ -139,7 +139,7 @@ export const EXPECTED_SHORT_RUNNER_VIEWS: AthleteRunView[] = [
     slug: 'kuzminki-2',
     raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'],
     rank: 1,
-    dateShort: '03.01.2026 г.',
+    dateShort: '03.01.2026',
     timeText: '23:20',
     lapText: '—',
     placeText: '—',

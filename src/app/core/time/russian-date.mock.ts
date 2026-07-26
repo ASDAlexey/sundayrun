@@ -13,6 +13,13 @@ export const FORMAT_RUSSIAN_DATE_SHORT_CASES: readonly (readonly [string, string
   ['2026-01-05', '05.01.2026 г.'],
 ];
 
+/** [ISO input, expected numeric form '20.09.2020' — the short form without the ' г.' tail]. */
+export const FORMAT_RUSSIAN_DATE_NUMERIC_CASES: readonly (readonly [string, string])[] = [
+  ['2020-09-20', '20.09.2020'],
+  // zero padding is preserved
+  ['2026-01-05', '05.01.2026'],
+];
+
 /** [ISO input, expected compact form '28 дек 2025']. */
 export const FORMAT_RUSSIAN_DATE_COMPACT_CASES: readonly (readonly [string, string])[] = [
   ['2025-12-28', '28 дек 2025'],

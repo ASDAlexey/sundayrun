@@ -19,9 +19,17 @@ export function formatRussianDateLong(dateIso: string): string {
 
 /** '2020-09-20' → '20.09.2020 г.'. Throws on an invalid ISO date. */
 export function formatRussianDateShort(dateIso: string): string {
+  return `${formatRussianDateNumeric(dateIso)} ${YEAR_SUFFIX}`;
+}
+
+/**
+ * '2020-09-20' → '20.09.2020' — the numeric form without the ' г.' tail, for table cells
+ * where the suffix only steals width. Throws on an invalid ISO date.
+ */
+export function formatRussianDateNumeric(dateIso: string): string {
   const [year, month, day] = parseIsoDate(dateIso);
 
-  return `${day}.${month}.${year} ${YEAR_SUFFIX}`;
+  return `${day}.${month}.${year}`;
 }
 
 /** '2025-01-12' → '12 янв 2025' for the dated «ЛР (было X)» note. Throws on an invalid ISO date. */

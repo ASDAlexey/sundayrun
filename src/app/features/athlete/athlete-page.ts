@@ -4,7 +4,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
@@ -43,8 +42,9 @@ import { GenderType } from '../../core/models/gender.enum';
 import { formatDuration } from '../../core/time/duration';
 import { MS_IN_SECOND } from '../../core/time/duration.constant';
 import { isoToday } from '../../core/time/iso-today';
-import { formatRussianDateShort } from '../../core/time/russian-date';
+import { formatRussianDateNumeric } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
+import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { YearBadgeChip } from '../../shared/year-badge/year-badge';
@@ -89,10 +89,10 @@ import { WeatherCard } from './weather-card';
     BadgeCatalog,
     FormCard,
     LifetimeCard,
+    LoadingState,
     MatButtonModule,
     MatButtonToggleModule,
     MatProgressBarModule,
-    MatProgressSpinnerModule,
     OfflineNotice,
     PacingCard,
     ProgressChart,
@@ -474,7 +474,7 @@ function toRunView(
     slug: run.slug,
     raceLink: [RACE_PAGE_BASE_LINK, run.slug],
     rank,
-    dateShort: formatRussianDateShort(run.dateIso),
+    dateShort: formatRussianDateNumeric(run.dateIso),
     timeText: formatDuration(run.timeMs),
     lapText: lapMs === undefined ? NO_LAP_TEXT : formatDuration(lapMs),
     placeText: placeText(place, finisherCounts[run.slug], gender),
