@@ -1,4 +1,16 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
+import {
+  Component,
+  DOCUMENT,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
@@ -13,10 +25,12 @@ import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
 import { SiteMetaService } from '../../github/site-meta.service';
+import { CountUp } from '../../shared/directives/count-up/count-up';
 import { ScrollReveal } from '../../shared/directives/scroll-reveal/scroll-reveal';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { RollNumber } from '../../shared/roll-number/roll-number';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
@@ -33,6 +47,7 @@ import {
   LATEST_RACES_COUNT,
   NO_MEDIAN_TIME_PLACEHOLDER,
   RACES_PAGE_LINK,
+  SCROLL_HINT_LISTENER_OPTIONS,
   STATS_AVERAGE_FORMAT,
   STATS_NUMBER_FORMAT,
 } from './home-page.constant';
@@ -51,7 +66,7 @@ import {
 /** The landing page: hero with a live "next start" countdown, the latest races preview and the course card. */
 @Component({
   selector: 'app-home-page',
-  imports: [LoadingState, MatButtonModule, OfflineNotice, RaceCard, ReloadButton, RouterLink, ScrollReveal],
+  imports: [CountUp, LoadingState, MatButtonModule, OfflineNotice, RaceCard, ReloadButton, RollNumber, RouterLink, ScrollReveal],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
 })
@@ -61,6 +76,7 @@ export class HomePage {
   readonly #athletes = inject(AthletesService);
   readonly #selfAthlete = inject(SelfAthleteService);
   readonly #destroyRef = inject(DestroyRef);
+  readonly #document = inject(DOCUMENT);
   readonly #stats = signal<OverallStats | null>(null);
   readonly #selfRecord = signal<AthleteRecord | null>(null);
   readonly #eventSlugs = signal<string[]>([]);
@@ -79,10 +95,14 @@ export class HomePage {
   readonly registrationLabel = computed(() => registrationTimeLabel(this.startTime()));
   readonly nextStart = computed<NextStartView | null>(() => toNextStartView(this.#nowMs(), this.startTime()));
 
+  // Rendered only before the first scroll of the session; see the constructor.
+  readonly scrollHintVisible = signal(false);
+
   // A signal query may not sit on an ES-private (#) member — Angular needs the runtime name.
   protected readonly courseMapDialog = viewChild.required<ElementRef<HTMLDialogElement>>('courseMapDialog');
 
   protected readonly statuses = RacesStatus;
+  protected readonly numberFormat = STATS_NUMBER_FORMAT.format;
   protected readonly racesLink = RACES_PAGE_LINK;
   protected readonly yearLink = YEAR_PAGE_BASE_LINK;
   protected readonly vkUrl = VK_COMMUNITY_URL;
@@ -134,6 +154,7 @@ export class HomePage {
       const timer = setInterval(tick, COUNTDOWN_TICK_MS);
 
       this.#destroyRef.onDestroy(() => clearInterval(timer));
+      this.#armScrollHint();
     });
   }
 
@@ -150,6 +171,31 @@ export class HomePage {
     if (event.target === this.courseMapDialog().nativeElement) {
       this.closeCourseMap();
     }
+  }
+
+  /**
+   * In an in-app browser the hero can fill the screen with no visible seam, and half the
+   * audience arrives there from a Telegram link. The hint says «there is more below» and
+   * then gets out of the way permanently — it has done its job the moment it is obeyed.
+   *
+   * A visitor who is already scrolled (a restored position, a deep link) never sees it.
+   */
+  #armScrollHint(): void {
+    const view = this.#document.defaultView;
+
+    if (view === null) {
+      return;
+    }
+
+    if (view.scrollY !== 0) {
+      return;
+    }
+
+    const hide = (): void => this.scrollHintVisible.set(false);
+
+    this.scrollHintVisible.set(true);
+    view.addEventListener('scroll', hide, SCROLL_HINT_LISTENER_OPTIONS);
+    this.#destroyRef.onDestroy(() => view.removeEventListener('scroll', hide));
   }
 
   /**
@@ -189,8 +235,11 @@ function toStatsView(stats: OverallStats | null): HomeStatsView | null {
 
   return {
     events: STATS_NUMBER_FORMAT.format(stats.eventsCount),
+    eventsCount: stats.eventsCount,
     finishes: STATS_NUMBER_FORMAT.format(stats.finishesCount),
+    finishesCount: stats.finishesCount,
     finishers: STATS_NUMBER_FORMAT.format(stats.finishersCount),
+    finishersCount: stats.finishersCount,
     averageFinishes: STATS_AVERAGE_FORMAT.format(stats.averageFinishes),
     medianTimeMen: formatMedianTime(stats.medianTimeMenMs),
     medianTimeWomen: formatMedianTime(stats.medianTimeWomenMs),

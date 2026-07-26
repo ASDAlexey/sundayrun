@@ -22,6 +22,8 @@
           <p class="home__next-final" i18n="@@home.nextStartMonthFinal">🏁 Итоговый забег этого месяца</p>
         }
 
+        <!-- Days and hours change too rarely for a flip to ever be seen, so only minutes and
+        seconds roll — the one animation on the page that proves the site is live before a scroll. -->
         <p class="home__next-timer">
           <span class="home__next-unit">{{ ns.countdown.days }}<small class="home__next-unit-label" i18n="@@home.unitDays">д</small></span>
 
@@ -30,11 +32,15 @@
           >
 
           <span class="home__next-unit"
-            >{{ ns.countdown.minutes }}<small class="home__next-unit-label" i18n="@@home.unitMinutes">м</small></span
+            ><app-roll-number [value]="ns.countdown.minutes" /><small class="home__next-unit-label" i18n="@@home.unitMinutes"
+              >м</small
+            ></span
           >
 
           <span class="home__next-unit"
-            >{{ ns.countdown.seconds }}<small class="home__next-unit-label" i18n="@@home.unitSeconds">с</small></span
+            ><app-roll-number [value]="ns.countdown.seconds" /><small class="home__next-unit-label" i18n="@@home.unitSeconds"
+              >с</small
+            ></span
           >
         </p>
       } @else {
@@ -47,17 +53,23 @@
     </aside>
   </header>
 
+  <!-- Phone only: inside an in-app browser the hero can fill the screen with no visible seam,
+  and nothing says there is a page under it. Gone for good after the first scroll. -->
+  @if (scrollHintVisible()) {
+    <div aria-hidden="true" class="home__scroll-hint"></div>
+  }
+
   <section class="home__course">
     <div class="home__course-info">
-      <p appScrollReveal class="home__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
+      <p appScrollReveal class="home__course-eyebrow" i18n="@@races.courseEyebrow" revealOnce>Трасса</p>
 
-      <h2 appScrollReveal class="home__course-title" i18n="@@races.courseTitle">5 км — два круга по парку</h2>
+      <h2 appScrollReveal class="home__course-title" i18n="@@races.courseTitle" revealOnce>5 км — два круга по парку</h2>
 
-      <p appScrollReveal class="home__course-text" i18n="@@races.courseText">
+      <p appScrollReveal class="home__course-text" i18n="@@races.courseText" revealOnce>
         Маршрут проходит по аллеям ПКиО им. Горького. Старт и финиш в одной точке, рядом — место сбора участников.
       </p>
 
-      <dl appScrollReveal class="home__course-facts">
+      <dl appScrollReveal class="home__course-facts" revealOnce>
         <div class="home__course-fact">
           <dt class="home__course-fact-term" i18n="@@races.courseFactMeetTerm">Сбор</dt>
 
@@ -73,7 +85,15 @@
         </div>
       </dl>
 
-      <a appScrollReveal class="home__course-vk" i18n="@@races.courseVk" matButton="tonal" rel="noopener" target="_blank" [href]="vkUrl"
+      <a
+        appScrollReveal
+        class="home__course-vk"
+        i18n="@@races.courseVk"
+        matButton="tonal"
+        rel="noopener"
+        revealOnce
+        target="_blank"
+        [href]="vkUrl"
         >Сообщество ВКонтакте</a
       >
     </div>
@@ -84,6 +104,7 @@
       aria-label="Открыть схему трассы в полном размере"
       class="home__course-figure"
       i18n-aria-label="@@races.courseZoomLabel"
+      revealOnce
       type="button"
       (click)="openCourseMap()"
     >
@@ -145,7 +166,7 @@
 
   @if (selfView(); as self) {
     <section class="home__self">
-      <div appScrollReveal class="home__self-head">
+      <div appScrollReveal class="home__self-head" revealOnce>
         <p class="home__self-eyebrow" i18n="@@home.selfEyebrow">Твоя статистика</p>
 
         <h2 class="home__self-name">
@@ -153,7 +174,7 @@
         </h2>
       </div>
 
-      <dl appScrollReveal class="home__self-grid">
+      <dl appScrollReveal class="home__self-grid" revealOnce>
         <div class="home__self-item">
           <dt class="home__self-label" i18n="@@home.selfFinishes">финишей · 5 км</dt>
 
@@ -185,14 +206,14 @@
         </div>
       </dl>
 
-      <a appScrollReveal class="home__self-cta" i18n="@@home.selfProfile" matButton="outlined" [routerLink]="self.athleteLink"
+      <a appScrollReveal class="home__self-cta" i18n="@@home.selfProfile" matButton="outlined" revealOnce [routerLink]="self.athleteLink"
         >Мой профиль</a
       >
     </section>
   }
 
   <section class="home__latest">
-    <div appScrollReveal class="home__latest-head">
+    <div appScrollReveal class="home__latest-head" revealOnce>
       <h2 class="home__latest-title" i18n="@@home.latestTitle">Последние забеги</h2>
 
       <a class="home__latest-all" i18n="@@home.allRaces" matButton="outlined" [routerLink]="racesLink">Все забеги</a>
@@ -211,15 +232,19 @@
 
     @switch (status()) {
       @case (statuses.ready) {
-        <ul appScrollReveal class="home__latest-list">
-          @for (race of latestRaces(); track race.slug) {
-            <li class="home__latest-item">
+        <!-- Cascade, not one block: revealing the whole <ul> at once made four cards appear as a
+        single slab. `--i` carries the index; the delay and its ceiling live in `_scroll-effects.scss`. -->
+        <ul class="home__latest-list">
+          @for (race of latestRaces(); track race.slug; let i = $index) {
+            <li appScrollReveal class="home__latest-item reveal_lift reveal_staggered" revealOnce [style.--i]="i">
               <app-race-card [race]="race" />
             </li>
           }
         </ul>
 
-        <a appScrollReveal class="home__all-cta" i18n="@@home.allRacesCta" matButton="filled" [routerLink]="racesLink">Все забеги</a>
+        <a appScrollReveal class="home__all-cta" i18n="@@home.allRacesCta" matButton="filled" revealOnce [routerLink]="racesLink"
+          >Все забеги</a
+        >
       }
       @case (statuses.error) {
         <app-offline-notice>
@@ -233,29 +258,33 @@
 
   @if (statsView(); as stats) {
     <section class="home__stats">
-      <div appScrollReveal class="home__stats-head">
+      <div appScrollReveal class="home__stats-head" revealOnce>
         <h2 class="home__stats-title" i18n="@@home.statsTitle">За всю историю</h2>
 
         <a class="home__stats-year" i18n="@@home.yearReviewLink" matButton="outlined" [routerLink]="yearLink">Итоги года</a>
       </div>
 
-      <dl appScrollReveal class="home__stats-grid">
+      <dl appScrollReveal class="home__stats-grid" revealOnce>
+        <!-- The three big tallies run up from zero on first sight. The binding stays the source of
+        truth — the directive borrows the text and hands back exactly what it found, so the
+        prerendered HTML and the no-JS view still carry the real number. Times are left alone:
+        a «лучшее время» spinning through 24:31 reads as a bug, not as an animation. -->
         <div class="home__stats-item">
           <dt class="home__stats-label" i18n="@@home.statsEvents">забегов проведено</dt>
 
-          <dd class="home__stats-value">{{ stats.events }}</dd>
+          <dd class="home__stats-value" [appCountUp]="stats.eventsCount" [appCountUpFormat]="numberFormat">{{ stats.events }}</dd>
         </div>
 
         <div class="home__stats-item">
           <dt class="home__stats-label" i18n="@@home.statsFinishes">всего финишей</dt>
 
-          <dd class="home__stats-value">{{ stats.finishes }}</dd>
+          <dd class="home__stats-value" [appCountUp]="stats.finishesCount" [appCountUpFormat]="numberFormat">{{ stats.finishes }}</dd>
         </div>
 
         <div class="home__stats-item">
           <dt class="home__stats-label" i18n="@@home.statsFinishers">уникальных финишёров</dt>
 
-          <dd class="home__stats-value">{{ stats.finishers }}</dd>
+          <dd class="home__stats-value" [appCountUp]="stats.finishersCount" [appCountUpFormat]="numberFormat">{{ stats.finishers }}</dd>
         </div>
 
         <div class="home__stats-item">

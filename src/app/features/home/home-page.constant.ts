@@ -18,3 +18,12 @@ export const STATS_AVERAGE_FORMAT = new Intl.NumberFormat('ru-RU', { minimumFrac
 
 /** Shown instead of '0:00' while a gender has no 5 km finishes yet. */
 export const NO_MEDIAN_TIME_PLACEHOLDER = '—';
+
+/**
+ * The scroll hint dies on the first scroll of the session, so the listener is one-shot and
+ * passive — it must never sit in the way of the very gesture it is asking for.
+ */
+export const SCROLL_HINT_LISTENER_OPTIONS: AddEventListenerOptions = {
+  once: true,
+  passive: true,
+};

@@ -1,8 +1,15 @@
-/** The overall statistics block prepared for the template — every value is a formatted string. */
+/**
+ * The overall statistics block prepared for the template. Every displayed value is a
+ * formatted string; the three raw counts ride along only so the count-up knows where it
+ * is heading — the string stays what actually renders.
+ */
 export interface HomeStatsView {
   events: string;
+  eventsCount: number;
   finishes: string;
+  finishesCount: number;
   finishers: string;
+  finishersCount: number;
   averageFinishes: string;
   medianTimeMen: string;
   medianTimeWomen: string;

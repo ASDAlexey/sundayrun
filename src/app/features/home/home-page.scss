@@ -156,6 +156,34 @@
     color: var(--text-muted);
   }
 
+  // Scroll affordance, phone only. On a tall phone the hero card can end flush with the fold
+  // with no visible seam, and inside an in-app browser there is no scrollbar to say otherwise.
+  // Desktop always shows a page edge, so the hint would be noise there.
+  &__scroll-hint {
+    display: none;
+    position: relative;
+    align-self: center;
+    width: 1px;
+    height: 44px;
+    background: linear-gradient(180deg, transparent, var(--border-hover) 35%, transparent);
+
+    &::after {
+      position: absolute;
+      top: 0;
+      left: -1px;
+      width: 3px;
+      height: 9px;
+      border-radius: var(--radius-xs);
+      background: var(--accent);
+      content: '';
+      animation: home-scroll-hint var(--time-breathe) var(--ease) infinite;
+    }
+
+    @media (width <= 860px) {
+      display: block;
+    }
+  }
+
   // The personal card («Выбери себя» in the header) — the visitor's own numbers over the shared ones.
   &__self {
     @include c.card;
@@ -673,5 +701,22 @@
     @include t.text('label', 'small');
 
     color: var(--text-muted);
+  }
+}
+
+// One of the two infinite loops the design language allows — a light falling down the hint line.
+@keyframes home-scroll-hint {
+  0% {
+    transform: translateY(-9px);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(44px);
+    opacity: 0;
   }
 }
