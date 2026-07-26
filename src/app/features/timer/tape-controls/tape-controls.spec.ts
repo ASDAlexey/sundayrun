@@ -4,6 +4,7 @@ import { TimerSession } from '../../../core/timer/timer-session.interface';
 import {
   KUZNETSOV_RUNNER_ID,
   POPOV_IGOR_RUNNER_ID,
+  SOKOLOVA_RUNNER_ID,
   TIMER_SESSION,
   TIMER_SESSION_IDLE,
   TIMER_SESSION_LAP_COMPLETE,
@@ -33,6 +34,8 @@ import {
   TAPE_NOBODY_LAP,
   TAPE_ONE_OPEN_REQUEST,
   TAPE_SECOND_SPLIT_ID_TAIL,
+  TAPE_SESSION_TWO_LAPS,
+  TAPE_TWO_LAP_ROW_NAMES,
 } from './tape-controls.mock';
 
 describe('TimerTape', () => {
@@ -200,6 +203,25 @@ describe('TimerTape', () => {
     fixture.componentRef.setInput('openRequest', TAPE_ONE_OPEN_REQUEST);
 
     expect(tape.mode(), 'with the whole field round, «Разобрать» lands on the finishes').toBe(TimerTapeMode.finish);
+  });
+
+  it('serves the surname a tap leaves alone, without asking for the tap', () => {
+    sessions.active.set(TAPE_SESSION_TWO_LAPS);
+    tape.onToggle(TimerTapeMode.lap);
+
+    expect(
+      tape.runners().map((runner) => runner.fullName),
+      'two surnames wait for a lap time',
+    ).toEqual(TAPE_TWO_LAP_ROW_NAMES);
+
+    tape.onAssign(KUZNETSOV_RUNNER_ID);
+
+    const served = applyLastChange(TAPE_SESSION_TWO_LAPS).splits.find((split) => split.runnerId === SOKOLOVA_RUNNER_ID);
+
+    expect(sessions.updateActive, 'one tap, two handouts — the row it left alone went by itself').toHaveBeenCalledTimes(2);
+    expect(served, 'and it went to the surname nobody else could have taken that time from').toBeDefined();
+    expect(haptics.play, 'both handouts buzz, so the finger knows the second one happened').toHaveBeenCalledTimes(2);
+    expect(tape.open(), 'the half is served out, so the sheet is done with').toBe(false);
   });
 
   it('opens the handout as a modal sheet and closes it on the backdrop, Escape and «Готово»', async () => {

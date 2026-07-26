@@ -166,16 +166,32 @@ export class TimerTape {
    * A tapped surname takes the earliest nameless time that can be his. Serving the last row closes
    * the sheet: that half has nothing left to ask about, and an empty list left on screen is read as
    * a handout that failed rather than as one that is finished.
+   *
+   * The row that a tap leaves alone is served with it. One surname against one queue is not a
+   * question — nobody else in this half can be given that time — and the tap that answers it is
+   * pure ceremony at the end of a handout done in the cold with wet gloves. Everything the organiser
+   * could still get wrong stays a choice: two rows are two taps, and a half of one is left on
+   * screen with its time until a tap sets the handout going.
    */
   onAssign(runnerId: string): void {
-    const wasLast = this.runners().length === TIMER_TAPE_LAST_TARGET;
+    const rest = this.runners().filter((runner) => runner.id !== runnerId);
+    const [alone] = rest;
 
-    this.#haptics.play(TimerFeedback.lap);
-    this.#sessions.updateActive((session) => assignNextUnnamed(session, runnerId));
+    this.#hand(runnerId);
 
-    if (wasLast) {
+    if (alone !== undefined && rest.length === TIMER_TAPE_LAST_TARGET) {
+      this.#hand(alone.id);
+    }
+
+    if (rest.length <= TIMER_TAPE_LAST_TARGET) {
       this.onClose();
     }
+  }
+
+  /** One handout: the buzz that says it landed, and the change the journal keeps. */
+  #hand(runnerId: string): void {
+    this.#haptics.play(TimerFeedback.lap);
+    this.#sessions.updateActive((session) => assignNextUnnamed(session, runnerId));
   }
 
   /** Where an outside «Разобрать» lands: the lap while anybody is still out on it, the finish after. */

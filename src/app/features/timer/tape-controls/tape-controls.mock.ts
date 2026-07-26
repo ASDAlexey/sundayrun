@@ -1,3 +1,18 @@
+import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { SOKOLOVA_RUNNER_ID, TIMER_SESSION, TIMER_SESSION_SPLITS } from '../../../core/timer/timer-session.mock';
+
+/**
+ * Соколова's own taps taken away, so the lap half holds two surnames instead of one: the handout
+ * that ends before its last row — the tap on Кузнецов leaves her alone, and alone is not a choice.
+ */
+export const TAPE_SESSION_TWO_LAPS: TimerSession = {
+  ...TIMER_SESSION,
+  splits: TIMER_SESSION_SPLITS.filter((split) => split.runnerId !== SOKOLOVA_RUNNER_ID),
+};
+
+/** Both surnames the lap half of {@link TAPE_SESSION_TWO_LAPS} offers, in roster order. */
+export const TAPE_TWO_LAP_ROW_NAMES = ['Соколова Анна', 'Кузнецов Пётр'];
+
 /** Whom the lap half of the fixture roster can hand a time to: the one man nobody has tapped. */
 export const TAPE_LAP_ROW_NAMES = ['Кузнецов Пётр'];
 
