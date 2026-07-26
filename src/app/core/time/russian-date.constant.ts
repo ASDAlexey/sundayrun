@@ -14,6 +14,22 @@ export const RUSSIAN_MONTHS_GENITIVE: readonly string[] = [
   'декабря',
 ];
 
+/** Russian month names in nominative case («апрель»), indexed by `month - 1`. */
+export const RUSSIAN_MONTHS_NOMINATIVE: readonly string[] = [
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь',
+];
+
 /** Russian month names in prepositional case («в мае»), indexed by `month - 1`. */
 export const RUSSIAN_MONTHS_PREPOSITIONAL: readonly string[] = [
   'январе',

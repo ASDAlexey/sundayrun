@@ -5,28 +5,55 @@ import {
   FEBRUARY,
   FEBRUARY_LEAP_LENGTH,
   FILE_NAME_DATE_PATTERN,
+  FILE_NAME_ISO_DATE_PATTERN,
   FILE_NAME_RUSSIAN_DATE_PATTERN,
   FIRST_DAY,
   FIRST_MONTH,
   LEAP_CENTURY_DIVISOR,
   LEAP_YEAR_DIVISOR,
   MONTH_LENGTHS,
+  RUSSIAN_MONTH_NAME_FORMS,
+  TWO_DIGIT_YEAR_BASE,
+  TWO_DIGIT_YEAR_LENGTH,
   YEAR_LENGTH,
 } from './file-name-date.constant';
-import { RUSSIAN_MONTHS_GENITIVE } from './russian-date.constant';
+import { FileNameDateMatch } from './file-name-date.interface';
 
 /**
  * Extracts the first date occurrence from a file name as an ISO date 'YYYY-MM-DD'.
- * Understands '14.06.2026.xlsx' and Russian '14 июня 2026.xlsx'; a yearless
+ * Understands ISO names ('2026-06-14.xlsx', '2026_06_14.xlsx'), day-first numbers with any
+ * separator ('14.06.2026', '1-6-2026', '14.06.26') and Russian month names in any case or
+ * abbreviation ('14 июня 2026.xlsx', '12 апр.xlsx', '12-апреля-2026.xlsx'); a yearless
  * '14 июня.xlsx' gets the year inferred against `todayIso` (see `inferYearlessDate`).
- * Returns null when there is no match or the date is not a valid calendar date
- * (validated by pure integer math, the caller supplies the clock via `todayIso`).
+ * The first format that matches decides — an impossible date fails outright instead of being
+ * re-read as another format. Returns null when there is no match or the date is not a valid
+ * calendar date (validated by pure integer math, the caller supplies the clock via `todayIso`).
  */
 export function parseDateFromFileName(name: string, todayIso: string): string | null {
-  return parseNumericDate(name) ?? parseRussianDate(name, todayIso);
+  const match = matchIsoDate(name) ?? matchNumericDate(name) ?? matchRussianDate(name);
+
+  if (match === null) {
+    return null;
+  }
+
+  const { day, month, year } = match;
+
+  return year === null ? inferYearlessDate(day, month, todayIso) : toValidIsoDate(day, month, year);
 }
 
-function parseNumericDate(name: string): string | null {
+function matchIsoDate(name: string): FileNameDateMatch | null {
+  const match = FILE_NAME_ISO_DATE_PATTERN.exec(name);
+
+  if (match === null) {
+    return null;
+  }
+
+  const [, year, month, day] = match;
+
+  return { day: Number(day), month: Number(month), year: Number(year) };
+}
+
+function matchNumericDate(name: string): FileNameDateMatch | null {
   const match = FILE_NAME_DATE_PATTERN.exec(name);
 
   if (match === null) {
@@ -35,24 +62,38 @@ function parseNumericDate(name: string): string | null {
 
   const [, day, month, year] = match;
 
-  return toValidIsoDate(Number(day), Number(month), Number(year));
+  return { day: Number(day), month: Number(month), year: fullYear(year) };
 }
 
-function parseRussianDate(name: string, todayIso: string): string | null {
-  const match = FILE_NAME_RUSSIAN_DATE_PATTERN.exec(name);
+/** A two-digit year is this century's: '14.06.26' is 2026, never 1926. */
+function fullYear(year: string): number {
+  return year.length === TWO_DIGIT_YEAR_LENGTH ? TWO_DIGIT_YEAR_BASE + Number(year) : Number(year);
+}
 
-  if (match === null) {
-    return null;
+/**
+ * The first 'number + Russian word' pair whose word really is a month; anything else
+ * ('2 круга', '5 км') is skipped, so a name carrying both a label and a date still resolves.
+ */
+function matchRussianDate(name: string): FileNameDateMatch | null {
+  for (const [, day, monthName, year] of name.matchAll(FILE_NAME_RUSSIAN_DATE_PATTERN)) {
+    const month = resolveMonth(monthName);
+
+    if (month !== null) {
+      return { day: Number(day), month, year: year === undefined ? null : Number(year) };
+    }
   }
 
-  const [, day, monthName, year] = match;
-  const month = RUSSIAN_MONTHS_GENITIVE.indexOf(monthName.toLowerCase()) + FIRST_MONTH;
+  return null;
+}
 
-  if (year !== undefined) {
-    return toValidIsoDate(Number(day), month, Number(year));
-  }
+/** The month whose spelling the word opens — 'апр', 'апреля' and 'апрель' all mean April; ambiguity means no month. */
+function resolveMonth(word: string): number | null {
+  const normalized = word.toLowerCase();
+  const months = RUSSIAN_MONTH_NAME_FORMS.flatMap((forms, index) =>
+    forms.some((form) => form.startsWith(normalized)) ? [index + FIRST_MONTH] : [],
+  );
 
-  return inferYearlessDate(Number(day), month, todayIso);
+  return months.length === 1 ? months[0] : null;
 }
 
 /**

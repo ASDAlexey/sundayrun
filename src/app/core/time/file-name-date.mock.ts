@@ -23,10 +23,31 @@ export const PARSE_DATE_FROM_FILE_NAME_CASES: readonly (readonly [string, string
   ['00.06.2026.xlsx', null],
   ['14.00.2026.xlsx', null],
   ['14.13.2026.xlsx', null],
+  // ISO names, dots and underscores included
+  ['2026-06-14.xlsx', '2026-06-14'],
+  ['2026_06_14 протокол.xlsx', '2026-06-14'],
+  ['2026.02.29.xlsx', null],
+  // single-digit parts, other separators and a two-digit year of this century
+  ['1.6.2026.xlsx', '2026-06-01'],
+  ['14-06-2026.xlsx', '2026-06-14'],
+  ['14_06_2026.xlsx', '2026-06-14'],
+  ['14.06.26.xlsx', '2026-06-14'],
   // Russian names with an explicit year
   ['14 июня 2026.xlsx', '2026-06-14'],
   ['Забег 5 января 2024 итог.xlsx', '2024-01-05'],
   ['29 февраля 2026.xlsx', null],
+  // abbreviations and other cases of the month name
+  ['12 апр.xlsx', '2026-04-12'],
+  ['12 апр 2025.xlsx', '2025-04-12'],
+  ['12-апреля-2026.xlsx', '2026-04-12'],
+  ['5 сент.xlsx', '2025-09-05'],
+  ['1 май.xlsx', '2026-05-01'],
+  ['3 август.xlsx', '2025-08-03'],
+  ['7 феврале.xlsx', '2026-02-07'],
+  // a number followed by a word that is no month is skipped, the real date wins
+  ['Протокол 2 круга 14 июня.xlsx', '2026-06-14'],
+  ['5 км.xlsx', null],
+  ['2 круга.xlsx', null],
   // yearless Russian names: past-or-today keeps the current year…
   ['1 марта.xlsx', '2026-03-01'],
   ['1 Марта.xlsx', '2026-03-01'],
@@ -39,7 +60,6 @@ export const PARSE_DATE_FROM_FILE_NAME_CASES: readonly (readonly [string, string
   ['32 марта.xlsx', null],
   // no date match at all
   ['results.xlsx', null],
-  ['1.6.2026.xlsx', null],
-  ['14-06-2026.xlsx', null],
+  ['протокол.xlsx', null],
   ['', null],
 ];
