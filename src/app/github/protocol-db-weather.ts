@@ -20,6 +20,7 @@ export function selectEventWeatherRows(db: ProtocolDrizzle): Promise<EventWeathe
       precipitationMm: eventWeather.precipitationMm,
       windKmh: eventWeather.windKmh,
       weatherCode: eventWeather.weatherCode,
+      recentPrecipitationMm: eventWeather.recentPrecipitationMm,
     })
     .from(eventWeather)
     .orderBy(asc(eventWeather.slug));
@@ -34,6 +35,7 @@ export async function selectEventWeather(db: ProtocolDrizzle, slug: string): Pro
       precipitationMm: eventWeather.precipitationMm,
       windKmh: eventWeather.windKmh,
       weatherCode: eventWeather.weatherCode,
+      recentPrecipitationMm: eventWeather.recentPrecipitationMm,
     })
     .from(eventWeather)
     .where(eq(eventWeather.slug, slug));

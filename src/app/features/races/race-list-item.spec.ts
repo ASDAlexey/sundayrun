@@ -9,8 +9,10 @@ import {
   EXPECTED_NEWER_WEATHER_TEXT,
   EXPECTED_NOTELESS_HERO,
   EXPECTED_RECORDLESS_HERO,
+  EXPECTED_WET_COURSE_WEATHER_TEXT,
   LEGACY_NUMBERED_ENTRY,
   NOTELESS_ENTRY,
+  WET_COURSE_ENTRY,
 } from './race-list-item.mock';
 
 describe('race-list-item', () => {
@@ -37,5 +39,11 @@ describe('race-list-item', () => {
 
     expect(legacyNumbered.numberTooltip, 'a legacy number grows the «new vs old» tooltip').toBe(EXPECTED_LEGACY_NUMBER_TOOLTIP);
     expect(legacyNumbered.weatherText, 'a stored reading becomes the card weather line').toBe(EXPECTED_NEWER_WEATHER_TEXT);
+
+    const [wetCourse] = toRaceListItems([WET_COURSE_ENTRY], EDGE_CASES_TODAY_ISO);
+
+    expect(wetCourse.weatherText, 'rain around the start notes the wet course under a clear 9:00 sky').toBe(
+      EXPECTED_WET_COURSE_WEATHER_TEXT,
+    );
   });
 });

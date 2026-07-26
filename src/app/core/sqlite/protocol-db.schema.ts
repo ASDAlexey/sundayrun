@@ -29,6 +29,7 @@ export const eventWeather = sqliteTable('event_weather', {
   precipitationMm: real('precipitation_mm'),
   windKmh: real('wind_kmh'),
   weatherCode: integer('weather_code'),
+  recentPrecipitationMm: real('recent_precipitation_mm'),
 });
 
 export const results = sqliteTable(

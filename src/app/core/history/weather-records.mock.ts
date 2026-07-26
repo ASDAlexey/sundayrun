@@ -10,6 +10,7 @@ const row = (slug: string, temperatureC: number | null, windKmh: number | null, 
   precipitationMm: 0,
   windKmh,
   weatherCode,
+  recentPrecipitationMm: 0,
 });
 
 /**

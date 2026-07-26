@@ -18,10 +18,13 @@ import { recomputeEventSummaryCounts } from './protocol-db-summary';
 import { athletes, eventWeather, events as eventsTable, meta, participations, results as resultsTable, runs } from './protocol-db.schema';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
+  PROTOCOL_DB_EVENT_WEATHER_COLUMNS_SQL,
   PROTOCOL_DB_META_SCHEMA_VERSION_KEY,
+  PROTOCOL_DB_RECENT_PRECIPITATION_COLUMN,
   PROTOCOL_DB_SCHEMA_STATEMENTS,
   PROTOCOL_DB_SCHEMA_VERSION,
   PROTOCOL_DB_V5_MIGRATION_STATEMENTS,
+  PROTOCOL_DB_V6_MIGRATION_STATEMENTS,
 } from './protocol-db-schema.constant';
 import { BEGIN_TRANSACTION_SQL, COMMIT_TRANSACTION_SQL, PROTOCOL_DB_PAGE_SIZE_PRAGMA, VACUUM_SQL } from './protocol-db-write.constant';
 import { ProtocolDbEventMeta, ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
@@ -143,10 +146,7 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     } else {
       deserializeDbInto(sqlite3, db, dbBytes);
 
-      // Downloaded bytes may predate the weather table; the statement is IF NOT EXISTS, so this is a no-op on v5 bytes.
-      for (const statement of PROTOCOL_DB_V5_MIGRATION_STATEMENTS) {
-        db.exec(statement);
-      }
+      migrateDb(db);
     }
 
     const ddb = oo1Drizzle(db);
@@ -177,6 +177,27 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     return sqlite3.capi.sqlite3_js_db_export(db);
   } finally {
     db.close();
+  }
+}
+
+/**
+ * Brings downloaded bytes up to the current schema before anything reads them. The v5 statement is
+ * IF NOT EXISTS and simply no-ops on newer bytes; the v6 `ALTER TABLE` cannot be, so it runs only
+ * while `event_weather` still lacks the column.
+ */
+function migrateDb(db: Database): void {
+  for (const statement of PROTOCOL_DB_V5_MIGRATION_STATEMENTS) {
+    db.exec(statement);
+  }
+
+  const columns = db.exec(PROTOCOL_DB_EVENT_WEATHER_COLUMNS_SQL, { rowMode: 'array', returnValue: 'resultRows' }).flat();
+
+  if (columns.includes(PROTOCOL_DB_RECENT_PRECIPITATION_COLUMN)) {
+    return;
+  }
+
+  for (const statement of PROTOCOL_DB_V6_MIGRATION_STATEMENTS) {
+    db.exec(statement);
   }
 }
 

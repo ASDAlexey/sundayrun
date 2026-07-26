@@ -7,7 +7,7 @@
  * over `runs`) and file paths (reconstructed from `slug`, see `github/event-paths.ts`).
  */
 
-export const PROTOCOL_DB_SCHEMA_VERSION = '5';
+export const PROTOCOL_DB_SCHEMA_VERSION = '6';
 
 export const PROTOCOL_DB_META_SCHEMA_VERSION_KEY = 'schemaVersion';
 
@@ -55,8 +55,9 @@ export const PROTOCOL_DB_V4_MIGRATION_STATEMENTS: readonly string[] = [
 
 /**
  * Mirrors `EventWeather` (see `core/weather`), keyed by the event slug: the 9:00 course readings
- * fetched at publish time. IF NOT EXISTS lets the same DDL double as the v4 → v5 migration, which
- * the write path applies to any pre-v5 bytes it deserializes.
+ * fetched at publish time, plus the rain of the wet-course window around them. IF NOT EXISTS lets
+ * the same DDL double as the v4 → v5 migration, which the write path applies to any pre-v5 bytes it
+ * deserializes.
  */
 export const PROTOCOL_DB_CREATE_EVENT_WEATHER_TABLE = `
 CREATE TABLE IF NOT EXISTS event_weather (
@@ -65,11 +66,28 @@ CREATE TABLE IF NOT EXISTS event_weather (
   apparent_c REAL,
   precipitation_mm REAL,
   wind_kmh REAL,
-  weather_code INTEGER
+  weather_code INTEGER,
+  recent_precipitation_mm REAL
 )`;
 
 /** v4 → v5: the per-event weather; applied to the local db by `scripts/backfill-weather.ts`. */
 export const PROTOCOL_DB_V5_MIGRATION_STATEMENTS: readonly string[] = [PROTOCOL_DB_CREATE_EVENT_WEATHER_TABLE];
+
+/** The v6 column, named apart so both migration paths can ask whether the table already has it. */
+export const PROTOCOL_DB_RECENT_PRECIPITATION_COLUMN = 'recent_precipitation_mm';
+
+/**
+ * v5 → v6: the wet-course window's rain. `ALTER TABLE` has no IF NOT EXISTS, so unlike the v5 DDL
+ * these statements are not self-guarding — both callers (the write path and
+ * `scripts/backfill-weather.ts`) run them only when `PROTOCOL_DB_RECENT_PRECIPITATION_COLUMN` is
+ * missing from `event_weather`.
+ */
+export const PROTOCOL_DB_V6_MIGRATION_STATEMENTS: readonly string[] = [
+  `ALTER TABLE event_weather ADD COLUMN ${PROTOCOL_DB_RECENT_PRECIPITATION_COLUMN} REAL`,
+];
+
+/** The `event_weather` columns of a freshly created (or fully migrated) db, in declaration order. */
+export const PROTOCOL_DB_EVENT_WEATHER_COLUMNS_SQL = `SELECT name FROM pragma_table_info('event_weather')`;
 
 /** Mirrors `ProtocolRow`; `idx` is the row's `index` (a reserved word in SQL). */
 export const PROTOCOL_DB_CREATE_RESULTS_TABLE = `

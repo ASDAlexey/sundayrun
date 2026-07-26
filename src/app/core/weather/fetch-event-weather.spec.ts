@@ -3,15 +3,18 @@ import { Mock } from 'vitest';
 import { fetchEventWeather, fetchEventsWeather, weatherRequestUrl } from './fetch-event-weather';
 import {
   ARCHIVE_DATE_ISO,
+  ARCHIVE_EVE_DATE_ISO,
   FRESH_DATE_ISO,
   OPEN_METEO_BARE_HOUR_BODY_MOCK,
   OPEN_METEO_BODY_MOCK,
   OPEN_METEO_MISSING_HOUR_BODY_MOCK,
   OPEN_METEO_RANGE_BODY_MOCK,
+  OPEN_METEO_WET_EVE_BODY_MOCK,
   SECOND_ARCHIVE_DATE_ISO,
   SECOND_WEATHER_MOCK,
   TODAY_ISO,
   WEATHER_MOCK,
+  WET_EVE_PRECIPITATION_MM,
 } from './fetch-event-weather.mock';
 import { WEATHER_ARCHIVE_API_URL, WEATHER_FORECAST_API_URL } from './weather-api.constant';
 import { WeatherFetchFn } from './weather-fetch.type';
@@ -25,8 +28,17 @@ describe('fetchEventWeather', () => {
 
     await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, fetchFn)).resolves.toEqual(WEATHER_MOCK);
     expect(fetchFn.mock.calls[0][0]).toContain(`${WEATHER_ARCHIVE_API_URL}?`);
-    expect(fetchFn.mock.calls[0][0]).toContain(`start_date=${ARCHIVE_DATE_ISO}`);
+    expect(fetchFn.mock.calls[0][0], 'the range opens on the eve, where the wet-course window does').toContain(
+      `start_date=${ARCHIVE_EVE_DATE_ISO}&end_date=${ARCHIVE_DATE_ISO}`,
+    );
     expect(weatherRequestUrl(FRESH_DATE_ISO, TODAY_ISO)).toContain(`${WEATHER_FORECAST_API_URL}?`);
+  });
+
+  it('sums the rain of the eve and the morning, so a dry start hour still reports a wet course', async () => {
+    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, jsonFetch(OPEN_METEO_WET_EVE_BODY_MOCK))).resolves.toEqual({
+      ...WEATHER_MOCK,
+      recentPrecipitationMm: WET_EVE_PRECIPITATION_MM,
+    });
   });
 
   it('degrades to null on a network failure, a non-ok status or a response without the start hour', async () => {
@@ -53,7 +65,7 @@ describe('fetchEventWeather', () => {
       WEATHER_MOCK,
     ]);
     expect(fetchFn).toHaveBeenCalledTimes(2);
-    expect(fetchFn.mock.calls[0][0]).toContain(`start_date=${ARCHIVE_DATE_ISO}&end_date=${SECOND_ARCHIVE_DATE_ISO}`);
+    expect(fetchFn.mock.calls[0][0]).toContain(`start_date=${ARCHIVE_EVE_DATE_ISO}&end_date=${SECOND_ARCHIVE_DATE_ISO}`);
     expect(fetchFn.mock.calls[1][0]).toContain(`${WEATHER_FORECAST_API_URL}?`);
   });
 

@@ -20,7 +20,7 @@ export const NEWER_ENTRY: ArchiveIndexEntry = {
   bestFemaleMs: 1238000,
   newcomerCount: 3,
   personalRecordCount: 2,
-  weather: { temperatureC: 24.6, apparentC: 25.1, precipitationMm: 0, windKmh: 9.4, weatherCode: 1 },
+  weather: { temperatureC: 24.6, apparentC: 25.1, precipitationMm: 0, windKmh: 9.4, weatherCode: 1, recentPrecipitationMm: 0 },
   files: {
     sourceXlsx: 'data/events/2026-07-05/source.xlsx',
     resultsJson: 'data/events/2026-07-05/results.json',

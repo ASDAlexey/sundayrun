@@ -54,6 +54,7 @@ interface WeatherRow {
   precipitation_mm: number | null;
   wind_kmh: number | null;
   weather_code: number | null;
+  recent_precipitation_mm: number | null;
 }
 
 const source = new Database(DB_PATH, { readonly: true });
@@ -77,7 +78,7 @@ if (!resultRows.some((row) => row.full_name === WRONG_NAME)) {
 
 const weatherRow = source
   .query<WeatherRow, [string]>(
-    'SELECT temperature_c, apparent_c, precipitation_mm, wind_kmh, weather_code FROM event_weather WHERE slug = ?1',
+    'SELECT temperature_c, apparent_c, precipitation_mm, wind_kmh, weather_code, recent_precipitation_mm FROM event_weather WHERE slug = ?1',
   )
   .get(SLUG);
 
@@ -102,6 +103,7 @@ const weather: EventWeather | null =
         precipitationMm: weatherRow.precipitation_mm,
         windKmh: weatherRow.wind_kmh,
         weatherCode: weatherRow.weather_code,
+        recentPrecipitationMm: weatherRow.recent_precipitation_mm,
       };
 
 const rows: ProtocolRow[] = resultRows.map((row) => ({
@@ -163,7 +165,7 @@ const summary = fixed
 const stats = fixed.query<{ value: string }, [string]>('SELECT value FROM meta WHERE key = ?1').get('overallStats');
 const weatherBack = fixed
   .query<WeatherRow, [string]>(
-    'SELECT temperature_c, apparent_c, precipitation_mm, wind_kmh, weather_code FROM event_weather WHERE slug = ?1',
+    'SELECT temperature_c, apparent_c, precipitation_mm, wind_kmh, weather_code, recent_precipitation_mm FROM event_weather WHERE slug = ?1',
   )
   .get(SLUG);
 

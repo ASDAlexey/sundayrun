@@ -1,8 +1,11 @@
 import { EventWeather } from './event-weather.interface';
-import { RACE_START_HOUR } from './weather-api.constant';
+import { RACE_START_HOUR, WET_WINDOW_START_HOUR } from './weather-api.constant';
 
 /** An archive-aged event date and a today far enough past it to route to the archive endpoint. */
 export const ARCHIVE_DATE_ISO = '2019-07-28';
+
+/** The eve the wet-course window opens on — where every request for `ARCHIVE_DATE_ISO` now starts. */
+export const ARCHIVE_EVE_DATE_ISO = '2019-07-27';
 
 export const TODAY_ISO = '2026-07-13';
 
@@ -15,6 +18,7 @@ export const WEATHER_MOCK: EventWeather = {
   precipitationMm: 0,
   windKmh: 10.1,
   weatherCode: 0,
+  recentPrecipitationMm: 0,
 };
 
 /** An Open-Meteo hourly body carrying `WEATHER_MOCK` at 9:00, padded with a neighbour hour. */
@@ -38,6 +42,7 @@ export const SECOND_WEATHER_MOCK: EventWeather = {
   precipitationMm: 1.2,
   windKmh: 14.6,
   weatherCode: 61,
+  recentPrecipitationMm: 1.2,
 };
 
 /** One range body covering both archive dates at 9:00, as the batched request receives it. */
@@ -49,6 +54,21 @@ export const OPEN_METEO_RANGE_BODY_MOCK = {
     precipitation: [WEATHER_MOCK.precipitationMm, SECOND_WEATHER_MOCK.precipitationMm],
     wind_speed_10m: [WEATHER_MOCK.windKmh, SECOND_WEATHER_MOCK.windKmh],
     weather_code: [WEATHER_MOCK.weatherCode, SECOND_WEATHER_MOCK.weatherCode],
+  },
+};
+
+/** Millimetres the eve's shower left on the course — enough to make it wet at a dry 9:00. */
+export const WET_EVE_PRECIPITATION_MM = 3.4;
+
+/** An evening downpour that had stopped by the start: 9:00 is clear, the asphalt is not. */
+export const OPEN_METEO_WET_EVE_BODY_MOCK = {
+  hourly: {
+    time: [`${ARCHIVE_EVE_DATE_ISO}T${WET_WINDOW_START_HOUR}`, `${ARCHIVE_DATE_ISO}T${RACE_START_HOUR}`],
+    temperature_2m: [21.2, WEATHER_MOCK.temperatureC],
+    apparent_temperature: [20.4, WEATHER_MOCK.apparentC],
+    precipitation: [WET_EVE_PRECIPITATION_MM, WEATHER_MOCK.precipitationMm],
+    wind_speed_10m: [12.7, WEATHER_MOCK.windKmh],
+    weather_code: [61, WEATHER_MOCK.weatherCode],
   },
 };
 

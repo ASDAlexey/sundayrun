@@ -31,6 +31,7 @@ export const TEMPERATURELESS_WEATHER_MOCK: EventWeather = {
   precipitationMm: 0,
   windKmh: 5,
   weatherCode: 2,
+  recentPrecipitationMm: 0,
 };
 
 /** A reading with a temperature but no wind — the header line drops the «ветер …» part. */
@@ -40,6 +41,7 @@ export const WINDLESS_WEATHER_MOCK: EventWeather = {
   precipitationMm: 0,
   windKmh: null,
   weatherCode: 3,
+  recentPrecipitationMm: 0,
 };
 
 /** `weatherLineText(WINDLESS_WEATHER_MOCK)` — the temperature with its sky icon, no wind clause. */

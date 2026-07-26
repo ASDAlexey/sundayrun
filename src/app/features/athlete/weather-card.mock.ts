@@ -46,7 +46,15 @@ export const EXPECTED_WEATHER_BEST_VIEWS: WeatherBestView[] = [
 
 /** A rainy event that stored no temperature: the run qualifies by the code, the chip stays out. */
 export const BARE_RAIN_ROWS: EventWeatherRow[] = [
-  { slug: '2024-06-02', temperatureC: null, apparentC: null, precipitationMm: 1.2, windKmh: null, weatherCode: 61 },
+  {
+    slug: '2024-06-02',
+    temperatureC: null,
+    apparentC: null,
+    precipitationMm: 1.2,
+    windKmh: null,
+    weatherCode: 61,
+    recentPrecipitationMm: 4.1,
+  },
 ];
 
 export const BARE_RAIN_RUNS: AthleteRun[] = [

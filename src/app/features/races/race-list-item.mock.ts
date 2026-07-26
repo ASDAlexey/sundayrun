@@ -35,6 +35,22 @@ export const EXPECTED_LEGACY_NUMBER_TOOLTIP = 'Новая нумерация —
 /** NEWER_ENTRY's stored reading on the card: the mostly-clear icon, +25° rounded and the 9 km/h wind. */
 export const EXPECTED_NEWER_WEATHER_TEXT = '🌤️ +25°, ветер 9 км/ч';
 
+/** The same clear start hour after a night of rain: the window's millimetres, not the sky, add the note. */
+export const WET_COURSE_ENTRY: ArchiveIndexEntry = {
+  ...NEWER_ENTRY,
+  weather: {
+    ...NEWER_ENTRY.weather,
+    temperatureC: 24.6,
+    apparentC: 25.1,
+    precipitationMm: 0,
+    windKmh: 9.4,
+    weatherCode: 1,
+    recentPrecipitationMm: 6.2,
+  },
+};
+
+export const EXPECTED_WET_COURSE_WEATHER_TEXT = `${EXPECTED_NEWER_WEATHER_TEXT}, трасса мокрая`;
+
 /** NOTELESS_ENTRY a week after NEWER_ENTRY, newest first: two finishers against the window's 18 — a decline. */
 export const DECLINE_ENTRIES: ArchiveIndexEntry[] = [{ ...NOTELESS_ENTRY, slug: '2026-07-12', dateIso: '2026-07-12' }, NEWER_ENTRY];
 

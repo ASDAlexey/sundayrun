@@ -89,15 +89,29 @@ const META_SEED = `INSERT INTO meta VALUES ('${PROTOCOL_DB_META_SCHEMA_VERSION_K
 
 const weatherInsert = (slug: string, weather: EventWeather): string =>
   `INSERT INTO event_weather VALUES (${q(slug)}, ${num(weather.temperatureC)}, ${num(weather.apparentC)}, ` +
-  `${num(weather.precipitationMm)}, ${num(weather.windKmh)}, ${num(weather.weatherCode)})`;
+  `${num(weather.precipitationMm)}, ${num(weather.windKmh)}, ${num(weather.weatherCode)}, ${num(weather.recentPrecipitationMm)})`;
 
 /** A stale weather row for the re-published slug, so the publication exercises the upsert's UPDATE path. */
-const STALE_WEATHER: EventWeather = { temperatureC: -10, apparentC: -15, precipitationMm: 5, windKmh: 40, weatherCode: 75 };
+const STALE_WEATHER: EventWeather = {
+  temperatureC: -10,
+  apparentC: -15,
+  precipitationMm: 5,
+  windKmh: 40,
+  weatherCode: 75,
+  recentPrecipitationMm: 12,
+};
 
 /** The seeded weather of an untouched event; a publication must leave it exactly as stored. */
 export const PRESERVED_WEATHER_SLUG = STALE_INDEX.events[0].slug;
 
-export const PRESERVED_WEATHER: EventWeather = { temperatureC: 3.5, apparentC: 1.2, precipitationMm: 0.4, windKmh: 18, weatherCode: 61 };
+export const PRESERVED_WEATHER: EventWeather = {
+  temperatureC: 3.5,
+  apparentC: 1.2,
+  precipitationMm: 0.4,
+  windKmh: 18,
+  weatherCode: 61,
+  recentPrecipitationMm: 2.6,
+};
 
 /**
  * The seed SQL for the previous `sundayrun.db`: the three unsorted `STALE_INDEX` events (each with the
@@ -111,6 +125,37 @@ export const EXISTING_DB_SEED: readonly string[] = [
   weatherInsert(PRESERVED_WEATHER_SLUG, PRESERVED_WEATHER),
   META_SEED,
 ];
+
+/** `event_weather` as v5 declared it — without the wet-course column the v6 migration adds. */
+const PRE_V6_EVENT_WEATHER_TABLE = `
+CREATE TABLE event_weather (
+  slug TEXT PRIMARY KEY,
+  temperature_c REAL,
+  apparent_c REAL,
+  precipitation_mm REAL,
+  wind_kmh REAL,
+  weather_code INTEGER
+)`;
+
+const preV6WeatherInsert = (slug: string, weather: EventWeather): string =>
+  `INSERT INTO event_weather VALUES (${q(slug)}, ${num(weather.temperatureC)}, ${num(weather.apparentC)}, ` +
+  `${num(weather.precipitationMm)}, ${num(weather.windKmh)}, ${num(weather.weatherCode)})`;
+
+/**
+ * The same previous db as `EXISTING_DB_SEED`, published before v6: the weather table is rebuilt in
+ * its narrower shape, so applying to these bytes has to migrate them before anything reads.
+ */
+export const PRE_V6_DB_SEED: readonly string[] = [
+  ...STALE_INDEX.events.map((entry) => eventInsert(entry, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN)),
+  ...athleteInserts(EXISTING_HISTORY),
+  'DROP TABLE event_weather',
+  PRE_V6_EVENT_WEATHER_TABLE,
+  preV6WeatherInsert(PRESERVED_WEATHER_SLUG, PRESERVED_WEATHER),
+  META_SEED,
+];
+
+/** What the migrated row reads back as: every v5 reading intact, the added column empty. */
+export const EXPECTED_MIGRATED_WEATHER: EventWeather = { ...PRESERVED_WEATHER, recentPrecipitationMm: null };
 
 /**
  * The archive `readIndexFile` reads back after the publication: newest first, the stale slug

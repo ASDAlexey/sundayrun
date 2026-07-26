@@ -19,8 +19,10 @@ import {
   EXISTING_DB_SEED,
   EXPECTED_APPLIED_EVENTS,
   EXPECTED_DNF_ONLY_HISTORY,
+  EXPECTED_MIGRATED_WEATHER,
   EXPECTED_PRE_BASELINE_EVENTS,
   EXPECTED_STORED_ROWS,
+  PRE_V6_DB_SEED,
   PRESERVED_WEATHER,
   PRESERVED_WEATHER_SLUG,
   PRE_BASELINE_DB_SEED,
@@ -81,6 +83,23 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(selectEventWeather(db, RACE_EVENT.dateIso), 'the stale weather row is overwritten').resolves.toEqual(WEATHER_MOCK);
       await expect(selectEventWeather(db, PRESERVED_WEATHER_SLUG), 'other events keep their stored weather').resolves.toEqual(
         PRESERVED_WEATHER,
+      );
+    },
+    ROUNDTRIP_TIMEOUT_MS,
+  );
+
+  it(
+    'migrates bytes published before the wet-course column, keeping the readings they already stored',
+    async () => {
+      const preV6Bytes = await exportMemoryProtocolDbBytes(PRE_V6_DB_SEED);
+
+      const db = await reopen(await applyEventToDb(preV6Bytes, DB_UPDATE_MOCK));
+
+      await expect(selectEventWeather(db, PRESERVED_WEATHER_SLUG), 'the older row survives with an empty new column').resolves.toEqual(
+        EXPECTED_MIGRATED_WEATHER,
+      );
+      await expect(selectEventWeather(db, RACE_EVENT.dateIso), 'the published event stores the full reading').resolves.toEqual(
+        WEATHER_MOCK,
       );
     },
     ROUNDTRIP_TIMEOUT_MS,

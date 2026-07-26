@@ -1,5 +1,7 @@
+import { ISO_DATE_LENGTH } from '../history/notables.constant';
 import { EventWeather } from './event-weather.interface';
 import {
+  MM_ROUNDING_FACTOR,
   MS_PER_DAY,
   RACE_START_HOUR,
   WEATHER_ARCHIVE_API_URL,
@@ -9,6 +11,9 @@ import {
   WEATHER_LATITUDE,
   WEATHER_LONGITUDE,
   WEATHER_TIMEZONE,
+  WET_WINDOW_END_HOUR,
+  WET_WINDOW_LEAD_DAYS,
+  WET_WINDOW_START_HOUR,
 } from './weather-api.constant';
 import { WeatherFetchFn } from './weather-fetch.type';
 
@@ -66,9 +71,14 @@ export async function fetchEventsWeather(dateIsos: string[], todayIso: string, f
   return dateIsos.map((dateIso) => weatherByDate.get(dateIso) ?? null);
 }
 
-/** One-day hourly request for the event date, against the endpoint that actually has the date. */
+/** The hourly request for one event date — the eve included — against the endpoint that has the date. */
 export function weatherRequestUrl(dateIso: string, todayIso: string): string {
-  return hourlyRangeUrl(endpointForDate(dateIso, todayIso), dateIso, dateIso);
+  return hourlyRangeUrl(endpointForDate(dateIso, todayIso), eveOf(dateIso), dateIso);
+}
+
+/** The day before an ISO date, in the same 'YYYY-MM-DD' shape; the wet-course window starts there. */
+function eveOf(dateIso: string): string {
+  return new Date(Date.parse(dateIso) - WET_WINDOW_LEAD_DAYS * MS_PER_DAY).toISOString().slice(0, ISO_DATE_LENGTH);
 }
 
 /** Dates split by the endpoint that serves them, each group keeping the order it arrived in. */
@@ -101,7 +111,8 @@ async function fetchHourly(baseUrl: string, dates: string[], fetchFn: WeatherFet
   const sorted = [...dates].sort();
 
   try {
-    const response = await fetchFn(hourlyRangeUrl(baseUrl, sorted[0], sorted[sorted.length - 1]));
+    // The range opens on the eve of the earliest date: the wet-course window starts the evening before.
+    const response = await fetchFn(hourlyRangeUrl(baseUrl, eveOf(sorted[0]), sorted[sorted.length - 1]));
 
     if (!response.ok) {
       return undefined;
@@ -130,6 +141,9 @@ function hourlyRangeUrl(baseUrl: string, startDateIso: string, endDateIso: strin
 
 /** The race-start-hour readings; a response without that hour (or without a temperature) is no weather at all. */
 function extractStartHour(hourly: OpenMeteoHourly | undefined, dateIso: string): EventWeather | null {
+  // Read off the whole response, not the start hour: the wet-course window spans hours around it,
+  // and a response that misses 9:00 can still be missing the window entirely.
+  const recentPrecipitationMm = sumWetWindow(hourly, dateIso);
   const index = hourly?.time?.indexOf(`${dateIso}T${RACE_START_HOUR}`) ?? -1;
 
   if (index === -1) {
@@ -142,7 +156,34 @@ function extractStartHour(hourly: OpenMeteoHourly | undefined, dateIso: string):
     precipitationMm: hourly?.precipitation?.[index] ?? null,
     windKmh: hourly?.wind_speed_10m?.[index] ?? null,
     weatherCode: hourly?.weather_code?.[index] ?? null,
+    recentPrecipitationMm,
   };
 
   return weather.temperatureC === null ? null : weather;
+}
+
+/**
+ * The rain that decides whether the course was still wet: every hourly reading from the eve's 18:00
+ * through the race day's 10:00, summed. Local ISO timestamps sort as text, so the window is a plain
+ * string range over `time`. Null when the response covers none of those hours — an absent window is
+ * not a dry one.
+ */
+function sumWetWindow(hourly: OpenMeteoHourly | undefined, dateIso: string): number | null {
+  const from = `${eveOf(dateIso)}T${WET_WINDOW_START_HOUR}`;
+  const to = `${dateIso}T${WET_WINDOW_END_HOUR}`;
+  const times = hourly?.time ?? [];
+  let total: number | null = null;
+
+  for (const [index, time] of times.entries()) {
+    if (time >= from && time <= to) {
+      total = (total ?? 0) + (hourly?.precipitation?.[index] ?? 0);
+    }
+  }
+
+  return total === null ? null : roundMillimetres(total);
+}
+
+/** Float addition of tenths drifts (0.1 + 0.2); the stored sum keeps the source's one decimal. */
+function roundMillimetres(millimetres: number): number {
+  return Math.round(millimetres * MM_ROUNDING_FACTOR) / MM_ROUNDING_FACTOR;
 }

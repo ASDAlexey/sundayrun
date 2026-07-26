@@ -21,4 +21,5 @@ export type ArchiveEntryRow = {
   precipitationMm: number | null;
   windKmh: number | null;
   weatherCode: number | null;
+  recentPrecipitationMm: number | null;
 };
