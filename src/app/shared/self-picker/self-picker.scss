@@ -35,6 +35,8 @@
   &__me {
     display: flex;
     align-items: center;
+    min-width: 0;
+    max-width: 100%;
     border: 1px solid var(--accent-line);
     border-radius: 999px;
     background: var(--accent-glow);
@@ -45,6 +47,7 @@
 
     display: inline-flex;
     align-items: center;
+    min-width: 0;
     padding: 7px 4px 7px 14px;
     gap: 8px;
     border-radius: 999px 0 0 999px;
@@ -66,6 +69,16 @@
     &:hover {
       color: var(--accent);
     }
+  }
+
+  // A double surname is longer than a phone header has to give: the chip cuts the name rather
+  // than pushing the wordmark off its own line. The dot before it never shrinks, so the cut is
+  // always in the name, never in the marker that says «это ты».
+  &__me-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   // «Мои замеры» — the middle segment of the chip, so the stopwatch list sits where the visitor

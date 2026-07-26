@@ -228,6 +228,18 @@
       padding-left: 12px;
     }
 
+    // The version cannot ride the wordmark's shoulder any more: to the right of it now sits the
+    // pick chip, and a lockup one pixel too wide slid its version under that chip. It wraps under
+    // the name instead — still on screen, which is the only reason to print a version at all.
+    &__name-row {
+      row-gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    &__name {
+      min-width: 0;
+    }
+
     // With the chip on its line the wordmark wraps three ways, and the location line on top of
     // that pushed the header past a third of the screen. It is also the one part of the lockup
     // the page below repeats anyway — every protocol is headed by the park and the town.
@@ -241,8 +253,12 @@
     // the brand line and the sections get a rail of their own, full width, that the finger pushes
     // along; nothing is hidden behind a burger, and the order of the sections is still the order
     // of the site.
+    // The chip carries a name of unknown length, so on a phone it gives way before the brand
+    // does; what it cannot fit it cuts with an ellipsis (see `self-picker`).
     &__self {
+      flex: 0 1 auto;
       order: 1;
+      min-width: 0;
     }
 
     &__nav {

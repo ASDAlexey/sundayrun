@@ -3,7 +3,7 @@
     <span class="self-picker__me">
       @if (selfLink(); as link) {
         <a aria-label="Моя страница атлета" class="self-picker__me-link" i18n-aria-label="@@selfPicker.myPageLabel" [routerLink]="link">
-          {{ picked.displayName }}
+          <span class="self-picker__me-name">{{ picked.displayName }}</span>
         </a>
       }
 
