@@ -1,4 +1,4 @@
-import { Directive, ElementRef, afterNextRender, inject } from '@angular/core';
+import { Directive, ElementRef, afterNextRender, booleanAttribute, inject, input } from '@angular/core';
 
 import { REVEAL_OBSERVER_OPTIONS } from './scroll-reveal.constant';
 
@@ -18,6 +18,13 @@ import { REVEAL_OBSERVER_OPTIONS } from './scroll-reveal.constant';
 export class ScrollReveal {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
 
+  /**
+   * Reveal once and stay revealed. Reversing is right for a decorative accent, but wrong
+   * for content: an inertial flick back up on a phone blinks whole paragraphs out and in
+   * again. Content sections opt into this and the observer disconnects after the entrance.
+   */
+  readonly revealOnce = input(false, { transform: booleanAttribute });
+
   constructor() {
     afterNextRender(() => this.#observe());
   }
@@ -33,7 +40,17 @@ export class ScrollReveal {
     }
 
     const observer = new IntersectionObserver((entries) => {
-      el.classList.toggle('is-visible', entries[0].isIntersecting);
+      if (!entries[0].isIntersecting) {
+        el.classList.remove('is-visible');
+
+        return;
+      }
+
+      el.classList.add('is-visible');
+
+      if (this.revealOnce()) {
+        observer.disconnect();
+      }
     }, REVEAL_OBSERVER_OPTIONS);
 
     observer.observe(el);

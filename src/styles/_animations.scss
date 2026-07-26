@@ -10,13 +10,18 @@
   transform: translateY(30px);
   opacity: 0;
   transition:
-    opacity 0.8s var(--ease),
-    transform 0.8s var(--ease);
+    opacity var(--time-reveal) var(--ease),
+    transform var(--time-reveal) var(--ease);
+
+  // Only while the block is still hidden. Left on permanently this promotes every
+  // revealed element to its own compositor layer — dozens of them on the long home
+  // page, which is exactly what makes an in-app browser drop frames.
   will-change: opacity, transform;
 
   &.is-visible {
     transform: none;
     opacity: 1;
+    will-change: auto;
   }
 }
 
