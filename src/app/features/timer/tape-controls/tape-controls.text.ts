@@ -9,9 +9,11 @@ export function tapeKeysHintText(canCut: boolean): string | null {
   return canCut ? null : $localize`:@@timer.tapeHintIdle:Нажмите «Старт» — до старта отсечки не пишутся`;
 }
 
-/** «Выбросить время?» spells out which time — a queue of four looks the same from a metre away. */
-export function tapeDiscardNoteText(timeText: string): string {
-  return $localize`:@@timer.tapeDiscardNote:Отсечка ${timeText}:time: так и осталась без имени. Вернуть её будет нельзя — время придётся засекать заново.`;
+/** What the open sheet is about, said in its own heading — the keys behind it are covered up. */
+export function tapeHeadingText(mode: TimerTapeModeType): string {
+  return mode === TimerTapeMode.lap
+    ? $localize`:@@timer.tapeHeadingLap:Разобрать круг`
+    : $localize`:@@timer.tapeHeadingFinish:Разобрать финиш`;
 }
 
 /**

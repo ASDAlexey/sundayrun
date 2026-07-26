@@ -125,3 +125,26 @@ export const TIMER_SESSION_FINISHED: TimerSession = {
 
 /** A session with a roster but an empty journal, for the "nothing recorded yet" branches. */
 export const TIMER_SESSION_WITHOUT_SPLITS: TimerSession = { ...TIMER_SESSION, splits: [] };
+
+/** Nothing but the queue: the whole active field is still waiting for its very first tap. */
+export const TIMER_SESSION_ONLY_QUEUE: TimerSession = {
+  ...TIMER_SESSION,
+  splits: TIMER_SESSION_SPLITS.filter((split) => split.runnerId === null),
+};
+
+export const KUZNETSOV_LAP_SPLIT_ID = 'split-12';
+export const KUZNETSOV_LAP_MS = 780_000;
+
+/** Everybody is round, so a nameless time can only ever be somebody's finish now. */
+export const TIMER_SESSION_LAP_COMPLETE: TimerSession = {
+  ...TIMER_SESSION,
+  splits: [...TIMER_SESSION_SPLITS, buildSplit(KUZNETSOV_LAP_SPLIT_ID, KUZNETSOV_LAP_MS, KUZNETSOV_RUNNER_ID)],
+};
+
+/** Both nameless times fell before every lap of the race — nobody owed a finish can be given one. */
+export const STALE_UNNAMED_SPLIT_MS = 100_000;
+
+export const TIMER_SESSION_STALE_QUEUE: TimerSession = {
+  ...TIMER_SESSION,
+  splits: TIMER_SESSION_SPLITS.map((split) => (split.runnerId === null ? { ...split, atMs: STALE_UNNAMED_SPLIT_MS } : split)),
+};

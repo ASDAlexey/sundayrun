@@ -25,9 +25,13 @@ export const EXPECTED_TROILIN_SPLIT_IDS: string[] = [TROILIN_LAP_SPLIT_ID, TROIL
 export const EXPECTED_TROILIN_SPLIT_TIMES_MS: number[] = [TROILIN_LAP_MS, TROILIN_FINISH_MS];
 export const EXPECTED_UNASSIGNED_SPLIT_IDS: string[] = [FIRST_UNNAMED_SPLIT_ID, SECOND_UNNAMED_SPLIT_ID];
 
-/** Six runners are through the lap (the DNF ran it too), three of them are through the finish. */
-export const EXPECTED_LAP_DONE_COUNT = 6;
-export const EXPECTED_FINISH_DONE_COUNT = 3;
+/**
+ * Six runners are through the lap by name (the DNF ran it too) and three of them are through the
+ * finish — plus the two nameless times, which belong to somebody as well: one covers the lap of the
+ * man nobody has tapped, the other the finish still owed.
+ */
+export const EXPECTED_LAP_DONE_COUNT = 7;
+export const EXPECTED_FINISH_DONE_COUNT = 4;
 
 export const EXPECTED_STAGES: Record<string, TimerRunnerStageType> = {
   [TROILIN_RUNNER_ID]: TimerRunnerStage.finished,

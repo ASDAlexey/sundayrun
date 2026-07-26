@@ -6,8 +6,8 @@ import { TimerHeaderView } from './timer-page.interface';
 /** The header of the running fixture: six through the lap, three home, seven on the roster. */
 export const TIMER_HEADER_RUNNING: TimerHeaderView = {
   dateText: 'вс · 26 июл 2026',
-  finishCount: 3,
-  lapCount: 6,
+  finishCount: 4,
+  lapCount: 7,
   runnerCount: 7,
   undoArmed: true,
 };

@@ -1,6 +1,6 @@
 import { GenderType } from '../models/gender.enum';
 import { CreateSessionInput, NewTimerRunner } from './session-actions.interface';
-import { runnerSplits, unassignedSplits } from './session-splits';
+import { nextSplitForRunner, runnerSplits } from './session-splits';
 import { EMPTY_ROSTER, INITIAL_PUBLISH_STATUS, MAX_SPLITS_PER_RUNNER, WITHOUT_LAST_ENTRY } from './timer-session.constant';
 import { TimerRole, TimerRunnerOutcome, TimerRunnerOutcomeType, TimerStatus } from './timer-session.enum';
 import { TimerPublishStatus, TimerRunner, TimerSession, TimerSplit } from './timer-session.interface';
@@ -114,20 +114,13 @@ export function recordUnnamedSplit(session: TimerSession, atMs: number, splitId:
   return { ...session, splits: [...session.splits, { id: splitId, atMs, runnerId: null }] };
 }
 
-/** Gives a queued unnamed time to a runner; a time that already has an owner needs `reassignSplit`. */
-export function assignSplit(session: TimerSession, splitId: string, runnerId: string): TimerSession {
-  const split = findSplit(session, splitId);
-
-  if (split === undefined) {
-    return session;
-  }
-
-  return split.runnerId === null ? withSplitOwner(session, split, runnerId) : session;
-}
-
-/** «Раздача очереди по порядку»: the earliest unnamed time goes to the runner just tapped. */
+/**
+ * «Раздача очереди по порядку»: the earliest unnamed time that can be this runner's goes to him.
+ * «That can be his» is what keeps the handout honest — the queue holds laps and finishes together,
+ * and the earliest time of all is somebody else's lap once the man being tapped already has one.
+ */
 export function assignNextUnnamed(session: TimerSession, runnerId: string): TimerSession {
-  const [next] = unassignedSplits(session);
+  const next = nextSplitForRunner(session, runnerId);
 
   return next === undefined ? session : withSplitOwner(session, next, runnerId);
 }

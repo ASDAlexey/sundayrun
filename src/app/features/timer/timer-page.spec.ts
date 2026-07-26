@@ -352,18 +352,15 @@ describe('TimerPage', () => {
     click('.timer-tape__modes .timer-tape__toggle:nth-child(2)');
     await fixture.whenStable();
 
-    expect(element().querySelector('.timer-tape__panel')).not.toBeNull();
+    expect(element().querySelector('.timer-tape__sheet')).not.toBeNull();
     expect(element().querySelector('app-timer-grid'), 'a queue is handed out by tapping surnames, so the tiles come back').not.toBeNull();
     expect(textOf('.timer-tape__runner-name')).toEqual([GRID_PLAIN_RUNNERS[0].fullName]);
 
     click('.timer-tape__runner');
-
-    expect(applyLastChange(TIMER_PAGE_QUEUE).splits.find((split) => split.id === PAGE_UNNAMED_SPLIT_ID)?.runnerId).toBe(PLAIN_LEADER_ID);
-
-    click('.timer-tape__modes .timer-tape__toggle:nth-child(2)');
     await fixture.whenStable();
 
-    expect(element().querySelector('.timer-tape__panel'), 'and the panel gives the grid its row back').toBeNull();
+    expect(applyLastChange(TIMER_PAGE_QUEUE).splits.find((split) => split.id === PAGE_UNNAMED_SPLIT_ID)?.runnerId).toBe(PLAIN_LEADER_ID);
+    expect(element().querySelector('.timer-tape__sheet'), 'the half had one surname in it, so the sheet is done').toBeNull();
 
     click('.timer-clock__control_stop');
 
@@ -381,6 +378,6 @@ describe('TimerPage', () => {
     click('.timer-publish__unnamed-resolve');
     await fixture.whenStable();
 
-    expect(element().querySelector('.timer-tape__panel'), '«Разобрать» takes the organiser to the queue itself').not.toBeNull();
+    expect(element().querySelector('.timer-tape__sheet'), '«Разобрать» takes the organiser to the queue itself').not.toBeNull();
   });
 });

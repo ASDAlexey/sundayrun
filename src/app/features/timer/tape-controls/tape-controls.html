@@ -1,29 +1,7 @@
 <div class="timer-tape">
-  @if (showQueue()) {
-    <div class="timer-tape__queue">
-      @for (chip of queue(); track chip.id) {
-        <button
-          aria-label="Время без имени"
-          class="timer-tape__chip"
-          i18n-aria-label="@@timer.tapeChipLabel"
-          type="button"
-          [attr.aria-pressed]="chip.selected"
-          [class.timer-tape__chip_next]="chip.next"
-          (click)="onPick(chip.id)"
-        >
-          {{ chip.timeText }}
-        </button>
-      }
-
-      @if (flyingText(); as text) {
-        <span aria-hidden="true" class="timer-tape__chip timer-tape__chip_flying" (animationend)="onFlyEnd()">{{ text }}</span>
-      }
-
-      <span class="timer-tape__count">{{ queueCount() }}</span>
-    </div>
-
+  @if (hasQueue()) {
     <!-- Two keys instead of one: a queued time is either somebody's lap or somebody's finish, and the
-    list below has to know which question it is answering before a surname is tapped. -->
+    sheet has to know which question it is answering before a surname is tapped. -->
     <div class="timer-tape__modes">
       <button
         class="timer-tape__toggle"
@@ -53,47 +31,6 @@
         <span class="timer-tape__toggle-count">{{ finishWaiting() }}</span>
       </button>
     </div>
-
-    <p class="timer-tape__hint" i18n="@@timer.tapeHint">тапайте фамилии по порядку</p>
-  }
-
-  @if (open()) {
-    <div aria-label="Очередь времён без имени" class="timer-tape__panel" i18n-aria-label="@@timer.tapePanelLabel" role="group">
-      @if (pickedChip(); as chip) {
-        <div class="timer-tape__panel-head">
-          <span class="timer-tape__picked">{{ chip.timeText }}</span>
-
-          <span class="timer-tape__pick-hint" i18n="@@timer.tapePickHint">тапните фамилию — время уйдёт ей</span>
-
-          <button
-            aria-label="Выбросить время без имени"
-            class="timer-tape__discard"
-            i18n="@@timer.tapeDiscardKey"
-            i18n-aria-label="@@timer.tapeDiscardLabel"
-            type="button"
-            (click)="onDiscardAsk(chip)"
-          >
-            выбросить
-          </button>
-        </div>
-      }
-
-      @if (emptyText(); as empty) {
-        <p class="timer-tape__done">{{ empty }}</p>
-      } @else {
-        <ul class="timer-tape__list">
-          @for (runner of runners(); track runner.id) {
-            <li class="timer-tape__item">
-              <button class="timer-tape__runner" type="button" (click)="onAssign(runner.id)">
-                <span class="timer-tape__runner-name">{{ runner.fullName }}</span>
-
-                <span class="timer-tape__runner-meta">{{ runner.metaText }}</span>
-              </button>
-            </li>
-          }
-        </ul>
-      }
-    </div>
   }
 
   @if (keysHint(); as hint) {
@@ -116,16 +53,33 @@
     </div>
   }
 
-  @if (discardAsk(); as ask) {
-    <dialog
-      actionLabel="Выбросить"
-      appTimerConfirm
-      heading="Выбросить время?"
-      i18n-actionLabel="@@timer.tapeDiscardAction"
-      i18n-heading="@@timer.tapeDiscardHeading"
-      [note]="ask.note"
-      (closed)="discardAsk.set(null)"
-      (confirmed)="onDiscard(ask.id)"
-    ></dialog>
+  @if (open()) {
+    <dialog appTimerSheet class="timer-tape__sheet" (closed)="onClose()">
+      <div class="timer-tape__sheet-head">
+        <h2 class="timer-tape__sheet-title">{{ heading() }}</h2>
+
+        <p class="timer-tape__sheet-hint" i18n="@@timer.tapePickHint">тапните фамилию — время уйдёт ей</p>
+      </div>
+
+      @if (emptyText(); as empty) {
+        <p class="timer-tape__done">{{ empty }}</p>
+      } @else {
+        <ul class="timer-tape__list">
+          @for (runner of runners(); track runner.id) {
+            <li class="timer-tape__item">
+              <button class="timer-tape__runner" type="button" (click)="onAssign(runner.id)">
+                <span class="timer-tape__runner-name">{{ runner.fullName }}</span>
+
+                <span class="timer-tape__runner-meta">{{ runner.metaText }}</span>
+
+                <span class="timer-tape__runner-time">{{ runner.timeText }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      <button class="timer-tape__sheet-close" i18n="@@timer.tapeSheetClose" type="button" (click)="onClose()">Готово</button>
+    </dialog>
   }
 </div>

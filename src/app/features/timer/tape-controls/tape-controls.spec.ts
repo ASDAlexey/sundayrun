@@ -2,11 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TimerSession } from '../../../core/timer/timer-session.interface';
 import {
-  FIRST_UNNAMED_SPLIT_ID,
   KUZNETSOV_RUNNER_ID,
-  SECOND_UNNAMED_SPLIT_ID,
+  POPOV_IGOR_RUNNER_ID,
   TIMER_SESSION,
   TIMER_SESSION_IDLE,
+  TIMER_SESSION_LAP_COMPLETE,
+  TIMER_SESSION_ONLY_QUEUE,
+  TIMER_SESSION_STALE_QUEUE,
   TIMER_SESSION_WITHOUT_SPLITS,
 } from '../../../core/timer/timer-session.mock';
 import { TimerFeedback } from '../../../state/haptics.enum';
@@ -19,14 +21,17 @@ import { TimerSessionServiceMock, timerSessionServiceMock } from '../../../state
 import { TimerTape } from './tape-controls';
 import { TimerTapeMode } from './tape-controls.enum';
 import {
-  TAPE_FIRST_SPLIT_ID_TAIL,
-  TAPE_IDLE_HINT,
-  TAPE_ONE_OPEN_REQUEST,
+  TAPE_FINISH_HEADING,
   TAPE_FINISH_ROW_META,
   TAPE_FINISH_ROW_NAMES,
+  TAPE_FIRST_SPLIT_ID_TAIL,
+  TAPE_IDLE_HINT,
+  TAPE_LAP_HEADING,
   TAPE_LAP_ROW_META,
   TAPE_LAP_ROW_NAMES,
-  TAPE_QUEUE_TIME_TEXTS,
+  TAPE_NEXT_TIME_TEXT,
+  TAPE_NOBODY_LAP,
+  TAPE_ONE_OPEN_REQUEST,
   TAPE_SECOND_SPLIT_ID_TAIL,
 } from './tape-controls.mock';
 
@@ -62,10 +67,12 @@ describe('TimerTape', () => {
   });
 
   it('records nameless times on the monotonic clock', () => {
-    expect(tape.queue(), 'no measurement is open, so there is no queue').toEqual([]);
+    expect(tape.hasQueue(), 'no measurement is open, so there is no queue').toBe(false);
     expect(tape.runners()).toEqual([]);
+    expect(tape.lapRows()).toEqual([]);
     expect(tape.canCut(), 'and there is nothing to cut into either').toBe(false);
     expect(tape.keysHint(), 'a dead panel says why it is dead').toBe(TAPE_IDLE_HINT);
+    expect(tape.emptyText(), 'a closed sheet has no empty half to explain').toBeNull();
 
     tape.onCut();
 
@@ -101,63 +108,7 @@ describe('TimerTape', () => {
     expect(applyLastChange(TIMER_SESSION).splits.at(-1)?.id.endsWith(TAPE_SECOND_SPLIT_ID_TAIL)).toBe(true);
   });
 
-  it('hands the queue out in order, or gives away the chip picked by hand', () => {
-    sessions.active.set(TIMER_SESSION);
-
-    expect(tape.queue().map((chip) => chip.timeText)).toEqual(TAPE_QUEUE_TIME_TEXTS);
-    expect(
-      tape.queue().map((chip) => chip.next),
-      'the earliest time is the one that goes next',
-    ).toEqual([true, false]);
-    expect(tape.hasQueue()).toBe(true);
-    expect(tape.showQueue()).toBe(true);
-    expect(tape.pickedChip()).toBeNull();
-
-    tape.onAssign(KUZNETSOV_RUNNER_ID);
-
-    expect(tape.flyingText(), 'the chip flies away with the time it carried').toBe(TAPE_QUEUE_TIME_TEXTS[0]);
-
-    const ordered = applyLastChange(TIMER_SESSION).splits.find((split) => split.id === FIRST_UNNAMED_SPLIT_ID);
-
-    expect(ordered?.runnerId).toBe(KUZNETSOV_RUNNER_ID);
-
-    tape.onFlyEnd();
-
-    expect(tape.flyingText()).toBeNull();
-
-    tape.onPick(SECOND_UNNAMED_SPLIT_ID);
-
-    expect(tape.pickedChip()?.id).toBe(SECOND_UNNAMED_SPLIT_ID);
-    expect(
-      tape.queue().map((chip) => chip.next),
-      'a picked chip becomes the next one',
-    ).toEqual([false, true]);
-
-    tape.onAssign(KUZNETSOV_RUNNER_ID);
-
-    const byHand = applyLastChange(TIMER_SESSION).splits.find((split) => split.id === SECOND_UNNAMED_SPLIT_ID);
-
-    expect(byHand?.runnerId).toBe(KUZNETSOV_RUNNER_ID);
-    expect(tape.pickedChip(), 'the handout puts the queue back in order').toBeNull();
-
-    tape.onPick(FIRST_UNNAMED_SPLIT_ID);
-    tape.onPick(FIRST_UNNAMED_SPLIT_ID);
-
-    expect(tape.pickedChip(), 'picking the same chip twice unpicks it').toBeNull();
-
-    sessions.active.set(TIMER_SESSION_WITHOUT_SPLITS);
-    sessions.updateActive.mockClear();
-    tape.onAssign(KUZNETSOV_RUNNER_ID);
-
-    expect(sessions.updateActive, 'an empty queue has nothing to hand out').not.toHaveBeenCalled();
-    expect(tape.showQueue(), 'a chip still in flight keeps the row alive').toBe(true);
-
-    tape.onFlyEnd();
-
-    expect(tape.showQueue()).toBe(false);
-  });
-
-  it('hands the lap and the finish out from separate lists, and opens the waiting one on request', () => {
+  it('hands each half the times that can be its own, and closes a half it has served out', () => {
     const opened: boolean[] = [];
 
     tape.panelOpen.subscribe((open) => opened.push(open));
@@ -165,21 +116,27 @@ describe('TimerTape', () => {
 
     expect(tape.lapWaiting(), 'one man of the roster has not been tapped at all').toBe(TAPE_LAP_ROW_NAMES.length);
     expect(tape.finishWaiting(), 'and one has his lap and nothing else').toBe(TAPE_FINISH_ROW_NAMES.length);
+    expect(tape.heading(), 'a closed sheet has nothing to head').toBeNull();
 
     tape.onToggle(TimerTapeMode.lap);
 
     expect(tape.open()).toBe(true);
-    expect(opened, 'the page loses a grid row while the queue is open').toEqual([true]);
+    expect(tape.heading()).toBe(TAPE_LAP_HEADING);
+    expect(opened, 'the page gets the tiles out of the way while the sheet is up').toEqual([true]);
     expect(
       tape.runners().map((runner) => runner.fullName),
       'the finished and the retired are not greyed out — they are not in the list',
     ).toEqual(TAPE_LAP_ROW_NAMES);
     expect(tape.runners().map((runner) => runner.metaText)).toEqual(TAPE_LAP_ROW_META);
-    expect(tape.queueCount()).toBe(TAPE_QUEUE_TIME_TEXTS.length);
+    expect(
+      tape.runners().map((runner) => runner.timeText),
+      'every row carries the time it is about to write',
+    ).toEqual([TAPE_NEXT_TIME_TEXT]);
 
     tape.onToggle(TimerTapeMode.finish);
 
     expect(tape.mode(), 'the other key swaps the group without closing anything').toBe(TimerTapeMode.finish);
+    expect(tape.heading()).toBe(TAPE_FINISH_HEADING);
     expect(opened).toEqual([true, true]);
     expect(tape.runners().map((runner) => runner.fullName)).toEqual(TAPE_FINISH_ROW_NAMES);
     expect(
@@ -187,63 +144,95 @@ describe('TimerTape', () => {
       'the lap he already has names him',
     ).toEqual(TAPE_FINISH_ROW_META);
 
+    tape.onAssign(POPOV_IGOR_RUNNER_ID);
+
+    const handed = applyLastChange(TIMER_SESSION).splits.find((split) => split.runnerId === POPOV_IGOR_RUNNER_ID && split.atMs > 0);
+
+    expect(handed, 'the finish is written, and from the queue').toBeDefined();
+    expect(haptics.play).toHaveBeenCalledWith(TimerFeedback.lap);
+    expect(tape.open(), 'the half had one surname left, so the sheet is done with').toBe(false);
+    expect(opened).toEqual([true, true, false]);
+
+    tape.onToggle(TimerTapeMode.finish);
     tape.onToggle(TimerTapeMode.finish);
 
-    expect(tape.open()).toBe(false);
-    expect(opened).toEqual([true, true, false]);
+    expect(tape.open(), 'the same key twice closes the sheet').toBe(false);
 
     fixture.componentRef.setInput('openRequest', TAPE_ONE_OPEN_REQUEST);
 
     expect(tape.mode(), '«Разобрать» from the publish card lands where people are still awaited').toBe(TimerTapeMode.lap);
   });
 
-  it('asks by name before it throws a picked time away, and takes no for an answer', async () => {
+  it('refuses a finish earlier than the runner’s own lap, and says so instead of showing him', () => {
+    sessions.active.set(TIMER_SESSION_STALE_QUEUE);
+    tape.onToggle(TimerTapeMode.finish);
+
+    expect(tape.finishWaiting(), 'the queue holds nothing later than his lap — he is no target').toBe(0);
+    expect(tape.runners()).toEqual([]);
+    expect(tape.emptyText(), 'an empty half of a full queue says which half it is').toBeTruthy();
+
     sessions.active.set(TIMER_SESSION);
     tape.onToggle(TimerTapeMode.lap);
-    tape.onPick(FIRST_UNNAMED_SPLIT_ID);
+    tape.onAssign(KUZNETSOV_RUNNER_ID);
+
+    const lap = applyLastChange(TIMER_SESSION).splits.find((split) => split.runnerId === KUZNETSOV_RUNNER_ID);
+
+    expect(lap, 'a man with no taps at all takes the earliest time there is').toBeDefined();
+
+    sessions.active.set(TIMER_SESSION_ONLY_QUEUE);
+    tape.onToggle(TimerTapeMode.lap);
+    tape.onAssign(KUZNETSOV_RUNNER_ID);
+
+    expect(tape.open(), 'a half with people still in it stays open for the next surname').toBe(true);
+
+    sessions.active.set(TIMER_SESSION_WITHOUT_SPLITS);
+
+    expect(tape.emptyText(), 'an emptied queue says so before it says anything about the group').toBeTruthy();
+    expect(tape.hasQueue()).toBe(false);
+
+    sessions.active.set(TIMER_SESSION_LAP_COMPLETE);
+    tape.onClose();
+    tape.onToggle(TimerTapeMode.lap);
+
+    expect(tape.emptyText(), 'the whole field is round — the queue can only be finishes now').toBe(TAPE_NOBODY_LAP);
+
+    tape.onClose();
+    fixture.componentRef.setInput('openRequest', TAPE_ONE_OPEN_REQUEST);
+
+    expect(tape.mode(), 'with the whole field round, «Разобрать» lands on the finishes').toBe(TimerTapeMode.finish);
+  });
+
+  it('opens the handout as a modal sheet and closes it on the backdrop, Escape and «Готово»', async () => {
+    sessions.active.set(TIMER_SESSION);
+    tape.onToggle(TimerTapeMode.lap);
     await fixture.whenStable();
 
     const element = fixture.nativeElement;
-    const dialog = (): HTMLDialogElement | null => element.querySelector('dialog.timer-confirm');
-    const ask = async (): Promise<void> => {
-      element.querySelector('.timer-tape__discard').click();
-      await fixture.whenStable();
-    };
+    const sheet = (): HTMLDialogElement | null => element.querySelector('.timer-tape__sheet');
 
-    expect(element.querySelectorAll('.timer-tape__chip')).toHaveLength(TAPE_QUEUE_TIME_TEXTS.length);
-    expect(element.querySelector('.timer-tape__count').textContent.trim()).toBe(String(TAPE_QUEUE_TIME_TEXTS.length));
+    expect(sheet()?.open, 'the list is a modal, not a panel lost in the page').toBe(true);
     expect(element.querySelectorAll('.timer-tape__runner')).toHaveLength(TAPE_LAP_ROW_NAMES.length);
-    expect(dialog(), 'nothing is asked until the organiser asks for it').toBeNull();
+    expect(element.querySelector('.timer-tape__runner-time').textContent.trim()).toBe(TAPE_NEXT_TIME_TEXT);
+    expect(element.querySelector('.timer-tape__sheet-title').textContent.trim()).toBe(TAPE_LAP_HEADING);
 
-    await ask();
-
-    expect(dialog()?.open).toBe(true);
-    expect(dialog()?.querySelector('.timer-confirm__note')?.textContent, 'the question names the very time it is about').toContain(
-      TAPE_QUEUE_TIME_TEXTS[0],
-    );
-
-    dialog()?.querySelector<HTMLElement>('.timer-confirm__cancel')?.click();
+    sheet()?.dispatchEvent(new MouseEvent('click'));
     await fixture.whenStable();
 
-    expect(sessions.updateActive, '«Отмена» leaves the queue exactly as it was').not.toHaveBeenCalled();
-    expect(haptics.play, 'and nothing is felt for a question that was answered «нет»').not.toHaveBeenCalled();
-    expect(dialog(), 'the question is gone with it').toBeNull();
+    expect(sheet(), 'a click on the backdrop is a click on the dialog itself').toBeNull();
 
-    await ask();
-    dialog()?.querySelector<HTMLElement>('.timer-confirm__action')?.click();
+    tape.onToggle(TimerTapeMode.lap);
+    await fixture.whenStable();
+    sheet()?.dispatchEvent(new Event('cancel'));
     await fixture.whenStable();
 
-    const discarded = applyLastChange(TIMER_SESSION);
+    expect(sheet(), 'Escape closes it too').toBeNull();
 
-    expect(discarded.splits).toHaveLength(TIMER_SESSION.splits.length - 1);
-    expect(discarded.splits.some((split) => split.id === FIRST_UNNAMED_SPLIT_ID)).toBe(false);
-    expect(tape.pickedChip(), 'the queue is back in order behind the discard').toBeNull();
-    expect(dialog(), 'and the question closes itself behind the deed').toBeNull();
-
-    sessions.active.set(TIMER_SESSION_WITHOUT_SPLITS);
+    tape.onToggle(TimerTapeMode.lap);
+    await fixture.whenStable();
+    element.querySelector('.timer-tape__sheet-close').click();
     await fixture.whenStable();
 
-    expect(element.querySelector('.timer-tape__done'), 'an emptied queue says so instead of showing names').not.toBeNull();
+    expect(sheet()).toBeNull();
 
     sessions.active.set(TIMER_SESSION_IDLE);
     await fixture.whenStable();

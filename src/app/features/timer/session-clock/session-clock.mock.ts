@@ -1,9 +1,12 @@
 import { TimerSession } from '../../../core/timer/timer-session.interface';
 import { TIMER_SESSION_IDLE } from '../../../core/timer/timer-session.mock';
 
-/** What the fixture race adds up to: six through the lap, three home, seven on the roster. */
-export const CLOCK_LAP_COUNT = 6;
-export const CLOCK_FINISH_COUNT = 3;
+/**
+ * What the fixture race adds up to. Six laps and three finishes carry a surname; the two nameless
+ * times belong to somebody too, so they are counted where they can only fall — one lap, one finish.
+ */
+export const CLOCK_LAP_COUNT = 7;
+export const CLOCK_FINISH_COUNT = 4;
 export const CLOCK_TOTAL_COUNT = 7;
 
 /** The digits the stubbed clock stands at, and the figure they have to spell. */

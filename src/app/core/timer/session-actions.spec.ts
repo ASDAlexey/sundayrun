@@ -2,7 +2,6 @@ import { Gender } from '../models/gender.enum';
 import {
   addRunner,
   assignNextUnnamed,
-  assignSplit,
   createSession,
   reassignSplit,
   recordSplit,
@@ -48,14 +47,15 @@ import {
   IVANOV_LAP_SPLIT_ID,
   IVANOV_RUNNER_ID,
   KUZNETSOV_RUNNER_ID,
+  POPOV_IGOR_LAP_SPLIT_ID,
   POPOV_IGOR_RUNNER_ID,
   ROMANENKO_RUNNER_ID,
   SECOND_UNNAMED_SPLIT_ID,
   SOKOLOVA_RUNNER_ID,
   TIMER_SESSION,
   TIMER_SESSION_IDLE,
+  TIMER_SESSION_STALE_QUEUE,
   TIMER_SESSION_WITHOUT_SPLITS,
-  TROILIN_LAP_SPLIT_ID,
   TROILIN_RUNNER_ID,
 } from './timer-session.mock';
 
@@ -144,22 +144,25 @@ describe('recording actions', () => {
 
 describe('queue actions', () => {
   it('hands unnamed times out in order, moves a time between runners, frees it and throws it away', () => {
-    const assigned = assignSplit(TIMER_SESSION, FIRST_UNNAMED_SPLIT_ID, KUZNETSOV_RUNNER_ID);
     const fromQueue = assignNextUnnamed(TIMER_SESSION, KUZNETSOV_RUNNER_ID);
+    const finishFromQueue = assignNextUnnamed(TIMER_SESSION, POPOV_IGOR_RUNNER_ID);
     const moved = reassignSplit(TIMER_SESSION, IVANOV_LAP_SPLIT_ID, KUZNETSOV_RUNNER_ID);
     const freed = unassignSplit(TIMER_SESSION, IVANOV_LAP_SPLIT_ID);
 
-    expect(runnerSplits(assigned, KUZNETSOV_RUNNER_ID).map((split) => split.id)).toEqual([FIRST_UNNAMED_SPLIT_ID]);
-    expect(assignSplit(TIMER_SESSION, TROILIN_LAP_SPLIT_ID, KUZNETSOV_RUNNER_ID), 'a time that already has a name').toBe(TIMER_SESSION);
-    expect(assignSplit(TIMER_SESSION, UNKNOWN_SPLIT_ID, KUZNETSOV_RUNNER_ID), 'an unknown time').toBe(TIMER_SESSION);
-    expect(assignSplit(TIMER_SESSION, FIRST_UNNAMED_SPLIT_ID, UNKNOWN_RUNNER_ID), 'an unknown runner').toBe(TIMER_SESSION);
-    expect(assignSplit(TIMER_SESSION, FIRST_UNNAMED_SPLIT_ID, TROILIN_RUNNER_ID), 'a runner who already has both times').toBe(
-      TIMER_SESSION,
-    );
     expect(
       runnerSplits(fromQueue, KUZNETSOV_RUNNER_ID).map((split) => split.id),
       'the earliest queued time goes first',
     ).toEqual([FIRST_UNNAMED_SPLIT_ID]);
+    expect(
+      runnerSplits(finishFromQueue, POPOV_IGOR_RUNNER_ID).map((split) => split.id),
+      'and a finish is taken from the same queue, after his own lap',
+    ).toEqual([POPOV_IGOR_LAP_SPLIT_ID, FIRST_UNNAMED_SPLIT_ID]);
+    expect(
+      assignNextUnnamed(TIMER_SESSION_STALE_QUEUE, POPOV_IGOR_RUNNER_ID),
+      'a queued time before his lap is somebody else’s tap, not his finish',
+    ).toBe(TIMER_SESSION_STALE_QUEUE);
+    expect(assignNextUnnamed(TIMER_SESSION, TROILIN_RUNNER_ID), 'a runner who already has both times').toBe(TIMER_SESSION);
+    expect(assignNextUnnamed(TIMER_SESSION, UNKNOWN_RUNNER_ID), 'an unknown runner').toBe(TIMER_SESSION);
     expect(assignNextUnnamed(TIMER_SESSION_WITHOUT_SPLITS, KUZNETSOV_RUNNER_ID), 'an empty queue').toBe(TIMER_SESSION_WITHOUT_SPLITS);
     expect(runnerSplits(moved, KUZNETSOV_RUNNER_ID).map((split) => split.id)).toEqual([IVANOV_LAP_SPLIT_ID]);
     expect(runnerSplits(moved, IVANOV_RUNNER_ID), 'the old owner loses it').toEqual([]);

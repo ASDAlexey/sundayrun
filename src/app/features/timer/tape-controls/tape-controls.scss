@@ -1,5 +1,4 @@
 @use 'styles/buttons' as b;
-@use 'styles/card' as c;
 @use 'styles/typography' as t;
 
 // The host has to carry the width, not the div inside it: as a flex item of the bottom bar an
@@ -23,56 +22,6 @@
   flex-direction: column;
   min-width: 0;
   gap: 6px;
-
-  &__queue {
-    display: flex;
-    flex: none;
-    align-items: center;
-    min-height: 44px;
-    overflow-x: auto;
-    gap: 6px;
-    scrollbar-width: none;
-
-    &:empty {
-      display: none;
-    }
-  }
-
-  // A chip is handed a name with a thumb, in a hurry, with people still running: 44 px like every
-  // other key here, and the queue row grew with it.
-  &__chip {
-    @include t.mono-meta;
-    @include t.pill;
-
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 14px;
-    gap: 6px;
-    border: 1px solid var(--accent-line);
-    background: var(--accent-glow);
-    color: var(--accent-light);
-    font-variant-numeric: tabular-nums;
-    animation: timer-tape-chip-in var(--transition-time) var(--spring-tap) backwards;
-    cursor: pointer;
-
-    &_next {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: var(--accent-contrast);
-    }
-
-    // Without the grid geometry of another component the flight has a fixed heading — up and
-    // slightly left, towards the handout list that opens above the keys (see the report).
-    &_flying {
-      --timer-chip-dx: -24px;
-      --timer-chip-dy: -72px;
-
-      animation: timer-tape-chip-fly var(--transition-time) var(--ease) forwards;
-      pointer-events: none;
-    }
-  }
 
   // The two halves of the handout share the row evenly: on a phone «Разобрать финиш» is as far from
   // the thumb as «Разобрать круг», and neither of them may be the one that is easier to hit.
@@ -116,78 +65,61 @@
     font-variant-numeric: tabular-nums;
   }
 
-  &__count {
-    @include t.mono-value;
-
-    flex: none;
-    color: var(--accent-light);
-    font-variant-numeric: tabular-nums;
-  }
-
-  &__hint {
-    @include t.mono-caption;
-
-    margin: 0;
-    color: var(--text-secondary);
-  }
-
-  // The handout list opens upwards: the keys must keep their place under the thumb while the
-  // organiser reads surnames (docs/TIMER.md §4, «раздача очереди по порядку»).
-  &__panel {
-    @include c.card;
-
+  // The handout is a modal sheet rather than a panel in the page flow: inline, between the publish
+  // card and the keys, the list of surnames was simply lost, and a list nobody sees is a list that
+  // gives a time to the wrong man. It rises from the bottom, where the thumb already is.
+  &__sheet {
     display: flex;
-    z-index: 10;
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 6px);
-    left: 0;
     flex-direction: column;
-    max-height: 48dvh;
-    padding: 8px;
+    width: min(560px, 100vw);
+    max-height: 80dvh;
+    margin: auto auto 0;
+    padding: 12px 12px max(12px, env(safe-area-inset-bottom));
     overflow-y: auto;
     overscroll-behavior: contain;
-    gap: 8px;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: var(--surface);
+    color: var(--text);
+    animation: timer-tape-sheet-rise var(--transition-time) var(--ease) backwards;
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--black) 65%, transparent);
+    }
   }
 
-  &__panel-head {
+  &__sheet-head {
     display: flex;
-    align-items: center;
+    flex: none;
+    align-items: baseline;
+    justify-content: space-between;
     padding-bottom: 8px;
     gap: 8px;
     border-bottom: 1px solid var(--border-soft);
   }
 
-  &__picked {
-    @include t.mono-value;
+  &__sheet-title {
+    @include t.text('title', 'medium');
 
-    flex: none;
-    color: var(--accent-light);
-    font-variant-numeric: tabular-nums;
+    margin: 0;
+    color: var(--text);
   }
 
-  &__pick-hint {
+  &__sheet-hint {
     @include t.mono-caption;
 
-    flex: 1;
+    margin: 0;
     color: var(--text-secondary);
+    text-align: right;
   }
 
-  &__discard {
+  &__sheet-close {
     @include b.button-outline;
-    @include t.mono-caption;
 
-    display: inline-flex;
     flex: none;
-    align-items: center;
     min-height: 44px;
-    padding: 0 12px;
-    border-color: var(--accent-warm);
-    color: var(--accent-warm);
-
-    &:hover {
-      border-color: var(--accent-warm);
-    }
+    padding: 0 18px;
   }
 
   &__list {
@@ -208,8 +140,8 @@
     align-items: baseline;
     justify-content: space-between;
     width: 100%;
-    min-height: 44px;
-    padding: 0 10px;
+    min-height: 52px;
+    padding: 0 12px;
     gap: 10px;
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-sm);
@@ -230,6 +162,7 @@
     @include t.text('body', 'medium');
     @include t.semibold;
 
+    flex: 1;
     overflow: hidden;
     color: var(--text);
     text-overflow: ellipsis;
@@ -241,6 +174,16 @@
 
     flex: none;
     color: var(--text-secondary);
+  }
+
+  // The time this row is about to write. It is the whole point of the row: the organiser sees the
+  // finish he is handing out before it lands, not after, in the protocol.
+  &__runner-time {
+    @include t.mono-value;
+
+    flex: none;
+    color: var(--accent-light);
+    font-variant-numeric: tabular-nums;
   }
 
   &__done {
@@ -298,9 +241,8 @@
 
   // A finger must not leave a ring behind; a keyboard cut has to be visible.
   &__cut:focus-visible,
-  &__chip:focus-visible,
-  &__discard:focus-visible,
   &__runner:focus-visible,
+  &__sheet-close:focus-visible,
   &__toggle:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -312,54 +254,26 @@
     &__keys {
       height: 48px;
     }
-
-    &__queue {
-      min-height: 44px;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     &__cut,
-    &__more,
-    &__chip,
-    &__runner {
+    &__runner,
+    &__sheet {
       animation: none;
       transition: none;
     }
 
     &__cut:active,
-    &__more:active,
     &__runner:active {
       transform: none;
     }
-
-    // The ghost of a handed-out time is removed by its own `animationend`, so it cannot simply have
-    // no animation: it would sit in the queue row for the rest of the race. It gets a motionless
-    // frame of the same length instead — «чип просто исчезает», exactly as the design table asks.
-    &__chip_flying {
-      animation: timer-tape-chip-vanish var(--time-tap) var(--ease) forwards;
-    }
   }
 }
 
-@keyframes timer-tape-chip-in {
+@keyframes timer-tape-sheet-rise {
   from {
-    transform: scale(0.6);
-    opacity: 0;
-  }
-}
-
-@keyframes timer-tape-chip-fly {
-  to {
-    transform: translate(var(--timer-chip-dx, 0), var(--timer-chip-dy, 0)) scale(0.4);
-    opacity: 0;
-  }
-}
-
-// Nothing moves and nothing is seen — the frame exists only so that `animationend` still fires.
-@keyframes timer-tape-chip-vanish {
-  from,
-  to {
+    transform: translateY(12px);
     opacity: 0;
   }
 }

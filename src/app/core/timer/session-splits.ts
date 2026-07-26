@@ -30,6 +30,19 @@ export function unassignedSplits(session: TimerSession): TimerSplit[] {
 }
 
 /**
+ * The queued time this runner would take: the earliest nameless tap that can be his. Laps and
+ * finishes wait in the same queue, so «the earliest one» alone is not enough — a finish has to come
+ * after his own lap. A time before it is not a slow lap, it is somebody else's tap, and handing it
+ * over would write a finish that happened before the man went round.
+ */
+export function nextSplitForRunner(session: TimerSession, runnerId: string): TimerSplit | undefined {
+  const own = runnerSplits(session, runnerId);
+  const last = own[own.length - 1];
+
+  return unassignedSplits(session).find((split) => last === undefined || split.atMs > last.atMs);
+}
+
+/**
  * Where the runner stands right now. A runner who was retired (DNF or «only the lap») is `retired`
  * whatever the journal holds — the organiser's word wins over the tap count. An id that is not in
  * the roster has no tile to colour, so it reports `retired` as well.
@@ -44,14 +57,22 @@ export function runnerStage(session: TimerSession, runnerId: string): TimerRunne
   return stageOf(runner, runnerSplits(session, runnerId).length);
 }
 
-/** How many runners are already through the 2.3 km lap — the left half of «круг: 8 из 15 · финиш: 0». */
+/**
+ * How many runners are already through the 2.3 km lap — the left half of «круг: 8 из 15 · финиш: 0».
+ *
+ * Counted in taps rather than in names: a time in the queue belongs to somebody, so while people are
+ * still out on the lap the nameless taps are their laps. The counter answers «сколько прошло круг»,
+ * and four people have gone round whether the surnames are on the times yet or not.
+ */
 export function lapDoneCount(session: TimerSession): number {
-  return countRunnersWithSplits(session, LAP_DONE_MIN_SPLITS);
+  return countRunnersWithSplits(session, LAP_DONE_MIN_SPLITS) + queuedLapCount(session);
 }
 
-/** How many runners are already through the 5 km finish — the right half of the same counter. */
+/** How many runners are already through the 5 km finish — the right half, by the same rule. */
 export function finishDoneCount(session: TimerSession): number {
-  return countRunnersWithSplits(session, MAX_SPLITS_PER_RUNNER);
+  const queued = unassignedSplits(session).length - queuedLapCount(session);
+
+  return countRunnersWithSplits(session, MAX_SPLITS_PER_RUNNER) + Math.min(queued, owedFinishCount(session));
 }
 
 /**
@@ -133,6 +154,23 @@ function stageOf(runner: TimerRunner, splitCount: number): TimerRunnerStageType 
 
 function countRunnersWithSplits(session: TimerSession, minimum: number): number {
   return session.runners.filter((runner) => runnerSplits(session, runner.id).length >= minimum).length;
+}
+
+/** How much of the queue can only be laps: nobody can be given a second tap before their first. */
+function queuedLapCount(session: TimerSession): number {
+  return Math.min(unassignedSplits(session).length, activeRunnersWithSplits(session, NOTHING_RECORDED));
+}
+
+/** Whom a queued time could still finish: those with a lap, plus those the queue is about to give one. */
+function owedFinishCount(session: TimerSession): number {
+  return activeRunnersWithSplits(session, LAP_DONE_MIN_SPLITS) + queuedLapCount(session);
+}
+
+/** Active runners holding exactly this many taps — a retired one owes nothing, he is not coming round. */
+function activeRunnersWithSplits(session: TimerSession, count: number): number {
+  return session.runners.filter(
+    (runner) => runner.outcome === TimerRunnerOutcome.active && runnerSplits(session, runner.id).length === count,
+  ).length;
 }
 
 function surnameKey(fullName: string): string {
