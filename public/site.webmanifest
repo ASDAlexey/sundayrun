@@ -13,7 +13,7 @@
   "name": "Воскресный парковый пробег в Таганроге",
   "orientation": "portrait",
   "scope": "./",
-  "short_name": "Пробег",
+  "short_name": "Воскресный парковый пробег",
   "start_url": "./",
   "theme_color": "#060607"
 }
