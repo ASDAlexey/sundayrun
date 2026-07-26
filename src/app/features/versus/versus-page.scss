@@ -58,12 +58,6 @@
     @include st.error-text;
   }
 
-  &__spinner {
-    display: inline-block;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
-
   &__picker {
     @include c.card;
 

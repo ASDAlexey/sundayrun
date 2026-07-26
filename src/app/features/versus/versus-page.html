@@ -52,9 +52,7 @@
 
     <div aria-live="polite" class="versus__status" role="status">
       @if (status() === statuses.loading) {
-        <mat-progress-spinner class="versus__spinner" mode="indeterminate" [diameter]="24" />
-
-        <span i18n="@@versus.loading">Загружаем список атлетов…</span>
+        <app-loading-state i18n-label="@@versus.loading" label="Загружаем список атлетов…" />
       }
     </div>
 
@@ -118,9 +116,7 @@
   <div aria-live="polite" class="versus__status" role="status">
     @switch (duelStatus()) {
       @case (duelStatuses.loading) {
-        <mat-progress-spinner class="versus__spinner" mode="indeterminate" [diameter]="24" />
-
-        <span i18n="@@versus.duelLoading">Считаем очные встречи…</span>
+        <app-loading-state i18n-label="@@versus.duelLoading" label="Считаем очные встречи…" />
       }
       @case (duelStatuses.notFound) {
         <span i18n="@@versus.notFound">Атлет из ссылки не найден. История могла ещё не обновиться после публикации протокола.</span>

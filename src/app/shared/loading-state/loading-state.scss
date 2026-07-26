@@ -1,0 +1,62 @@
+@use 'styles/typography' as t;
+
+// ===========================================================
+//  Loading state — a chronometer sweep travelling a thin lane,
+//  the caption in the same mono the protocol tables use.
+// ===========================================================
+
+// Inline-level on purpose: the block shrinks to its caption, so a page that centres its status
+// panel centres this too, while a left-aligned status keeps it at the text edge.
+.loading-state {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  &__lane {
+    position: relative;
+    width: 100%;
+    max-width: 180px;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--border-soft);
+  }
+
+  &__sweep {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 45%;
+    border-radius: inherit;
+    background: var(--accent-gradient);
+    animation: loading-state-sweep var(--time-breathe) var(--ease) infinite;
+  }
+
+  &__label {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+}
+
+@keyframes loading-state-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(222%);
+  }
+}
+
+// Reduced motion keeps the lane and drops the travel: a dimmed, standing bar.
+@media (prefers-reduced-motion: reduce) {
+  .loading-state__sweep {
+    width: 100%;
+    animation: none;
+    opacity: 0.4;
+  }
+}

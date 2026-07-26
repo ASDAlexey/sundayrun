@@ -324,10 +324,6 @@
     }
   }
 
-  &__status-spinner {
-    margin: 0 auto 12px;
-  }
-
   &__error {
     @include st.error-text;
   }

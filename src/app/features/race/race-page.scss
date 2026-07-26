@@ -139,10 +139,6 @@ $race-columns: 32px minmax(112px, 1.3fr) 72px 72px 64px 44px 76px 76px 60px minm
     @include st.status-text;
   }
 
-  &__status-spinner {
-    margin: 0 auto 12px;
-  }
-
   &__error {
     @include st.error-text;
   }

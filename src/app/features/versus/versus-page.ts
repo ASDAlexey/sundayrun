@@ -2,7 +2,6 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
@@ -16,6 +15,7 @@ import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
+import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
@@ -34,7 +34,7 @@ import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from '.
  */
 @Component({
   selector: 'app-versus-page',
-  imports: [MatButtonModule, MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink],
+  imports: [LoadingState, MatButtonModule, OfflineNotice, ReloadButton, RouterLink],
   templateUrl: './versus-page.html',
   styleUrl: './versus-page.scss',
 })

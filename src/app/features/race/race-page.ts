@@ -3,7 +3,6 @@ import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-exp
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
@@ -41,6 +40,7 @@ import { AthletesService } from '../../github/athletes.service';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
+import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
@@ -68,8 +68,8 @@ import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView
   selector: 'app-race-page',
   imports: [
     ExperimentalScrollingModule,
+    LoadingState,
     MatButtonModule,
-    MatProgressSpinnerModule,
     MatTooltipModule,
     OfflineNotice,
     ReloadButton,

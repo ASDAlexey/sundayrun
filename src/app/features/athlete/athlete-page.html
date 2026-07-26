@@ -2,9 +2,7 @@
   <div aria-live="polite" class="athlete__status" role="status">
     @switch (status()) {
       @case (statuses.loading) {
-        <mat-progress-spinner class="athlete__spinner" mode="indeterminate" [diameter]="24" />
-
-        <span i18n="@@athlete.loading">Загружаем историю атлета…</span>
+        <app-loading-state i18n-label="@@athlete.loading" label="Загружаем историю атлета…" />
       }
       @case (statuses.notFound) {
         <span i18n="@@athlete.notFound">Атлет не найден. История могла ещё не обновиться после публикации протокола.</span>

@@ -1,6 +1,5 @@
 import { Component, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 
 import { ATHLETES_PAGE_LINK, VK_COMMUNITY_URL } from '../../app.constant';
@@ -15,6 +14,7 @@ import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { ScrollReveal } from '../../shared/directives/scroll-reveal/scroll-reveal';
+import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { SelfAthlete } from '../../state/self-athlete.interface';
@@ -51,7 +51,7 @@ import {
 /** The landing page: hero with a live "next start" countdown, the latest races preview and the course card. */
 @Component({
   selector: 'app-home-page',
-  imports: [MatButtonModule, MatProgressSpinnerModule, OfflineNotice, RaceCard, ReloadButton, RouterLink, ScrollReveal],
+  imports: [LoadingState, MatButtonModule, OfflineNotice, RaceCard, ReloadButton, RouterLink, ScrollReveal],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
 })

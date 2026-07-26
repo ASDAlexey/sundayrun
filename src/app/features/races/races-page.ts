@@ -1,10 +1,10 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { isoYear } from '../../core/history/iso-year';
 import { pluralText } from '../../core/i18n/plural-text';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
+import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { toRaceListItems } from './race-list-item';
@@ -16,7 +16,7 @@ import { RaceListItem, RaceYearGroup } from './races-page.interface';
 /** The full race list (newest first — `parseArchiveIndex` guarantees the order), filtered by year chips and grouped under year dividers. */
 @Component({
   selector: 'app-races-page',
-  imports: [MatProgressSpinnerModule, OfflineNotice, RaceCard, ReloadButton],
+  imports: [LoadingState, OfflineNotice, RaceCard, ReloadButton],
   templateUrl: './races-page.html',
   styleUrl: './races-page.scss',
 })

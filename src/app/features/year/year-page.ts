@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { pluralText } from '../../core/i18n/plural-text';
@@ -9,6 +8,7 @@ import { YearBestResult, YearReview } from '../../core/history/year-review.inter
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { YearReviewService } from '../../github/year-review.service';
+import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { YearBadgeChip } from '../../shared/year-badge/year-badge';
@@ -29,7 +29,7 @@ import {
 /** «Итоги года»: the year's totals, best results, most active finishers and badge holders. */
 @Component({
   selector: 'app-year-page',
-  imports: [MatProgressSpinnerModule, OfflineNotice, ReloadButton, RouterLink, YearBadgeChip],
+  imports: [LoadingState, OfflineNotice, ReloadButton, RouterLink, YearBadgeChip],
   templateUrl: './year-page.html',
   styleUrl: './year-page.scss',
 })
