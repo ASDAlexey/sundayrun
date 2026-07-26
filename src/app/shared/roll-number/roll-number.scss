@@ -1,0 +1,48 @@
+:host {
+  display: inline-flex;
+}
+
+.roll {
+  display: inline-flex;
+}
+
+.roll__slot {
+  display: inline-block;
+  position: relative;
+
+  // Tabular figures, so a slot keeps its width as the digit inside it changes.
+  font-variant-numeric: tabular-nums;
+
+  // Clips the flip vertically without disturbing the baseline. `overflow: hidden` would
+  // move an inline-block's baseline to its bottom margin edge, and the countdown shares a
+  // baseline with its «д/ч/м/с» labels — the row would step down by a few pixels.
+  clip-path: inset(0 -0.12em);
+}
+
+.roll__frame {
+  display: inline-block;
+}
+
+.roll__frame_enter {
+  animation: roll-number-in var(--time-tap) var(--ease) both;
+}
+
+// The replaced character leaves the flow, so the arriving one owns the slot's width, then
+// rides up and fades. It sat at exactly this spot a frame ago, so going absolute is silent.
+.roll__frame_out {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition:
+    transform var(--time-tap) var(--ease),
+    opacity var(--time-tap) var(--ease);
+}
+
+@keyframes roll-number-in {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}

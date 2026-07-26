@@ -1,0 +1,13 @@
+<span aria-hidden="true" class="roll">
+  @for (slot of slots(); track slot.index) {
+    <span class="roll__slot">
+      @for (frame of slot.frames; track frame.seq) {
+        <span class="roll__frame" [class.roll__frame_enter]="frame.enter" [class.roll__frame_out]="frame.seq !== slot.live.seq">{{
+          frame.char
+        }}</span>
+      }
+    </span>
+  }
+</span>
+
+<span class="visually-hidden">{{ value() }}</span>
