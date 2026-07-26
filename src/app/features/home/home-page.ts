@@ -7,7 +7,7 @@ import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { OverallStats } from '../../core/history/overall-stats.interface';
 import { athleteStreaks } from '../../core/history/streaks';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
+import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration } from '../../core/time/duration';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
@@ -23,6 +23,7 @@ import { CourseTrack } from './course-track/course-track';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
+import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { toRaceListItems } from '../races/race-list-item';
 import { RaceCard } from '../races/race-card/race-card';
 import { RacesStatus, RacesStatusType } from '../races/races-page.enum';
@@ -238,18 +239,32 @@ function toSelfView(self: SelfAthlete | null, record: AthleteRecord | null, even
   const streaks = athleteStreaks(record.participationSlugs, record.runs, eventSlugs);
   // The card is browser-only (the pick lives in localStorage), so the client clock is the season.
   const year = String(new Date().getFullYear());
-  const yearFinishes = fiveKmRuns.filter((run) => run.dateIso.startsWith(`${year}-`)).length;
+  const yearRuns = fiveKmRuns.filter((run) => run.dateIso.startsWith(`${year}-`));
   const yearBestMs = record.bestMsByYear[year];
+  const bestRun = record.bestMs === null ? null : firstRunWith(fiveKmRuns, record.bestMs);
+  const yearBestRun = yearBestMs === undefined ? null : firstRunWith(yearRuns, yearBestMs);
 
   return {
     displayName: record.displayName,
     athleteLink: [ATHLETES_PAGE_LINK, record.key],
     finishesText: STATS_NUMBER_FORMAT.format(fiveKmRuns.length),
     bestTimeText: record.bestMs === null ? NO_BEST_TIME_TEXT : formatDuration(record.bestMs),
+    bestTimeLink: bestRun === null ? null : [RACE_PAGE_BASE_LINK, bestRun.slug],
     streakText: STATS_NUMBER_FORMAT.format(streaks.currentWeeks),
-    finishesYearText: STATS_NUMBER_FORMAT.format(yearFinishes),
+    finishesYearText: STATS_NUMBER_FORMAT.format(yearRuns.length),
     bestTimeYearText: yearBestMs === undefined ? NO_BEST_TIME_TEXT : formatDuration(yearBestMs),
+    bestTimeYearLink: yearBestRun === null ? null : [RACE_PAGE_BASE_LINK, yearBestRun.slug],
   };
+}
+
+/**
+ * The race where a personal best was *first* set. A tie goes to the earlier run, matching how
+ * the rest of the site treats records: whoever got there first keeps them.
+ */
+function firstRunWith(runs: AthleteRun[], timeMs: number): AthleteRun | null {
+  const matches = runs.filter((run) => run.timeMs === timeMs).sort((a, b) => a.dateIso.localeCompare(b.dateIso));
+
+  return matches[0] ?? null;
 }
 
 /** A gender with no 5 km finishes yet shows a dash instead of a zero time. */

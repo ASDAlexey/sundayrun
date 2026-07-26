@@ -119,10 +119,18 @@
           <dd class="home__self-value">{{ self.finishesText }}</dd>
         </div>
 
+        <!-- A personal best is a race, not just a number: the value links to the protocol where
+        it was set, so «20:05» is a question the page can answer. -->
         <div class="home__self-item">
           <dt class="home__self-label" i18n="@@home.selfBestTime">лучшее время</dt>
 
-          <dd class="home__self-value">{{ self.bestTimeText }}</dd>
+          <dd class="home__self-value">
+            @if (self.bestTimeLink; as raceLink) {
+              <a class="home__self-value-link" [routerLink]="raceLink">{{ self.bestTimeText }}</a>
+            } @else {
+              {{ self.bestTimeText }}
+            }
+          </dd>
         </div>
 
         <div class="home__self-item">
@@ -140,7 +148,13 @@
         <div class="home__self-item">
           <dt class="home__self-label" i18n="@@home.selfBestTimeYear">лучшее время за этот год</dt>
 
-          <dd class="home__self-value">{{ self.bestTimeYearText }}</dd>
+          <dd class="home__self-value">
+            @if (self.bestTimeYearLink; as raceLink) {
+              <a class="home__self-value-link" [routerLink]="raceLink">{{ self.bestTimeYearText }}</a>
+            } @else {
+              {{ self.bestTimeYearText }}
+            }
+          </dd>
         </div>
       </dl>
 

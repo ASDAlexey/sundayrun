@@ -4,6 +4,7 @@ import { STATS_HISTORY } from '../../core/history/overall-stats.mock';
 import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
+import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
 import { HomeSelfView } from './home-page.interface';
 
@@ -48,9 +49,11 @@ export const EXPECTED_HOME_SELF_VIEW: HomeSelfView = {
   athleteLink: [ATHLETES_PAGE_LINK, 'иванова мария'],
   finishesText: '4',
   bestTimeText: '24:40',
+  bestTimeLink: [RACE_PAGE_BASE_LINK, '2025-12-28'],
   streakText: '2',
   finishesYearText: '3',
   bestTimeYearText: '25:00',
+  bestTimeYearLink: [RACE_PAGE_BASE_LINK, '2026-06-28'],
 };
 
 /** The personal card values in template order: finishes, best time, streak weeks, year finishes, year best. */
@@ -72,7 +75,9 @@ export const EXPECTED_HOME_SELF_DNF_VIEW: HomeSelfView = {
   athleteLink: [ATHLETES_PAGE_LINK, 'иванова мария'],
   finishesText: '0',
   bestTimeText: NO_BEST_TIME_TEXT,
+  bestTimeLink: null,
   streakText: '1',
   finishesYearText: '0',
   bestTimeYearText: NO_BEST_TIME_TEXT,
+  bestTimeYearLink: null,
 };

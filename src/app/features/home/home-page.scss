@@ -255,6 +255,21 @@
     font-variant-numeric: tabular-nums;
   }
 
+  // Underlined only on hover: five big numbers each wearing a permanent underline would read
+  // as a row of links rather than as a row of results.
+  &__self-value-link {
+    border-bottom: 1px solid transparent;
+    color: inherit;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--accent-line);
+      color: var(--accent-light);
+    }
+  }
+
   &__self-label {
     @include t.text('label', 'medium');
 

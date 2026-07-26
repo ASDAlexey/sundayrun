@@ -21,9 +21,12 @@ export interface HomeSelfView {
   athleteLink: string[];
   finishesText: string;
   bestTimeText: string;
+  /** The race where that best was first set; null when there is no finish to point at. */
+  bestTimeLink: string[] | null;
   /** Current weekly streak — consecutive latest events with a participation. */
   streakText: string;
   /** 5 km finishes and the best time within the current calendar year. */
   finishesYearText: string;
   bestTimeYearText: string;
+  bestTimeYearLink: string[] | null;
 }
