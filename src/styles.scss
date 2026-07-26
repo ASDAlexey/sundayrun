@@ -3,6 +3,7 @@
 @use 'styles/tokens';
 @use 'styles/typography' as t;
 @use 'styles/animations';
+@use 'styles/scroll-effects';
 
 html {
   color-scheme: dark;

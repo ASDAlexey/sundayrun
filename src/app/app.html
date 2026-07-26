@@ -93,6 +93,10 @@
 
     <app-self-picker class="shell-header__self" />
   </mat-toolbar>
+
+  <!-- Reading progress. Driven by `scroll(root block)` in `_scroll-effects.scss`: no listener,
+  no JS, and it collapses to nothing where the timeline is unsupported. -->
+  <div aria-hidden="true" class="scroll-progress"></div>
 </header>
 
 <router-outlet />

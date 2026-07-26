@@ -1,0 +1,64 @@
+// Scroll choreography built on top of the base `.reveal` layer in `_animations.scss`.
+//
+// Two kinds of things live here:
+//   * reveal variants — modifiers a `.reveal` element opts into (cascade, card lift);
+//   * the reading-progress strip — a page-wide effect driven purely by the scroll
+//     position, with no JS and no scroll listener.
+
+// Cascade. `--i` is the element's index inside its list, set from the template; the
+// delay is computed here so the markup carries data and the stylesheet carries timing.
+// The cap matters: without it the last card of a long list arrives half a second after
+// the eye has already read it, which reads as lag rather than as choreography.
+.reveal_staggered {
+  transition-delay: min(calc(var(--i, 0) * var(--time-stagger-step)), var(--time-stagger-cap));
+}
+
+// Card entrance — the plain rise plus a barely-there scale, so a card feels like it
+// settles into place instead of sliding. `.reveal.is-visible` outranks this selector,
+// so the visible state still resets the transform.
+.reveal_lift {
+  transform: translateY(24px) scale(0.98);
+}
+
+// Reading progress — a hairline under the header that fills as the document scrolls.
+// `scroll(root block)` drives it from the compositor: no scroll handler, no layout read,
+// nothing to throttle. Where the timeline is unsupported the bar simply stays collapsed
+// at scaleX(0), which is an honest absence rather than a broken control.
+.scroll-progress {
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: var(--accent-gradient);
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: scroll-progress-fill linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+@keyframes scroll-progress-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  // The global reduce rule zeroes durations but leaves delays alone; a staggered list
+  // would still trickle in one card at a time.
+  .reveal_staggered {
+    transition-delay: 0s;
+  }
+
+  .reveal_lift {
+    transform: none;
+  }
+
+  // A bar that tracks the scroll position is information, not decoration, so it keeps
+  // working — it just has no easing left to interpolate.
+  .scroll-progress {
+    transform: scaleX(0);
+  }
+}
