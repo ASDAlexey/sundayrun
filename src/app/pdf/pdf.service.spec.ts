@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { buildProtocolDocDefinition } from '../core/pdf/protocol-doc-definition';
-import { PDF_EVENT_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK, PDF_ROWS_MOCK } from '../core/pdf/protocol-doc-definition.mock';
+import { PDF_DOC_INPUT_MOCK, PDF_EVENT_MOCK } from '../core/pdf/protocol-doc-definition.mock';
 import { PdfFontsService } from './pdf-fonts.service';
 import { PdfService } from './pdf.service';
 import {
@@ -46,11 +46,11 @@ describe('PdfService', () => {
   });
 
   it('renders blobs through pdfmake in both module shapes and suggests the file name', async () => {
-    const first = await service.generateProtocolBlob(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK);
+    const first = await service.generateProtocolBlob(PDF_DOC_INPUT_MOCK);
 
     PDF_MAKE_SHAPE.useDefault = false;
 
-    const second = await service.generateProtocolBlob(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK);
+    const second = await service.generateProtocolBlob(PDF_DOC_INPUT_MOCK);
 
     expect(first).toBe(PDF_BLOB_MOCK);
     expect(second).toBe(PDF_BLOB_MOCK);
@@ -59,7 +59,7 @@ describe('PdfService', () => {
     // The signature footer is a freshly built closure per call, so the definitions are compared by content.
     expect(CREATE_PDF_MOCK).toHaveBeenCalledWith(
       expect.objectContaining({
-        content: buildProtocolDocDefinition(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK).content,
+        content: buildProtocolDocDefinition(PDF_DOC_INPUT_MOCK).content,
       }),
     );
     expect(ADD_VIRTUAL_FILE_SYSTEM_MOCK).toHaveBeenCalledWith(FONTS_MOCK.vfs);

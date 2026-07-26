@@ -1,4 +1,5 @@
 import type { Alignment, Margins, PageOrientation, PageSize, Size } from 'pdfmake/interfaces';
+import { CANONICAL_SITE_BASE_URL } from '../../shared/seo/canonical-link.constant';
 import { Gender, GenderType } from '../models/gender.enum';
 
 export const PDF_PAGE_SIZE: PageSize = 'A4';
@@ -24,12 +25,28 @@ export const PDF_ALIGN_JUSTIFY: Alignment = 'justify';
 /** Every page-header column takes an equal share of the page width. */
 export const FLEX_COLUMN_WIDTH: Size = '*';
 
+/** A column no wider than its content: the footer QR takes only the room its caption needs. */
+export const AUTO_COLUMN_WIDTH: Size = 'auto';
+
 export const LINE_BREAK = '\n';
 
 /** The header column is a third of the page, so «№ 105 (221)» is glued with non-breaking spaces — a wrap falls before the number, never inside it. */
 export const NON_BREAKING_SPACE = '\u00a0';
 
 export const EVENT_TITLE_PREFIX = `Воскресный парковый пробег №${NON_BREAKING_SPACE}`;
+
+/**
+ * The header weather line: «Погода: +26°, ветер 10 км/ч». Unlike the web line it carries no sky
+ * emoji — PT Serif has no glyph for one and pdfmake would print a blank box.
+ */
+export const WEATHER_PREFIX = 'Погода: ';
+
+export const WEATHER_WIND_PREFIX = 'ветер ';
+
+export const WEATHER_WIND_SUFFIX = ' км/ч';
+
+/** Rain in the hours around the start leaves puddles the 9:00 sky says nothing about. */
+export const WEATHER_WET_COURSE = 'трасса мокрая';
 
 export const PROTOCOL_TITLE = 'ПРОТОКОЛ';
 
@@ -84,8 +101,13 @@ export const HEADER_ROW_SPAN = 2;
 /** Two-row table header repeated on every page. */
 export const TABLE_HEADER_ROWS = 2;
 
-/** №, athlete (flexible), 2.3 км, 5 км, пол, место М, место Ж, финишей, клуб, примечание. */
-export const TABLE_WIDTHS: readonly Size[] = ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 70, 110];
+/**
+ * №, athlete (flexible), 2.3 км, 5 км, пол, место М, место Ж, финишей, клуб, примечание.
+ * The club column is 'auto' rather than a fixed 70pt: almost every runner leaves it blank, yet the
+ * fixed width reserved that room anyway and squeezed the flexible name column until «Хахуцкий
+ * Виктор» wrapped onto two lines. Auto collapses it to its header when unused and the names fit.
+ */
+export const TABLE_WIDTHS: readonly Size[] = ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 110];
 
 /** Display labels for the 'Пол' column. */
 export const GENDER_LABELS: Record<GenderType, string> = {
@@ -105,6 +127,24 @@ export const ABBREVIATION_DNF = 'DNF – участник не финиширо�
 export const ABBREVIATION_DSQ = 'DSQ – участник дисквалифицирован';
 
 export const ABBREVIATIONS_MARGIN: Margins = [0, 16, 0, 0];
+
+/**
+ * The protocol page of this event, encoded in the QR beside the abbreviations: a protocol printed
+ * for the park's noticeboard leads to the athlete pages, records and duels behind it. The route slug
+ * is the event's ISO date, so the link needs nothing the document does not already carry.
+ */
+export const RACE_PAGE_URL_PREFIX = `${CANONICAL_SITE_BASE_URL}/races/`;
+
+/** Side of the QR square in points — readable by a phone held over a printed A4. */
+export const QR_SIZE = 52;
+
+export const QR_CAPTION = 'Протокол на сайте';
+
+/** Smaller than the body: the caption labels the square, it is not part of the protocol text. */
+export const QR_CAPTION_FONT_SIZE = 8;
+
+/** Lifts the caption off the square it sits under. */
+export const QR_CAPTION_MARGIN: Margins = [0, 3, 0, 0];
 
 export const SIGNATURE_PREFIX = 'Председатель ';
 

@@ -6,6 +6,7 @@ import { PublishEventInput } from '../../core/github/publish-event.interface';
 import { DraftRows } from '../../core/history/draft-priors.interface';
 import { RaceEvent } from '../../core/models/race-event.interface';
 import { PDF_EVENT_MOCK, PDF_PREVIOUS_BESTS_MOCK, PDF_ROWS_MOCK } from '../../core/pdf/protocol-doc-definition.mock';
+import { WEATHER_MOCK } from '../../core/weather/fetch-event-weather.mock';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { CdnRefService } from '../../github/cdn-ref.service';
 import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
@@ -44,6 +45,7 @@ import {
   PROTOCOL_IMAGE_BLOB_MOCK,
   PUBLISH_INPUTS_BATCH_MOCK,
   RESULT_BLOB_MOCK,
+  RESULT_WEATHER_BODY_MOCK,
   RUN_PHOTO_MOCK,
   SECOND_EVENT_MOCK,
   SECOND_OBJECT_URL_MOCK,
@@ -86,6 +88,7 @@ describe('ResultPage', () => {
   const cdnRef = cdnRefServiceMock();
   const createObjectURL = vi.fn(() => OBJECT_URL_MOCK);
   const revokeObjectURL = vi.fn();
+  const weatherFetch = vi.fn(() => Promise.resolve(new Response(JSON.stringify(RESULT_WEATHER_BODY_MOCK))));
 
   let fixture: ComponentFixture<ResultPage>;
 
@@ -109,6 +112,8 @@ describe('ResultPage', () => {
     dbFreshness.state.set(DbFreshness.Fresh);
     dbFreshness.pinnedDbAvailable.mockResolvedValue(true);
     publishDuration.averageMs.set(null);
+    // The page reads the event's weather off Open-Meteo, the one live request its PDF depends on.
+    vi.stubGlobal('fetch', weatherFetch);
     // The router's fake platform navigation does `new URL()`, so the stub must stay constructible.
     vi.stubGlobal('URL', Object.assign(class extends URL {}, { createObjectURL, revokeObjectURL }));
     TestBed.configureTestingModule({
@@ -165,12 +170,13 @@ describe('ResultPage', () => {
 
     expect(loadFinishCountsBefore).toHaveBeenCalledWith(PDF_EVENT_MOCK.dateIso);
     expect(loadPreviousBestsBefore).toHaveBeenCalledWith(PDF_EVENT_MOCK.dateIso);
-    expect(generateProtocolBlob).toHaveBeenCalledWith(
-      PDF_EVENT_MOCK,
-      PDF_ROWS_MOCK,
-      EXPECTED_RESULT_FINISH_COUNTS,
-      PDF_PREVIOUS_BESTS_MOCK,
-    );
+    expect(generateProtocolBlob).toHaveBeenCalledWith({
+      event: PDF_EVENT_MOCK,
+      rows: PDF_ROWS_MOCK,
+      finishCounts: EXPECTED_RESULT_FINISH_COUNTS,
+      previousBests: PDF_PREVIOUS_BESTS_MOCK,
+      weather: WEATHER_MOCK,
+    });
     expect(reset, 'a stale publish state of the previous event is cleared on entry').toHaveBeenCalled();
     expect(page.status()).toBe(ResultStatus.ready);
     expect(createObjectURL).toHaveBeenCalledWith(RESULT_BLOB_MOCK);
@@ -234,7 +240,13 @@ describe('ResultPage', () => {
     fixture = await createPage();
 
     expect(fixture.componentInstance.status(), 'the history is garnish — the protocol still renders').toBe(ResultStatus.ready);
-    expect(generateProtocolBlob).toHaveBeenCalledWith(PDF_EVENT_MOCK, PDF_ROWS_MOCK, {}, {});
+    expect(generateProtocolBlob).toHaveBeenCalledWith({
+      event: PDF_EVENT_MOCK,
+      rows: PDF_ROWS_MOCK,
+      finishCounts: {},
+      previousBests: {},
+      weather: WEATHER_MOCK,
+    });
   });
 
   it('shows the error state when generation fails, guards sharing/publishing and navigates back to the preview', async () => {

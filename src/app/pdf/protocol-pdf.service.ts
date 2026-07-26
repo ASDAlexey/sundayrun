@@ -20,22 +20,25 @@ export class ProtocolPdfService {
 
   /** Generates the protocol PDF for `slug` and saves it; rejects when the event is not published. */
   async download(slug: string): Promise<void> {
-    const [file, participantRuns] = await Promise.all([
+    const [file, participantRuns, weather] = await Promise.all([
       this.#results.loadResults(slug),
       // The runs are garnish: a failed read blanks the «Участий» column and the «ЛР» dates, never the PDF.
       this.#results.loadParticipantRuns(slug).catch(() => []),
+      // So is the weather: a failed read, or an event stored before the fetch existed, drops its header line.
+      this.#results.loadWeather(slug).catch(() => null),
     ]);
 
     if (file === null) {
       throw new Error(PROTOCOL_PDF_NOT_FOUND_ERROR);
     }
 
-    const blob = await this.#pdf.generateProtocolBlob(
-      file.event,
-      file.rows,
-      finishCountsAt(participantRuns, file.event.dateIso),
-      buildPreviousBests(participantRuns, file.event.dateIso),
-    );
+    const blob = await this.#pdf.generateProtocolBlob({
+      event: file.event,
+      rows: file.rows,
+      finishCounts: finishCountsAt(participantRuns, file.event.dateIso),
+      previousBests: buildPreviousBests(participantRuns, file.event.dateIso),
+      weather,
+    });
 
     triggerBlobDownload(this.#document, blob, this.#pdf.suggestedFileName(file.event));
   }

@@ -4,11 +4,15 @@ import { PreviousBest } from '../history/previous-bests.interface';
 import { Gender, GenderType } from '../models/gender.enum';
 import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
+import { EventWeather } from '../weather/event-weather.interface';
+import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
+import { ProtocolDocInput } from './protocol-doc-definition.interface';
 import {
   ABBREVIATION_DNF,
   ABBREVIATION_DSQ,
   ABBREVIATIONS_MARGIN,
   ABBREVIATIONS_TITLE,
+  AUTO_COLUMN_WIDTH,
   DNF_LABEL,
   EMPTY_CELL,
   FLEX_COLUMN_WIDTH,
@@ -37,6 +41,10 @@ import {
   PDF_PAGE_ORIENTATION,
   PROTOCOL_TITLE,
   PROTOCOL_TITLE_MARGIN,
+  QR_CAPTION,
+  QR_CAPTION_FONT_SIZE,
+  QR_CAPTION_MARGIN,
+  QR_SIZE,
   SIGNATURE_MARGIN,
   TABLE_HEADER_ROWS,
   TABLE_WIDTHS,
@@ -123,10 +131,36 @@ export const PDF_PREVIOUS_BESTS_MOCK: Record<string, PreviousBest> = {
   'хахуцкий виктор': { slug: '2020-03-15', dateIso: '2020-03-15', timeMs: 1075000 },
 };
 
+/** The whole builder input of the four-row sample protocol. */
+export const PDF_DOC_INPUT_MOCK: ProtocolDocInput = {
+  event: PDF_EVENT_MOCK,
+  rows: PDF_ROWS_MOCK,
+  finishCounts: PDF_FINISH_COUNTS_MOCK,
+  previousBests: PDF_PREVIOUS_BESTS_MOCK,
+  weather: WEATHER_MOCK,
+};
+
 /** The previous 17:55 gains the date of the run it fell at. */
 export const EXPECTED_MALE_NOTE = 'ЛР (было 17:55 · 15 мар 2020); Лучший результат 2020 г.';
 
 export const EXPECTED_LONG_DATE = '20 сентября 2020 г.';
+
+/** `WEATHER_MOCK` rounded and stripped of the web line's emoji: 25.7 °C and 10.1 km/h on a dry course. */
+export const EXPECTED_WEATHER_LINE = 'Погода: +26°, ветер 10 км/ч';
+
+/** The date column carries the weather on its second line. */
+export const EXPECTED_DATE_COLUMN = `${EXPECTED_LONG_DATE}\n${EXPECTED_WEATHER_LINE}`;
+
+/** The QR target: the canonical origin plus the race route, whose slug is the event's ISO date. */
+export const EXPECTED_QR_URL = 'https://asdalexey.github.io/sundayrun/races/2020-09-20';
+
+/** A stored row without a temperature: nothing anchors the line, so the header keeps the date alone. */
+export const TEMPERATURELESS_WEATHER_MOCK: EventWeather = { ...WEATHER_MOCK, temperatureC: null };
+
+/** No wind reading and rain in the wet-course window: the line drops «ветер …» and gains the puddles. */
+export const WET_WINDLESS_WEATHER_MOCK: EventWeather = { ...WEATHER_MOCK, windKmh: null, recentPrecipitationMm: 1.4 };
+
+export const EXPECTED_WET_WINDLESS_WEATHER_LINE = 'Погода: +26°, трасса мокрая';
 
 /** The race number is glued with non-breaking spaces (u00a0), so the narrow header never wraps inside it. */
 export const EXPECTED_CENTER_HEADER = 'Воскресный парковый пробег № 160 (2.16)\nг. Таганрог';
@@ -219,11 +253,29 @@ export const EXPECTED_DNF_ROW_CELLS: TableCell[] = [
   { text: DNF_ROW_MOCK.note },
 ];
 
-/** The whole document body: page header, title, intro, participants table, abbreviations (the signature is a footer). */
+/** The abbreviations list and the protocol-page QR beside it, the body's closing row. */
+export const EXPECTED_ABBREVIATIONS_WITH_QR: Content = {
+  columns: [
+    {
+      width: FLEX_COLUMN_WIDTH,
+      stack: [{ text: ABBREVIATIONS_TITLE }, { text: ABBREVIATION_DNF }, { text: ABBREVIATION_DSQ }],
+    },
+    {
+      width: AUTO_COLUMN_WIDTH,
+      stack: [
+        { qr: EXPECTED_QR_URL, fit: QR_SIZE, alignment: PDF_ALIGN_RIGHT },
+        { text: QR_CAPTION, fontSize: QR_CAPTION_FONT_SIZE, alignment: PDF_ALIGN_RIGHT, margin: QR_CAPTION_MARGIN },
+      ],
+    },
+  ],
+  margin: ABBREVIATIONS_MARGIN,
+};
+
+/** The whole document body: page header, title, intro, participants table, abbreviations with the QR (the signature is a footer). */
 export const EXPECTED_DOC_CONTENT: Content[] = [
   {
     columns: [
-      { width: FLEX_COLUMN_WIDTH, text: EXPECTED_LONG_DATE },
+      { width: FLEX_COLUMN_WIDTH, text: EXPECTED_DATE_COLUMN },
       { width: FLEX_COLUMN_WIDTH, text: EXPECTED_CENTER_HEADER, alignment: PDF_ALIGN_CENTER },
       { width: FLEX_COLUMN_WIDTH, text: EXPECTED_RIGHT_HEADER, alignment: PDF_ALIGN_RIGHT },
     ],
@@ -244,9 +296,7 @@ export const EXPECTED_DOC_CONTENT: Content[] = [
       ],
     },
   },
-  { text: ABBREVIATIONS_TITLE, margin: ABBREVIATIONS_MARGIN },
-  { text: ABBREVIATION_DNF },
-  { text: ABBREVIATION_DSQ },
+  EXPECTED_ABBREVIATIONS_WITH_QR,
 ];
 
 /** The last page's footer: club chairman on the left, name on the right. */
@@ -323,3 +373,12 @@ export const FULL_PAGE_ROWS_MOCK: ProtocolRow[] = FULL_PAGE_RAW_ROWS.map(
 export const FULL_PAGE_FINISH_COUNTS_MOCK: Record<string, number> = Object.fromEntries(
   FULL_PAGE_RAW_ROWS.map(([fullName, , , , , , finishes]) => [fullName.toLowerCase(), finishes]),
 );
+
+/** The full-size protocol as the builder takes it, weather line and all — the worst case for the single-page fit. */
+export const FULL_PAGE_DOC_INPUT_MOCK: ProtocolDocInput = {
+  event: FULL_PAGE_EVENT_MOCK,
+  rows: FULL_PAGE_ROWS_MOCK,
+  finishCounts: FULL_PAGE_FINISH_COUNTS_MOCK,
+  previousBests: {},
+  weather: WEATHER_MOCK,
+};

@@ -1,9 +1,27 @@
 import { PublishEventInput } from '../../core/github/publish-event.interface';
 import { RaceEvent } from '../../core/models/race-event.interface';
 import { PDF_EVENT_MOCK, PDF_ROWS_MOCK } from '../../core/pdf/protocol-doc-definition.mock';
+import { WEATHER_MOCK } from '../../core/weather/fetch-event-weather.mock';
+import { RACE_START_HOUR } from '../../core/weather/weather-api.constant';
 import { SourceFile } from '../../state/source-file.interface';
 
 export const RESULT_BLOB_MOCK = new Blob(['%PDF-1.7']);
+
+/**
+ * The Open-Meteo answer the page's own weather fetch gets: one hourly row, at 9:00 on the fixture
+ * event's date, carrying `WEATHER_MOCK`. The row falls inside the wet-course window too, so the
+ * extracted reading is `WEATHER_MOCK` exactly — a dry course included.
+ */
+export const RESULT_WEATHER_BODY_MOCK = {
+  hourly: {
+    time: [`${PDF_EVENT_MOCK.dateIso}T${RACE_START_HOUR}`],
+    temperature_2m: [WEATHER_MOCK.temperatureC],
+    apparent_temperature: [WEATHER_MOCK.apparentC],
+    precipitation: [WEATHER_MOCK.precipitationMm],
+    wind_speed_10m: [WEATHER_MOCK.windKmh],
+    weather_code: [WEATHER_MOCK.weatherCode],
+  },
+};
 
 export const PROTOCOL_IMAGE_BLOB_MOCK = new Blob(['png-bytes'], { type: 'image/png' });
 

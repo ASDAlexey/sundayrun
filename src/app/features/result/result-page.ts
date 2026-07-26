@@ -12,7 +12,9 @@ import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { composeRaceAnnouncement } from '../../core/share/race-announcement';
 import { LINE_SEPARATOR } from '../../core/share/race-announcement.constant';
 import { formatDuration } from '../../core/time/duration';
+import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateLong } from '../../core/time/russian-date';
+import { fetchEventWeather } from '../../core/weather/fetch-event-weather';
 import { AdminTokenService } from '../../github/admin-token.service';
 import { CdnRefService } from '../../github/cdn-ref.service';
 import { DbFreshness } from '../../github/db-freshness.enum';
@@ -396,12 +398,16 @@ export class ResultPage implements OnDestroy {
     const rows = this.#store.protocolRows();
 
     try {
-      const blob = await this.#pdf.generateProtocolBlob(
+      const blob = await this.#pdf.generateProtocolBlob({
         event,
         rows,
-        await this.#finishCounts(event.dateIso),
-        await this.#previousBests(event.dateIso),
-      );
+        finishCounts: await this.#finishCounts(event.dateIso),
+        previousBests: await this.#previousBests(event.dateIso),
+        // The event is not published yet, so its weather is not in the db either: this preview — the
+        // very file the organiser downloads and reposts — reads it straight off Open-Meteo, the same
+        // source the publish will store. A failed fetch resolves to null and drops the header line.
+        weather: await fetchEventWeather(event.dateIso, isoToday()),
+      });
 
       return { blob, url: URL.createObjectURL(blob), description: composeRaceAnnouncement(event, rows), imageBlob: null };
     } catch {

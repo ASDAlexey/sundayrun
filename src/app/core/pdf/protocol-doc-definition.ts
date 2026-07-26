@@ -1,4 +1,4 @@
-import type { Content, ContentColumns, ContentTable, ContentText, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
+import type { Column, Content, ContentColumns, ContentTable, ContentText, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { formatRaceNumber } from '../github/race-number';
 import { normalizeAthleteKey } from '../history/athlete-key';
 import { prNoteWithDate } from '../history/pr-note';
@@ -7,11 +7,17 @@ import { ProtocolRow } from '../models/protocol-row.interface';
 import { RaceEvent } from '../models/race-event.interface';
 import { EMPTY_TIME } from '../protocol/protocol-builder.constant';
 import { formatRussianDateLong, formatRussianDateShort } from '../time/russian-date';
+import { EventWeather } from '../weather/event-weather.interface';
+import { temperatureText } from '../weather/temperature-text';
+import { isWetCourse } from '../weather/weather-line';
+import { WEATHER_PART_SEPARATOR } from '../weather/weather-line.constant';
+import { ProtocolDocInput } from './protocol-doc-definition.interface';
 import {
   ABBREVIATION_DNF,
   ABBREVIATION_DSQ,
   ABBREVIATIONS_MARGIN,
   ABBREVIATIONS_TITLE,
+  AUTO_COLUMN_WIDTH,
   DNF_LABEL,
   EMPTY_CELL,
   EMPTY_FOOTER,
@@ -51,53 +57,57 @@ import {
   PDF_PAGE_SIZE,
   PROTOCOL_TITLE,
   PROTOCOL_TITLE_MARGIN,
+  QR_CAPTION,
+  QR_CAPTION_FONT_SIZE,
+  QR_CAPTION_MARGIN,
+  QR_SIZE,
+  RACE_PAGE_URL_PREFIX,
   SIGNATURE_MARGIN,
   SIGNATURE_PREFIX,
   TABLE_HEADER_ROWS,
   TABLE_WIDTHS,
+  WEATHER_PREFIX,
+  WEATHER_WET_COURSE,
+  WEATHER_WIND_PREFIX,
+  WEATHER_WIND_SUFFIX,
 } from './protocol-doc-definition.constant';
 
 /**
  * pdfmake document definition of the one-page A4 race protocol
  * (mirrors the reference TCPDF sample): page header, 'ПРОТОКОЛ' title,
- * justified intro, participants table, abbreviations and signature.
+ * justified intro, participants table, abbreviations beside the site QR and signature.
  * The signature sits in the bottom margin band of the LAST page instead of the flow: in the flow it
  * carried a fixed gap above it and a protocol whose table ended a few points too low spilled the
  * signature — and only the signature — onto a second page. As a footer it costs the body nothing and
  * a protocol that fits by its table fits as a whole.
- * `finishCounts` (athleteKey → 5 km finishes as of the event, this one included)
- * feeds the «Участий» column; athletes outside the map get a blank cell.
- * `previousBests` (athleteKey → the best run before the event) dates the «ЛР (было X)»
- * note; athletes outside the map keep the note as stored.
  */
-export function buildProtocolDocDefinition(
-  event: RaceEvent,
-  rows: ProtocolRow[],
-  finishCounts: Record<string, number>,
-  previousBests: Record<string, PreviousBest>,
-): TDocumentDefinitions {
+export function buildProtocolDocDefinition({ event, rows, finishCounts, previousBests, weather }: ProtocolDocInput): TDocumentDefinitions {
   return {
     pageSize: PDF_PAGE_SIZE,
     pageOrientation: PDF_PAGE_ORIENTATION,
     pageMargins: PDF_PAGE_MARGINS,
     defaultStyle: { font: PDF_FONT_FAMILY, fontSize: PDF_FONT_SIZE },
     content: [
-      buildPageHeader(event),
+      buildPageHeader(event, weather),
       buildTitle(),
       buildIntro(event),
       buildParticipantsTitle(),
       buildParticipantsTable(rows, finishCounts, previousBests),
-      ...buildAbbreviations(),
+      buildAbbreviationsWithQr(event),
     ],
     footer: (currentPage: number, pageCount: number): Content => (currentPage === pageCount ? buildSignature(event) : EMPTY_FOOTER),
   };
 }
 
-/** Left: long date; center: event name + city; right: park + club. */
-function buildPageHeader(event: RaceEvent): ContentColumns {
+/**
+ * Left: long date and, under it, the start weather; center: event name + city; right: park + club.
+ * The weather rides the date column because it is the only one with a spare line — an event without
+ * a stored reading keeps the date there alone.
+ */
+function buildPageHeader(event: RaceEvent, weather: EventWeather | null): ContentColumns {
   return {
     columns: [
-      { width: FLEX_COLUMN_WIDTH, text: formatRussianDateLong(event.dateIso) },
+      { width: FLEX_COLUMN_WIDTH, text: `${formatRussianDateLong(event.dateIso)}${weatherHeaderLine(weather)}` },
       {
         width: FLEX_COLUMN_WIDTH,
         text: `${EVENT_TITLE_PREFIX}${raceNumberNoWrap(event)}${LINE_BREAK}${event.city}`,
@@ -106,6 +116,35 @@ function buildPageHeader(event: RaceEvent): ContentColumns {
       { width: FLEX_COLUMN_WIDTH, text: `${event.park}${LINE_BREAK}${event.clubName}`, alignment: PDF_ALIGN_RIGHT },
     ],
   };
+}
+
+/**
+ * «\nПогода: +26°, ветер 10 км/ч, трасса мокрая» — the stored 9:00 course reading as the second line
+ * of the date column, empty (the leading break included) without a temperature to anchor it. Unlike
+ * the web line it carries no sky emoji: PT Serif has no glyph for one and pdfmake would print a box.
+ */
+function weatherHeaderLine(weather: EventWeather | null): string {
+  if (weather === null) {
+    return EMPTY_CELL;
+  }
+
+  const { temperatureC, windKmh } = weather;
+
+  if (temperatureC === null) {
+    return EMPTY_CELL;
+  }
+
+  const parts = [temperatureText(temperatureC)];
+
+  if (windKmh !== null) {
+    parts.push(`${WEATHER_WIND_PREFIX}${Math.round(windKmh)}${WEATHER_WIND_SUFFIX}`);
+  }
+
+  if (isWetCourse(weather)) {
+    parts.push(WEATHER_WET_COURSE);
+  }
+
+  return `${LINE_BREAK}${WEATHER_PREFIX}${parts.join(WEATHER_PART_SEPARATOR)}`;
 }
 
 /** «105 (221)» glued with non-breaking spaces, so a narrow header wraps before the number — never inside it. */
@@ -195,8 +234,31 @@ function isDnfRow(row: ProtocolRow): boolean {
   return row.time23 === EMPTY_TIME && row.time5 === EMPTY_TIME;
 }
 
+/**
+ * The abbreviations and the QR of this event's protocol page share one row: the list is three short
+ * lines and the space to its right was blank anyway, so the QR costs the page only the height it
+ * exceeds the list by — a printed protocol on the park's noticeboard leads to the site for that.
+ */
+function buildAbbreviationsWithQr(event: RaceEvent): ContentColumns {
+  return {
+    columns: [{ width: FLEX_COLUMN_WIDTH, stack: buildAbbreviations() }, buildQrColumn(event)],
+    margin: ABBREVIATIONS_MARGIN,
+  };
+}
+
 function buildAbbreviations(): ContentText[] {
-  return [{ text: ABBREVIATIONS_TITLE, margin: ABBREVIATIONS_MARGIN }, { text: ABBREVIATION_DNF }, { text: ABBREVIATION_DSQ }];
+  return [{ text: ABBREVIATIONS_TITLE }, { text: ABBREVIATION_DNF }, { text: ABBREVIATION_DSQ }];
+}
+
+/** The square is right-aligned on its caption — the widest line of the column, and what sets its width. */
+function buildQrColumn(event: RaceEvent): Column {
+  return {
+    width: AUTO_COLUMN_WIDTH,
+    stack: [
+      { qr: `${RACE_PAGE_URL_PREFIX}${event.dateIso}`, fit: QR_SIZE, alignment: PDF_ALIGN_RIGHT },
+      { text: QR_CAPTION, fontSize: QR_CAPTION_FONT_SIZE, alignment: PDF_ALIGN_RIGHT, margin: QR_CAPTION_MARGIN },
+    ],
+  };
 }
 
 function buildSignature(event: RaceEvent): ContentColumns {

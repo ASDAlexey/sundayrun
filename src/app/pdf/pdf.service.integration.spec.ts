@@ -5,13 +5,10 @@ import { TestBed } from '@angular/core/testing';
 
 import {
   EXPECTED_LONG_DATE,
+  EXPECTED_WEATHER_LINE,
+  FULL_PAGE_DOC_INPUT_MOCK,
   FULL_PAGE_EVENT_MOCK,
-  FULL_PAGE_FINISH_COUNTS_MOCK,
-  FULL_PAGE_ROWS_MOCK,
-  PDF_EVENT_MOCK,
-  PDF_FINISH_COUNTS_MOCK,
-  PDF_PREVIOUS_BESTS_MOCK,
-  PDF_ROWS_MOCK,
+  PDF_DOC_INPUT_MOCK,
 } from '../core/pdf/protocol-doc-definition.mock';
 import { loadPtSerifVfs } from './pdf-fonts';
 import { PdfFontsService } from './pdf-fonts.service';
@@ -87,6 +84,7 @@ describe('PdfService against the real pdfmake bundle', () => {
       expect(Math.round(viewport.height)).toBe(A4_PORTRAIT_HEIGHT_PT);
       // Readable Cyrillic proves the subset carries a ToUnicode map rather than blank glyph boxes.
       expect(await pageText(page)).toContain(EXPECTED_LONG_DATE);
+      expect(await pageText(page), 'the stored reading rides the header').toContain(EXPECTED_WEATHER_LINE);
     },
     RENDER_TIMEOUT_MS,
   );
@@ -97,12 +95,7 @@ describe('PdfService against the real pdfmake bundle', () => {
       installPdfJsBrowserApis();
 
       const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-      const blob = await TestBed.inject(PdfService).generateProtocolBlob(
-        FULL_PAGE_EVENT_MOCK,
-        FULL_PAGE_ROWS_MOCK,
-        FULL_PAGE_FINISH_COUNTS_MOCK,
-        {},
-      );
+      const blob = await TestBed.inject(PdfService).generateProtocolBlob(FULL_PAGE_DOC_INPUT_MOCK);
       const document = await pdfjs.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
 
       expect(document.numPages).toBe(EXPECTED_PAGE_COUNT);
@@ -124,7 +117,7 @@ function installPdfJsBrowserApis(): void {
 }
 
 function renderProtocol(): Promise<Blob> {
-  return TestBed.inject(PdfService).generateProtocolBlob(PDF_EVENT_MOCK, PDF_ROWS_MOCK, PDF_FINISH_COUNTS_MOCK, PDF_PREVIOUS_BESTS_MOCK);
+  return TestBed.inject(PdfService).generateProtocolBlob(PDF_DOC_INPUT_MOCK);
 }
 
 /** pdf.js hands back one item per drawn text run, so the page reads as their concatenation. */

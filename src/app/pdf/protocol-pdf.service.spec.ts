@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { buildEventResultsFile } from '../core/github/results-file';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
+import { WEATHER_MOCK } from '../core/weather/fetch-event-weather.mock';
 import { ResultsService } from '../github/results.service';
 import { OBJECT_URL_MOCK } from './blob-download.mock';
 import { PdfService } from './pdf.service';
@@ -12,6 +13,7 @@ import { PROTOCOL_PDF_BLOB_MOCK, PROTOCOL_PDF_FILE_NAME, PROTOCOL_PDF_SLUG } fro
 describe('ProtocolPdfService', () => {
   const loadResults = vi.fn();
   const loadParticipantRuns = vi.fn();
+  const loadWeather = vi.fn();
   const generateProtocolBlob = vi.fn();
   const suggestedFileName = vi.fn();
 
@@ -23,6 +25,7 @@ describe('ProtocolPdfService', () => {
     vi.useFakeTimers();
     downloadName = '';
     loadParticipantRuns.mockResolvedValue([]);
+    loadWeather.mockResolvedValue(WEATHER_MOCK);
     generateProtocolBlob.mockResolvedValue(PROTOCOL_PDF_BLOB_MOCK);
     suggestedFileName.mockReturnValue(PROTOCOL_PDF_FILE_NAME);
     vi.spyOn(URL, 'createObjectURL').mockReturnValue(OBJECT_URL_MOCK);
@@ -32,7 +35,7 @@ describe('ProtocolPdfService', () => {
     });
     TestBed.configureTestingModule({
       providers: [
-        { provide: ResultsService, useValue: { loadResults, loadParticipantRuns } },
+        { provide: ResultsService, useValue: { loadResults, loadParticipantRuns, loadWeather } },
         { provide: PdfService, useValue: { generateProtocolBlob, suggestedFileName } },
       ],
     });
@@ -54,19 +57,27 @@ describe('ProtocolPdfService', () => {
 
     expect(loadResults).toHaveBeenCalledExactlyOnceWith(PROTOCOL_PDF_SLUG);
     expect(loadParticipantRuns).toHaveBeenCalledExactlyOnceWith(PROTOCOL_PDF_SLUG);
-    expect(generateProtocolBlob).toHaveBeenCalledExactlyOnceWith(file.event, file.rows, {}, {});
+    expect(loadWeather).toHaveBeenCalledExactlyOnceWith(PROTOCOL_PDF_SLUG);
+    expect(generateProtocolBlob).toHaveBeenCalledExactlyOnceWith({
+      event: file.event,
+      rows: file.rows,
+      finishCounts: {},
+      previousBests: {},
+      weather: WEATHER_MOCK,
+    });
     expect(suggestedFileName).toHaveBeenCalledExactlyOnceWith(file.event);
     expect(URL.createObjectURL).toHaveBeenCalledExactlyOnceWith(PROTOCOL_PDF_BLOB_MOCK);
     expect(downloadName, 'the saved file carries the suggested name').toBe(PROTOCOL_PDF_FILE_NAME);
 
     loadParticipantRuns.mockRejectedValueOnce(new Error('history read failed'));
+    loadWeather.mockRejectedValueOnce(new Error('weather read failed'));
 
     await service.download(PROTOCOL_PDF_SLUG);
 
     expect(
       generateProtocolBlob,
-      'the runs are garnish — a failed history read only blanks the column and the dates',
-    ).toHaveBeenLastCalledWith(file.event, file.rows, {}, {});
+      'both reads are garnish — their failure only blanks the column, the dates and the weather line',
+    ).toHaveBeenLastCalledWith({ event: file.event, rows: file.rows, finishCounts: {}, previousBests: {}, weather: null });
   });
 
   it('rejects without generating anything when the event was never published', async () => {

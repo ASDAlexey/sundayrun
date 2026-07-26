@@ -2,10 +2,9 @@ import { Service, inject } from '@angular/core';
 
 import type { PdfMakeStatic } from 'pdfmake/build/pdfmake';
 
-import { PreviousBest } from '../core/history/previous-bests.interface';
-import { ProtocolRow } from '../core/models/protocol-row.interface';
 import { RaceEvent } from '../core/models/race-event.interface';
 import { buildProtocolDocDefinition } from '../core/pdf/protocol-doc-definition';
+import { ProtocolDocInput } from '../core/pdf/protocol-doc-definition.interface';
 import { PdfFontsService } from './pdf-fonts.service';
 import { PDF_FILE_EXTENSION, PROTOCOL_FILE_PREFIX } from './pdf.service.constant';
 
@@ -14,19 +13,14 @@ import { PDF_FILE_EXTENSION, PROTOCOL_FILE_PREFIX } from './pdf.service.constant
 export class PdfService {
   readonly #fonts = inject(PdfFontsService);
 
-  /** `finishCounts` feeds the «Участий» column and `previousBests` dates the «ЛР» notes; empty maps degrade gracefully. */
-  async generateProtocolBlob(
-    event: RaceEvent,
-    rows: ProtocolRow[],
-    finishCounts: Record<string, number>,
-    previousBests: Record<string, PreviousBest>,
-  ): Promise<Blob> {
+  /** Everything past the event and its rows is garnish (see `ProtocolDocInput`): empty maps and a null weather degrade gracefully. */
+  async generateProtocolBlob(input: ProtocolDocInput): Promise<Blob> {
     const [{ fonts, vfs }, pdfMake] = await Promise.all([this.#fonts.load(), loadPdfMake()]);
 
     pdfMake.addVirtualFileSystem(vfs);
     pdfMake.setFonts(fonts);
 
-    return pdfMake.createPdf(buildProtocolDocDefinition(event, rows, finishCounts, previousBests)).getBlob();
+    return pdfMake.createPdf(buildProtocolDocDefinition(input)).getBlob();
   }
 
   /** 'protokol-2026-06-14.pdf' straight from the event ISO date. */
