@@ -94,6 +94,13 @@ JSON остаётся источником истины (git-diff, отладк�
 - `athletes` + `runs` — из `athletes.json` (атлет, его забеги, лучшие результаты)
 - индексы: `athletes.key`, `runs.athlete_key`, `results.slug`, `events.dateIso`
 
+> Это план миграции, каким он был написан. Как оно вышло на самом деле — в
+> [DB_ONLY_MIGRATION.md](./DB_ONLY_MIGRATION.md): JSON источником истины не остался, БД стала
+> единственным хранилищем. Актуальная схема живёт в коде (`core/sqlite/protocol-db.schema.ts`,
+> версия в `PROTOCOL_DB_SCHEMA_VERSION`, сейчас **v6**) и к перечисленным таблицам добавила
+> `participations` (все явки, включая DNF), `event_weather` (погода 9:00 + `recent_precipitation_mm`
+> для пометки «трасса мокрая») и `meta` (материализованные сводки вроде `overallStats`).
+
 ### Запись (публикация)
 
 В `publish-event.ts` пятым файлом коммитить обновлённый `data/sundayrun.db`:
