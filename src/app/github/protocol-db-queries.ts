@@ -121,51 +121,34 @@ export async function selectAthleteRunFinisherCounts(db: ProtocolDrizzle, key: s
 }
 
 /**
- * The records-page leaderboard source: every ranked athlete with exactly the runs the boards
- * read — one per season, the earliest run of that year's best. `participationSlugs` stays
- * empty (no board reads it), so the participations table is never fetched.
+ * The records-page leaderboard source: every ranked athlete with every 5 km run behind them.
+ *
+ * The rollup this used to do — one run per athlete per year, that year's best — is what a plain
+ * «лучшее время» board reads, and nothing more: it hid an athlete from a season board whenever
+ * their year's best fell in another season, and it made the «Кто чаще всех» tally count one finish
+ * per year for everyone. The full chronology is one scan of `runs` against the two the rollup cost,
+ * so the boards, the season cuts, the attendance tally and the form index all read real history.
+ * `participationSlugs` stays empty (no board reads it), so the participations table is never fetched.
  */
 export async function selectAthleteRecords(db: ProtocolDrizzle): Promise<AthleteRecord[]> {
-  const yearBests = db.$with('year_bests').as(
-    db
-      .select({
-        athleteKey: runs.athleteKey,
-        year: sql<string>`substr(${runs.dateIso}, 1, 4)`.as('year'),
-        bestMs: min(runs.timeMs).as('best_ms'),
-      })
-      .from(runs)
-      .where(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM))
-      .groupBy(runs.athleteKey, sql`substr(${runs.dateIso}, 1, 4)`),
-  );
-
-  const [athleteRows, yearBestRows] = await Promise.all([
+  const [athleteRows, runRows] = await Promise.all([
     db
       .select({ key: athletes.key, displayName: athletes.displayName, gender: athletes.gender, bestMs: athletes.bestMs })
       .from(athletes)
       .where(isNotNull(athletes.bestMs)),
     db
-      .with(yearBests)
-      .select({ athleteKey: yearBests.athleteKey, dateIso: min(runs.dateIso), slug: runs.slug, timeMs: yearBests.bestMs })
-      .from(yearBests)
-      .innerJoin(
-        runs,
-        and(eq(runs.athleteKey, yearBests.athleteKey), eq(runs.distanceKm, FIVE_KM_DISTANCE_KM), eq(runs.timeMs, yearBests.bestMs)),
-      )
-      .groupBy(yearBests.athleteKey, sql`${yearBests.year}`),
+      .select({ athleteKey: runs.athleteKey, dateIso: runs.dateIso, slug: runs.slug, timeMs: runs.timeMs })
+      .from(runs)
+      .where(eq(runs.distanceKm, FIVE_KM_DISTANCE_KM))
+      .orderBy(asc(runs.dateIso)),
   ]);
   const runsByKey = new Map<string, AthleteRun[]>();
 
-  for (const yearBest of yearBestRows) {
-    const athleteKey = asString(yearBest.athleteKey);
-    const seasonRuns = runsByKey.get(athleteKey) ?? [];
+  for (const run of runRows) {
+    const athleteRuns = runsByKey.get(run.athleteKey) ?? [];
 
-    seasonRuns.push({
-      dateIso: asString(yearBest.dateIso),
-      slug: asString(yearBest.slug),
-      timeMs: asNumber(yearBest.timeMs),
-      distanceKm: FIVE_KM_DISTANCE_KM,
-    });
-    runsByKey.set(athleteKey, seasonRuns);
+    athleteRuns.push({ dateIso: run.dateIso, slug: run.slug, timeMs: run.timeMs, distanceKm: FIVE_KM_DISTANCE_KM });
+    runsByKey.set(run.athleteKey, athleteRuns);
   }
 
   return athleteRows.map((row) => toLeaderboardRecord(row, runsByKey));
@@ -405,6 +388,7 @@ export async function selectArchiveEvents(db: ProtocolDrizzle, limit?: number): 
       precipitationMm: eventWeather.precipitationMm,
       windKmh: eventWeather.windKmh,
       weatherCode: eventWeather.weatherCode,
+      recentPrecipitationMm: eventWeather.recentPrecipitationMm,
     })
     .from(events)
     .leftJoin(eventWeather, eq(eventWeather.slug, events.slug))
@@ -610,6 +594,7 @@ function toArchiveEntry(row: ArchiveEntryRow): ArchiveIndexEntry {
             precipitationMm: row.precipitationMm,
             windKmh: row.windKmh,
             weatherCode: row.weatherCode,
+            recentPrecipitationMm: row.recentPrecipitationMm,
           },
     files: eventFilePaths(row.dateIso),
   };

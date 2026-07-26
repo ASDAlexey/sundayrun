@@ -198,15 +198,31 @@ export const EXPECTED_DB_PACING_ROWS: PacingRow[] = [
  * older archive event, left unseeded, exercises the null branch.
  */
 export const SEED_WEATHER: readonly string[] = [
-  `INSERT INTO event_weather VALUES (${q('2024-05-05')}, -2.5, -6, 0, 14.3, 3)`,
-  `INSERT INTO event_weather VALUES (${q('2024-06-06')}, 21.4, NULL, NULL, NULL, NULL)`,
-  `INSERT INTO event_weather VALUES (${q(NEWER_ENTRY.slug)}, 24.6, 25.1, 0, 9.4, 1)`,
+  `INSERT INTO event_weather VALUES (${q('2024-05-05')}, -2.5, -6, 0, 14.3, 3, 1.8)`,
+  `INSERT INTO event_weather VALUES (${q('2024-06-06')}, 21.4, NULL, NULL, NULL, NULL, NULL)`,
+  `INSERT INTO event_weather VALUES (${q(NEWER_ENTRY.slug)}, 24.6, 25.1, 0, 9.4, 1, 0)`,
 ];
 
 export const EXPECTED_DB_WEATHER_ROWS: EventWeatherRow[] = [
-  { slug: '2024-05-05', temperatureC: -2.5, apparentC: -6, precipitationMm: 0, windKmh: 14.3, weatherCode: 3 },
-  { slug: '2024-06-06', temperatureC: 21.4, apparentC: null, precipitationMm: null, windKmh: null, weatherCode: null },
-  { slug: NEWER_ENTRY.slug, temperatureC: 24.6, apparentC: 25.1, precipitationMm: 0, windKmh: 9.4, weatherCode: 1 },
+  { slug: '2024-05-05', temperatureC: -2.5, apparentC: -6, precipitationMm: 0, windKmh: 14.3, weatherCode: 3, recentPrecipitationMm: 1.8 },
+  {
+    slug: '2024-06-06',
+    temperatureC: 21.4,
+    apparentC: null,
+    precipitationMm: null,
+    windKmh: null,
+    weatherCode: null,
+    recentPrecipitationMm: null,
+  },
+  {
+    slug: NEWER_ENTRY.slug,
+    temperatureC: 24.6,
+    apparentC: 25.1,
+    precipitationMm: 0,
+    windKmh: 9.4,
+    weatherCode: 1,
+    recentPrecipitationMm: 0,
+  },
 ];
 
 /** The full populated db used by most assertions. */
@@ -244,9 +260,13 @@ export const EXPECTED_LEADERBOARD_RECORDS: AthleteRecord[] = [
     displayName: 'Иванов Иван',
     gender: Gender.male,
     participationSlugs: [],
+    // Every 5 km run, oldest first — the 2.3 km one stays out, so a season board and the
+    // attendance tally see the same chronology the athlete page does.
     runs: [
+      { dateIso: '2024-05-05', slug: '2024-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
       { dateIso: '2024-06-06', slug: '2024-06-06', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM },
       { dateIso: '2025-03-03', slug: '2025-03-03', timeMs: 1560000, distanceKm: FIVE_KM_DISTANCE_KM },
+      { dateIso: '2025-05-05', slug: '2025-05-05', timeMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM },
     ],
     bestMs: 1500000,
     bestMsByYear: { '2024': 1500000, '2025': 1560000 },
