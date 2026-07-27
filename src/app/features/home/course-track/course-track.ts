@@ -41,10 +41,8 @@ import {
  * too — while the run itself, the thing worth seeing, no longer waits for a click nobody
  * knew to make.
  *
- * Replay works by rebuilding the animated group: `@for` over `attempts` gives the elements a
- * new identity, and a CSS animation restarts when its element does. Nudging a class or a
- * custom property would not — the browser has no reason to replay an animation it is
- * already running.
+ * Replay alternates between two identical takes of the keyframes, because a CSS animation
+ * restarts when its `animation-name` changes and at no other moment — see `alternateTake`.
  */
 @Component({
   selector: 'app-course-track',
