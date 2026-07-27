@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
 
 import {
   COURSE_ALLEY_PATH,
@@ -16,10 +16,11 @@ import {
   COURSE_VIEW_BOX,
 } from './course-geometry.constant';
 import {
+  COURSE_AUTOPLAY_OBSERVER_OPTIONS,
   COURSE_LAP_MARK_SHIFT,
   COURSE_MEETING_OFFSET,
-  COURSE_MEETING_RADIUS,
   COURSE_PIN_RADIUS,
+  COURSE_REDUCED_MOTION_QUERY,
   COURSE_PLAY_SECONDS,
   COURSE_RUNNER_RADIUS,
   COURSE_TOTAL_METERS,
@@ -29,15 +30,16 @@ import {
  * The course as a map you can watch someone run.
  *
  * At rest it is simply the whole course: the park's alleys underneath, both laps drawn as
- * parallel ribbons, start and finish pinned. Press the button and a marker runs the 5 km
- * while the distance counts up beside it.
+ * parallel ribbons, start and finish pinned. Scroll it into the frame and a marker runs the
+ * 5 km while the distance counts up on the plate in the corner; the button replays it.
  *
  * It began as a scroll-driven flyover with a camera chasing the marker, and that was wrong
  * twice over. The camera had to zoom in to follow, which meant you never saw the course you
  * came to look at; and tying it to the scrollbar held three screens hostage on a page people
- * open every week for the protocol. On a button it is opt-in, the whole course stays in
- * frame, the page is short again — and it no longer depends on scroll-driven animations, so
- * it works in Firefox too.
+ * open every week for the protocol. Playing it once on arrival keeps the whole course in
+ * frame and the page short, and it depends on no scroll-driven animation, so Firefox gets it
+ * too — while the run itself, the thing worth seeing, no longer waits for a click nobody
+ * knew to make.
  *
  * Replay works by rebuilding the animated group: `@for` over `attempts` gives the elements a
  * new identity, and a CSS animation restarts when its element does. Nudging a class or a
@@ -51,6 +53,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CourseTrack {
+  readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
   readonly #attempt = signal(0);
 
   protected readonly viewBox = COURSE_VIEW_BOX;
@@ -62,7 +65,6 @@ export class CourseTrack {
   protected readonly finishPoint = COURSE_FINISH_POINT;
   protected readonly runnerRadius = COURSE_RUNNER_RADIUS;
   protected readonly pinRadius = COURSE_PIN_RADIUS;
-  protected readonly meetingRadius = COURSE_MEETING_RADIUS;
   protected readonly totalMeters = COURSE_TOTAL_METERS;
   protected readonly arrows = COURSE_ARROWS;
 
@@ -83,14 +85,7 @@ export class CourseTrack {
 
   /** The chequer is drawn about the disc's own origin, so the disc is placed rather than centred. */
   protected readonly finishTransform = at(COURSE_FINISH_POINT);
-  protected readonly meetingTransform = at(this.meetingPoint);
 
-  /**
-   * From the gathering point down onto the line, as a shaft and a head rather than a marker: an
-   * SVG marker inherits its own scale from the stroke, and the stroke here is hairline. Both ends
-   * are held clear of the discs they join, so the arrow reads as a link and not as a tail.
-   */
-  protected readonly meetingArrow = arrowBetween(this.meetingPoint, COURSE_START_POINT, 19, 16);
   /**
    * Landmarks with their glyph resolved to a fragment reference and their position expressed as
    * a percentage of the frame.
@@ -127,7 +122,13 @@ export class CourseTrack {
 
   protected readonly playing = signal(false);
 
-  /** True once a run has finished, so the button can offer another instead of the first. */
+  /**
+   * True from the first run onwards, so the button offers another instead of the first.
+   *
+   * Set when the run starts rather than when it ends: with the map playing itself on arrival, a
+   * button still reading «посмотреть, как по ней бежать» would be inviting the visitor to watch
+   * what they are already watching.
+   */
   protected readonly replayable = signal(false);
 
   /**
@@ -149,9 +150,14 @@ export class CourseTrack {
   protected readonly lapTwoTiming = computed(() => timing(COURSE_LAP_ONE_END_FRACTION, COURSE_LAP_TWO_END_FRACTION));
   protected readonly lapFinalTiming = computed(() => timing(COURSE_LAP_TWO_END_FRACTION, 1));
 
+  constructor() {
+    afterNextRender(() => this.#armAutoplay());
+  }
+
   protected play(): void {
     this.#attempt.update((attempt) => attempt + 1);
     this.playing.set(true);
+    this.replayable.set(true);
   }
 
   /**
@@ -160,8 +166,37 @@ export class CourseTrack {
    */
   protected onRunEnd(): void {
     this.playing.set(false);
-    this.replayable.set(true);
   }
+
+  /**
+   * Plays the run once, when enough of the map is on screen to be worth watching.
+   *
+   * Disconnects on the first showing: a map that replays itself every time it scrolls back past
+   * the fold is a page that will not settle, and the button is right there for a second look.
+   * Skipped entirely when the visitor has asked for less motion — the same rule that hides the
+   * button, since the animation is the whole of what either would do.
+   */
+  #armAutoplay(): void {
+    if (typeof IntersectionObserver === 'undefined' || prefersReducedMotion()) {
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) {
+        return;
+      }
+
+      observer.disconnect();
+      this.play();
+    }, COURSE_AUTOPLAY_OBSERVER_OPTIONS);
+
+    observer.observe(this.#host.nativeElement);
+  }
+}
+
+/** Guarded because `matchMedia` is missing in jsdom and in any non-browser DOM shim. */
+function prefersReducedMotion(): boolean {
+  return typeof matchMedia === 'function' && matchMedia(COURSE_REDUCED_MOTION_QUERY).matches;
 }
 
 /** A slice of the play-through as CSS `delay` and `duration`, in seconds. */
@@ -173,34 +208,6 @@ const [VIEW_WIDTH, VIEW_HEIGHT] = COURSE_VIEW_BOX.split(' ').slice(2).map(Number
 
 function at(point: { x: number; y: number }): string {
   return `translate(${point.x} ${point.y})`;
-}
-
-/**
- * A shaft and a rotated head running from one point to another, each end held back by its own
- * clearance so the arrow starts outside the first mark and stops outside the second.
- *
- * The head is drawn pointing down and turned into place: `atan2(-dx, dy)` is the angle that takes
- * SVG's downward axis onto the shaft, remembering that y grows towards the bottom of the map.
- */
-function arrowBetween(
-  from: { x: number; y: number },
-  to: { x: number; y: number },
-  fromClearance: number,
-  toClearance: number,
-): { shaft: string; head: string } {
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  // No guard against a zero length: the only arrow drawn here spans the gathering offset, and an
-  // offset of nothing would leave nothing to point at in the first place.
-  const length = Math.hypot(dx, dy);
-  const ux = dx / length;
-  const uy = dy / length;
-  const tip = { x: to.x - ux * toClearance, y: to.y - uy * toClearance };
-
-  return {
-    shaft: `M${(from.x + ux * fromClearance).toFixed(1)} ${(from.y + uy * fromClearance).toFixed(1)} L${tip.x.toFixed(1)} ${tip.y.toFixed(1)}`,
-    head: `${at({ x: Number(tip.x.toFixed(1)), y: Number(tip.y.toFixed(1)) })} rotate(${((Math.atan2(-dx, dy) * 180) / Math.PI).toFixed(1)})`,
-  };
 }
 
 function percentOf(value: number, extent: number): string {

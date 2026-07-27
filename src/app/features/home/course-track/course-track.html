@@ -41,11 +41,6 @@ same span but sit in different branches, and a custom property only travels down
           <circle cx="12" cy="12" r="3.2" />
         </g>
 
-        <!-- Two uprights and a bar: the pull-up frame the runners gather at. -->
-        <g fill="none" id="course-icon-bars" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">
-          <path d="M5 5.5v13M19 5.5v13M5 7.5h14" />
-        </g>
-
         <!-- The finish check, in map units. The disc is drawn about its own origin, so the tiling
         starts from the same origin and the squares sit square to the page rather than to the map. -->
         <pattern height="6.4" id="course-finish-check" patternUnits="userSpaceOnUse" width="6.4" x="-12.8" y="-12.8">
@@ -170,18 +165,6 @@ same span but sit in different branches, and a custom property only travels down
         </g>
       }
 
-      <!-- Where everyone gathers: the pull-up frame a few strides up the alley from the line, with
-      an arrow onto the line itself — the same pair the club's own schematic draws. -->
-      <g class="course-track__meeting" [attr.transform]="meetingTransform">
-        <circle class="course-track__meeting-disc" [attr.r]="meetingRadius" />
-
-        <use height="26" href="#course-icon-bars" width="26" x="-13" y="-13" />
-      </g>
-
-      <path class="course-track__meeting-arrow" [attr.d]="meetingArrow.shaft" />
-
-      <path class="course-track__meeting-arrow-head" d="M-5.5 -7.5 5.5 -7.5 0 0Z" [attr.transform]="meetingArrow.head" />
-
       <!-- Start and finish: the two things every visitor looks for, so they are the largest marks on
       the map. Red for the one, the chequer for the other — the pair the legend below spells out. -->
       <circle
@@ -202,13 +185,17 @@ same span but sit in different branches, and a custom property only travels down
     <!-- Names in HTML, not in the SVG: here a label is a real element at a real pixel size with a
     real plate behind it, instead of stroked text that shrinks along with the viewBox. -->
     <div aria-hidden="true" class="course-track__labels">
-      <span
-        class="course-track__chip course-track__chip_meeting"
-        i18n="@@course.meeting"
-        [style.left]="meetingLabel.left"
-        [style.top]="meetingLabel.top"
-        >Место сбора · турники</span
-      >
+      <!-- The bars have no mark of their own any more, so the arrow is the mark: it starts under
+      the label and its tip is the spot. Drawn here rather than in the SVG because it hangs off a
+      fixed-size label — an arrow measured in map units would drift away from it at every width the
+      map is drawn at. -->
+      <span aria-hidden="true" class="course-track__meeting-arrow" [style.left]="meetingLabel.left" [style.top]="meetingLabel.top"></span>
+
+      <span class="course-track__chip course-track__chip_meeting" [style.left]="meetingLabel.left" [style.top]="meetingLabel.top">
+        <span i18n="@@course.meeting">Место сбора</span>
+
+        <span class="course-track__chip-sub" i18n="@@course.meetingSpot">турники</span>
+      </span>
 
       <span
         class="course-track__chip course-track__chip_start"
@@ -238,6 +225,67 @@ same span but sit in different branches, and a custom property only travels down
         }
       }
     </div>
+
+    <!-- The instruments live on the map rather than under it: the distance belongs to the marker
+    that is drawing it, and the button belongs to the picture it starts. Dark plates on light paper,
+    in the two corners the route never reaches. -->
+    <div class="course-track__hud">
+      <p class="course-track__readout">
+        <span class="course-track__meters"
+          ><span class="course-track__meters-static">{{ totalMeters }}</span></span
+        >
+
+        <span class="course-track__unit" i18n="@@course.metersUnit">м</span>
+      </p>
+
+      <!-- Its own plate under the readout rather than a line inside it, so the distance keeps one
+      size whether a lap is being announced or not. -->
+      <span aria-hidden="true" class="course-track__laps">
+        <span
+          class="course-track__lap course-track__lap_one"
+          i18n="@@course.lapOne"
+          [style.--trace-delay]="lapOneTiming().delay"
+          [style.--trace-duration]="lapOneTiming().duration"
+          >1-й круг</span
+        >
+
+        <span
+          class="course-track__lap course-track__lap_two"
+          i18n="@@course.lapTwo"
+          [style.--trace-delay]="lapTwoTiming().delay"
+          [style.--trace-duration]="lapTwoTiming().duration"
+          >2-й круг</span
+        >
+
+        <span
+          class="course-track__lap course-track__lap_final"
+          i18n="@@course.lapFinal"
+          [style.--trace-delay]="lapFinalTiming().delay"
+          [style.--trace-duration]="lapFinalTiming().duration"
+          >малый круг</span
+        >
+      </span>
+    </div>
+
+    <button class="course-track__play" type="button" (click)="play()">
+      <span aria-hidden="true" class="course-track__play-glyph"></span>
+
+      <span class="course-track__play-label">
+        @if (replayable()) {
+          <ng-container i18n="@@course.playAgain">Ещё раз</ng-container>
+        } @else {
+          <ng-container i18n="@@course.play">Посмотреть, как по ней бежать</ng-container>
+        }
+      </span>
+
+      <!-- How much of the run is left, on the control that started it. -->
+      <span aria-hidden="true" class="course-track__play-progress"></span>
+    </button>
+
+    <!-- A licence term, not a courtesy: the alleys are OpenStreetMap data under ODbL. Kept to the
+    corner mark every web map carries, because the sentence that used to spell it out told a visitor
+    nothing they came here for. -->
+    <p class="course-track__credit" i18n="@@course.credit">© OpenStreetMap</p>
   </div>
 
   <figcaption class="course-track__bar">
@@ -268,52 +316,5 @@ same span but sit in different branches, and a custom property only travels down
         <ng-container i18n="@@course.legendFinish">финиш</ng-container>
       </li>
     </ul>
-
-    <button class="course-track__play" type="button" (click)="play()">
-      @if (replayable()) {
-        <ng-container i18n="@@course.playAgain">Ещё раз</ng-container>
-      } @else {
-        <ng-container i18n="@@course.play">Посмотреть, как по ней бежать</ng-container>
-      }
-    </button>
-
-    <p class="course-track__readout">
-      <span class="course-track__meters"
-        ><span class="course-track__meters-static">{{ totalMeters }}</span></span
-      >
-
-      <span class="course-track__unit" i18n="@@course.metersUnit">м</span>
-
-      <span class="course-track__laps">
-        <span
-          class="course-track__lap course-track__lap_one"
-          i18n="@@course.lapOne"
-          [style.--trace-delay]="lapOneTiming().delay"
-          [style.--trace-duration]="lapOneTiming().duration"
-          >1-й круг</span
-        >
-
-        <span
-          class="course-track__lap course-track__lap_two"
-          i18n="@@course.lapTwo"
-          [style.--trace-delay]="lapTwoTiming().delay"
-          [style.--trace-duration]="lapTwoTiming().duration"
-          >2-й круг</span
-        >
-
-        <span
-          class="course-track__lap course-track__lap_final"
-          i18n="@@course.lapFinal"
-          [style.--trace-delay]="lapFinalTiming().delay"
-          [style.--trace-duration]="lapFinalTiming().duration"
-          >малый круг</span
-        >
-      </span>
-    </p>
-
-    <!-- A licence term, not a courtesy: the alleys are OpenStreetMap data under ODbL. -->
-    <p class="course-track__credit">
-      <span i18n="@@course.credit">Аллеи — © OpenStreetMap, трасса снята GPS-записью круга</span>
-    </p>
   </figcaption>
 </figure>

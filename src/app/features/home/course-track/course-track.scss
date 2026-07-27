@@ -8,11 +8,26 @@
   initial-value: 0;
 }
 
+// The instrument plate. The page is dark and the map is printed paper, so anything that belongs to
+// the interface rather than to the map has to be the dark object lying on it — the one place in the
+// project where that reads as «on top of» instead of «behind».
+@mixin plate {
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--black) 40%, transparent);
+}
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
 .course-track {
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: 0 18px 18px;
+  padding: 18px;
   gap: 12px;
 }
 
@@ -64,13 +79,44 @@
   transform: translate(-50%, -34px);
 }
 
-// Sits on the bars themselves rather than floating between them and the start: the arrow below it
-// already says which of the two the label belongs to, so the label can stay close to its subject.
+// The gathering point, labelled the way the park's own landmarks are: one plate, two lines, the
+// same paper as «Верёвочный парк» above it. It used to wear a red border and a red glyph, which
+// made a third destination out of what is really a note attached to the arrow below it.
+//
+// Stood off to the west of its own spot, clear of the alley the route comes down: the arrow starts
+// where the label ends, and the two together are read as one instruction.
 .course-track__chip_meeting {
-  transform: translate(-50%, -38px);
-  border: 1px solid var(--map-mark);
-  background: var(--map-paper);
-  color: var(--map-mark);
+  display: flex;
+  flex-direction: column;
+  transform: translate(calc(-50% - 34px), calc(-100% - 46px));
+  text-align: center;
+}
+
+// The arrow from the label onto the spot: a hairline stood on its tip and swung 40° west, so that
+// its head lands exactly on the gathering point while its tail comes out from under the label.
+.course-track__meeting-arrow {
+  position: absolute;
+  width: 2px;
+  height: 46px;
+  transform: translate(-50%, calc(-100% - 7px)) rotate(-40deg);
+  transform-origin: bottom center;
+  background: var(--map-mark);
+
+  &::after {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    width: 9px;
+    height: 7px;
+    transform: translateX(-50%);
+    background: var(--map-mark);
+    content: '';
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+}
+
+.course-track__chip-sub {
+  color: var(--map-ink-soft);
 }
 
 .course-track__chip_start,
@@ -226,31 +272,6 @@
   stroke-width: 4.5;
 }
 
-// Where everyone gathers before the start: the pull-up frame, in the same red as the start, with
-// an arrow running from it down onto the line. The two are one sign — the disc says where to
-// stand, the arrow says where that puts you.
-.course-track__meeting {
-  color: var(--map-mark);
-}
-
-.course-track__meeting-disc {
-  fill: var(--map-paper);
-  stroke: var(--map-mark);
-  stroke-width: 2.4;
-}
-
-.course-track__meeting-arrow {
-  fill: none;
-  stroke: var(--map-mark);
-  stroke-dasharray: 5 4;
-  stroke-linecap: round;
-  stroke-width: 2.8;
-}
-
-.course-track__meeting-arrow-head {
-  fill: var(--map-mark);
-}
-
 // Start and finish are the two points every visitor looks for first, so they are the largest marks
 // on the map: two discs the size of the kilometre balloons, told apart the way the legend tells
 // them apart — one solid red, one chequered.
@@ -282,49 +303,45 @@
   opacity: 0;
 }
 
+// The bar under the map is the legend and nothing else now: the distance and the button that
+// drives it belong on the drawing they describe, in the corners the route never reaches.
 .course-track__bar {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+}
+
+// North-west corner: the odometer, and under it whichever lap is being drawn.
+.course-track__hud {
+  display: flex;
+  z-index: 1;
+  position: absolute;
+  top: 14px;
+  left: 14px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
+  pointer-events: none;
 }
 
-.course-track__play {
-  @include t.text('label', 'medium');
-
-  padding: 9px 16px;
-  border: 1px solid var(--accent-line);
-  border-radius: var(--radius-sm);
-  background: var(--accent-glow);
-  color: var(--accent-light);
-  cursor: pointer;
-  transition:
-    border-color var(--transition-time) var(--ease),
-    background var(--transition-time) var(--ease);
-
-  &:hover {
-    border-color: var(--accent);
-    background: var(--surface-hover);
-  }
-
-  &:active {
-    transform: scale(0.97);
-    transition-timing-function: var(--spring-tap);
-  }
-}
-
+// «м» rides at the middle of the digits, not on their baseline: sat on the baseline, a caption
+// this much smaller than the figure hangs off one corner of it instead of belonging to it.
 .course-track__readout {
+  @include plate;
+
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  padding: 8px 13px;
+  gap: 7px;
 }
 
 .course-track__meters {
-  @include t.mono-value-large;
+  @include t.mono-value-secondary;
 
   color: var(--accent-light);
 
-  // The digits change every frame while it plays; without tabular figures the row jitters.
+  // The digits change every frame while it plays; without tabular figures the plate jitters.
   font-variant-numeric: tabular-nums;
   counter-reset: course-meters var(--course-meters);
 }
@@ -335,18 +352,101 @@
   color: var(--text-muted);
 }
 
-// Grid rather than absolute positioning: the three labels stack in one cell, so the row keeps
-// the width of the longest and nothing reflows as they hand over.
+// The three labels stack in one grid cell, so the plate keeps the width of the longest and no
+// edge moves as one lap hands over to the next.
 .course-track__laps {
   display: grid;
 }
 
+// Centred both ways inside a plate of a fixed height, rather than left where the text flowed and
+// as tall as its own line box: the plate is as wide as «малый круг» whichever lap is showing, and
+// the caption's leading is not the same shape as the caps it is holding.
 .course-track__lap {
+  @include plate;
+  @include t.mono-caption;
+  @include t.line-height(1);
+
+  display: flex;
+  grid-area: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  color: var(--accent-light);
+  opacity: 0;
+}
+
+// South-west corner, on the map rather than under it: the control and the picture it starts are
+// one object, and a button parked in a strip below reads as a footnote to the map instead.
+.course-track__play {
+  @include plate;
   @include t.text('label', 'medium');
 
-  grid-area: 1 / 1;
-  color: var(--text-secondary);
-  opacity: 0;
+  display: inline-flex;
+  z-index: 1;
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  align-items: center;
+  padding: 10px 16px;
+  overflow: hidden;
+  gap: 10px;
+  color: var(--accent-light);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-time) var(--ease),
+    background var(--transition-time) var(--ease);
+
+  &:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--surface-hover) 92%, transparent);
+  }
+
+  &:active {
+    transform: scale(0.97);
+    transition-timing-function: var(--spring-tap);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.course-track__play-glyph {
+  flex-shrink: 0;
+  width: 9px;
+  height: 11px;
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+// How much of the run is left, on the control that started it — the button is the only thing on
+// screen that is not moving while the marker goes round.
+.course-track__play-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: var(--accent);
+}
+
+// The corner mark every web map carries, and the ODbL term for the alleys under the route.
+.course-track__credit {
+  @include t.text('label', 'small');
+
+  z-index: 1;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--map-paper) 78%, transparent);
+  color: var(--map-ink-soft);
 }
 
 // The legend. Signs on the map, meaning underneath — so the park is not also a noticeboard.
@@ -403,12 +503,6 @@
   background: conic-gradient(var(--text) 0 25%, transparent 0 50%, var(--text) 0 75%, transparent 0) 0 0 / 7px 7px;
 }
 
-.course-track__credit {
-  @include t.text('label', 'small');
-
-  color: var(--text-muted);
-}
-
 // Everything about the play-through except which keyframes to run. The name is withheld on
 // purpose — see the `$take` loop below.
 .course-track_playing {
@@ -431,6 +525,12 @@
     animation-duration: var(--trace-duration);
     animation-timing-function: linear;
     animation-delay: var(--trace-delay);
+    animation-fill-mode: both;
+  }
+
+  .course-track__play-progress {
+    animation-duration: var(--play-duration);
+    animation-timing-function: linear;
     animation-fill-mode: both;
   }
 
@@ -471,6 +571,16 @@
 
   .course-track__meters {
     animation-name: course-track-meters-a;
+  }
+
+  .course-track__play-progress {
+    animation-name: course-track-progress-a;
+  }
+}
+
+@keyframes course-track-progress-a {
+  to {
+    transform: scaleX(1);
   }
 }
 
@@ -528,6 +638,16 @@
   .course-track__meters {
     animation-name: course-track-meters-b;
   }
+
+  .course-track__play-progress {
+    animation-name: course-track-progress-b;
+  }
+}
+
+@keyframes course-track-progress-b {
+  to {
+    transform: scaleX(1);
+  }
 }
 
 @keyframes course-track-draw-b {
@@ -577,7 +697,50 @@
 // western edge and be clipped. The bars glyph and the arrow still say gather-here-start-there, and
 // the card above the map spells the rest out in words.
 @media (width <= 720px) {
-  .course-track__chip:not(.course-track__chip_start, .course-track__chip_finish) {
+  .course-track {
+    padding: 12px;
+  }
+
+  .course-track__chip:not(.course-track__chip_start, .course-track__chip_finish),
+  .course-track__meeting-arrow {
+    display: none;
+  }
+
+  .course-track__hud {
+    top: 10px;
+    left: 10px;
+  }
+
+  // The map is a few hundred pixels across here and a sentence-long label would take a third of
+  // it. The run has already played itself by the time anyone reaches the button, so a triangle is
+  // the whole message — the words stay for the screen reader.
+  .course-track__play {
+    bottom: 10px;
+    left: 10px;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .course-track__play-glyph {
+    margin-left: 2px;
+  }
+
+  .course-track__play-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+
+  // A two-pixel chord across the bottom of a circle says nothing; the marker on the map is the
+  // progress indicator here.
+  .course-track__play-progress {
     display: none;
   }
 }

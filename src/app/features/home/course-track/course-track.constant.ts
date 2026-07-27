@@ -25,9 +25,6 @@ export const COURSE_RUNNER_RADIUS = 11;
  */
 export const COURSE_PIN_RADIUS = 13;
 
-/** The gathering disc, a touch larger again: it carries a glyph rather than a flat colour. */
-export const COURSE_MEETING_RADIUS = 16;
-
 /**
  * Where the runners gather, as an offset from the start line in viewBox units.
  *
@@ -36,7 +33,7 @@ export const COURSE_MEETING_RADIUS = 16;
  * Worth confirming on the ground before anyone follows it: this is wayfinding, not decoration.
  *
  * Pushed further up the alley and a little into the park than the strides warrant, so that the
- * bars, the arrow and the start disc are three separate objects rather than one red smudge. The
+ * label, the arrow and the start disc are three separate objects rather than one red smudge. The
  * arrow is what carries the actual claim — the gathering point is up this way — and an arrow
  * needs a length to be read as one.
  */
@@ -50,6 +47,19 @@ export const COURSE_MEETING_OFFSET = { x: 20, y: -66 };
  * uses, it sits beside the line the way a timing mat sits beside one, and both marks survive.
  */
 export const COURSE_LAP_MARK_SHIFT = 0.62;
+
+/**
+ * When the map starts playing by itself.
+ *
+ * A fraction rather than «any part of it»: the run is worth watching only once the whole course is
+ * in the frame, and a map that starts the moment its top edge appears plays its first lap off
+ * screen. Two thirds is the point where the drawing is committed on a laptop and still reachable
+ * on a phone, where the map is a third of the viewport tall.
+ */
+export const COURSE_AUTOPLAY_OBSERVER_OPTIONS: IntersectionObserverInit = { threshold: 0.66 };
+
+/** The visitor has asked for less movement — the map stays a still drawing and the button goes. */
+export const COURSE_REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 /**
  * How long a play-through lasts.
