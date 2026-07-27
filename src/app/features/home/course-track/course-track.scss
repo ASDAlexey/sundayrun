@@ -1,13 +1,5 @@
 @use 'styles/typography' as t;
 
-// The counter behind the ticking distance. Registering it is what makes it animatable at all:
-// an unregistered custom property is a string to the animation engine and would snap, not count.
-@property --course-meters {
-  syntax: '<integer>';
-  inherits: false;
-  initial-value: 0;
-}
-
 // The instrument plate. The page is dark and the map is printed paper, so anything that belongs to
 // the interface rather than to the map has to be the dark object lying on it — the one place in the
 // project where that reads as «on top of» instead of «behind».
@@ -343,7 +335,6 @@
 
   // The digits change every frame while it plays; without tabular figures the plate jitters.
   font-variant-numeric: tabular-nums;
-  counter-reset: course-meters var(--course-meters);
 }
 
 .course-track__unit {
@@ -533,20 +524,6 @@
     animation-timing-function: linear;
     animation-fill-mode: both;
   }
-
-  .course-track__meters-static {
-    display: none;
-  }
-
-  .course-track__meters {
-    animation-duration: var(--play-duration);
-    animation-timing-function: linear;
-    animation-fill-mode: both;
-
-    &::after {
-      content: counter(course-meters);
-    }
-  }
 }
 
 // Two identical takes, alternated on every press. Changing `animation-name` is the only thing
@@ -567,10 +544,6 @@
 
   .course-track__lap {
     animation-name: course-track-lap-a;
-  }
-
-  .course-track__meters {
-    animation-name: course-track-meters-a;
   }
 
   .course-track__play-progress {
@@ -600,16 +573,6 @@
   }
 }
 
-@keyframes course-track-meters-a {
-  from {
-    --course-meters: 0;
-  }
-
-  to {
-    --course-meters: 5000;
-  }
-}
-
 @keyframes course-track-lap-a {
   0%,
   100% {
@@ -633,10 +596,6 @@
 
   .course-track__lap {
     animation-name: course-track-lap-b;
-  }
-
-  .course-track__meters {
-    animation-name: course-track-meters-b;
   }
 
   .course-track__play-progress {
@@ -663,16 +622,6 @@
 @keyframes course-track-run-b {
   to {
     offset-distance: 100%;
-  }
-}
-
-@keyframes course-track-meters-b {
-  from {
-    --course-meters: 0;
-  }
-
-  to {
-    --course-meters: 5000;
   }
 }
 

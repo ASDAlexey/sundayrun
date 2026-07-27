@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { COURSE_RUN_PATH } from './course-geometry.constant';
-import { COURSE_TOTAL_METERS } from './course-track.constant';
+import { COURSE_MS_PER_SECOND, COURSE_PLAY_SECONDS, COURSE_TOTAL_METERS } from './course-track.constant';
 import { CourseTrack } from './course-track';
 
 function intersectionEntry(target: Element, isIntersecting: boolean): IntersectionObserverEntry {
@@ -70,9 +70,9 @@ describe('CourseTrack', () => {
     // Three ribbons, each drawn twice: an orange body and the yellow core inside it.
     expect(host.querySelectorAll('.course-track__trace')).toHaveLength(6);
 
-    expect(host.querySelector('.course-track__meters-static')?.textContent, 'the declared 5 km, never what the GPS measured').toBe(
-      String(COURSE_TOTAL_METERS),
-    );
+    const meters = host.querySelector('.course-track__meters');
+
+    expect(meters?.textContent, 'the declared 5 km, never what the GPS measured').toBe(String(COURSE_TOTAL_METERS));
 
     // Wayfinding, and the reason anyone opens the map: where to stand, where the line is, which
     // way round it goes. The lap balloon has to be off the start disc or one of them is a rumour.
@@ -97,6 +97,18 @@ describe('CourseTrack', () => {
     expect(root?.classList.contains('course-track_playing'), 'nothing moves until the map is on screen').toBe(false);
     expect(host.querySelector('.course-track__play-label')?.textContent?.trim()).toBe('Посмотреть, как по ней бежать');
 
+    // The odometer is the one part of the play-through JavaScript drives, so the frames it asks
+    // for are handed back by the test rather than by the browser. Everything pending is run on
+    // each turn: Angular schedules frames of its own here, and the loop's is not told apart.
+    const frames: FrameRequestCallback[] = [];
+    const runFrames = (at: number): void => {
+      frames.splice(0).forEach((frame) => frame(at));
+      fixture.detectChanges();
+    };
+
+    vi.stubGlobal('requestAnimationFrame', (frame: FrameRequestCallback) => frames.push(frame));
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+
     play?.click();
     fixture.detectChanges();
 
@@ -112,11 +124,32 @@ describe('CourseTrack', () => {
 
     expect(runner?.style.offsetPath, "the marker's route reaches CSS as a value").toContain(COURSE_RUN_PATH.slice(0, 24));
 
+    // Counted in JavaScript because WebKit will not count in CSS — the plate has to move on
+    // Safari too, and the first frame is what zeroes the clock the rest are measured from.
+    runFrames(0);
+    expect(meters?.textContent, 'the run starts from nothing').toBe('0');
+
+    runFrames((COURSE_PLAY_SECONDS * COURSE_MS_PER_SECOND) / 2);
+    expect(meters?.textContent, 'and half a play-through is half the course').toBe(String(COURSE_TOTAL_METERS / 2));
+
     runner?.dispatchEvent(new Event('animationend'));
     fixture.detectChanges();
 
+    expect(meters?.textContent, 'the plate ends where it rests').toBe(String(COURSE_TOTAL_METERS));
     expect(root?.classList.contains('course-track_playing'), 'the finished picture is the resting one').toBe(false);
     expect(host.querySelector('.course-track__play-label')?.textContent?.trim(), 'and the button offers another run').toBe('Ещё раз');
+
+    // A second run counts from zero again, and arrives on its own clock rather than waiting to
+    // be told the animation is over.
+    play?.click();
+    fixture.detectChanges();
+    runFrames(0);
+
+    expect(meters?.textContent, 'a replay winds the plate back').toBe('0');
+
+    runFrames(COURSE_PLAY_SECONDS * COURSE_MS_PER_SECOND);
+
+    expect(meters?.textContent, 'and lands on the full five kilometres').toBe(String(COURSE_TOTAL_METERS));
   });
 
   it('plays itself the first time enough of the map is on screen, and only that once', () => {

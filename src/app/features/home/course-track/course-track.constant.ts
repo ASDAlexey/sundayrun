@@ -69,3 +69,6 @@ export const COURSE_REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
  * finishes before attention does.
  */
 export const COURSE_PLAY_SECONDS = 14;
+
+/** The play-through is declared in seconds for CSS; the frame loop counting the metres is not. */
+export const COURSE_MS_PER_SECOND = 1000;

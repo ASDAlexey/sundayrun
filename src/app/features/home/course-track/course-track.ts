@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
 
 import {
   COURSE_ALLEY_PATH,
@@ -19,6 +19,7 @@ import {
   COURSE_AUTOPLAY_OBSERVER_OPTIONS,
   COURSE_LAP_MARK_SHIFT,
   COURSE_MEETING_OFFSET,
+  COURSE_MS_PER_SECOND,
   COURSE_PIN_RADIUS,
   COURSE_REDUCED_MOTION_QUERY,
   COURSE_PLAY_SECONDS,
@@ -52,7 +53,14 @@ import {
 })
 export class CourseTrack {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly #destroyRef = inject(DestroyRef);
   readonly #attempt = signal(0);
+
+  /**
+   * The reading on the distance plate: the whole 5 km at rest, and wherever the marker has got
+   * to while the run plays.
+   */
+  protected readonly meters = signal(COURSE_TOTAL_METERS);
 
   protected readonly viewBox = COURSE_VIEW_BOX;
   protected readonly alleyPath = COURSE_ALLEY_PATH;
@@ -63,7 +71,6 @@ export class CourseTrack {
   protected readonly finishPoint = COURSE_FINISH_POINT;
   protected readonly runnerRadius = COURSE_RUNNER_RADIUS;
   protected readonly pinRadius = COURSE_PIN_RADIUS;
-  protected readonly totalMeters = COURSE_TOTAL_METERS;
   protected readonly arrows = COURSE_ARROWS;
 
   /**
@@ -148,14 +155,19 @@ export class CourseTrack {
   protected readonly lapTwoTiming = computed(() => timing(COURSE_LAP_ONE_END_FRACTION, COURSE_LAP_TWO_END_FRACTION));
   protected readonly lapFinalTiming = computed(() => timing(COURSE_LAP_TWO_END_FRACTION, 1));
 
+  /** The frame loop ticking the distance plate, or 0 when nothing is counting. */
+  #frame = 0;
+
   constructor() {
     afterNextRender(() => this.#armAutoplay());
+    this.#destroyRef.onDestroy(() => this.#stopCounting());
   }
 
   protected play(): void {
     this.#attempt.update((attempt) => attempt + 1);
     this.playing.set(true);
     this.replayable.set(true);
+    this.#countUp();
   }
 
   /**
@@ -164,6 +176,45 @@ export class CourseTrack {
    */
   protected onRunEnd(): void {
     this.playing.set(false);
+    this.#stopCounting();
+    this.meters.set(COURSE_TOTAL_METERS);
+  }
+
+  /**
+   * Winds the distance plate from 0 up to the 5 km, alongside the run it belongs to.
+   *
+   * It used to be pure CSS: a registered `--course-meters` animated from 0 to 5000 and read back
+   * out through `counter-reset` and `content: counter(…)`. Chrome and Firefox count with it, and
+   * WebKit does not — it animates the property but never rebuilds the counter from the new value,
+   * so on Safari the one instrument on the map sat at 5000 for the whole play-through while
+   * everything around it moved. A frame loop over the same fourteen seconds says the same thing
+   * in every browser, and it is the only piece of the animation that JavaScript now owns.
+   *
+   * Its own clock rather than the animation's: `getAnimations()` would tie the two together to
+   * the millisecond, and nobody reading a plate of metres can tell one frame of drift from none.
+   */
+  #countUp(): void {
+    this.#stopCounting();
+
+    let startedAt: number | undefined;
+
+    const tick = (now: number): void => {
+      startedAt ??= now;
+
+      const played = Math.min((now - startedAt) / (COURSE_PLAY_SECONDS * COURSE_MS_PER_SECOND), 1);
+
+      this.meters.set(Math.round(played * COURSE_TOTAL_METERS));
+      this.#frame = played < 1 ? requestAnimationFrame(tick) : 0;
+    };
+
+    this.#frame = requestAnimationFrame(tick);
+  }
+
+  #stopCounting(): void {
+    if (this.#frame) {
+      cancelAnimationFrame(this.#frame);
+      this.#frame = 0;
+    }
   }
 
   /**

@@ -231,9 +231,8 @@ same span but sit in different branches, and a custom property only travels down
     in the two corners the route never reaches. -->
     <div class="course-track__hud">
       <p class="course-track__readout">
-        <span class="course-track__meters"
-          ><span class="course-track__meters-static">{{ totalMeters }}</span></span
-        >
+        <!-- Counted in JavaScript rather than in CSS, and 5000 at rest — see `#countUp`. -->
+        <span class="course-track__meters">{{ meters() }}</span>
 
         <span class="course-track__unit" i18n="@@course.metersUnit">м</span>
       </p>
