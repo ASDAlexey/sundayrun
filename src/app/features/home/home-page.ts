@@ -2,7 +2,7 @@ import { Component, DOCUMENT, DestroyRef, afterNextRender, computed, effect, inj
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
-import { ATHLETES_PAGE_LINK, VK_COMMUNITY_URL } from '../../app.constant';
+import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { OverallStats } from '../../core/history/overall-stats.interface';
@@ -103,7 +103,6 @@ export class HomePage {
   protected readonly numberFormat = STATS_NUMBER_FORMAT.format;
   protected readonly racesLink = RACES_PAGE_LINK;
   protected readonly yearLink = YEAR_PAGE_BASE_LINK;
-  protected readonly vkUrl = VK_COMMUNITY_URL;
 
   constructor() {
     // Prerender bakes the real preview and start time into the static HTML, so hydration

@@ -60,15 +60,20 @@
   }
 
   <section class="home__course">
+    <!-- Two columns above the map: what the course is on the left, what a Sunday morning asks of
+    you on the right. Stacked, the same four blocks were a column of short lines with the map pushed
+    a screen further down. -->
     <div class="home__course-info">
-      <p appScrollReveal class="home__course-eyebrow" i18n="@@races.courseEyebrow" revealOnce>Трасса</p>
+      <div appScrollReveal class="home__course-brief" revealOnce>
+        <p class="home__course-eyebrow" i18n="@@races.courseEyebrow">Трасса</p>
 
-      <h2 appScrollReveal class="home__course-title" i18n="@@races.courseTitle" revealOnce>5 км — два круга и малый круг</h2>
+        <h2 class="home__course-title" i18n="@@races.courseTitle">5 км — два круга и малый круг</h2>
 
-      <p appScrollReveal class="home__course-text" i18n="@@races.courseText" revealOnce>
-        Маршрут проходит по аллеям ПКиО им. Горького. Два больших круга по 2,3 км и малый круг 400 м — вместе ровно 5 км. Старт и финиш
-        рядом, там же собираются участники.
-      </p>
+        <p class="home__course-text" i18n="@@races.courseText">
+          Маршрут проходит по аллеям ПКиО им. Горького. Два больших круга по 2,3 км и малый круг 400 м — вместе ровно 5 км. Старт и финиш
+          рядом, там же собираются участники.
+        </p>
+      </div>
 
       <dl appScrollReveal class="home__course-facts" revealOnce>
         <div class="home__course-fact">
@@ -85,18 +90,6 @@
           </dd>
         </div>
       </dl>
-
-      <a
-        appScrollReveal
-        class="home__course-vk"
-        i18n="@@races.courseVk"
-        matButton="tonal"
-        rel="noopener"
-        revealOnce
-        target="_blank"
-        [href]="vkUrl"
-        >Сообщество ВКонтакте</a
-      >
     </div>
 
     <app-course-track />

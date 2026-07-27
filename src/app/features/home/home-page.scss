@@ -369,11 +369,24 @@
   }
 
   &__course-info {
+    display: grid;
+    padding: 32px 32px 4px;
+    gap: 24px;
+
+    // The briefing and the two facts sit side by side as soon as there is room for both: «сбор» and
+    // «старт» are the two lines anyone actually came for, and in a single column they ended up
+    // below the fold under a paragraph they already knew.
+    @media (width >= 860px) {
+      grid-template-columns: minmax(0, 1fr) minmax(230px, 290px);
+      align-items: start;
+      gap: 40px;
+    }
+  }
+
+  &__course-brief {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
-    padding: 32px;
     gap: 12px;
   }
 
@@ -396,46 +409,39 @@
     color: var(--text-secondary);
   }
 
+  // A folded-out slip beside the description rather than two more lines under it: a rule down the
+  // fold on a wide screen, across it on a narrow one, and the same slip either way.
   &__course-facts {
     display: flex;
     flex-direction: column;
-    margin: 4px 0 8px;
-    gap: 10px;
+    padding-top: 18px;
+    gap: 14px;
+    border-top: 1px solid var(--border-soft);
+
+    @media (width >= 860px) {
+      padding-top: 4px;
+      padding-left: 32px;
+      border-top: 0;
+      border-left: 1px solid var(--border-soft);
+    }
   }
 
   &__course-fact {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
+    flex-direction: column;
+    gap: 4px;
   }
 
   &__course-fact-term {
-    @include t.text('label', 'medium');
+    @include t.mono-caption;
 
-    flex-shrink: 0;
-    min-width: 52px;
     color: var(--accent);
-    text-transform: uppercase;
   }
 
   &__course-fact-value {
     @include t.text('body', 'medium');
 
     color: var(--text);
-  }
-
-  // Material renders the button chrome; only the arrow glyph stays ours.
-  &__course-vk {
-    &::after {
-      display: inline-block;
-      margin-left: 8px;
-      content: '↗';
-      transition: transform var(--transition-time) ease;
-    }
-
-    &:hover::after {
-      transform: translate(2px, -2px);
-    }
   }
 
   &__stats {
