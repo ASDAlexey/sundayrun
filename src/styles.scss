@@ -76,7 +76,17 @@ body {
 }
 
 // A modal <dialog> (the course-map lightbox) freezes the page behind it.
-body:has(dialog[open]) {
+//
+// The race cockpit does the same. It is `position: fixed` over the whole viewport, but the site
+// header and footer stay in the document behind it and are together taller than a phone screen — so
+// the page kept a scrollbar of its own that scrolled nothing anybody could see, and on a phone a
+// stray drag rubber-banded the keys instead of hitting them. Inside the cockpit the tile grid is the
+// only thing that ever scrolls, and only when the field outgrows the screen.
+// `html` as well as `body`: on iOS the scrolling element is the document one, and a lock written
+// only on the body leaves the rubber band exactly where it was.
+body:has(dialog[open]),
+html:has(.timer_race),
+body:has(.timer_race) {
   overflow: hidden;
 }
 
