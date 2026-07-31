@@ -1,6 +1,6 @@
 import { Component, computed, inject, output, signal } from '@angular/core';
 
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { reassignSplit, removeSplit, setRunnerOutcome, unassignSplit } from '../../../core/timer/session-actions';
 import { FIRST_POSITION } from '../../../core/timer/timer-session.constant';
 import { TimerRunnerOutcome, TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
@@ -8,6 +8,7 @@ import { TimerSessionService } from '../../../state/timer-session.service';
 import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
 import { TimerHistoryEntry, TimerHistoryRemove, TimerHistoryRunner } from './session-history.interface';
 import { historyRemoveNoteText } from './session-history.text';
+import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
  * The full journal of taps, and the only place it can be corrected by hand (docs/TIMER.md §4). Every
@@ -20,7 +21,7 @@ import { historyRemoveNoteText } from './session-history.text';
  */
 @Component({
   selector: 'app-timer-history',
-  imports: [TimerConfirm],
+  imports: [TimerConfirm, RaceTime],
   templateUrl: './session-history.html',
   styleUrl: './session-history.scss',
 })
@@ -52,7 +53,7 @@ export class TimerHistory {
         index: index + FIRST_POSITION,
         orphan: split.runnerId === null,
         ownerName: owner?.fullName ?? null,
-        timeText: formatDuration(split.atMs),
+        timeText: formatRaceTime(split.atMs),
       };
     });
   });

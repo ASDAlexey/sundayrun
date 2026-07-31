@@ -6,17 +6,17 @@ import { TimerFinishRow } from './finish-board.interface';
  * order — one tap left alone, an explicit DNF and somebody nobody tapped.
  */
 export const FINISH_EXPECTED_ROWS: TimerFinishRow[] = [
-  { fullName: 'Троилин Антон', index: 1, out: false, paceText: '4:41', placeText: '1', time23: '9:26', time5: '23:26' },
-  { fullName: 'Попов Алексей', index: 2, out: false, paceText: '5:16', placeText: '2', time23: '11:41', time5: '26:20' },
-  { fullName: 'Соколова Анна', index: 3, out: false, paceText: '5:24', placeText: '', time23: '12:00', time5: '27:00' },
-  { fullName: 'Романенко Елена', index: 4, out: true, paceText: '4:56', placeText: '', time23: '11:20', time5: '' },
+  { fullName: 'Троилин Антон', index: 1, out: false, paceText: '4:41,20', placeText: '1', time23: '9:26', time5: '23:26,00' },
+  { fullName: 'Попов Алексей', index: 2, out: false, paceText: '5:16,00', placeText: '2', time23: '11:41', time5: '26:20,00' },
+  { fullName: 'Соколова Анна', index: 3, out: false, paceText: '5:24,00', placeText: '', time23: '12:00', time5: '27:00,00' },
+  { fullName: 'Романенко Елена', index: 4, out: true, paceText: '4:55,65', placeText: '', time23: '11:20', time5: '' },
   { fullName: 'Попов Игорь', index: 5, out: true, paceText: '', placeText: '', time23: '', time5: '' },
   { fullName: 'Иванов Дмитрий', index: 6, out: true, paceText: '', placeText: '', time23: '', time5: '' },
   { fullName: 'Кузнецов Пётр', index: 7, out: true, paceText: '', placeText: '', time23: '', time5: '' },
 ];
 
 /** The two nameless times of the fixture, formatted the way the block lists them. */
-export const FINISH_EXPECTED_UNASSIGNED_TIMES = ['27:35', '28:10'];
+export const FINISH_EXPECTED_UNASSIGNED_TIMES = ['27:35,00', '28:10,00'];
 
 /** What the block calls them. */
 export const FINISH_EXPECTED_UNASSIGNED_TEXT = '2 времени без имени';

@@ -52,7 +52,7 @@ is now sized like a tile, which is not what a list of finishers needs. -->
         <button class="timer-grid__shelf-item" type="button" [attr.aria-label]="view.runner.fullName" (click)="onUndo(view)">
           <span class="timer-grid__shelf-name">{{ view.surname }}</span>
 
-          <span class="timer-grid__shelf-time">{{ view.timeText }}</span>
+          <span class="timer-grid__shelf-time"><app-race-time [value]="view.timeText" /></span>
         </button>
       }
     </div>

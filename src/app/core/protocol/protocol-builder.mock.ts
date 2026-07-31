@@ -40,12 +40,26 @@ export const PROTOCOL_PARTICIPANTS: Participant[] = [
   buildParticipant(9, 'Сошедшая Вторая', null, [], Gender.female),
 ];
 
+/**
+ * The same protocol as the stopwatch hands it over: every reading is milliseconds off the session
+ * journal. The 2.3 km column has hundredths to show here, so it keeps them — including on the lap
+ * that happens to land on a whole second, which follows its column rather than its own value.
+ */
+export const TIMED_PARTICIPANTS: Participant[] = [
+  buildParticipant(1, 'Троилин Антон', 1165061, [528310, 636751], Gender.male),
+  buildParticipant(2, 'Хандыго Наталья', 1928450, [949000, 979450], Gender.female),
+];
+
+export const EXPECTED_TIMED_LAP_TEXTS = ['8:48,31', '15:49,00'];
+
+export const EXPECTED_TIMED_FINISH_TEXTS = ['19:25,06', '32:08,45'];
+
 export const EXPECTED_PROTOCOL_ROWS: ProtocolRow[] = [
   {
     index: 1,
     fullName: 'Безымянный Атлет',
     time23: '9:50',
-    time5: '20:00',
+    time5: '20:00,00',
     totalMs: 1200000,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender: null,
@@ -58,7 +72,7 @@ export const EXPECTED_PROTOCOL_ROWS: ProtocolRow[] = [
     index: 2,
     fullName: 'Иванов Иван',
     time23: '11:00',
-    time5: '23:18',
+    time5: '23:18,00',
     totalMs: 1398000,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender: Gender.male,
@@ -71,7 +85,7 @@ export const EXPECTED_PROTOCOL_ROWS: ProtocolRow[] = [
     index: 3,
     fullName: 'Сидоров Пётр',
     time23: '11:40',
-    time5: '23:18',
+    time5: '23:18,00',
     totalMs: 1398000,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender: Gender.male,
@@ -84,7 +98,7 @@ export const EXPECTED_PROTOCOL_ROWS: ProtocolRow[] = [
     index: 4,
     fullName: 'Петрова Анна',
     time23: '12:00',
-    time5: '25:00',
+    time5: '25:00,00',
     totalMs: 1500000,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender: Gender.female,
@@ -97,7 +111,7 @@ export const EXPECTED_PROTOCOL_ROWS: ProtocolRow[] = [
     index: 5,
     fullName: 'Козлова Мария',
     time23: '',
-    time5: '26:40',
+    time5: '26:40,00',
     totalMs: 1600000,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender: Gender.female,

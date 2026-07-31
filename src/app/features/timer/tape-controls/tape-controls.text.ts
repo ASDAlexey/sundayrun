@@ -1,4 +1,4 @@
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
 
 /**
@@ -26,7 +26,7 @@ export function tapeRunnerMetaText(mode: TimerTapeModeType, lapMs: number | unde
     return '';
   }
 
-  return $localize`:@@timer.tapeRunnerLap:круг ${formatDuration(lapMs)}:lap:`;
+  return $localize`:@@timer.tapeRunnerLap:круг ${formatRaceTime(lapMs)}:lap:`;
 }
 
 /** The queue is empty — everything recorded has a name on it now. */

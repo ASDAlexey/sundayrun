@@ -52,7 +52,7 @@ export const REGULAR_POINT_INDEX = 0;
 
 export const EXPECTED_TOOLTIP_TITLE = '27 декабря 2025 г.';
 
-export const EXPECTED_TOOLTIP_TIME = 'Время: 24:00';
+export const EXPECTED_TOOLTIP_TIME = 'Время: 24:00,00';
 
 export const EXPECTED_TOOLTIP_BEST = 'Личный рекорд';
 

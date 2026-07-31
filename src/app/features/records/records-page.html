@@ -264,7 +264,7 @@
                           }
                         </span>
 
-                        <span class="records__time">{{ row.timeText }}</span>
+                        <span class="records__time"><app-race-time [value]="row.timeText" /></span>
 
                         <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
                       </li>
@@ -311,7 +311,7 @@
                           }
                         </span>
 
-                        <span class="records__time">{{ row.timeText }}</span>
+                        <span class="records__time"><app-race-time [value]="row.timeText" /></span>
 
                         <a class="records__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
                       </li>
@@ -345,13 +345,13 @@
                   <ol class="records__timeline">
                     @for (entry of menRecordTimeline(); track $index) {
                       <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
-                        <span class="records__time">{{ entry.timeText }}</span>
+                        <span class="records__time"><app-race-time [value]="entry.timeText" /></span>
 
                         <span class="records__athlete-cell">
                           <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
 
                           @if (entry.improvementText !== null) {
-                            <span class="records__delta">{{ entry.improvementText }}</span>
+                            <span class="records__delta"><app-race-time [value]="entry.improvementText" /></span>
                           }
                         </span>
 
@@ -377,13 +377,13 @@
                   <ol class="records__timeline">
                     @for (entry of womenRecordTimeline(); track $index) {
                       <li class="records__timeline-row" [class.records__timeline-row_current]="entry.current">
-                        <span class="records__time">{{ entry.timeText }}</span>
+                        <span class="records__time"><app-race-time [value]="entry.timeText" /></span>
 
                         <span class="records__athlete-cell">
                           <a class="records__athlete" [routerLink]="entry.athleteLink">{{ entry.displayName }}</a>
 
                           @if (entry.improvementText !== null) {
-                            <span class="records__delta">{{ entry.improvementText }}</span>
+                            <span class="records__delta"><app-race-time [value]="entry.improvementText" /></span>
                           }
                         </span>
 
@@ -415,7 +415,7 @@
 
                 @if (menFirstLap(); as lap) {
                   <div class="records__lap">
-                    <span class="records__lap-time">{{ lap.timeText }}</span>
+                    <span class="records__lap-time"><app-race-time [value]="lap.timeText" /></span>
 
                     <span class="records__athlete-cell">
                       <a class="records__athlete" [routerLink]="lap.athleteLink">{{ lap.displayName }}</a>
@@ -437,7 +437,7 @@
 
                 @if (womenFirstLap(); as lap) {
                   <div class="records__lap">
-                    <span class="records__lap-time">{{ lap.timeText }}</span>
+                    <span class="records__lap-time"><app-race-time [value]="lap.timeText" /></span>
 
                     <span class="records__athlete-cell">
                       <a class="records__athlete" [routerLink]="lap.athleteLink">{{ lap.displayName }}</a>
@@ -769,7 +769,11 @@
                     </div>
 
                     @if (menPositions().lines.length > 0) {
-                      <app-bump-chart [data]="menPositions()" [highlighted]="highlightedKeys()" />
+                      <app-bump-chart
+                        [data]="menPositions()"
+                        [firstLap]="chartMetric() === metrics.firstLap"
+                        [highlighted]="highlightedKeys()"
+                      />
                     } @else {
                       <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
                     }
@@ -785,7 +789,11 @@
                     </div>
 
                     @if (womenPositions().lines.length > 0) {
-                      <app-bump-chart [data]="womenPositions()" [highlighted]="highlightedKeys()" />
+                      <app-bump-chart
+                        [data]="womenPositions()"
+                        [firstLap]="chartMetric() === metrics.firstLap"
+                        [highlighted]="highlightedKeys()"
+                      />
                     } @else {
                       <p class="records__board-empty" i18n="@@records.boardEmpty">Нет результатов по выбранным фильтрам.</p>
                     }

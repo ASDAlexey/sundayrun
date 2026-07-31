@@ -14,9 +14,9 @@
 
         <span class="timer-lap-board__name" role="cell" [class.timer-lap-board__name_blank]="!row.named">{{ row.fullName }}</span>
 
-        <span class="timer-lap-board__time" role="cell">{{ row.timeText }}</span>
+        <span class="timer-lap-board__time" role="cell"><app-race-time [value]="row.timeText" /></span>
 
-        <span class="timer-lap-board__gap" role="cell">{{ row.gapText }}</span>
+        <span class="timer-lap-board__gap" role="cell"><app-race-time [value]="row.gapText" /></span>
 
         @switch (row.mark) {
           @case (marks.courseRecord) {

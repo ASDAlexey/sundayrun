@@ -18,13 +18,13 @@ export const EXPECTED_COURSE_START_DEFAULT_TEXT = 'в 8:00, регистраци
 export const EXPECTED_COURSE_START_CUSTOM_TEXT = 'в 9:00, регистрация с 8:45';
 
 /** STATS_HISTORY rendered by the stats block, in template order: events, finishes, finishers, avg finishes, median time М/Ж. */
-export const EXPECTED_STATS_VALUES = ['3', '8', '3', '2,7', '32:00', '30:00'];
+export const EXPECTED_STATS_VALUES = ['3', '8', '3', '2,7', '32:00,00', '30:00,00'];
 
 /** The totals over the male finisher of STATS_HISTORY only — the women's median has nothing to show. */
 export const MEN_ONLY_STATS = computeOverallStats({ 'пётр сидоров': STATS_HISTORY['пётр сидоров'] });
 
 /** MEN_ONLY_STATS rendered by the stats block: the missing women's median degrades to a dash. */
-export const EXPECTED_MEN_ONLY_STATS_VALUES = ['3', '3', '1', '3,0', '32:00', '—'];
+export const EXPECTED_MEN_ONLY_STATS_VALUES = ['3', '3', '1', '3,0', '32:00,00', '—'];
 
 export const HOME_SELF_PICK: SelfAthlete = { key: 'иванова мария', displayName: 'Иванова Мария' };
 
@@ -48,16 +48,16 @@ export const EXPECTED_HOME_SELF_VIEW: HomeSelfView = {
   displayName: 'Иванова Мария',
   athleteLink: [ATHLETES_PAGE_LINK, 'иванова мария'],
   finishesText: '4',
-  bestTimeText: '24:40',
+  bestTimeText: '24:40,00',
   bestTimeLink: [RACE_PAGE_BASE_LINK, '2025-12-28'],
   streakText: '2',
   finishesYearText: '3',
-  bestTimeYearText: '25:00',
+  bestTimeYearText: '25:00,00',
   bestTimeYearLink: [RACE_PAGE_BASE_LINK, '2026-06-28'],
 };
 
 /** The personal card values in template order: finishes, best time, streak weeks, year finishes, year best. */
-export const EXPECTED_HOME_SELF_VALUES: string[] = ['4', '24:40', '2', '3', '25:00'];
+export const EXPECTED_HOME_SELF_VALUES: string[] = ['4', '24:40,00', '2', '3', '25:00,00'];
 
 /** Мария came to the newest event but has never finished 5 km — both best times degrade to the dash. */
 export const HOME_SELF_DNF_RECORD: AthleteRecord = {

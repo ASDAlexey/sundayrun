@@ -140,8 +140,8 @@ export const PDF_DOC_INPUT_MOCK: ProtocolDocInput = {
   weather: WEATHER_MOCK,
 };
 
-/** The previous 17:55 gains the date of the run it fell at. */
-export const EXPECTED_MALE_NOTE = 'ЛР (было 17:55 · 15 мар 2020); Лучший результат 2020 г.';
+/** The previous 17:55 gains its hundredths off the run it names, and that run's date. */
+export const EXPECTED_MALE_NOTE = 'ЛР (было 17:55,00 · 15 мар 2020); Лучший результат 2020 г.';
 
 export const EXPECTED_LONG_DATE = '20 сентября 2020 г.';
 

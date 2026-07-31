@@ -12,7 +12,7 @@ import { HeadToHead, HeadToHeadMeeting } from '../../core/history/head-to-head.i
 import { meetingSplitLeads } from '../../core/history/pacing';
 import { MeetingSplits } from '../../core/history/pacing.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { LoadingState } from '../../shared/loading-state/loading-state';
@@ -26,6 +26,7 @@ import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { DRAW_GAP_TEXT, LEFT_ROUTE_PARAM, RIGHT_ROUTE_PARAM, VERSUS_SUGGESTION_LIMIT } from './versus-page.constant';
 import { DuelStatus, DuelStatusType, VersusStatus, VersusStatusType } from './versus-page.enum';
 import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from './versus-page.interface';
+import { RaceTime } from '../../shared/race-time/race-time';
 
 /**
  * The duel page: pick two athletes and see how many times they ran the same 5 km race and who
@@ -34,7 +35,7 @@ import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from '.
  */
 @Component({
   selector: 'app-versus-page',
-  imports: [LoadingState, MatButtonModule, OfflineNotice, ReloadButton, RouterLink],
+  imports: [LoadingState, MatButtonModule, OfflineNotice, ReloadButton, RouterLink, RaceTime],
   templateUrl: './versus-page.html',
   styleUrl: './versus-page.scss',
 })
@@ -226,7 +227,7 @@ function toOptionView(record: AthleteRecord): AthleteOptionView {
   return {
     key: record.key,
     displayName: record.displayName,
-    bestTimeText: record.bestMs === null ? NO_BEST_TIME_TEXT : formatDuration(record.bestMs),
+    bestTimeText: record.bestMs === null ? NO_BEST_TIME_TEXT : formatRaceTime(record.bestMs),
   };
 }
 
@@ -235,11 +236,11 @@ function toMeetingView(meeting: HeadToHeadMeeting, splits: MeetingSplits | null)
     slug: meeting.slug,
     raceLink: [RACE_PAGE_BASE_LINK, meeting.slug],
     dateShort: formatRussianDateShort(meeting.dateIso),
-    leftTimeText: formatDuration(meeting.leftMs),
-    rightTimeText: formatDuration(meeting.rightMs),
+    leftTimeText: formatRaceTime(meeting.leftMs),
+    rightTimeText: formatRaceTime(meeting.rightMs),
     leftWon: meeting.leftMs < meeting.rightMs,
     rightWon: meeting.rightMs < meeting.leftMs,
-    gapText: meeting.leftMs === meeting.rightMs ? DRAW_GAP_TEXT : formatDuration(Math.abs(meeting.leftMs - meeting.rightMs)),
+    gapText: meeting.leftMs === meeting.rightMs ? DRAW_GAP_TEXT : formatRaceTime(Math.abs(meeting.leftMs - meeting.rightMs)),
     leftLedSplit: splits !== null && splits.leftLapMs < splits.rightLapMs,
     rightLedSplit: splits !== null && splits.rightLapMs < splits.leftLapMs,
   };

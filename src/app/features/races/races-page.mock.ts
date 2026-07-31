@@ -35,8 +35,8 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
       ],
     },
     genders: [
-      { title: 'М · мужчины', best: '17:36', median: '30:10' },
-      { title: 'Ж · женщины', best: '20:38', median: '33:04' },
+      { title: 'М · мужчины', best: '17:36,00', median: '30:10,00' },
+      { title: 'Ж · женщины', best: '20:38,00', median: '33:04,00' },
     ],
     // NEWER_ENTRY's stored reading: mostly-clear icon, +25° rounded and the 9 km/h wind.
     weatherText: '🌤️ +25°, ветер 9 км/ч',
@@ -65,8 +65,8 @@ export const EXPECTED_RACE_ITEMS: RaceListItem[] = [
       ],
     },
     genders: [
-      { title: 'М · мужчины', best: '19:43', median: '28:41' },
-      { title: 'Ж · женщины', best: '22:40', median: '30:46' },
+      { title: 'М · мужчины', best: '19:43,00', median: '28:41,00' },
+      { title: 'Ж · женщины', best: '22:40,00', median: '30:46,00' },
     ],
     // OLDER_ENTRY predates the weather fetch, so its card carries no weather line.
     weatherText: '',

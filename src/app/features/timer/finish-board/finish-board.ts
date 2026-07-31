@@ -1,12 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
 
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { unassignedSplits } from '../../../core/timer/session-splits';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TIMER_FINISH_NOTHING_UNASSIGNED } from './finish-board.constant';
 import { TimerFinishRow } from './finish-board.interface';
 import { unassignedTimesText } from './finish-board.text';
 import { buildFinishRows } from './finish-rows';
+import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
  * The «Финиш» tab: the ready protocol in the shape it will go to the site — place per gender, name,
@@ -15,6 +16,7 @@ import { buildFinishRows } from './finish-rows';
  */
 @Component({
   selector: 'app-timer-finish-board',
+  imports: [RaceTime],
   templateUrl: './finish-board.html',
   styleUrl: './finish-board.scss',
 })
@@ -32,7 +34,7 @@ export class TimerFinishBoard {
   readonly unassignedTimes = computed<string[]>(() => {
     const session = this.#sessions.active();
 
-    return session === null ? [] : unassignedSplits(session).map((split) => formatDuration(split.atMs));
+    return session === null ? [] : unassignedSplits(session).map((split) => formatRaceTime(split.atMs));
   });
 
   /** «2 времени без имени» — null once the queue is empty. */

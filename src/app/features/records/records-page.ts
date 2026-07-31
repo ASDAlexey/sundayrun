@@ -30,7 +30,8 @@ import { EventWeatherRow, WeatherExtreme, WeatherExtremes } from '../../core/his
 import { pluralText } from '../../core/i18n/plural-text';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { Gender, GenderType } from '../../core/models/gender.enum';
-import { formatDuration } from '../../core/time/duration';
+import { lapTimeTextOf } from '../../core/protocol/race-time-cells';
+import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { temperatureText } from '../../core/weather/temperature-text';
 import { weatherIconOf } from '../../core/weather/weather-icon';
@@ -74,6 +75,7 @@ import {
   WINDIEST_VALUE_ICON,
 } from './records-page.constant';
 import { RecordsStatus, RecordsStatusType, RecordsView, RecordsViewType, SeasonMetric, SeasonMetricType } from './records-page.enum';
+import { RaceTime } from '../../shared/race-time/race-time';
 import {
   BestResultView,
   ChartPick,
@@ -99,7 +101,7 @@ import {
  */
 @Component({
   selector: 'app-records-page',
-  imports: [BumpChart, LoadingState, OfflineNotice, ReloadButton, RouterLink, ScrollingModule],
+  imports: [BumpChart, LoadingState, OfflineNotice, ReloadButton, RouterLink, ScrollingModule, RaceTime],
   templateUrl: './records-page.html',
   styleUrl: './records-page.scss',
 })
@@ -419,7 +421,7 @@ function toView(result: BestResult, index: number, crowned: string | null): Best
     key: result.key,
     athleteLink: [ATHLETES_PAGE_LINK, result.key],
     displayName: result.displayName,
-    timeText: formatDuration(result.bestMs),
+    timeText: formatRaceTime(result.bestMs),
     dateShort: formatRussianDateShort(result.dateIso),
     raceLink: [RACE_PAGE_BASE_LINK, result.slug],
     crowned: result.key === crowned,
@@ -436,7 +438,7 @@ function toFirstLapView(record: FirstLapRun | null): FirstLapRecordView | null {
     key: record.key,
     athleteLink: [ATHLETES_PAGE_LINK, record.key],
     displayName: record.displayName,
-    timeText: formatDuration(record.lapMs),
+    timeText: lapTimeTextOf(record.lapMs),
     dateShort: formatRussianDateShort(record.dateIso),
     raceLink: [RACE_PAGE_BASE_LINK, record.slug],
   };
@@ -563,10 +565,10 @@ function toTimeline(entries: readonly CourseRecordEntry[]): CourseRecordView[] {
       key: entry.key,
       athleteLink: [ATHLETES_PAGE_LINK, entry.key],
       displayName: entry.displayName,
-      timeText: formatDuration(entry.timeMs),
+      timeText: formatRaceTime(entry.timeMs),
       dateShort: formatRussianDateShort(entry.dateIso),
       raceLink: [RACE_PAGE_BASE_LINK, entry.slug],
-      improvementText: entry.previousMs === null ? null : RECORD_DELTA_SIGN + formatDuration(entry.previousMs - entry.timeMs),
+      improvementText: entry.previousMs === null ? null : RECORD_DELTA_SIGN + formatRaceTime(entry.previousMs - entry.timeMs),
       current: index === entries.length - 1,
     }))
     .reverse();

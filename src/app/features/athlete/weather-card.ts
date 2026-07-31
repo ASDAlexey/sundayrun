@@ -4,12 +4,13 @@ import { RouterLink } from '@angular/router';
 import { athleteWeatherBests } from '../../core/history/weather-records';
 import { AthleteWeatherBest, EventWeatherRow } from '../../core/history/weather-records.interface';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { temperatureText } from '../../core/weather/temperature-text';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { WEATHER_BUCKETS } from './weather-card.constant';
 import { WeatherBestView } from './weather-card.interface';
+import { RaceTime } from '../../shared/race-time/race-time';
 
 /**
  * The «Погодные рекорды» card: the athlete's fastest 5 km in rain, snow, frost and heat, by the
@@ -18,7 +19,7 @@ import { WeatherBestView } from './weather-card.interface';
  */
 @Component({
   selector: 'app-weather-card',
-  imports: [RouterLink],
+  imports: [RouterLink, RaceTime],
   templateUrl: './weather-card.html',
   styleUrl: './weather-card.scss',
 })
@@ -51,7 +52,7 @@ function toBestView(key: string, icon: string, label: string, best: AthleteWeath
     key,
     icon,
     label,
-    timeText: formatDuration(best.timeMs),
+    timeText: formatRaceTime(best.timeMs),
     temperatureText: best.temperatureC === null ? '' : temperatureText(best.temperatureC),
     dateShort: formatRussianDateShort(best.slug),
     raceLink: [RACE_PAGE_BASE_LINK, best.slug],

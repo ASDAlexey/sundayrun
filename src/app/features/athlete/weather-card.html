@@ -11,7 +11,7 @@
         <li class="weather-card__row">
           <span class="weather-card__label">{{ row.icon }} {{ row.label }}</span>
 
-          <span class="weather-card__time">{{ row.timeText }}</span>
+          <span class="weather-card__time"><app-race-time [value]="row.timeText" /></span>
 
           @if (row.temperatureText) {
             <span class="weather-card__temp">{{ row.temperatureText }}</span>

@@ -78,12 +78,13 @@ const EXPECTED_EVENT: RaceEvent = {
   chairman: 'Иванов Иван',
 };
 
+/** The db holds the archive's whole-second text; the read redraws both cells to hundredths. */
 const EXPECTED_EVENT_ROWS: ProtocolRow[] = [
   {
     index: 1,
     fullName: 'Мария Иванова',
     time23: '11:30',
-    time5: '25:00',
+    time5: '25:00,00',
     totalMs: 1500000,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender: Gender.female,

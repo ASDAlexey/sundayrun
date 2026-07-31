@@ -101,8 +101,8 @@ export const EXPECTED_MEETING_VIEWS: MeetingView[] = [
     slug: 'kuzminki-4',
     raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-4'],
     dateShort: '17.01.2026 г.',
-    leftTimeText: '25:00',
-    rightTimeText: '25:00',
+    leftTimeText: '25:00,00',
+    rightTimeText: '25:00,00',
     leftWon: false,
     rightWon: false,
     gapText: DRAW_GAP_TEXT,
@@ -113,11 +113,11 @@ export const EXPECTED_MEETING_VIEWS: MeetingView[] = [
     slug: 'kuzminki-3',
     raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-3'],
     dateShort: '10.01.2026 г.',
-    leftTimeText: '25:00',
-    rightTimeText: '24:00',
+    leftTimeText: '25:00,00',
+    rightTimeText: '24:00,00',
     leftWon: false,
     rightWon: true,
-    gapText: '1:00',
+    gapText: '1:00,00',
     leftLedSplit: false,
     rightLedSplit: true,
   },
@@ -125,23 +125,23 @@ export const EXPECTED_MEETING_VIEWS: MeetingView[] = [
     slug: 'kuzminki-2',
     raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'],
     dateShort: '03.01.2026 г.',
-    leftTimeText: '24:00',
-    rightTimeText: '25:00',
+    leftTimeText: '24:00,00',
+    rightTimeText: '25:00,00',
     leftWon: true,
     rightWon: false,
-    gapText: '1:00',
+    gapText: '1:00,00',
     leftLedSplit: true,
     rightLedSplit: false,
   },
 ];
 
 /** The highlighted (winning) time of each decided meeting, newest first; the draw contributes none. */
-export const EXPECTED_WINNING_TIMES: string[] = ['24:00', '24:00'];
+export const EXPECTED_WINNING_TIMES: string[] = ['24:00,00', '24:00,00'];
 
 export const EXPECTED_SUGGESTION_OPTION: AthleteOptionView = {
   key: SUGGESTED_KEY,
   displayName: 'Петрова Мария',
-  bestTimeText: '27:00',
+  bestTimeText: '27:00,00',
 };
 
 /** The `петр` matches with `LEFT_KEY` picked, sorted by display name; no best time renders a dash. */

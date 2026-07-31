@@ -3,7 +3,8 @@ import { RouterLink } from '@angular/router';
 
 import { ATHLETES_PAGE_LINK } from '../../../app.constant';
 import { SeasonPositionLine, SeasonPositions } from '../../../core/history/season-positions.interface';
-import { formatDuration } from '../../../core/time/duration';
+import { lapTimeTextOf } from '../../../core/protocol/race-time-cells';
+import { formatRaceTime } from '../../../core/time/duration';
 import { formatRussianDateLong } from '../../../core/time/russian-date';
 import { RUSSIAN_MONTHS_SHORT } from '../../../core/time/russian-date.constant';
 import {
@@ -43,10 +44,12 @@ import { BumpChartView, BumpDotView, BumpLabelView, BumpLineView, BumpRowView, B
   styleUrl: './bump-chart.scss',
 })
 export class BumpChart {
-  // The geometry depends on the data alone, so a hover or a pick never re-plots the paths.
-  readonly #geometry = computed(() => toChartView(this.data()));
+  // The geometry depends on the inputs alone, so a hover or a pick never re-plots the paths.
+  readonly #geometry = computed(() => toChartView(this.data(), this.firstLap()));
 
   readonly data = input.required<SeasonPositions>();
+  /** Whether the plotted times are 2.3 km splits — they are drawn without hundredths (see `lapTimeTextOf`). */
+  readonly firstLap = input(false);
   readonly highlighted = input<readonly string[]>([]);
   readonly hovered = signal<string | null>(null);
   readonly tooltip = signal<BumpTooltipView | null>(null);
@@ -129,7 +132,7 @@ function withStates(geometry: BumpChartView, hovered: string | null, highlighted
   };
 }
 
-function toChartView(data: SeasonPositions): BumpChartView {
+function toChartView(data: SeasonPositions, firstLap: boolean): BumpChartView {
   const rows = buildRows(data.rankedCount);
   const lastX = eventX(Math.max(data.eventDates.length - 1, 0));
   const plotBottom = BUMP_PAD_TOP + rows.length * BUMP_ROW_HEIGHT;
@@ -144,7 +147,7 @@ function toChartView(data: SeasonPositions): BumpChartView {
     tickY: plotBottom + BUMP_TICK_OFFSET,
     ticks: data.eventDates.map((dateIso, index) => ({ x: eventX(index), label: tickLabel(dateIso) })),
     rows,
-    lines: data.lines.map((line, index) => toLineView(line, index, data.eventDates)),
+    lines: data.lines.map((line, index) => toLineView(line, index, data.eventDates, firstLap)),
   };
 }
 
@@ -159,7 +162,7 @@ function buildRows(rowCount: number): BumpRowView[] {
   }));
 }
 
-function toLineView(line: SeasonPositionLine, index: number, eventDates: string[]): BumpLineView {
+function toLineView(line: SeasonPositionLine, index: number, eventDates: string[], firstLap: boolean): BumpLineView {
   const dots = line.points.flatMap<BumpDotView>((point, eventIndex) => {
     if (point === null) {
       return [];
@@ -172,7 +175,7 @@ function toLineView(line: SeasonPositionLine, index: number, eventDates: string[
         label: {
           date: formatRussianDateLong(eventDates[eventIndex]),
           place: `№${point.position}`,
-          time: formatDuration(point.bestMs),
+          time: firstLap ? lapTimeTextOf(point.bestMs) : formatRaceTime(point.bestMs),
         },
       },
     ];

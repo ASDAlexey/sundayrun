@@ -10,8 +10,8 @@ export const EXPECTED_LIFETIME_VIEW: LifetimeView = {
     { minute: 26, label: '26:xx', count: 1, widthPercent: 50 },
   ],
   yearPaces: [
-    { year: '2024', paceText: '5:04' },
-    { year: '2025', paceText: '4:58' },
+    { year: '2024', paceText: '5:04,00' },
+    { year: '2025', paceText: '4:58,00' },
   ],
 };
 

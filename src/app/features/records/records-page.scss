@@ -424,10 +424,15 @@
     flex: none;
   }
 
+  // The leaderboard's whole point, so it gets a track of its own rather than an `auto` one that
+  // each row measures for itself: '9:26,00' is a character shorter than '19:26,00', and without a
+  // floor the date behind it would step left on every single-digit minute. Cut for 'mm:ss,cc'.
   &__time {
     @include t.mono-value;
 
+    min-width: 7.6ch;
     color: var(--accent-light);
+    text-align: right;
   }
 
   &__date {
@@ -515,9 +520,13 @@
     background: linear-gradient(90deg, var(--accent-glow), transparent 55%);
   }
 
+  // Shares the leaderboard time's floor, so the two boards read as one column of figures.
   &__lap-time {
     @include t.mono-value;
     @include t.gradient-text;
+
+    min-width: 7.6ch;
+    text-align: right;
   }
 
   &__weather {

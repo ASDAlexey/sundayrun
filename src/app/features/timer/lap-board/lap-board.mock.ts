@@ -76,7 +76,7 @@ export const LAP_BOARD_SESSION_QUEUED: TimerSession = {
 /** It stands fourth — behind the 700 000 lap, ahead of the 900 000 one — and carries no surname. */
 export const LAP_QUEUED_PLACE = 4;
 export const LAP_QUEUED_NAME = 'без имени';
-export const LAP_QUEUED_TIME_TEXT = '13:20';
+export const LAP_QUEUED_TIME_TEXT = '13:20,00';
 
 /** The fastest first lap of the archive per gender: the male one is beaten, the female one is not. */
 export const LAP_COURSE_RECORD_LAP_MS: Readonly<Record<GenderType, number | null>> = {
@@ -107,10 +107,10 @@ export const LAP_EXPECTED_NOTE_STEPS = [2, 0, 0, 0, 0];
 
 export const LAP_EXPECTED_MOVED = [true, true, true, false, false];
 
-export const LAP_EXPECTED_TIME_TEXTS = ['11:40', '8:20', '10:00', '15:00', '16:40'];
+export const LAP_EXPECTED_TIME_TEXTS = ['11:40,00', '8:20,00', '10:00,00', '15:00,00', '16:40,00'];
 
 /** The leader of the lap chases nobody, so his gap column stays empty. */
-export const LAP_EXPECTED_GAP_TEXTS = ['+3:20', '', '+1:40', '+6:40', '+8:20'];
+export const LAP_EXPECTED_GAP_TEXTS = ['+3:20,00', '', '+1:40,00', '+6:40,00', '+8:20,00'];
 
 /** One of the six is still out on the course. */
 export const LAP_EXPECTED_PENDING_TEXT = 'ещё 1 не прошёл круг';

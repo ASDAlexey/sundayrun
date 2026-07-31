@@ -1,0 +1,20 @@
+@use 'styles/typography' as t;
+
+:host {
+  display: inline;
+}
+
+.race-time {
+  // Tabular figures, so a column of times keeps one width whatever digits land in it.
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.race-time__fraction {
+  @include t.race-time-fraction;
+
+  // Dimmed rather than recoloured: the fraction rides on accent cells and on plain ones, and it has
+  // to stay the junior of whatever colour it inherits. On the archive rows it is always ',00' and
+  // carries nothing at all, so it must never compete with the seconds it trails.
+  opacity: 0.62;
+}

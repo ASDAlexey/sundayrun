@@ -137,7 +137,7 @@ export const EXPECTED_MEN_NAMES = ['Азбукин Андрей', 'Быстро�
 export const EXPECTED_WOMEN_NAMES = ['Ланская Лидия'];
 
 /** 1140000 ms formatted by formatDuration. */
-export const EXPECTED_TOP_TIME_TEXT = '19:00';
+export const EXPECTED_TOP_TIME_TEXT = '19:00,00';
 
 /** Finds Быстров via key normalization (case-insensitive); he is second all-time. */
 export const SEARCH_QUERY = 'Быстров';
@@ -276,9 +276,9 @@ export const EXPECTED_CROWNED_MEN_KEY = 'быстров борис';
 export const EXPECTED_CROWNED_WOMEN_KEY = 'ланская лидия';
 
 /** EXPECTED_COURSE_RECORD_HISTORY men flipped newest first for the timeline. */
-export const EXPECTED_MEN_TIMELINE_TIMES = ['19:00', '20:00', '21:00'];
+export const EXPECTED_MEN_TIMELINE_TIMES = ['19:00,00', '20:00,00', '21:00,00'];
 
-export const EXPECTED_MEN_TIMELINE_DELTAS = [`${RECORD_DELTA_SIGN}1:00`, `${RECORD_DELTA_SIGN}1:00`, null];
+export const EXPECTED_MEN_TIMELINE_DELTAS = [`${RECORD_DELTA_SIGN}1:00,00`, `${RECORD_DELTA_SIGN}1:00,00`, null];
 
 /** Three men's record steps plus the single women's one. */
 export const EXPECTED_TIMELINE_ROW_COUNT = 4;

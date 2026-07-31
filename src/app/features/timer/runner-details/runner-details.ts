@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { removeRunner, setRunnerOutcome, swapRunnerSplits } from '../../../core/timer/session-actions';
 import { runnerSplitTimesMs } from '../../../core/timer/session-splits';
 import { TimerRunnerOutcome, TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
@@ -10,6 +10,7 @@ import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
 import { TIMER_CARD_FINISH_INDEX, TIMER_CARD_LAP_INDEX, TIMER_CARD_NO_TIME, TIMER_CARD_TIME_SEPARATOR } from './runner-details.constant';
 import { TimerCardRunner } from './runner-details.interface';
 import { cardRemoveNoteText } from './runner-details.text';
+import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
  * The card behind a long press on a tile (docs/TIMER.md §4): the two times of one runner, how his
@@ -22,7 +23,7 @@ import { cardRemoveNoteText } from './runner-details.text';
  */
 @Component({
   selector: 'app-timer-runner-card',
-  imports: [TimerConfirm],
+  imports: [TimerConfirm, RaceTime],
   templateUrl: './runner-details.html',
   styleUrl: './runner-details.scss',
 })
@@ -112,7 +113,7 @@ export class TimerRunnerCard {
 function timeAt(timesMs: readonly number[], index: number): string {
   const atMs = timesMs[index];
 
-  return atMs === undefined ? TIMER_CARD_NO_TIME : formatDuration(atMs);
+  return atMs === undefined ? TIMER_CARD_NO_TIME : formatRaceTime(atMs);
 }
 
 function timesText(session: TimerSession, runnerId: string): string {
@@ -121,5 +122,5 @@ function timesText(session: TimerSession, runnerId: string): string {
 
 /** «9:26 · 23:26», or a dash while nothing is written down for him yet. */
 function joinTimes(timesMs: readonly number[]): string {
-  return timesMs.length === 0 ? TIMER_CARD_NO_TIME : timesMs.map((atMs) => formatDuration(atMs)).join(TIMER_CARD_TIME_SEPARATOR);
+  return timesMs.length === 0 ? TIMER_CARD_NO_TIME : timesMs.map((atMs) => formatRaceTime(atMs)).join(TIMER_CARD_TIME_SEPARATOR);
 }

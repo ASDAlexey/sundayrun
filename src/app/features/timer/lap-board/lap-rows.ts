@@ -1,4 +1,4 @@
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { LapBoardRow } from '../../../core/timer/session-lap-board.interface';
 import { FIRST_POSITION, NO_GAP_MS } from '../../../core/timer/timer-session.constant';
 import { TimerRunner } from '../../../core/timer/timer-session.interface';
@@ -86,7 +86,7 @@ function toLapRow(entry: MarkedLapRow, rowSteps: number, noteSteps: number): Tim
 
   return {
     fullName: row.fullName ?? unnamedLapText(),
-    gapText: row.gapMs === NO_GAP_MS ? TIMER_LAP_NO_GAP_TEXT : `${TIMER_LAP_GAP_PREFIX}${formatDuration(row.gapMs)}`,
+    gapText: row.gapMs === NO_GAP_MS ? TIMER_LAP_NO_GAP_TEXT : `${TIMER_LAP_GAP_PREFIX}${formatRaceTime(row.gapMs)}`,
     id: row.splitId,
     mark: entry.mark,
     named: row.fullName !== null,
@@ -95,6 +95,6 @@ function toLapRow(entry: MarkedLapRow, rowSteps: number, noteSteps: number): Tim
     place: row.position,
     rowSteps,
     runnerId: row.runnerId,
-    timeText: formatDuration(row.lapMs),
+    timeText: formatRaceTime(row.lapMs),
   };
 }

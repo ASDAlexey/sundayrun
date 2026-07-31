@@ -27,6 +27,7 @@ import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interf
 import { parseDuration } from '../core/time/duration';
 import { Gender, GenderType } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
+import { withRaceTimeCells } from '../core/protocol/race-time-cells';
 import { athletes, eventWeather, events, meta, participations, results, runs } from '../core/sqlite/protocol-db.schema';
 import { PROTOCOL_DB_META_OVERALL_STATS_KEY } from '../core/sqlite/protocol-db-schema.constant';
 import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
@@ -436,7 +437,7 @@ export async function selectEventResults(db: ProtocolDrizzle, slug: string): Pro
     .where(eq(results.slug, slug))
     .orderBy(asc(results.idx));
 
-  return buildEventResultsFile(event, rows.map(toProtocolRow));
+  return buildEventResultsFile(event, withRaceTimeCells(rows.map(toProtocolRow)));
 }
 
 /**

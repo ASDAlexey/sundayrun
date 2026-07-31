@@ -2,7 +2,8 @@ import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distan
 import { Gender, GenderType } from '../models/gender.enum';
 import { Participant } from '../models/participant.interface';
 import { ProtocolRow } from '../models/protocol-row.interface';
-import { formatDuration } from '../time/duration';
+import { formatRaceTime } from '../time/duration';
+import { lapTimeText, lapsCarryHundredths } from './race-time-cells';
 import { EMPTY_TIME, FIRST_LAP_INDEX, FIRST_ROW_INDEX, FIVE_KM_LAP_COUNT, TWO_THREE_KM_LAP_COUNT } from './protocol-builder.constant';
 import { TimedParticipant } from './protocol-builder.type';
 
@@ -14,18 +15,31 @@ import { TimedParticipant } from './protocol-builder.type';
  */
 export function buildProtocolRows(participants: Participant[]): ProtocolRow[] {
   const places: Record<GenderType, number> = { [Gender.male]: 0, [Gender.female]: 0 };
+  const ordered = orderProtocolParticipants(participants);
+  // Decided once for the whole protocol — a stopwatch session times every lap to the millisecond,
+  // an imported sheet none of them, and the 2.3 km column follows the event it belongs to.
+  const lapHundredths = lapsCarryHundredths(ordered.map(lapReadingOf));
 
-  return orderProtocolParticipants(participants).map((participant, index) => {
+  return ordered.map((participant, index) => {
     if (isFiveKmFinisher(participant)) {
-      return toFiveKmRow(participant, index + FIRST_ROW_INDEX, places);
+      return toFiveKmRow(participant, index + FIRST_ROW_INDEX, places, lapHundredths);
     }
 
     if (isTwoThreeKmRunner(participant)) {
-      return toTwoThreeKmRow(participant, index + FIRST_ROW_INDEX);
+      return toTwoThreeKmRow(participant, index + FIRST_ROW_INDEX, lapHundredths);
     }
 
     return toDnfRow(participant, index + FIRST_ROW_INDEX);
   });
+}
+
+/** What each participant contributes to the 2.3 km column: their split, or their whole one-lap race. */
+function lapReadingOf(participant: Participant): number | null {
+  if (isFiveKmFinisher(participant)) {
+    return participant.lapsMs[FIRST_LAP_INDEX];
+  }
+
+  return isTwoThreeKmRunner(participant) ? participant.totalMs : null;
 }
 
 /**
@@ -53,7 +67,12 @@ function sortByTotalMs(participants: TimedParticipant[]): TimedParticipant[] {
   return [...participants].sort((left, right) => left.totalMs - right.totalMs);
 }
 
-function toFiveKmRow(participant: TimedParticipant, index: number, places: Record<GenderType, number>): ProtocolRow {
+function toFiveKmRow(
+  participant: TimedParticipant,
+  index: number,
+  places: Record<GenderType, number>,
+  lapHundredths: boolean,
+): ProtocolRow {
   const gender = participant.gender;
   const place = gender === null ? null : (places[gender] += 1);
   const firstLapMs = participant.lapsMs[FIRST_LAP_INDEX];
@@ -61,8 +80,8 @@ function toFiveKmRow(participant: TimedParticipant, index: number, places: Recor
   return {
     index,
     fullName: participant.fullName,
-    time23: firstLapMs === null ? EMPTY_TIME : formatDuration(firstLapMs),
-    time5: formatDuration(participant.totalMs),
+    time23: firstLapMs === null ? EMPTY_TIME : lapTimeText(firstLapMs, lapHundredths),
+    time5: formatRaceTime(participant.totalMs),
     totalMs: participant.totalMs,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender,
@@ -73,11 +92,11 @@ function toFiveKmRow(participant: TimedParticipant, index: number, places: Recor
   };
 }
 
-function toTwoThreeKmRow(participant: TimedParticipant, index: number): ProtocolRow {
+function toTwoThreeKmRow(participant: TimedParticipant, index: number, lapHundredths: boolean): ProtocolRow {
   return {
     index,
     fullName: participant.fullName,
-    time23: formatDuration(participant.totalMs),
+    time23: lapTimeText(participant.totalMs, lapHundredths),
     time5: EMPTY_TIME,
     totalMs: participant.totalMs,
     distanceKm: TWO_THREE_KM_DISTANCE_KM,

@@ -22,11 +22,11 @@
 
             <td class="timer-finish-board__name">{{ row.fullName }}</td>
 
-            <td class="timer-finish-board__value">{{ row.time23 }}</td>
+            <td class="timer-finish-board__value"><app-race-time [value]="row.time23" /></td>
 
-            <td class="timer-finish-board__value">{{ row.time5 }}</td>
+            <td class="timer-finish-board__value"><app-race-time [value]="row.time5" /></td>
 
-            <td class="timer-finish-board__pace">{{ row.paceText }}</td>
+            <td class="timer-finish-board__pace"><app-race-time [value]="row.paceText" /></td>
           </tr>
         }
       </tbody>

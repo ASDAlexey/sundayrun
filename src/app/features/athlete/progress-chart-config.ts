@@ -4,7 +4,7 @@ import type {} from 'chartjs-plugin-zoom';
 import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
 
 import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatDuration, formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import {
   AREA_BOTTOM_ALPHA_HEX,
@@ -159,7 +159,7 @@ function bestPerDate(runs: AthleteRun[]): ProgressDay[] {
 export function tooltipCallbacks(days: ProgressDay[], isBest: boolean[]): ProgressTooltipCallbacks {
   return {
     title: (items) => formatRussianDateLong(days[items[0].dataIndex].dateIso),
-    label: (item) => $localize`:@@athlete.chartTooltipTime:Время: ${formatDuration(days[item.dataIndex].timeMs)}:time:`,
+    label: (item) => $localize`:@@athlete.chartTooltipTime:Время: ${formatRaceTime(days[item.dataIndex].timeMs)}:time:`,
     afterLabel: (item) => (isBest[item.dataIndex] ? $localize`:@@athlete.chartTooltipBest:Личный рекорд` : ''),
   };
 }

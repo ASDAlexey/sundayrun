@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, linkedSignal, output, untracked } from '@angular/core';
 
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { assignNextUnnamed, recordUnnamedSplit } from '../../../core/timer/session-actions';
 import { nextSplitForRunner, runnerSplitTimesMs, runnerStage, unassignedSplits } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
@@ -16,6 +16,7 @@ import { STAGE_OF_MODE, TIMER_TAPE_LAST_TARGET, TIMER_TAPE_NOBODY_WAITING, TIMER
 import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
 import { TimerTapeRunner } from './tape-controls.interface';
 import { tapeHeadingText, tapeKeysHintText, tapeNobodyWaitingText, tapeQueueDoneText, tapeRunnerMetaText } from './tape-controls.text';
+import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
  * The safety net for a pack on the first lap (docs/TIMER.md §4): the big «ОТСЕЧКА» key writes a time
@@ -28,7 +29,7 @@ import { tapeHeadingText, tapeKeysHintText, tapeNobodyWaitingText, tapeQueueDone
  */
 @Component({
   selector: 'app-timer-tape',
-  imports: [TimerSheet],
+  imports: [TimerSheet, RaceTime],
   templateUrl: './tape-controls.html',
   styleUrl: './tape-controls.scss',
 })
@@ -216,7 +217,7 @@ export class TimerTape {
 
       const metaText = tapeRunnerMetaText(mode, runnerSplitTimesMs(session, runner.id)[LAP_SPLIT_INDEX]);
 
-      return [...rows, { fullName: runner.fullName, id: runner.id, metaText, timeText: formatDuration(next.atMs) }];
+      return [...rows, { fullName: runner.fullName, id: runner.id, metaText, timeText: formatRaceTime(next.atMs) }];
     }, []);
   }
 

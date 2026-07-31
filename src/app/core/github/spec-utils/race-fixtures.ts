@@ -13,13 +13,17 @@ export const RACE_EVENT: RaceEvent = {
   chairman: 'Иванов Иван',
 };
 
-/** A 5 km finisher, a 2.3 km one-lap runner and a DNF (null `totalMs`/`distanceKm`). */
+/**
+ * A 5 km finisher, a 2.3 km one-lap runner and a DNF (null `totalMs`/`distanceKm`). The shape
+ * `buildProtocolRows` writes and `withRaceTimeCells` reads back: the finish carries its hundredths,
+ * the laps of this whole-second event carry none.
+ */
 export const PROTOCOL_ROWS: ProtocolRow[] = [
   {
     index: 1,
     fullName: 'Мария Иванова',
     time23: '11:30',
-    time5: '25:00',
+    time5: '25:00,00',
     totalMs: 1500000,
     distanceKm: FIVE_KM_DISTANCE_KM,
     gender: Gender.female,

@@ -3,11 +3,15 @@ import {
   EXPECTED_COMBINED_PARTS,
   EXPECTED_DATED_COMBINED_NOTE,
   EXPECTED_DATED_PLAIN_NOTE,
+  EXPECTED_DRIFTED_NOTE,
   EXPECTED_PLAIN_PARTS,
+  EXPECTED_TIMED_NOTE,
   EXPECTED_TIME_WITH_DATE,
   PR_NOTE_COMBINED,
+  PR_NOTE_DRIFTED_PREVIOUS_BEST,
   PR_NOTE_PLAIN,
   PR_NOTE_PREVIOUS_BEST,
+  PR_NOTE_TIMED_PREVIOUS_BEST,
   PR_NOTE_WITHOUT_RECORD,
 } from './pr-note.mock';
 
@@ -21,5 +25,11 @@ describe('pr-note', () => {
     expect(prNoteWithDate(PR_NOTE_COMBINED, PR_NOTE_PREVIOUS_BEST)).toBe(EXPECTED_DATED_COMBINED_NOTE);
     expect(prNoteWithDate(PR_NOTE_PLAIN, undefined), 'without a known previous run the note stays as stored').toBe(PR_NOTE_PLAIN);
     expect(prNoteWithDate(PR_NOTE_WITHOUT_RECORD, PR_NOTE_PREVIOUS_BEST), 'a recordless note stays as stored').toBe(PR_NOTE_WITHOUT_RECORD);
+    expect(prNoteWithDate(PR_NOTE_PLAIN, PR_NOTE_TIMED_PREVIOUS_BEST), 'the hundredths come off the run, not the note').toBe(
+      EXPECTED_TIMED_NOTE,
+    );
+    expect(prNoteWithDate(PR_NOTE_PLAIN, PR_NOTE_DRIFTED_PREVIOUS_BEST), 'a run the note cannot mean leaves it alone').toBe(
+      EXPECTED_DRIFTED_NOTE,
+    );
   });
 });

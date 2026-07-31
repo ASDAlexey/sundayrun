@@ -14,7 +14,7 @@ import { noteBadgeKindOf } from '../../../core/protocol/note-badge-kind';
 import { NoteBadgeKind } from '../../../core/protocol/note-badge-kind.enum';
 import { paceTextOf } from '../../../core/protocol/pace-text';
 import { orderProtocolParticipants } from '../../../core/protocol/protocol-builder';
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { ResultsService } from '../../../github/results.service';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import {
@@ -25,6 +25,7 @@ import {
   PLACE_MEDAL_CLASSES,
 } from './participants-table.constant';
 import { ParticipantRowView, PreviewNoteBadgeView } from './participants-table.interface';
+import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
  * The imported participants in the exact shape of the published protocol page — protocol order,
@@ -36,7 +37,7 @@ import { ParticipantRowView, PreviewNoteBadgeView } from './participants-table.i
   selector: 'app-participants-table',
   templateUrl: './participants-table.html',
   styleUrl: './participants-table.scss',
-  imports: [ScrollingModule, ExperimentalScrollingModule],
+  imports: [ScrollingModule, ExperimentalScrollingModule, RaceTime],
 })
 export class ParticipantsTable {
   readonly #store = inject(ProtocolStateService);
@@ -116,7 +117,7 @@ function toRowView(
   finishCounts: Record<string, number>,
 ): ParticipantRowView {
   const finishCount = finishCounts[normalizeAthleteKey(row.fullName)];
-  const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatDuration(gapMs);
+  const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatRaceTime(gapMs);
 
   return {
     id: participant.id,

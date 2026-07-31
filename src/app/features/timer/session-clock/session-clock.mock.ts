@@ -21,7 +21,7 @@ export const CLOCK_READOUT_TEXT = `${CLOCK_FIGURE_TEXT}${CLOCK_FRACTION_TEXT}`;
 export const CLOCK_START_EPOCH_MS = 1_785_045_600_000;
 
 /** The tail of the farewell line — Троилин's finish, printed the way the boards print it. */
-export const CLOCK_SUMMARY_BEST_TEXT = '23:26';
+export const CLOCK_SUMMARY_BEST_TEXT = '23:26,00';
 
 /** An empty screen shows zeros, and a bar with nothing to fill stays at nought. */
 export const CLOCK_EMPTY_COUNT_TEXT = '0';

@@ -95,7 +95,7 @@
                   <button class="versus__suggestion" type="button" (click)="pick(option.key)">
                     <span class="versus__suggestion-name">{{ option.displayName }}</span>
 
-                    <span class="versus__suggestion-time">{{ option.bestTimeText }}</span>
+                    <span class="versus__suggestion-time"><app-race-time [value]="option.bestTimeText" /></span>
                   </button>
                 </li>
               }
@@ -171,7 +171,7 @@
                         </svg>
                       }
 
-                      {{ meeting.leftTimeText }}
+                      <app-race-time [value]="meeting.leftTimeText" />
 
                       @if (meeting.leftLedSplit) {
                         <svg
@@ -186,7 +186,7 @@
                       }
                     </span>
 
-                    <span class="versus__gap">{{ meeting.gapText }}</span>
+                    <span class="versus__gap"><app-race-time [value]="meeting.gapText" /></span>
 
                     <span class="versus__time versus__time_right">
                       @if (meeting.rightWon) {
@@ -208,7 +208,7 @@
                         </svg>
                       }
 
-                      {{ meeting.rightTimeText }}
+                      <app-race-time [value]="meeting.rightTimeText" />
                     </span>
                   </li>
                 }

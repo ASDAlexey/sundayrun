@@ -4,7 +4,7 @@ import { athleteForm } from '../../core/history/form';
 import { FORM_WINDOW_SIZE, PEAK_PERCENT } from '../../core/history/form.constant';
 import { AthleteForm, FormPoint } from '../../core/history/form.interface';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateLong, formatRussianMonthPrepositional } from '../../core/time/russian-date';
 import {
   COORD_TENTHS_BASE,
@@ -66,7 +66,7 @@ function toFormView(form: AthleteForm | null): FormView | null {
 /** A dot enriched with its styled-tooltip text and the percent position that floats the tooltip. */
 function toChartPoint(dot: FormChartDot, point: FormPoint, isPeak: boolean, isCurrent: boolean): FormChartPoint {
   const dateText = formatRussianDateLong(point.dateIso);
-  const medianText = formatDuration(point.medianMs);
+  const medianText = formatRaceTime(point.medianMs);
   const leftPercent = roundCoord((dot.x / FORM_CHART_WIDTH) * 100);
   const topPercent = roundCoord((dot.y / FORM_CHART_HEIGHT) * 100);
 

@@ -61,7 +61,7 @@
 
                     <a class="year__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
 
-                    <span class="year__time">{{ row.timeText }}</span>
+                    <span class="year__time"><app-race-time [value]="row.timeText" /></span>
 
                     <a class="year__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
                   </li>
@@ -81,7 +81,7 @@
 
                     <a class="year__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
 
-                    <span class="year__time">{{ row.timeText }}</span>
+                    <span class="year__time"><app-race-time [value]="row.timeText" /></span>
 
                     <a class="year__date" [routerLink]="row.raceLink">{{ row.dateShort }}</a>
                   </li>
@@ -126,7 +126,7 @@
 
               <a class="year__athlete" [routerLink]="row.athleteLink">{{ row.displayName }}</a>
 
-              <span class="year__progress-delta">{{ row.deltaText }}</span>
+              <span class="year__progress-delta"><app-race-time [value]="row.deltaText" /></span>
 
               <span class="year__progress-medians">{{ row.mediansText }}</span>
             </li>

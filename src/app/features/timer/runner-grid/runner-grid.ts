@@ -1,7 +1,7 @@
 import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { recordSplit, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
 import { hasDuplicateSurnames } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
@@ -28,6 +28,7 @@ import {
 } from './runner-grid.constant';
 import { TimerDensity } from './runner-grid.enum';
 import { TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid.interface';
+import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
  * The keyboard of the instrument: every runner on one screen, in an order that stops moving the
@@ -37,7 +38,7 @@ import { TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid
  */
 @Component({
   selector: 'app-timer-grid',
-  imports: [CdkDrag, CdkDragPlaceholder, CdkDropList, TimerTile],
+  imports: [CdkDrag, CdkDragPlaceholder, CdkDropList, TimerTile, RaceTime],
   templateUrl: './runner-grid.html',
   styleUrl: './runner-grid.scss',
 })
@@ -135,7 +136,7 @@ export class TimerGrid {
     this.announce.emit({
       kind: finishing ? TimerAnnouncementKind.finish : TimerAnnouncementKind.lap,
       name: view.runner.fullName,
-      timeText: formatDuration(atMs),
+      timeText: formatRaceTime(atMs),
     });
   }
 
@@ -146,7 +147,7 @@ export class TimerGrid {
    */
   protected onUndo(view: TimerTileView): void {
     const last = this.#lastTap();
-    const timeText = last !== null && last.runnerId === view.runner.id ? formatDuration(last.atMs) : view.timeText;
+    const timeText = last !== null && last.runnerId === view.runner.id ? formatRaceTime(last.atMs) : view.timeText;
 
     this.#lastTap.set(null);
     this.#sessions.updateActive((current) => removeNewestSplit(current, view.runner.id));
@@ -186,7 +187,7 @@ export class TimerGrid {
     this.#lastTap.set(null);
     this.#sessions.updateActive((current) => removeSplit(current, last.splitId));
     this.#haptics.play(TimerFeedback.cancel);
-    this.announce.emit({ kind: TimerAnnouncementKind.undo, name: view.runner.fullName, timeText: formatDuration(last.atMs) });
+    this.announce.emit({ kind: TimerAnnouncementKind.undo, name: view.runner.fullName, timeText: formatRaceTime(last.atMs) });
 
     return true;
   }

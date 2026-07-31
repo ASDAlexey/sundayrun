@@ -22,6 +22,6 @@ export const BESTLESS_YEAR_REVIEW: YearReview = { ...EXPECTED_EMPTY_YEAR_REVIEW,
 export const BESTLESS_STAT_COUNT = 5;
 
 /** Иванов's 26:30 → 24:30 season-median gain as the progress board formats it. */
-export const PROGRESS_DELTA_TEXT = '−2:00';
+export const PROGRESS_DELTA_TEXT = '−2:00,00';
 
-export const PROGRESS_MEDIANS_TEXT = '26:30 → 24:30';
+export const PROGRESS_MEDIANS_TEXT = '26:30,00 → 24:30,00';

@@ -1,5 +1,5 @@
 import { pluralText } from '../../../core/i18n/plural-text';
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 
 /** «15 финишировали» — the middle of the farewell line. */
 export function finishedCountText(count: number): string {
@@ -12,5 +12,5 @@ export function finishedCountText(count: number): string {
 
 /** «19:24 лучший» — the tail of the same line. */
 export function bestFinishText(ms: number): string {
-  return $localize`:@@timer.bestFinish:${formatDuration(ms)}:time: лучший`;
+  return $localize`:@@timer.bestFinish:${formatRaceTime(ms)}:time: лучший`;
 }

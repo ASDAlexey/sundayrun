@@ -1,4 +1,4 @@
-import { formatDuration } from '../../../core/time/duration';
+import { formatRaceTime } from '../../../core/time/duration';
 import { runnerSplitTimesMs, runnerStage } from '../../../core/timer/session-splits';
 import { LAST_ENTRY_INDEX } from '../../../core/timer/timer-session.constant';
 import { TimerRunner, TimerSession } from '../../../core/timer/timer-session.interface';
@@ -23,7 +23,7 @@ export function buildTimerTileViews(session: TimerSession, orderedIds: readonly 
 export function tileTimeText(session: TimerSession, runnerId: string): string {
   const latestMs = runnerSplitTimesMs(session, runnerId).at(LAST_ENTRY_INDEX);
 
-  return latestMs === undefined ? TIMER_TILE_EMPTY_TIME : formatDuration(latestMs);
+  return latestMs === undefined ? TIMER_TILE_EMPTY_TIME : formatRaceTime(latestMs);
 }
 
 function tileView(session: TimerSession, runner: TimerRunner, spellGiven: boolean): TimerTileView {

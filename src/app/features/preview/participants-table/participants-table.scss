@@ -5,7 +5,8 @@
 // Header and rows share this template so the columns line up; the gender column is a touch
 // wider to hold both М/Ж toggles. Tuned to fit the card width without horizontal scroll on
 // desktop; the flexible name/club/note tracks absorb the slack, narrow headers wrap.
-$columns: 32px minmax(112px, 1.3fr) 72px 72px 64px 62px 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
+// The three time tracks carry hundredths, so they are cut for 'mm:ss,cc' rather than 'mm:ss'.
+$columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 62px 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
 
 .participants-table {
   @include c.card;

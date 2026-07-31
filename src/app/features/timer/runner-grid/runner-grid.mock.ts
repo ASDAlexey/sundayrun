@@ -180,11 +180,11 @@ export const GRID_PLAIN_AFTER_FINISH: TimerSession = {
 export const GRID_LATE_TAP_MS = 1_300_000;
 
 /** The time a tap at the stubbed clock writes down, and the one a late tap writes instead. */
-export const GRID_TAP_TIME_TEXT = '20:35';
-export const GRID_LATE_TAP_TIME_TEXT = '21:40';
+export const GRID_TAP_TIME_TEXT = '20:34,50';
+export const GRID_LATE_TAP_TIME_TEXT = '21:40,00';
 
 /** The finish the crowd's first man home carries, as the shelf prints it. */
-export const GRID_CROWD_FINISH_TEXT = '25:00';
+export const GRID_CROWD_FINISH_TEXT = '25:00,00';
 
 /** How long after a tap the shelf is allowed to move anything. */
 export const GRID_QUIET_ELAPSED_MS = 5_000_000;
@@ -247,7 +247,7 @@ export const VIEW_GONE_RUNNER_ID = 'runner-went-home';
 export const VIEW_ORDER: readonly string[] = [TROILIN_RUNNER_ID, VIEW_GONE_RUNNER_ID, KUZNETSOV_RUNNER_ID];
 
 /** Троилин's newest time as the tile prints it, and the surname and first name it splits into. */
-export const VIEW_TROILIN_TIME_TEXT = '23:26';
+export const VIEW_TROILIN_TIME_TEXT = '23:26,00';
 export const VIEW_TROILIN_SURNAME = 'Троилин';
 export const VIEW_TROILIN_GIVEN = 'Антон';
 

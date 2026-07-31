@@ -204,6 +204,16 @@
   letter-spacing: 0.01em;
 }
 
+// The hundredths trailing a race time in running text — the table cells, the cards, the chips.
+// Sized in `em` so it demotes itself against whatever figure it rides on, the same bargain the
+// stopwatch's own `timer-fraction` strikes at hero scale: minutes and seconds carry the reading,
+// the fraction is the footnote to them. Most of the archive can only ever say ',00', and at full
+// size that pair would turn a column of results into a wall of digits.
+@mixin race-time-fraction {
+  font-size: 0.76em;
+  letter-spacing: 0.01em;
+}
+
 // A podium rank number — display face, tuned to sit inside a fixed leaderboard row.
 @mixin podium-rank {
   font-weight: 800;

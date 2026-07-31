@@ -23,10 +23,10 @@ export const TAPE_LAP_ROW_META = [''];
 export const TAPE_FINISH_ROW_NAMES = ['Попов Игорь'];
 
 /** The lap he already has, so a surname in a hurry can be checked against something. */
-export const TAPE_FINISH_ROW_META = ['круг 11:08'];
+export const TAPE_FINISH_ROW_META = ['круг 11:08,00'];
 
 /** The earliest nameless time of the fixture — the one both halves are about to write. */
-export const TAPE_NEXT_TIME_TEXT = '27:35';
+export const TAPE_NEXT_TIME_TEXT = '27:35,00';
 
 /** The heading of the open sheet: the keys that name the half are covered by the sheet itself. */
 export const TAPE_LAP_HEADING = 'Разобрать круг';

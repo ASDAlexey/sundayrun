@@ -13,7 +13,7 @@ export const TIMER_HEADER_RUNNING: TimerHeaderView = {
 };
 
 /** The tail of the farewell line: Троилин's 1 406 000 ms, as the clock prints them. */
-export const FAREWELL_BEST_TEXT = '23:26';
+export const FAREWELL_BEST_TEXT = '23:26,00';
 
 export const PAGE_UNNAMED_SPLIT_ID = 'split-page-unnamed';
 

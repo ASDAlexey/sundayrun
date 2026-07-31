@@ -64,7 +64,7 @@ export const EXPECTED_DECLINE_TREND: RaceCardTrend = {
 };
 
 /** EXPECTED_NEW_ENTRY's М/Ж block: the sole finisher is a woman, so the men's block drops out. */
-export const EXPECTED_FEMALE_ONLY_GENDERS: RaceCardGenderBlock[] = [{ title: 'Ж · женщины', best: '25:00', median: '25:00' }];
+export const EXPECTED_FEMALE_ONLY_GENDERS: RaceCardGenderBlock[] = [{ title: 'Ж · женщины', best: '25:00,00', median: '25:00,00' }];
 
 /** NOTELESS_ENTRY alone: the null note counters fall back to dimmed zeros instead of vanishing. */
 export const EXPECTED_NOTELESS_HERO: RaceCardHero = {

@@ -17,8 +17,18 @@ export const EXPECTED_COMBINED_PARTS: PrNoteParts = {
 
 export const PR_NOTE_PREVIOUS_BEST: PreviousBest = { slug: '2025-01-12', dateIso: '2025-01-12', timeMs: 1252000 };
 
-export const EXPECTED_TIME_WITH_DATE = '20:52 · 12 янв 2025';
+export const EXPECTED_TIME_WITH_DATE = '20:52,00 · 12 янв 2025';
 
-export const EXPECTED_DATED_PLAIN_NOTE = 'ЛР (было 20:52 · 12 янв 2025)';
+/** The same record, but timed to hundredths: the archive's own reading beats the note's text. */
+export const PR_NOTE_TIMED_PREVIOUS_BEST: PreviousBest = { slug: '2025-01-12', dateIso: '2025-01-12', timeMs: 1252840 };
 
-export const EXPECTED_DATED_COMBINED_NOTE = 'Дети; ЛР (было 20:52 · 12 янв 2025); Лучший результат 2025 г.';
+export const EXPECTED_TIMED_NOTE = 'ЛР (было 20:52,84 · 12 янв 2025)';
+
+/** A run the note cannot be talking about — nearly a minute apart, so the stored text is kept. */
+export const PR_NOTE_DRIFTED_PREVIOUS_BEST: PreviousBest = { slug: '2025-01-12', dateIso: '2025-01-12', timeMs: 1300000 };
+
+export const EXPECTED_DRIFTED_NOTE = 'ЛР (было 20:52 · 12 янв 2025)';
+
+export const EXPECTED_DATED_PLAIN_NOTE = 'ЛР (было 20:52,00 · 12 янв 2025)';
+
+export const EXPECTED_DATED_COMBINED_NOTE = 'Дети; ЛР (было 20:52,00 · 12 янв 2025); Лучший результат 2025 г.';

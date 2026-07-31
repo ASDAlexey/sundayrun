@@ -44,6 +44,22 @@ export const FORMAT_DURATION_CASES: readonly (readonly [string, number, string])
   ['multi-hour', 36610000, '10:10:10'],
 ];
 
+/** [label, milliseconds, expected 'm:ss,cc' string]: the fraction is always drawn, zeros included. */
+export const FORMAT_RACE_TIME_CASES: readonly (readonly [string, number, string])[] = [
+  ['zero', 0, '0:00,00'],
+  ['a whole-second archive time reads as ,00', 1165000, '19:25,00'],
+  ['hundredths keep their leading zero', 1165061, '19:25,06'],
+  ['hundredths below a tenth', 1165010, '19:25,01'],
+  ['rounds to the nearest hundredth', 1384181, '23:04,18'],
+  ['rounds half up', 1384185, '23:04,19'],
+  ['a remainder just under a second carries into the seconds', 1165999, '19:26,00'],
+  ['carries across the minute boundary', 1199999, '20:00,00'],
+  ['just below one hour', 3599994, '59:59,99'],
+  ['carries across the hour boundary', 3599999, '1:00:00,00'],
+  ['h:mm:ss,cc zero-pads minutes and seconds', 3723020, '1:02:03,02'],
+  ['fractional input (an average pace) rounds too', 277036.2, '4:37,04'],
+];
+
 /** [label, integer milliseconds, expected lossless string]; every case must survive `parseDuration`. */
 export const FORMAT_DURATION_PRECISE_CASES: readonly (readonly [string, number, string])[] = [
   ['zero', 0, '0:00,000'],

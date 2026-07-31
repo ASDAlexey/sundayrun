@@ -8,6 +8,7 @@ import { TimerLapMark } from './lap-board.enum';
 import { TimerLapRow } from './lap-board.interface';
 import { pendingLapText } from './lap-board.text';
 import { buildLapRows } from './lap-rows';
+import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
  * The live «Первый круг» table (docs/TIMER.md §4): who is through the 2.3 km and how far behind the
@@ -17,6 +18,7 @@ import { buildLapRows } from './lap-rows';
  */
 @Component({
   selector: 'app-timer-lap-board',
+  imports: [RaceTime],
   templateUrl: './lap-board.html',
   styleUrl: './lap-board.scss',
 })

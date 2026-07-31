@@ -3,7 +3,7 @@ import { Component, computed, input } from '@angular/core';
 import { lifetimeAggregates } from '../../core/history/lifetime-aggregates';
 import { LifetimeAggregates } from '../../core/history/lifetime-aggregates.interface';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatDuration, formatRaceTime } from '../../core/time/duration';
 import { LifetimeView } from './lifetime-card.interface';
 
 /**
@@ -39,6 +39,6 @@ function toLifetimeView(aggregates: LifetimeAggregates): LifetimeView | null {
       count: bucket.count,
       widthPercent: Math.round((100 * bucket.count) / tallestCount),
     })),
-    yearPaces: aggregates.yearPaces.map((pace) => ({ year: pace.year, paceText: formatDuration(pace.paceMsPerKm) })),
+    yearPaces: aggregates.yearPaces.map((pace) => ({ year: pace.year, paceText: formatRaceTime(pace.paceMsPerKm) })),
   };
 }

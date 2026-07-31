@@ -8,7 +8,7 @@ import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { OverallStats } from '../../core/history/overall-stats.interface';
 import { athleteStreaks } from '../../core/history/streaks';
 import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatRaceTime } from '../../core/time/duration';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
 import { AthletesService } from '../../github/athletes.service';
@@ -44,6 +44,7 @@ import {
 import { HomeSelfView, HomeStatsView } from './home-page.interface';
 import { COUNTDOWN_TICK_MS, DEFAULT_START_TIME } from './next-start.constant';
 import { NextStartView } from './next-start.interface';
+import { RaceTime } from '../../shared/race-time/race-time';
 import {
   formatCountdown,
   formatStartDate,
@@ -67,6 +68,7 @@ import {
     RollNumber,
     RouterLink,
     ScrollReveal,
+    RaceTime,
   ],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
@@ -247,11 +249,11 @@ function toSelfView(self: SelfAthlete | null, record: AthleteRecord | null, even
     displayName: record.displayName,
     athleteLink: [ATHLETES_PAGE_LINK, record.key],
     finishesText: STATS_NUMBER_FORMAT.format(fiveKmRuns.length),
-    bestTimeText: record.bestMs === null ? NO_BEST_TIME_TEXT : formatDuration(record.bestMs),
+    bestTimeText: record.bestMs === null ? NO_BEST_TIME_TEXT : formatRaceTime(record.bestMs),
     bestTimeLink: bestRun === null ? null : [RACE_PAGE_BASE_LINK, bestRun.slug],
     streakText: STATS_NUMBER_FORMAT.format(streaks.currentWeeks),
     finishesYearText: STATS_NUMBER_FORMAT.format(yearRuns.length),
-    bestTimeYearText: yearBestMs === undefined ? NO_BEST_TIME_TEXT : formatDuration(yearBestMs),
+    bestTimeYearText: yearBestMs === undefined ? NO_BEST_TIME_TEXT : formatRaceTime(yearBestMs),
     bestTimeYearLink: yearBestRun === null ? null : [RACE_PAGE_BASE_LINK, yearBestRun.slug],
   };
 }
@@ -268,7 +270,7 @@ function firstRunWith(runs: AthleteRun[], timeMs: number): AthleteRun | null {
 
 /** A gender with no 5 km finishes yet shows a dash instead of a zero time. */
 function formatMedianTime(medianMs: number): string {
-  return medianMs === 0 ? NO_MEDIAN_TIME_PLACEHOLDER : formatDuration(medianMs);
+  return medianMs === 0 ? NO_MEDIAN_TIME_PLACEHOLDER : formatRaceTime(medianMs);
 }
 
 /** Builds the live card view; null before the browser clock starts, keeping the placeholder on screen. */

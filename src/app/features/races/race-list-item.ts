@@ -1,7 +1,7 @@
 import { ArchiveIndexEntry } from '../../core/github/archive-index.interface';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { pluralText } from '../../core/i18n/plural-text';
-import { formatDuration } from '../../core/time/duration';
+import { formatRaceTime } from '../../core/time/duration';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateChip } from '../../core/time/russian-date';
 import { weatherLineText } from '../../core/weather/weather-line';
@@ -158,5 +158,5 @@ function toCardGenders(entry: ArchiveIndexEntry): RaceCardGenderBlock[] {
 }
 
 function formatTimeOrNull(timeMs: number | null): string | null {
-  return timeMs === null ? null : formatDuration(timeMs);
+  return timeMs === null ? null : formatRaceTime(timeMs);
 }

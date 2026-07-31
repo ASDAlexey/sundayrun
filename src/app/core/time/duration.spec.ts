@@ -1,8 +1,10 @@
-import { formatDuration, formatDurationPrecise, parseDuration } from './duration';
+import { formatDuration, formatDurationPrecise, formatRaceTime, parseDuration } from './duration';
+import { MS_IN_HUNDREDTH } from './duration.constant';
 import {
   FORMAT_DURATION_CASES,
   FORMAT_DURATION_PRECISE_CASES,
   FORMAT_DURATION_PRECISE_ROUNDING_CASES,
+  FORMAT_RACE_TIME_CASES,
   PARSE_DURATION_CASES,
 } from './duration.mock';
 
@@ -16,6 +18,13 @@ describe('duration', () => {
   it('formats milliseconds as m:ss or h:mm:ss, rounding to the nearest second first', () => {
     for (const [label, ms, expected] of FORMAT_DURATION_CASES) {
       expect(formatDuration(ms), `formatDuration(${ms}) — ${label}`).toBe(expected);
+    }
+  });
+
+  it('formats milliseconds as m:ss,cc with the hundredths always drawn, and parseDuration reads them back', () => {
+    for (const [label, ms, expected] of FORMAT_RACE_TIME_CASES) {
+      expect(formatRaceTime(ms), `formatRaceTime(${ms}) — ${label}`).toBe(expected);
+      expect(parseDuration(expected), `parseDuration(${expected}) — ${label}`).toBe(Math.round(ms / MS_IN_HUNDREDTH) * MS_IN_HUNDREDTH);
     }
   });
 

@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { pluralText } from '../../core/i18n/plural-text';
 import { createTransferLoader } from '../../core/transfer/transfer-load';
 import { YearBestResult, YearReview } from '../../core/history/year-review.interface';
-import { formatDuration } from '../../core/time/duration';
+import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { YearReviewService } from '../../github/year-review.service';
 import { LoadingState } from '../../shared/loading-state/loading-state';
@@ -16,6 +16,7 @@ import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { YEAR_LATEST_KEY, YEAR_PAGE_BASE_LINK, YEAR_PODIUM_SIZE, YEAR_ROUTE_PARAM, YEAR_TRANSFER_KEY_PREFIX } from './year-page.constant';
 import { YearStatus, YearStatusType } from './year-page.enum';
+import { RaceTime } from '../../shared/race-time/race-time';
 import {
   YearActiveView,
   YearBadgeGroupView,
@@ -29,7 +30,7 @@ import {
 /** «Итоги года»: the year's totals, best results, most active finishers and badge holders. */
 @Component({
   selector: 'app-year-page',
-  imports: [LoadingState, OfflineNotice, ReloadButton, RouterLink, YearBadgeChip],
+  imports: [LoadingState, OfflineNotice, ReloadButton, RouterLink, YearBadgeChip, RaceTime],
   templateUrl: './year-page.html',
   styleUrl: './year-page.scss',
 })
@@ -122,11 +123,11 @@ function toStats(review: YearReview): YearStatView[] {
   ];
 
   if (review.medianTimeMenMs !== null) {
-    stats.push({ label: $localize`:@@year.statMedianMale:медиана мужчин · 5 км`, value: formatDuration(review.medianTimeMenMs) });
+    stats.push({ label: $localize`:@@year.statMedianMale:медиана мужчин · 5 км`, value: formatRaceTime(review.medianTimeMenMs) });
   }
 
   if (review.medianTimeWomenMs !== null) {
-    stats.push({ label: $localize`:@@year.statMedianFemale:медиана женщин · 5 км`, value: formatDuration(review.medianTimeWomenMs) });
+    stats.push({ label: $localize`:@@year.statMedianFemale:медиана женщин · 5 км`, value: formatRaceTime(review.medianTimeWomenMs) });
   }
 
   return stats;
@@ -137,7 +138,7 @@ function toBestRow(best: YearBestResult, index: number): YearBestRowView {
     place: index + 1,
     displayName: best.displayName,
     athleteLink: [ATHLETES_PAGE_LINK, best.key],
-    timeText: formatDuration(best.timeMs),
+    timeText: formatRaceTime(best.timeMs),
     dateShort: formatRussianDateShort(best.dateIso),
     raceLink: [RACE_PAGE_BASE_LINK, best.slug],
   };
@@ -161,8 +162,8 @@ function toProgressRow(row: YearReview['progress'][number], index: number): Year
     place: index + 1,
     displayName: row.displayName,
     athleteLink: [ATHLETES_PAGE_LINK, row.key],
-    deltaText: `−${formatDuration(row.deltaMs)}`,
-    mediansText: `${formatDuration(row.previousMedianMs)} → ${formatDuration(row.currentMedianMs)}`,
+    deltaText: `−${formatRaceTime(row.deltaMs)}`,
+    mediansText: `${formatRaceTime(row.previousMedianMs)} → ${formatRaceTime(row.currentMedianMs)}`,
   };
 }
 
