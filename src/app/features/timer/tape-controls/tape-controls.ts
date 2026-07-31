@@ -77,8 +77,6 @@ export class TimerTape {
    * goes grey — a dead key has to explain itself, and there is no room on a phone for the sentence.
    */
   readonly canCut = computed(() => this.#sessions.active()?.status === TimerStatus.running);
-  /** Past the finish the keys exist only to hand out the times still without a name. */
-  readonly finished = computed(() => this.#sessions.active()?.status === TimerStatus.finished);
 
   /**
    * Whom each half can hand a time to, and which time each of them takes. Only people the core would
