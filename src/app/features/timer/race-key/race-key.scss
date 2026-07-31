@@ -32,16 +32,37 @@
 
   // The stop is not a second accent key: by then the race is over and the eye should land on
   // «Сохранить», so this one steps back to an outline in the warm colour the cockpit already uses.
+  //
+  // A ring, but on a ground of its own: a 76 px circle drawn with a hairline over the panel's own
+  // colour reads as a hole punched in the floor beside the solid «ОТСЕЧКА», not as its pair. Two
+  // pixels of warm and a sixth of that warm mixed into the surface make it a disc — still quieter
+  // than the accent slab, but a thing, and the letters sit on dark where they can be read.
   &_stop {
     @include b.button-outline;
 
     width: var(--timer-floor-key);
     height: var(--timer-floor-key);
     padding: 0;
+    border: 2px solid var(--accent-warm);
     border-radius: 50%;
-    border-color: var(--accent-warm);
+    background: color-mix(in srgb, var(--accent-warm) 16%, var(--surface));
     box-shadow: none;
-    color: var(--accent-warm);
+    color: var(--accent-light);
+  }
+
+  // `button-accent` declares its own `:hover`, and one class beats one class only until a pseudo
+  // joins it: `.timer-key:hover` outranked `.timer-key_stop` and repainted the running key as a
+  // filled `--accent-light` circle under `--accent-warm` letters — orange on orange, illegible at
+  // the one moment of the race when the key has to be found without looking. The stop answers the
+  // pointer itself: the ground warms, the ring brightens, the shape never changes.
+  &_stop:hover {
+    border-color: var(--accent-light);
+    background: color-mix(in srgb, var(--accent-warm) 26%, var(--surface));
+    color: var(--accent-light);
+  }
+
+  &_stop:active {
+    background: color-mix(in srgb, var(--accent-warm) 34%, var(--surface));
   }
 
   // The same refusal «ОТСЕЧКА» draws right beside it — an outline gone grey, not a filled slug. A
