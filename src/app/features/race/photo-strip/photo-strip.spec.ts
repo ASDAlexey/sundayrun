@@ -26,10 +26,10 @@ describe('PhotoStrip', () => {
   });
 
   /** Renders the strip over the given photos and returns the component with its DOM settled. */
-  function createStrip(photos = PHOTO_STRIP_PHOTOS): PhotoStrip {
+  function createStrip(photos = PHOTO_STRIP_PHOTOS, postUrl = PHOTO_STRIP_POST_URL): PhotoStrip {
     fixture = TestBed.createComponent(PhotoStrip);
     fixture.componentRef.setInput('photos', photos);
-    fixture.componentRef.setInput('postUrl', PHOTO_STRIP_POST_URL);
+    fixture.componentRef.setInput('postUrl', postUrl);
     fixture.detectChanges();
 
     return fixture.componentInstance;
@@ -133,21 +133,23 @@ describe('PhotoStrip', () => {
       element.querySelector<HTMLImageElement>('.photo-strip__image')?.getAttribute('src'),
       'the strip closes ranks — the next photo takes the first square',
     ).toBe(PHOTO_STRIP_PHOTOS[1].previewUrl);
+
+    expect(
+      strip.slides().map((slide) => slide.photo),
+      'and a reopened viewer pages through the survivors alone',
+    ).toEqual(PHOTO_STRIP_PHOTOS.slice(1));
   });
 
   it('renders nothing for an empty post and falls back to the photo page when the post link is unknown', async () => {
-    const empty = createStrip([]);
+    const empty = createStrip([], '');
 
     expect(fixture.nativeElement.querySelector('.photo-strip'), 'no photos, no strip').toBeNull();
     expect(empty.positionLabel(), 'the closed viewer counts from zero').toBe('1 / 0');
+    expect(empty.sourceUrl(), 'with neither a post nor a photo the link points nowhere').toBe('');
 
     fixture.destroy();
 
-    fixture = TestBed.createComponent(PhotoStrip);
-    fixture.componentRef.setInput('photos', PHOTO_STRIP_SINGLE_PHOTO);
-    fixture.detectChanges();
-
-    const strip = fixture.componentInstance;
+    const strip = createStrip(PHOTO_STRIP_SINGLE_PHOTO, '');
     const element: HTMLElement = fixture.nativeElement;
 
     await openAt(strip, 0);
