@@ -18,6 +18,11 @@ export function unknownGenderText(count: number): string {
   });
 }
 
+/** The answer «Сохранить» gives while somebody's time is still nobody's — said only when it is pressed. */
+export function resolveFirstText(): string {
+  return $localize`:@@timerPublish.resolveFirst:сначала разберите все времена`;
+}
+
 /** Nobody was timed at all — the one thing that cannot be fixed by editing the protocol. */
 export function emptyRosterText(): string {
   return $localize`:@@timerPublish.emptyRoster:в составе никого — сохранять нечего`;

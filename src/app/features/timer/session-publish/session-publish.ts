@@ -14,7 +14,7 @@ import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
 import { removeSessionNoteText } from '../session-list/session-list.text';
 import { buildTimerSessionRow } from '../session-list/session-list.view';
 import { PREVIEW_PAGE_LINK, TIMER_ADMIN_RETURN_PARAMS, TIMER_PUBLISH_NOTHING } from './session-publish.constant';
-import { emptyRosterText, unknownGenderText, unnamedTimesText } from './session-publish.text';
+import { emptyRosterText, resolveFirstText, unknownGenderText, unnamedTimesText } from './session-publish.text';
 import { buildStepView } from './session-publish.view';
 
 /**
@@ -39,6 +39,9 @@ export class TimerPublish {
   readonly #adminToken = inject(AdminTokenService);
   readonly #destroyRef = inject(DestroyRef);
   readonly #view = inject(DOCUMENT).defaultView;
+
+  /** «Сохранить» was pressed while the queue was not empty — the card owes an answer until it is. */
+  readonly #nagged = signal(false);
 
   readonly session = input.required<TimerSession>();
 
@@ -79,6 +82,14 @@ export class TimerPublish {
   protected readonly blocked = computed(() => this.isEmpty() || this.missingGenderCount() > TIMER_PUBLISH_NOTHING);
   protected readonly blockedText = computed(() => (this.isEmpty() ? emptyRosterText() : unknownGenderText(this.missingGenderCount())));
 
+  /**
+   * A time still waiting for a name holds «Сохранить» too, but the key stays pressable: a dead button
+   * explains nothing, while a press that answers «сначала разберите все времена» says what is missing.
+   */
+  protected readonly held = computed(() => this.blocked() || this.hasUnnamed());
+  protected readonly softHeld = computed(() => this.hasUnnamed() && !this.blocked());
+  protected readonly nagText = computed(() => (this.#nagged() && this.hasUnnamed() ? resolveFirstText() : null));
+
   /** The measurement can be thrown away right here — a test run must not need a trip to the list. */
   protected readonly canRemove = computed(() => this.step() !== TimerPublishStep.done && !this.working());
   protected readonly removeAsk = signal(false);
@@ -113,6 +124,12 @@ export class TimerPublish {
 
   protected onSave(): void {
     if (this.blocked()) {
+      return;
+    }
+
+    if (this.hasUnnamed()) {
+      this.#nagged.set(true);
+
       return;
     }
 

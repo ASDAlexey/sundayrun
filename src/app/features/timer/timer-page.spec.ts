@@ -42,6 +42,7 @@ import {
   TIMER_HEADER_RUNNING,
   TIMER_PAGE_FINISHED,
   TIMER_PAGE_QUEUE,
+  TIMER_PAGE_SAVED,
   TIMER_RESET_NOTE,
 } from './timer-page.mock';
 
@@ -372,12 +373,21 @@ describe('TimerPage', () => {
     expect(element().querySelector('app-timer-publish'), '«Сохранить» appears only once the clock is stopped').not.toBeNull();
 
     click('.timer-publish__save');
+    await fixture.whenStable();
 
-    expect(publish.publish).toHaveBeenCalledExactlyOnceWith(TIMER_PAGE_FINISHED);
+    expect(publish.publish, 'a time still waiting for a name holds the key').not.toHaveBeenCalled();
+    expect(element().querySelector('.timer-publish__nag'), 'the held key answers what is missing').not.toBeNull();
 
     click('.timer-publish__unnamed-resolve');
     await fixture.whenStable();
 
     expect(element().querySelector('.timer-tape__sheet'), '«Разобрать» takes the organiser to the queue itself').not.toBeNull();
+
+    sessions.active.set(TIMER_PAGE_SAVED);
+    await fixture.whenStable();
+
+    click('.timer-publish__save');
+
+    expect(publish.publish).toHaveBeenCalledExactlyOnceWith(TIMER_PAGE_SAVED);
   });
 });

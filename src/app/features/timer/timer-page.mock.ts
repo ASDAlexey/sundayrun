@@ -33,5 +33,8 @@ export const TIMER_PAGE_FINISHED: TimerSession = {
   status: TimerStatus.finished,
 };
 
+/** The same stopped race with the queue handed out — nothing holds «Сохранить» any more. */
+export const TIMER_PAGE_SAVED: TimerSession = { ...TIMER_PAGE_FINISHED, splits: [GRID_PLAIN_LAP_SPLIT] };
+
 /** What «Сбросить забег?» says about the fixture race — the times go, the people stay. */
 export const TIMER_RESET_NOTE = 'Времена сотрутся — 11 отсечек. Состав останется: 7 участников, можно бежать заново.';

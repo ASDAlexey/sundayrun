@@ -17,9 +17,11 @@ import {
   TIMER_PUBLISH_GENDER_TEXT,
   TIMER_PUBLISH_RACE_HREF,
   TIMER_PUBLISH_REMOVE_NOTE,
+  TIMER_PUBLISH_RESOLVE_FIRST_TEXT,
   TIMER_PUBLISH_UNNAMED_TEXT,
   TIMER_SESSION_EMPTY,
   TIMER_SESSION_READY,
+  TIMER_SESSION_UNNAMED,
 } from './session-publish.mock';
 
 describe('TimerPublish', () => {
@@ -165,6 +167,30 @@ describe('TimerPublish', () => {
       element.querySelector('.timer-publish__blocked')?.textContent?.trim(),
       'a race nobody ran is stopped before any gender is asked about',
     ).toBe(TIMER_PUBLISH_EMPTY_TEXT);
+  });
+
+  it('holds «Сохранить» while a time is still nobody’s, and says so when it is pressed', async () => {
+    fixture.componentRef.setInput('session', TIMER_SESSION_UNNAMED);
+    await fixture.whenStable();
+
+    const element: HTMLElement = fixture.nativeElement;
+    const save = element.querySelector<HTMLButtonElement>('.timer-publish__save');
+
+    expect(save?.getAttribute('aria-disabled'), 'the key reads as held to a screen reader too').toBe('true');
+    expect(save?.classList.contains('timer-publish__save_held')).toBe(true);
+    expect(element.querySelector('.timer-publish__nag'), 'nothing is said before the key is pressed').toBeNull();
+
+    save?.click();
+    await fixture.whenStable();
+
+    expect(publish.publish, 'a time without a name never reaches the archive').not.toHaveBeenCalled();
+    expect(element.querySelector('.timer-publish__nag')?.textContent?.trim()).toBe(TIMER_PUBLISH_RESOLVE_FIRST_TEXT);
+
+    fixture.componentRef.setInput('session', TIMER_SESSION_READY);
+    await fixture.whenStable();
+
+    expect(element.querySelector('.timer-publish__nag'), 'the answer goes with the queue it was about').toBeNull();
+    expect(element.querySelector<HTMLButtonElement>('.timer-publish__save')?.getAttribute('aria-disabled')).toBeNull();
   });
 
   it('throws a test run away from the finish screen, once the question is answered', async () => {

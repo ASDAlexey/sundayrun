@@ -69,9 +69,21 @@
       </li>
     </ul>
   } @else {
-    <button class="timer-publish__save" i18n="@@timerPublish.save" type="button" [disabled]="blocked()" (click)="onSave()">
+    <button
+      class="timer-publish__save"
+      i18n="@@timerPublish.save"
+      type="button"
+      [attr.aria-disabled]="softHeld() || null"
+      [class.timer-publish__save_held]="held()"
+      [disabled]="blocked()"
+      (click)="onSave()"
+    >
       Сохранить
     </button>
+
+    @if (nagText(); as nag) {
+      <p class="timer-publish__nag" role="alert">{{ nag }}</p>
+    }
 
     @if (!isAdmin()) {
       @if (savedLocally()) {

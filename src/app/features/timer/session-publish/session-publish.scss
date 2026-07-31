@@ -73,6 +73,21 @@
     @include b.button-accent;
 
     height: 52px;
+
+    // Held, not dead: the key looks like `:disabled` but still takes the press, and the press is the
+    // only place where «сначала разберите все времена» can be said at the moment it is needed.
+    &_held {
+      background: var(--surface-hover);
+      color: var(--text-muted);
+      cursor: default;
+    }
+  }
+
+  &__nag {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--accent-light);
   }
 
   &__saved {
