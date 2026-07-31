@@ -42,6 +42,7 @@ import {
   TIMER_HEADER_RUNNING,
   TIMER_PAGE_FINISHED,
   TIMER_PAGE_QUEUE,
+  TIMER_CLEAR_ROSTER_NOTE,
   TIMER_PAGE_SAVED,
   TIMER_RESET_NOTE,
 } from './timer-page.mock';
@@ -287,6 +288,30 @@ describe('TimerPage', () => {
     expect(reset.splits).toEqual([]);
     expect(reset.runners, 'the people who came stay on the roster').toBe(TIMER_SESSION.runners);
     expect(element().querySelector('.timer__menu-panel'), 'the menu closes behind the reset').toBeNull();
+  });
+
+  it('offers the roster its own way out before the mass start, and empties it once asked twice', async () => {
+    sessions.active.set(TIMER_SESSION_IDLE);
+    await create();
+
+    click('.timer__menu');
+    await fixture.whenStable();
+    click('.timer__menu-item_danger');
+    await fixture.whenStable();
+
+    expect(
+      confirmDialog()?.querySelector('.timer-confirm__note')?.textContent,
+      'before the start there are no times to wipe — the line-up is what can be wrong',
+    ).toBe(TIMER_CLEAR_ROSTER_NOTE);
+
+    confirmDialog()?.querySelector<HTMLElement>('.timer-confirm__action')?.click();
+    await fixture.whenStable();
+
+    const cleared = applyLastChange(TIMER_SESSION_IDLE);
+
+    expect(cleared.runners).toEqual([]);
+    expect(cleared.id, 'the measurement itself survives — this is not «Удалить замер»').toBe(TIMER_SESSION_IDLE.id);
+    expect(element().querySelector('.timer__menu-panel'), 'the menu closes behind it').toBeNull();
   });
 
   it('opens the runner card on a long press and closes it again', async () => {

@@ -44,9 +44,24 @@
 
         <button class="timer__menu-item" i18n="@@timer.historyItem" type="button" (click)="onHistory()">История отсечек</button>
 
-        <button class="timer__menu-item timer__menu-item_danger" i18n="@@timer.reset" type="button" (click)="onResetAsk(current)">
-          Сбросить времена
-        </button>
+        <!-- Two ways back, and never both at once: before the start there are no times to wipe and
+        the line-up is the only thing that can be wrong, afterwards the people are the one thing the
+        organiser must not lose. -->
+        @if (current.status === statuses.idle) {
+          <button
+            class="timer__menu-item timer__menu-item_danger"
+            i18n="@@timer.clearRoster"
+            type="button"
+            [disabled]="header().runnerCount === 0"
+            (click)="onClearAsk(current)"
+          >
+            Очистить состав
+          </button>
+        } @else {
+          <button class="timer__menu-item timer__menu-item_danger" i18n="@@timer.reset" type="button" (click)="onResetAsk(current)">
+            Сбросить времена
+          </button>
+        }
       </div>
     }
 
@@ -193,6 +208,19 @@
       [note]="note"
       (closed)="resetAsk.set(null)"
       (confirmed)="onReset()"
+    ></dialog>
+  }
+
+  @if (clearAsk(); as note) {
+    <dialog
+      actionLabel="Очистить состав"
+      appTimerConfirm
+      heading="Очистить состав?"
+      i18n-actionLabel="@@timer.clearRosterAction"
+      i18n-heading="@@timer.clearRosterHeading"
+      [note]="note"
+      (closed)="clearAsk.set(null)"
+      (confirmed)="onClear()"
     ></dialog>
   }
 } @else {

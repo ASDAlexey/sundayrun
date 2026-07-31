@@ -2,7 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, computed, inject, linkedSignal, signal } from '@angular/core';
 
 import { resumeSession, undoLastSplit } from '../../core/timer/session-actions';
-import { resetSession } from '../../core/timer/session-reset';
+import { clearRoster, resetSession } from '../../core/timer/session-reset';
 import { unassignedSplits } from '../../core/timer/session-splits';
 import { TimerStatus } from '../../core/timer/timer-session.enum';
 import { TimerSession } from '../../core/timer/timer-session.interface';
@@ -29,7 +29,7 @@ import { TimerAnnouncement } from './timer-announcement.interface';
 import { TimerFarewellService } from './timer-farewell.service';
 import { TIMER_FIRST_QUEUE_REQUEST } from './timer-page.constant';
 import { TimerTab, TimerTabType } from './timer-page.enum';
-import { resetNoteText, toggleStateText } from './timer-page.text';
+import { clearRosterNoteText, resetNoteText, toggleStateText } from './timer-page.text';
 import { buildTimerHeader } from './timer-page.view';
 
 /**
@@ -94,6 +94,9 @@ export class TimerPage {
 
   /** The «Сбросить забег?» question in flight — the words are built while the race is in hand. */
   protected readonly resetAsk = signal<string | null>(null);
+
+  /** The same, for «Очистить состав?» — the minute before the start has nothing else to undo. */
+  protected readonly clearAsk = signal<string | null>(null);
   protected readonly menuOpen = signal(false);
   protected readonly pickerOpen = signal(false);
   protected readonly historyOpen = signal(false);
@@ -221,6 +224,18 @@ export class TimerPage {
   protected onReset(): void {
     this.resetAsk.set(null);
     this.#sessions.updateActive(resetSession);
+    this.menuOpen.set(false);
+  }
+
+  /** And its mirror: the question names the people, because they are all that is at stake here. */
+  protected onClearAsk(session: TimerSession): void {
+    this.clearAsk.set(clearRosterNoteText(session.runners.length));
+  }
+
+  /** Empties the line-up and leaves the measurement; the roster sheet is the way back. */
+  protected onClear(): void {
+    this.clearAsk.set(null);
+    this.#sessions.updateActive(clearRoster);
     this.menuOpen.set(false);
   }
 }

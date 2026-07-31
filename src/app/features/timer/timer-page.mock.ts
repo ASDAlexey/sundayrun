@@ -38,3 +38,6 @@ export const TIMER_PAGE_SAVED: TimerSession = { ...TIMER_PAGE_FINISHED, splits: 
 
 /** What «Сбросить забег?» says about the fixture race — the times go, the people stay. */
 export const TIMER_RESET_NOTE = 'Времена сотрутся — 11 отсечек. Состав останется: 7 участников, можно бежать заново.';
+
+/** And what «Очистить состав?» says about the same roster before the mass start. */
+export const TIMER_CLEAR_ROSTER_NOTE = 'Из состава уйдут все — 7 участников. Замер останется, состав можно собрать заново.';

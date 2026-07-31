@@ -15,3 +15,14 @@ export function resetNoteText(runnerCount: number, splitCount: number): string {
 
   return $localize`:@@timer.resetNote:Времена сотрутся — ${splits}:splits:. Состав останется: ${runners}:runners:, можно бежать заново.`;
 }
+
+/**
+ * The other half of the pair, and the only one that makes sense before the mass start: «Сброс» has
+ * no times to wipe yet, so what the minute before the start needs is a way out of a line-up put
+ * together wrong. The measurement survives — that is the difference from «Удалить замер».
+ */
+export function clearRosterNoteText(runnerCount: number): string {
+  const runners = runnerCountText(runnerCount);
+
+  return $localize`:@@timer.clearRosterNote:Из состава уйдут все — ${runners}:runners:. Замер останется, состав можно собрать заново.`;
+}
