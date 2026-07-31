@@ -18,6 +18,7 @@ import { EventWeatherRow } from '../core/history/weather-records.interface';
 import { YearBadge } from '../core/history/year-badges.enum';
 import { YearReview } from '../core/history/year-review.interface';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
+import { EventPhoto } from '../core/models/event-photo.interface';
 import { Gender } from '../core/models/gender.enum';
 import { ProtocolRow } from '../core/models/protocol-row.interface';
 
@@ -396,6 +397,34 @@ const resultInsert = (row: ProtocolRow): string =>
 
 /** Every `PROTOCOL_ROWS` row of the `RACE_EVENT`, so `selectEventResults` rebuilds the same file. */
 export const SEED_RACE_RESULTS: readonly string[] = PROTOCOL_ROWS.map(resultInsert);
+
+/** The community's wall post matched to the `RACE_EVENT`. */
+export const RACE_VK_POST_URL = 'https://vk.com/wall-141369129_1109';
+
+/** Its two photographs, as the strip and the viewer read them. */
+export const EXPECTED_RACE_PHOTOS: EventPhoto[] = [
+  {
+    previewUrl: 'https://sun9-1.userapi.com/impg/preview-0.jpg',
+    largeUrl: 'https://sun9-1.userapi.com/impg/large-0.jpg',
+    photoUrl: 'https://vk.com/photo-141369129_457243550',
+  },
+  {
+    previewUrl: 'https://sun9-1.userapi.com/impg/preview-1.jpg',
+    largeUrl: 'https://sun9-1.userapi.com/impg/large-1.jpg',
+    photoUrl: 'https://vk.com/photo-141369129_457243551',
+  },
+];
+
+/** The post and its photographs, the latter inserted back to front so the `idx` sort has work to do. */
+export const SEED_RACE_VK_POST: readonly string[] = [
+  `INSERT INTO event_vk_post VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_VK_POST_URL)})`,
+  ...[...EXPECTED_RACE_PHOTOS.entries()]
+    .reverse()
+    .map(
+      ([idx, photo]) =>
+        `INSERT INTO event_photo VALUES (${q(RACE_EVENT.dateIso)}, ${idx}, ${q(photo.previewUrl)}, ${q(photo.largeUrl)}, ${q(photo.photoUrl)})`,
+    ),
+];
 
 /** The 2024-05-05 event: `ATHLETE_KEY` is its only 5 km finisher among the seeded runs. */
 export const PARTICIPANT_RUNS_SLUG = '2024-05-05';

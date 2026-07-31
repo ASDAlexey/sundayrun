@@ -7,7 +7,14 @@ import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtur
 import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
 import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 import { createMemoryProtocolDb } from '../core/sqlite/spec-utils/protocol-db-memory';
-import { SEED_RACE_EVENT, SEED_RACE_RESULTS } from './protocol-db-queries.mock';
+import {
+  EXPECTED_RACE_PHOTOS,
+  RACE_VK_POST_URL,
+  SEED_RACE_EVENT,
+  SEED_RACE_RESULTS,
+  SEED_RACE_VK_POST,
+  UNKNOWN_EVENT_SLUG,
+} from './protocol-db-queries.mock';
 import { PROTOCOL_DB_ERROR_MESSAGE } from './protocol-db.service.mock';
 import { PROTOCOL_DB } from './protocol-db.token';
 import { ResultsService } from './results.service';
@@ -27,7 +34,7 @@ describe('ResultsService', () => {
   }
 
   it('serves the protocol from sql and reuses the cached load per slug', async () => {
-    const memory = await createMemoryProtocolDb([...SEED_RACE_EVENT, ...SEED_RACE_RESULTS]);
+    const memory = await createMemoryProtocolDb([...SEED_RACE_EVENT, ...SEED_RACE_RESULTS, ...SEED_RACE_VK_POST]);
 
     close = memory.close;
 
@@ -44,7 +51,14 @@ describe('ResultsService', () => {
     expect(queryValues, 'one event select plus one results select, then the cache answers').toHaveBeenCalledTimes(2);
     await expect(service.loadParticipantRuns(EVENT_DATE_ISO), 'no seeded runs — the notables source is empty').resolves.toEqual([]);
     await expect(service.loadWeather(EVENT_DATE_ISO), 'no seeded weather — the event predates the fetch').resolves.toBeNull();
-    await expect(service.loadVkPostUrl(EVENT_DATE_ISO), 'no seeded photo link — the event has no matched post').resolves.toBeNull();
+    await expect(service.loadVkPostUrl(EVENT_DATE_ISO), 'the matched wall post is where the strip links out to').resolves.toBe(
+      RACE_VK_POST_URL,
+    );
+    await expect(service.loadPhotos(EVENT_DATE_ISO), 'its photographs come back in the order the post attached them').resolves.toEqual(
+      EXPECTED_RACE_PHOTOS,
+    );
+    await expect(service.loadVkPostUrl(UNKNOWN_EVENT_SLUG), 'an event with no matched post has no link').resolves.toBeNull();
+    await expect(service.loadPhotos(UNKNOWN_EVENT_SLUG), 'and no photographs either').resolves.toEqual([]);
     await expect(service.loadFinishCountsBefore(EVENT_DATE_ISO), 'no seeded runs — no stored finish counts').resolves.toEqual({});
     await expect(service.loadPreviousBestsBefore(EVENT_DATE_ISO), 'no seeded runs — no previous bests').resolves.toEqual({});
   });
