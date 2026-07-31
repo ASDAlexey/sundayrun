@@ -15,7 +15,17 @@ import { narrowValues } from './protocol-db-narrow';
 import { recomputeStoredNotes } from './protocol-db-notes';
 import { storeOverallStats } from './protocol-db-overall-stats';
 import { recomputeEventSummaryCounts } from './protocol-db-summary';
-import { athletes, eventWeather, events as eventsTable, meta, participations, results as resultsTable, runs } from './protocol-db.schema';
+import {
+  athletes,
+  eventPhoto,
+  eventVkPost,
+  eventWeather,
+  events as eventsTable,
+  meta,
+  participations,
+  results as resultsTable,
+  runs,
+} from './protocol-db.schema';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
   PROTOCOL_DB_EVENT_WEATHER_COLUMNS_SQL,
@@ -25,6 +35,8 @@ import {
   PROTOCOL_DB_SCHEMA_VERSION,
   PROTOCOL_DB_V5_MIGRATION_STATEMENTS,
   PROTOCOL_DB_V6_MIGRATION_STATEMENTS,
+  PROTOCOL_DB_V7_MIGRATION_STATEMENTS,
+  PROTOCOL_DB_V8_MIGRATION_STATEMENTS,
 } from './protocol-db-schema.constant';
 import { BEGIN_TRANSACTION_SQL, COMMIT_TRANSACTION_SQL, PROTOCOL_DB_PAGE_SIZE_PRAGMA, VACUUM_SQL } from './protocol-db-write.constant';
 import { ProtocolDbEventMeta, ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
@@ -159,6 +171,7 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     await rewriteEvents(ddb, target.index, eventMeta);
     await rewriteResults(ddb, target.resultsFiles, target.removedSlug);
     await rewriteEventWeather(ddb, target.weathers, target.removedSlug);
+    await dropEventVkPost(ddb, target.removedSlug);
     await rewriteAthletes(ddb, target.history);
     // Every add or removal can shift later events' notes (first participation, records, year
     // bests), so the whole archive's notes converge in the same transaction.
@@ -181,12 +194,16 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
 }
 
 /**
- * Brings downloaded bytes up to the current schema before anything reads them. The v5 statement is
- * IF NOT EXISTS and simply no-ops on newer bytes; the v6 `ALTER TABLE` cannot be, so it runs only
- * while `event_weather` still lacks the column.
+ * Brings downloaded bytes up to the current schema before anything reads them. The v5, v7 and v8
+ * statements are IF NOT EXISTS and simply no-op on newer bytes; the v6 `ALTER TABLE` cannot be, so
+ * it runs only while `event_weather` still lacks the column.
  */
 function migrateDb(db: Database): void {
-  for (const statement of PROTOCOL_DB_V5_MIGRATION_STATEMENTS) {
+  for (const statement of [
+    ...PROTOCOL_DB_V5_MIGRATION_STATEMENTS,
+    ...PROTOCOL_DB_V7_MIGRATION_STATEMENTS,
+    ...PROTOCOL_DB_V8_MIGRATION_STATEMENTS,
+  ]) {
     db.exec(statement);
   }
 
@@ -317,6 +334,20 @@ async function rewriteEventWeather(db: ProtocolDrizzle, weathers: PublishedWeath
 
     await db.insert(eventWeather).values(row).onConflictDoUpdate({ target: eventWeather.slug, set: row });
   }
+}
+
+/**
+ * Drops the removed slug's photo link and photo strip. A publication never writes these tables —
+ * they are matched against the community's wall by `scripts/backfill-vk-posts.ts`, long after the
+ * protocol is up — so a re-publication of an event keeps the photos it already has.
+ */
+async function dropEventVkPost(db: ProtocolDrizzle, removedSlug: string | null): Promise<void> {
+  if (removedSlug === null) {
+    return;
+  }
+
+  await db.delete(eventVkPost).where(eq(eventVkPost.slug, removedSlug));
+  await db.delete(eventPhoto).where(eq(eventPhoto.slug, removedSlug));
 }
 
 /** `athletes`/`runs`/`participations` mirror the rollup exactly, so a full rebuild guarantees db ≡ history. */

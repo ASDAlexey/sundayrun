@@ -31,17 +31,19 @@ import { summarizeRace } from '../../core/history/race-summary';
 import { pluralText } from '../../core/i18n/plural-text';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
-import { formatDuration, parseDuration } from '../../core/time/duration';
+import { formatRaceTime, parseDuration } from '../../core/time/duration';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import { EventWeather } from '../../core/weather/event-weather.interface';
 import { weatherLineText } from '../../core/weather/weather-line';
 import { AthletesService } from '../../github/athletes.service';
+import { EventPhoto } from '../../core/models/event-photo.interface';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
+import { RaceTime } from '../../shared/race-time/race-time';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import {
@@ -60,6 +62,7 @@ import {
   SLUG_ROUTE_PARAM,
   SUMMARY_PART_SEPARATOR,
 } from './race-page.constant';
+import { PhotoStrip } from './photo-strip/photo-strip';
 import { RaceStatus, RaceStatusType } from './race-page.enum';
 import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
 
@@ -72,6 +75,8 @@ import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView
     MatButtonModule,
     MatTooltipModule,
     OfflineNotice,
+    PhotoStrip,
+    RaceTime,
     ReloadButton,
     RouterLink,
     ScrollingModule,
@@ -162,12 +167,15 @@ export class RacePage {
       return { status: RaceStatus.notFound, race: null };
     }
 
-    const [file, participantRuns, eventSlugs, weather] = await Promise.all([
+    const [file, participantRuns, eventSlugs, weather, vkPostUrl, photos] = await Promise.all([
       this.#results.loadResults(slug),
-      // The notables, the month-final mark and the weather are garnish: a failed read still renders the protocol.
+      // The notables, the month-final mark, the weather and the photographs are garnish: a failed
+      // read still renders the protocol.
       this.#results.loadParticipantRuns(slug).catch(() => []),
       this.#athletes.loadEventSlugs().catch(() => []),
       this.#results.loadWeather(slug).catch(() => null),
+      this.#results.loadVkPostUrl(slug).catch(() => null),
+      this.#results.loadPhotos(slug).catch(() => []),
     ]);
 
     if (file === null) {
@@ -183,6 +191,8 @@ export class RacePage {
         buildPreviousBests(participantRuns, file.event.dateIso),
         monthFinalSlugs(eventSlugs, isoToday()).has(slug),
         weather,
+        vkPostUrl,
+        photos,
       ),
     };
   }
@@ -195,6 +205,8 @@ function toRaceView(
   previousBests: Record<string, PreviousBest>,
   isMonthFinal: boolean,
   weather: EventWeather | null,
+  vkPostUrl: string | null,
+  photos: EventPhoto[],
 ): RaceView {
   return {
     number: formatRaceNumber(file.event.number, file.event.legacyNumber),
@@ -207,6 +219,8 @@ function toRaceView(
     medianTimeF: medianTimeTextOf(file.rows, Gender.female),
     weatherText: weatherLineText(weather),
     isMonthFinal,
+    vkPostUrl: vkPostUrl ?? '',
+    photos,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
     rows: toRowViews(file.rows, notables, finishCounts, previousBests),
@@ -236,7 +250,7 @@ function toRowView(
 ): RaceRowView {
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];
-  const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatDuration(gapMs);
+  const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatRaceTime(gapMs);
 
   return {
     index: row.index,
@@ -375,7 +389,7 @@ function medianTimeTextOf(rows: ProtocolRow[], gender: GenderType): string | nul
   }, []);
   const medianTimeMs = medianMsOrNull(times);
 
-  return medianTimeMs === null ? null : formatDuration(medianTimeMs);
+  return medianTimeMs === null ? null : formatRaceTime(medianTimeMs);
 }
 
 function genderTextOf(gender: GenderType | null): string {

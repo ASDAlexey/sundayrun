@@ -1,5 +1,6 @@
 import { Service, inject } from '@angular/core';
 
+import { EventPhoto } from '../core/models/event-photo.interface';
 import { EventResultsFile } from '../core/github/results-file.interface';
 import { ParticipantRun } from '../core/history/notables.interface';
 import { PreviousBest } from '../core/history/previous-bests.interface';
@@ -11,6 +12,7 @@ import {
   selectFiveKmFinishCountsBefore,
   selectPreviousBestsBefore,
 } from './protocol-db-queries';
+import { selectEventPhotos, selectEventVkPostUrl } from './protocol-db-vk';
 import { selectEventWeather } from './protocol-db-weather';
 import { PROTOCOL_DB } from './protocol-db.token';
 
@@ -63,6 +65,16 @@ export class ResultsService {
   /** The event's stored 9:00 course weather; null when it predates the publish-time fetch. */
   loadWeather(slug: string): Promise<EventWeather | null> {
     return selectEventWeather(this.#db, slug);
+  }
+
+  /** The community's wall post with the event's photographs; null when none was matched to the event. */
+  loadVkPostUrl(slug: string): Promise<string | null> {
+    return selectEventVkPostUrl(this.#db, slug);
+  }
+
+  /** The event's photographs, served straight from VK's CDN by the visitor's browser. */
+  loadPhotos(slug: string): Promise<EventPhoto[]> {
+    return selectEventPhotos(this.#db, slug);
   }
 
   /** athleteKey → 5 km finishes strictly before `dateIso`, feeding the publish-time «Участий» column. */

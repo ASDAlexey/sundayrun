@@ -1,3 +1,4 @@
+import { EventPhoto } from '../../core/models/event-photo.interface';
 import { NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
 import { RaceStatusType } from './race-page.enum';
 
@@ -84,6 +85,10 @@ export interface RaceView {
   weatherText: string;
   /** True for the month-final («итоговый») race — the header gets the accent badge. */
   isMonthFinal: boolean;
+  /** The community's wall post with the event's photographs; empty when none is stored. */
+  vkPostUrl: string;
+  /** The photographs of that post, rendered as the header's thumbnail strip; empty when none. */
+  photos: EventPhoto[];
   pdfAriaLabel: string;
   rows: RaceRowView[];
 }

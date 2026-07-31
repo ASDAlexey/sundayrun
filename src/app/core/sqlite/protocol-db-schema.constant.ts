@@ -7,7 +7,7 @@
  * over `runs`) and file paths (reconstructed from `slug`, see `github/event-paths.ts`).
  */
 
-export const PROTOCOL_DB_SCHEMA_VERSION = '6';
+export const PROTOCOL_DB_SCHEMA_VERSION = '8';
 
 export const PROTOCOL_DB_META_SCHEMA_VERSION_KEY = 'schemaVersion';
 
@@ -89,6 +89,42 @@ export const PROTOCOL_DB_V6_MIGRATION_STATEMENTS: readonly string[] = [
 /** The `event_weather` columns of a freshly created (or fully migrated) db, in declaration order. */
 export const PROTOCOL_DB_EVENT_WEATHER_COLUMNS_SQL = `SELECT name FROM pragma_table_info('event_weather')`;
 
+/**
+ * The community's wall post carrying the event's photographs, keyed by the event slug. A table of
+ * its own rather than an `events` column because `rewriteEvents` rebuilds `events` from the archive
+ * index on every publication, which knows nothing of VK; like `event_weather`, this survives that
+ * rewrite untouched. IF NOT EXISTS lets the same DDL double as the v6 → v7 migration.
+ */
+export const PROTOCOL_DB_CREATE_EVENT_VK_POST_TABLE = `
+CREATE TABLE IF NOT EXISTS event_vk_post (
+  slug TEXT PRIMARY KEY,
+  post_url TEXT NOT NULL
+)`;
+
+/** v6 → v7: the per-event VK post link; filled by `scripts/backfill-vk-posts.ts`. */
+export const PROTOCOL_DB_V7_MIGRATION_STATEMENTS: readonly string[] = [PROTOCOL_DB_CREATE_EVENT_VK_POST_TABLE];
+
+/**
+ * The individual photographs of an event's wall post, in the order the post attached them: the
+ * thumbnail the protocol's strip renders and the large one its viewer opens. Both are VK CDN urls —
+ * the images are never copied into this repository, the visitor's browser fetches them once and
+ * serves them from its own HTTP cache afterwards. VK signs those urls, so they can rot; the strip
+ * treats a failed image as absent and `scripts/backfill-vk-posts.ts` refreshes them on a re-run.
+ * `photo_url` is the permanent `vk.com/photo…` page, which never rots.
+ */
+export const PROTOCOL_DB_CREATE_EVENT_PHOTO_TABLE = `
+CREATE TABLE IF NOT EXISTS event_photo (
+  slug TEXT NOT NULL,
+  idx INTEGER NOT NULL,
+  preview_url TEXT NOT NULL,
+  large_url TEXT NOT NULL,
+  photo_url TEXT NOT NULL,
+  PRIMARY KEY (slug, idx)
+)`;
+
+/** v7 → v8: the per-event photo strip; filled by `scripts/backfill-vk-posts.ts`. */
+export const PROTOCOL_DB_V8_MIGRATION_STATEMENTS: readonly string[] = [PROTOCOL_DB_CREATE_EVENT_PHOTO_TABLE];
+
 /** Mirrors `ProtocolRow`; `idx` is the row's `index` (a reserved word in SQL). */
 export const PROTOCOL_DB_CREATE_RESULTS_TABLE = `
 CREATE TABLE results (
@@ -151,6 +187,8 @@ export const PROTOCOL_DB_CREATE_ATHLETES_GENDER_BEST_MS_INDEX = 'CREATE INDEX at
 export const PROTOCOL_DB_SCHEMA_STATEMENTS: readonly string[] = [
   PROTOCOL_DB_CREATE_EVENTS_TABLE,
   PROTOCOL_DB_CREATE_EVENT_WEATHER_TABLE,
+  PROTOCOL_DB_CREATE_EVENT_VK_POST_TABLE,
+  PROTOCOL_DB_CREATE_EVENT_PHOTO_TABLE,
   PROTOCOL_DB_CREATE_RESULTS_TABLE,
   PROTOCOL_DB_CREATE_ATHLETES_TABLE,
   PROTOCOL_DB_CREATE_RUNS_TABLE,

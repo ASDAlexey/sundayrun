@@ -32,6 +32,23 @@ export const eventWeather = sqliteTable('event_weather', {
   recentPrecipitationMm: real('recent_precipitation_mm'),
 });
 
+export const eventVkPost = sqliteTable('event_vk_post', {
+  slug: text('slug').primaryKey(),
+  postUrl: text('post_url').notNull(),
+});
+
+export const eventPhoto = sqliteTable(
+  'event_photo',
+  {
+    slug: text('slug').notNull(),
+    idx: integer('idx').notNull(),
+    previewUrl: text('preview_url').notNull(),
+    largeUrl: text('large_url').notNull(),
+    photoUrl: text('photo_url').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.slug, t.idx] })],
+);
+
 export const results = sqliteTable(
   'results',
   {

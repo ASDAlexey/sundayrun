@@ -4,6 +4,7 @@ import { EXPECTED_FIRST_PUBLISH_HISTORY, EXPECTED_PUBLISHED_HISTORY } from '../g
 import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
 import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
 import { selectEventResults, selectOverallStats } from '../../github/protocol-db-queries';
+import { selectEventVkPostUrl } from '../../github/protocol-db-vk';
 import { selectEventWeather } from '../../github/protocol-db-weather';
 import { readHistory, readIndexFile } from './protocol-db-read';
 import {
@@ -23,6 +24,7 @@ import {
   EXPECTED_PRE_BASELINE_EVENTS,
   EXPECTED_STORED_ROWS,
   PRE_V6_DB_SEED,
+  PRESERVED_VK_POST_URL,
   PRESERVED_WEATHER,
   PRESERVED_WEATHER_SLUG,
   PRE_BASELINE_DB_SEED,
@@ -84,6 +86,9 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(selectEventWeather(db, PRESERVED_WEATHER_SLUG), 'other events keep their stored weather').resolves.toEqual(
         PRESERVED_WEATHER,
       );
+      await expect(selectEventVkPostUrl(db, RACE_EVENT.dateIso), 'the photo link survives the re-publication').resolves.toBe(
+        PRESERVED_VK_POST_URL,
+      );
     },
     ROUNDTRIP_TIMEOUT_MS,
   );
@@ -101,6 +106,7 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(selectEventWeather(db, RACE_EVENT.dateIso), 'the published event stores the full reading').resolves.toEqual(
         WEATHER_MOCK,
       );
+      await expect(selectEventVkPostUrl(db, RACE_EVENT.dateIso), 'the photo-link table is created by the migration').resolves.toBeNull();
     },
     ROUNDTRIP_TIMEOUT_MS,
   );
@@ -151,6 +157,7 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       expect((await readIndexFile(db)).events).toEqual([]);
       await expect(selectEventResults(db, REMOVED_SLUG), 'the removed slug has no results').resolves.toBeNull();
       await expect(selectEventWeather(db, REMOVED_SLUG), 'the removed slug has no weather').resolves.toBeNull();
+      await expect(selectEventVkPostUrl(db, REMOVED_SLUG), 'the removed slug has no photo link').resolves.toBeNull();
     },
     ROUNDTRIP_TIMEOUT_MS,
   );

@@ -74,6 +74,27 @@
           @if (pdfFailed()) {
             <span class="race__pdf-error" i18n="@@race.pdfError" role="alert">Не удалось сформировать PDF</span>
           }
+
+          @if (view.photos.length > 0) {
+            <app-photo-strip class="race__photo-strip" [photos]="view.photos" [postUrl]="view.vkPostUrl" />
+          }
+
+          @if (view.vkPostUrl) {
+            <a class="race__photos" href="{{ view.vkPostUrl }}" rel="noopener noreferrer" target="_blank">
+              <svg aria-hidden="true" class="race__photos-icon" viewBox="0 0 16 16">
+                <path
+                  d="M2.25 4.25h11.5v8.5H2.25zM2.25 10.5l3-3 2.5 2.5 2.25-2.25 3.75 3.75M10.25 6.25h.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.4"
+                />
+              </svg>
+
+              <span i18n="@@race.photos">Фото с забега во ВКонтакте</span>
+            </a>
+          }
         </header>
 
         <div class="race__table-wrap">
@@ -119,10 +140,10 @@
                   </a>
                 </div>
 
-                <div class="race__td race__td_mono race__td_center" role="cell">{{ row.time23 }}</div>
+                <div class="race__td race__td_mono race__td_center" role="cell"><app-race-time [value]="row.time23" /></div>
 
                 <div class="race__td race__td_mono race__td_center" role="cell" [class.race__td_accent]="row.time5 !== ''">
-                  {{ row.time5 }}
+                  <app-race-time [value]="row.time5" />
 
                   @if (row.lapGainText !== '') {
                     <span
@@ -134,7 +155,7 @@
                   }
                 </div>
 
-                <div class="race__td race__td_mono race__td_center" role="cell">{{ row.paceText }}</div>
+                <div class="race__td race__td_mono race__td_center" role="cell"><app-race-time [value]="row.paceText" /></div>
 
                 <div class="race__td race__td_center" role="cell">
                   @if (row.genderText !== '') {
@@ -155,9 +176,9 @@
                   </span>
 
                   @if (row.gapMText !== '') {
-                    <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{
-                      row.gapMText
-                    }}</span>
+                    <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">
+                      <app-race-time [value]="row.gapMText" />
+                    </span>
                   }
                 </div>
 
@@ -174,9 +195,9 @@
                   </span>
 
                   @if (row.gapFText !== '') {
-                    <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">{{
-                      row.gapFText
-                    }}</span>
+                    <span class="race__gap" i18n-title="@@race.gapTitle" title="До следующего места в своей группе">
+                      <app-race-time [value]="row.gapFText" />
+                    </span>
                   }
                 </div>
 

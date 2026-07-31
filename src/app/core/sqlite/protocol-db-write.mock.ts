@@ -113,6 +113,11 @@ export const PRESERVED_WEATHER: EventWeather = {
   recentPrecipitationMm: 2.6,
 };
 
+const vkPostInsert = (slug: string, postUrl: string): string => `INSERT INTO event_vk_post VALUES (${q(slug)}, ${q(postUrl)})`;
+
+/** The photo link of the re-published event: a publication knows nothing of VK, so it must survive one. */
+export const PRESERVED_VK_POST_URL = 'https://vk.com/wall-141369129_1109';
+
 /**
  * The seed SQL for the previous `sundayrun.db`: the three unsorted `STALE_INDEX` events (each with the
  * preserved club meta) and `EXISTING_HISTORY`. Exported to bytes, this is the image the write reads
@@ -123,6 +128,7 @@ export const EXISTING_DB_SEED: readonly string[] = [
   ...athleteInserts(EXISTING_HISTORY),
   weatherInsert(RACE_EVENT.dateIso, STALE_WEATHER),
   weatherInsert(PRESERVED_WEATHER_SLUG, PRESERVED_WEATHER),
+  vkPostInsert(RACE_EVENT.dateIso, PRESERVED_VK_POST_URL),
   META_SEED,
 ];
 
@@ -143,12 +149,14 @@ const preV6WeatherInsert = (slug: string, weather: EventWeather): string =>
 
 /**
  * The same previous db as `EXISTING_DB_SEED`, published before v6: the weather table is rebuilt in
- * its narrower shape, so applying to these bytes has to migrate them before anything reads.
+ * its narrower shape and the photo-link table — a v7 addition — is dropped, so applying to these
+ * bytes has to migrate them before anything reads.
  */
 export const PRE_V6_DB_SEED: readonly string[] = [
   ...STALE_INDEX.events.map((entry) => eventInsert(entry, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN)),
   ...athleteInserts(EXISTING_HISTORY),
   'DROP TABLE event_weather',
+  'DROP TABLE event_vk_post',
   PRE_V6_EVENT_WEATHER_TABLE,
   preV6WeatherInsert(PRESERVED_WEATHER_SLUG, PRESERVED_WEATHER),
   META_SEED,
@@ -201,6 +209,7 @@ export const SOLE_EVENT_DB_SEED: readonly string[] = [
   eventInsert(SOLE_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
   ...athleteInserts(SOLE_HISTORY),
   weatherInsert(REMOVED_SLUG, PRESERVED_WEATHER),
+  vkPostInsert(REMOVED_SLUG, PRESERVED_VK_POST_URL),
   META_SEED,
 ];
 
@@ -245,7 +254,7 @@ export const PRE_BASELINE_ROW: ProtocolRow = {
   index: 1,
   fullName: 'Древнев Олег',
   time23: '12:00',
-  time5: '26:00',
+  time5: '26:00,00',
   totalMs: 1560000,
   distanceKm: FIVE_KM_DISTANCE_KM,
   gender: Gender.male,
@@ -302,11 +311,11 @@ export const BATCH_SECOND_SLUG = '2026-07-05';
 
 export const BATCH_SECOND_EVENT: RaceEvent = { ...RACE_EVENT, dateIso: BATCH_SECOND_SLUG };
 
-const MARIA_REPEAT_TIME_5 = '26:00';
+const MARIA_REPEAT_TIME_5 = '26:00,00';
 
 const MARIA_REPEAT_MS = 1560000;
 
-/** Мария again, slower than her batch-opening 25:00 — no ЛР and no year best, so the stored note stays empty. */
+/** Мария again, slower than her batch-opening 25:00,00 — no ЛР and no year best, so the stored note stays empty. */
 export const BATCH_SECOND_ROWS: ProtocolRow[] = [{ ...PROTOCOL_ROWS[0], time5: MARIA_REPEAT_TIME_5, totalMs: MARIA_REPEAT_MS }];
 
 /** A two-event batch given newest first, so the rollup must sort; only the older event carries weather. */

@@ -2,6 +2,7 @@ import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../../core/github/spec-utils/race-fixtures';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { ParticipantRun } from '../../core/history/notables.interface';
+import { EventPhoto } from '../../core/models/event-photo.interface';
 import { Gender } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { EventWeather } from '../../core/weather/event-weather.interface';
@@ -47,6 +48,23 @@ export const WINDLESS_WEATHER_MOCK: EventWeather = {
 /** `weatherLineText(WINDLESS_WEATHER_MOCK)` — the temperature with its sky icon, no wind clause. */
 export const EXPECTED_WINDLESS_WEATHER_TEXT = '☁️ +12°';
 
+/** The community wall post carrying the event's photographs, as `event_vk_post` stores it. */
+export const RACE_VK_POST_URL = 'https://vk.com/wall-141369129_1109';
+
+/** Two stored photographs of that post — enough for the strip to render and the viewer to page. */
+export const RACE_PHOTOS: EventPhoto[] = [
+  {
+    previewUrl: 'https://sun9-1.userapi.com/impg/preview-1.jpg',
+    largeUrl: 'https://sun9-1.userapi.com/impg/large-1.jpg',
+    photoUrl: 'https://vk.com/photo-141369129_457243557',
+  },
+  {
+    previewUrl: 'https://sun9-2.userapi.com/impg/preview-2.jpg',
+    largeUrl: 'https://sun9-2.userapi.com/impg/large-2.jpg',
+    photoUrl: 'https://vk.com/photo-141369129_457243558',
+  },
+];
+
 /** A later June race follows the fixture event, so it is NOT the month's final. */
 export const OPEN_MONTH_CHRONOLOGY: string[] = [RACE_PAGE_SLUG, '2026-06-29'];
 
@@ -64,11 +82,13 @@ export const EXPECTED_RACE_VIEW: RaceView = {
   summaryText: '2 финишёра, 0 новичков, 0 личных рекордов',
   // The only male ran the 2.3 km lap, so the male average has no qualifying 5 km times.
   medianTimeM: null,
-  medianTimeF: '25:00',
+  medianTimeF: '25:00,00',
   // `WEATHER_MOCK` formatted: clear-sky icon, rounded temperature with the explicit plus, rounded wind.
   weatherText: '☀️ +26°, ветер 10 км/ч',
   // The default chronology stub has a later June race, so the fixture event does not close the month.
   isMonthFinal: false,
+  vkPostUrl: RACE_VK_POST_URL,
+  photos: RACE_PHOTOS,
   pdfAriaLabel: 'Протокол пробега № 12 (PDF)',
   rows: [
     {
@@ -78,8 +98,8 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       athleteLink: [ATHLETES_PAGE_LINK, 'мария иванова'],
       athleteAriaLabel: 'История атлета Мария Иванова',
       time23: '11:30',
-      time5: '25:00',
-      paceText: '5:00',
+      time5: '25:00,00',
+      paceText: '5:00,00',
       genderText: 'Ж',
       genderClass: 'race__gender_female',
       placeMText: '',
@@ -105,7 +125,7 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       athleteAriaLabel: 'История атлета Олег Петров',
       time23: '15:00',
       time5: '',
-      paceText: '6:31',
+      paceText: '6:31,30',
       genderText: 'М',
       genderClass: 'race__gender_male',
       placeMText: '1',
@@ -158,7 +178,7 @@ const gapRow = (index: number, fullName: string, gender: ProtocolRow['gender'], 
   index,
   fullName,
   time23: '',
-  time5: '25:00',
+  time5: '25:00,00',
   totalMs,
   distanceKm: FIVE_KM_DISTANCE_KM,
   gender,
@@ -177,9 +197,9 @@ export const GAP_PROTOCOL_ROWS: ProtocolRow[] = [
 ];
 
 /** Row-by-row `gapMText`/`gapFText` behind GAP_PROTOCOL_ROWS. */
-export const EXPECTED_GAP_M_TEXTS = ['', '+0:12', '', ''];
+export const EXPECTED_GAP_M_TEXTS = ['', '+0:12,00', '', ''];
 
-export const EXPECTED_GAP_F_TEXTS = ['', '', '', '+0:30'];
+export const EXPECTED_GAP_F_TEXTS = ['', '', '', '+0:30,00'];
 
 const splitRow = (index: number, fullName: string, time23: string, totalMs: number): ProtocolRow => ({
   index,
@@ -290,7 +310,11 @@ export const EXPECTED_NOTE_BADGE_KINDS: string[][] = [
   [NoteBadgeKind.status, NoteBadgeKind.record],
 ];
 
-/** Against `RANK_PARTICIPANT_RUNS`: the earlier best is the 24:00 of 2025-08-03 — its date and race join the note. */
+/**
+ * Against `RANK_PARTICIPANT_RUNS`: the earlier best is the 24:00 of 2025-08-03 — its date and race
+ * join the note. Its time is two minutes off what the note says, so the note keeps its own text
+ * instead of borrowing the run's hundredths.
+ */
 export const EXPECTED_PR_NOTE_VIEW: RacePrNoteView = {
   before: 'ЛР (было ',
   label: '26:00 · 3 авг 2025',

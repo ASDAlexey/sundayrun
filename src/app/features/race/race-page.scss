@@ -8,7 +8,8 @@
 // One shared grid template for the pinned header and every virtual row, so the eleven
 // columns line up. Tuned to fit the card width without horizontal scroll on desktop; the
 // flexible name/club/note tracks absorb the slack, and narrow headers wrap to two lines.
-$race-columns: 32px minmax(112px, 1.3fr) 72px 72px 64px 44px 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
+// The three time tracks carry hundredths, so they are cut for 'mm:ss,cc' rather than 'mm:ss'.
+$race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
 
 .race {
   @include s.section;
@@ -133,6 +134,42 @@ $race-columns: 32px minmax(112px, 1.3fr) 72px 72px 64px 44px 76px 76px 60px minm
 
   &__pdf-error {
     @include st.error-text;
+  }
+
+  // The strip spans the whole header row: the six squares sit under the title and the PDF button,
+  // not squeezed beside them.
+  &__photo-strip {
+    display: block;
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  // The secondary action beside the PDF button: an outline link, so the header keeps one filled CTA.
+  &__photos {
+    @include t.button-label;
+
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 18px;
+    gap: 8px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition:
+      border-color var(--transition-time),
+      color var(--transition-time);
+
+    &:hover {
+      border-color: var(--accent-line);
+      color: var(--accent);
+    }
+  }
+
+  &__photos-icon {
+    width: 16px;
+    height: 16px;
   }
 
   &__status {

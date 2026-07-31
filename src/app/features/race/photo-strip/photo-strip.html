@@ -1,0 +1,91 @@
+@if (tiles().length > 0) {
+  <div class="photo-strip">
+    <ul class="photo-strip__list">
+      @for (tile of tiles(); track tile.index) {
+        <li class="photo-strip__item">
+          <button
+            aria-label="Открыть фотографию"
+            class="photo-strip__tile"
+            i18n-aria-label="@@race.photoOpen"
+            type="button"
+            [class.photo-strip__tile_loading]="!tile.loaded"
+            (click)="open(tile.livePosition)"
+          >
+            <img
+              alt=""
+              class="photo-strip__image"
+              decoding="async"
+              loading="lazy"
+              [class.photo-strip__image_loaded]="tile.loaded"
+              [src]="tile.photo.previewUrl"
+              (error)="markBroken(tile.index)"
+              (load)="markLoaded(tile.index)"
+            />
+
+            @if (tile.hiddenCount > 0) {
+              <span class="photo-strip__more">+{{ tile.hiddenCount }}</span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+}
+
+@if (isOpen()) {
+  <div aria-label="Просмотр фотографий" aria-modal="true" class="photo-viewer" i18n-aria-label="@@race.photoViewer" role="dialog">
+    <button
+      aria-label="Закрыть просмотр"
+      class="photo-viewer__backdrop"
+      i18n-aria-label="@@race.photoClose"
+      type="button"
+      (click)="close()"
+    ></button>
+
+    <div class="photo-viewer__frame">
+      @if (swiperReady()) {
+        <swiper-container
+          class="photo-viewer__swiper"
+          keyboard="true"
+          navigation="true"
+          pagination="true"
+          pagination-clickable="true"
+          [attr.initial-slide]="openPosition()"
+          (swiperslidechange)="onSlideChange($event)"
+        >
+          @for (slide of slides(); track slide.index) {
+            <swiper-slide class="photo-viewer__slide">
+              @if (slide.failed) {
+                <p class="photo-viewer__failed" i18n="@@race.photoFailed">Фотография больше не отдаётся ВКонтакте</p>
+              } @else {
+                <img alt="" class="photo-viewer__image" [src]="slide.photo.largeUrl" (error)="markLargeBroken(slide.index)" />
+              }
+            </swiper-slide>
+          }
+        </swiper-container>
+      } @else {
+        <p class="photo-viewer__loading" i18n="@@race.photoLoading">Открываем фотографии…</p>
+      }
+
+      <div class="photo-viewer__bar">
+        <span class="photo-viewer__position">{{ positionLabel() }}</span>
+
+        <a class="photo-viewer__source" href="{{ sourceUrl() }}" rel="noopener noreferrer" target="_blank">
+          <span i18n="@@race.photoSource">Открыть во ВКонтакте</span>
+        </a>
+      </div>
+
+      <button
+        aria-label="Закрыть просмотр"
+        class="photo-viewer__close"
+        i18n-aria-label="@@race.photoCloseButton"
+        type="button"
+        (click)="close()"
+      >
+        <svg aria-hidden="true" class="photo-viewer__nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 16 16">
+          <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+}

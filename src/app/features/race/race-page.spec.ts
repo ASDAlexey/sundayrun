@@ -40,8 +40,10 @@ import {
   OPEN_MONTH_CHRONOLOGY,
   PR_NOTE_PROTOCOL_ROWS,
   RACE_PAGE_SLUG,
+  RACE_PHOTOS,
   RACE_SELF_PICK,
   RACE_TODAY_ISO,
+  RACE_VK_POST_URL,
   RANK_PARTICIPANT_RUNS,
   RESULTS_LOAD_ERROR_MESSAGE,
   SPLIT_PROTOCOL_ROWS,
@@ -55,6 +57,8 @@ describe('RacePage', () => {
   const loadResults = vi.fn();
   const loadParticipantRuns = vi.fn();
   const loadWeather = vi.fn();
+  const loadVkPostUrl = vi.fn();
+  const loadPhotos = vi.fn();
   const loadEventSlugs = vi.fn();
   const download = vi.fn();
   const routeParams: Params = {};
@@ -72,13 +76,15 @@ describe('RacePage', () => {
     loadResults.mockResolvedValue(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS));
     loadParticipantRuns.mockResolvedValue([]);
     loadWeather.mockResolvedValue(WEATHER_MOCK);
+    loadVkPostUrl.mockResolvedValue(RACE_VK_POST_URL);
+    loadPhotos.mockResolvedValue(RACE_PHOTOS);
     loadEventSlugs.mockResolvedValue(OPEN_MONTH_CHRONOLOGY);
     routeStub = activatedRouteStub(routeParams);
     selfSignal = signal<SelfAthlete | null>(null);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: ResultsService, useValue: { loadResults, loadParticipantRuns, loadWeather } },
+        { provide: ResultsService, useValue: { loadResults, loadParticipantRuns, loadWeather, loadVkPostUrl, loadPhotos } },
         { provide: AthletesService, useValue: { loadEventSlugs } },
         { provide: ProtocolPdfService, useValue: { download } },
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
@@ -134,6 +140,15 @@ describe('RacePage', () => {
     expect(medianLines[0].textContent).toContain(EXPECTED_RACE_VIEW.medianTimeF);
     expect(pdfButton.tagName, 'the pdf action generates on click instead of linking to a file').toBe('BUTTON');
     expect(pdfButton.getAttribute('aria-label')).toBe(EXPECTED_RACE_VIEW.pdfAriaLabel);
+
+    const photosLink = element.querySelector('.race__photos');
+
+    expect(photosLink.getAttribute('href'), 'the photo link points at the stored VK post').toBe(RACE_VK_POST_URL);
+    expect(photosLink.getAttribute('rel'), 'an external tab must not reach back through window.opener').toBe('noopener noreferrer');
+    expect(
+      [...element.querySelectorAll('.photo-strip__image')].map((image) => image.getAttribute('src')),
+      'the strip renders one thumbnail per stored photo, straight from the VK CDN',
+    ).toEqual(RACE_PHOTOS.map((photo) => photo.previewUrl));
     expect(headers.length, 'the ten PDF columns plus the average pace').toBe(11);
     expect(
       headers.map((header) => header.getAttribute('role')),
@@ -167,7 +182,7 @@ describe('RacePage', () => {
     expect(
       gaps.map((gap) => gap.textContent.trim()),
       'one hint per runner-up, none for the winners',
-    ).toEqual(['+0:12', '+0:30']);
+    ).toEqual(['+0:12,00', '+0:30,00']);
   });
 
   it('marks the negative split and the places gained on lap 2, staying silent about fades', async () => {
@@ -302,12 +317,21 @@ describe('RacePage', () => {
 
   it('drops the weather line without a temperature and omits the wind clause without wind', async () => {
     loadWeather.mockRejectedValueOnce(new Error(RESULTS_LOAD_ERROR_MESSAGE));
+    loadVkPostUrl.mockRejectedValueOnce(new Error(RESULTS_LOAD_ERROR_MESSAGE));
+    loadPhotos.mockRejectedValueOnce(new Error(RESULTS_LOAD_ERROR_MESSAGE));
     fixture = await createPage();
 
     const page = fixture.componentInstance;
 
     expect(page.status(), 'the weather is garnish — the protocol still renders').toBe(RaceStatus.ready);
     expect(page.race()?.weatherText).toBe('');
+    expect(page.race()?.vkPostUrl, 'a failed photo-link read leaves the header without the link').toBe('');
+    expect(page.race()?.photos, 'a failed photo read leaves the header without the strip').toEqual([]);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.race__photos'), 'no link, no element').toBeNull();
+    expect(fixture.nativeElement.querySelector('app-photo-strip'), 'no photos, no strip').toBeNull();
 
     loadWeather.mockResolvedValueOnce(TEMPERATURELESS_WEATHER_MOCK);
     routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
