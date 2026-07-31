@@ -320,7 +320,7 @@ describe('TimerPage', () => {
 
     expect(element().querySelector('app-timer-picker')).toBeNull();
 
-    click('.timer-clock__control');
+    click('.timer-key');
 
     expect(clock.start, '«Старт» runs the clock at once').toHaveBeenCalledOnce();
 
@@ -362,7 +362,7 @@ describe('TimerPage', () => {
     expect(applyLastChange(TIMER_PAGE_QUEUE).splits.find((split) => split.id === PAGE_UNNAMED_SPLIT_ID)?.runnerId).toBe(PLAIN_LEADER_ID);
     expect(element().querySelector('.timer-tape__sheet'), 'the half had one surname in it, so the sheet is done').toBeNull();
 
-    click('.timer-clock__control_stop');
+    click('.timer-key');
 
     expect(clock.stop).toHaveBeenCalledOnce();
 

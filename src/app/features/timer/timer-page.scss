@@ -278,13 +278,20 @@
     position: sticky;
     bottom: 0;
     flex: none;
-    // Bottom-aligned, not stretched: the tape carries a hint line above its keys, so a stretched
-    // roster key started at the hint and ended twenty pixels above «ОТСЕЧКА». The keys of a cockpit
+    // Bottom-aligned, not stretched: past the mass start the tape can grow a row of handout keys
+    // above «ОТСЕЧКА», and a stretched neighbour would follow it upwards. The keys of a cockpit
     // share one floor — whatever stands over them is the tape's business.
     align-items: flex-end;
     justify-content: center;
     padding: 10px var(--timer-inline) max(10px, env(safe-area-inset-bottom));
-    gap: 8px;
+    // 12 and not 8: the round key in the middle has no corners to keep its distance with, so a gap
+    // sized for two rectangles let it crowd «Добавить атлета».
+    gap: 12px;
+    // The one height of the floor, so «Стоп» and «ОТСЕЧКА» are the same key twice over — the two
+    // things pressed during the race share a ceiling as well as a floor. 76 and not 96: on a 667 px
+    // phone every pixel here is taken off the tiles, and this is already two thumbs' worth of target.
+    --timer-floor-key: 76px;
+
     backdrop-filter: blur(18px) saturate(1.4);
     background: linear-gradient(to top, var(--bg) 30%, color-mix(in srgb, var(--bg) 78%, transparent));
     box-shadow: 0 -1px 0 var(--border-soft);
@@ -341,6 +348,11 @@
     display: inline-flex;
     flex: none;
     align-items: center;
+    // The one key on the floor that does not sit on it. Before the start it stands alone beside the
+    // round «Старт», and two keys of different heights on a shared baseline read as one of them
+    // having slipped; centred on the circle they read as a pair. The tape is never on this row at
+    // the same time, so nothing else is dragged up with it.
+    align-self: center;
     justify-content: center;
     height: 56px;
     padding: 0 12px;
@@ -380,6 +392,8 @@
 
     &__actions {
       padding-top: 6px;
+
+      --timer-floor-key: 64px;
     }
 
     // A phone on its side pays for that breath in tile height, so it gets the smaller one.

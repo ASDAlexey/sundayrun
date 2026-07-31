@@ -193,23 +193,14 @@
     color: var(--text-secondary);
   }
 
+  // The floor's own height, not 56 px of its own: «ОТСЕЧКА» stands beside the round «Стоп» for the
+  // whole race, and the two most-pressed keys of the cockpit have no business being different sizes.
   &__keys {
     display: flex;
     flex: none;
     align-items: stretch;
-    height: 56px;
+    height: var(--timer-floor-key);
     gap: 8px;
-  }
-
-  // Why a dead key is dead, in one line right above it — the panel never goes grey in silence.
-  // Centred over the keys it explains, so it belongs to them and not to whatever stands to the left.
-  &__keys-hint {
-    @include t.mono-caption;
-
-    margin: 0;
-    color: var(--text-muted);
-    text-align: center;
-    text-wrap: balance;
   }
 
   // The only key of the row now, so it takes the whole width: a lone half-width key reads as if

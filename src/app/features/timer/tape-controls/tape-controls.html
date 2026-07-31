@@ -33,17 +33,15 @@
     </div>
   }
 
-  @if (keysHint(); as hint) {
-    <p class="timer-tape__keys-hint">{{ hint }}</p>
-  }
-
-  @if (!finished()) {
+  <!-- Only while the race is on. A grey «ОТСЕЧКА» before the mass start needed a line of its own to
+  explain itself, and on a 375 px phone that line wrapped to four rows and shouldered the key off the
+  screen. Before the start there are exactly two things to do, and both are already on the floor. -->
+  @if (canCut()) {
     <div class="timer-tape__keys">
       <button
         class="timer-tape__cut"
         i18n="@@timer.tapeCut"
         type="button"
-        [disabled]="!canCut()"
         (keydown.enter)="onKeyCut($event)"
         (keydown.space)="onKeyCut($event)"
         (pointerdown)="onCut()"

@@ -26,7 +26,6 @@ import {
   TAPE_FINISH_ROW_META,
   TAPE_FINISH_ROW_NAMES,
   TAPE_FIRST_SPLIT_ID_TAIL,
-  TAPE_IDLE_HINT,
   TAPE_LAP_HEADING,
   TAPE_LAP_ROW_META,
   TAPE_LAP_ROW_NAMES,
@@ -74,7 +73,6 @@ describe('TimerTape', () => {
     expect(tape.runners()).toEqual([]);
     expect(tape.lapRows()).toEqual([]);
     expect(tape.canCut(), 'and there is nothing to cut into either').toBe(false);
-    expect(tape.keysHint(), 'a dead panel says why it is dead').toBe(TAPE_IDLE_HINT);
     expect(tape.emptyText(), 'a closed sheet has no empty half to explain').toBeNull();
 
     tape.onCut();
@@ -89,7 +87,6 @@ describe('TimerTape', () => {
     sessions.active.set(TIMER_SESSION);
 
     expect(tape.canCut(), 'but the race is under way — «ОТСЕЧКА» is live').toBe(true);
-    expect(tape.keysHint(), 'and a live key needs no explaining').toBeNull();
 
     tape.onCut();
 
@@ -259,7 +256,6 @@ describe('TimerTape', () => {
     sessions.active.set(TIMER_SESSION_IDLE);
     await fixture.whenStable();
 
-    expect(element.querySelector('.timer-tape__cut').disabled, 'and «ОТСЕЧКА» is dead before the start').toBe(true);
-    expect(element.querySelector('.timer-tape__keys-hint').textContent.trim()).toBe(TAPE_IDLE_HINT);
+    expect(element.querySelector('.timer-tape__cut'), 'and «ОТСЕЧКА» is gone before the start, not greyed out').toBeNull();
   });
 });

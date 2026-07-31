@@ -1,14 +1,6 @@
 import { formatRaceTime } from '../../../core/time/duration';
 import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
 
-/**
- * Why the key is dead, said out loud right above it. A grey «ОТСЕЧКА» before the start is correct
- * and looks broken in silence — so the line names the precondition that is missing.
- */
-export function tapeKeysHintText(canCut: boolean): string | null {
-  return canCut ? null : $localize`:@@timer.tapeHintIdle:Нажмите «Старт» — до старта отсечки не пишутся`;
-}
-
 /** What the open sheet is about, said in its own heading — the keys behind it are covered up. */
 export function tapeHeadingText(mode: TimerTapeModeType): string {
   return mode === TimerTapeMode.lap

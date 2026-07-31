@@ -15,7 +15,7 @@ import { TimerSheet } from '../handout-sheet/handout-sheet';
 import { STAGE_OF_MODE, TIMER_TAPE_LAST_TARGET, TIMER_TAPE_NOBODY_WAITING, TIMER_TAPE_NO_REQUEST } from './tape-controls.constant';
 import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
 import { TimerTapeRunner } from './tape-controls.interface';
-import { tapeHeadingText, tapeKeysHintText, tapeNobodyWaitingText, tapeQueueDoneText, tapeRunnerMetaText } from './tape-controls.text';
+import { tapeHeadingText, tapeNobodyWaitingText, tapeQueueDoneText, tapeRunnerMetaText } from './tape-controls.text';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
@@ -71,14 +71,14 @@ export class TimerTape {
     return session !== null && unassignedSplits(session).length > 0;
   });
 
-  /** The core refuses every split until the mass start, so the key says so instead of pretending. */
-  readonly canCut = computed(() => this.#sessions.active()?.status === TimerStatus.running);
   /**
-   * A stopped race has nothing left to cut, and the core would refuse anyway. The key goes rather
-   * than goes grey: past the finish the keys exist only to hand out the times still without a name.
+   * The core refuses every split outside the race, so the key exists only inside it: before the mass
+   * start there is nothing to cut yet, and past the finish nothing left to cut. It goes rather than
+   * goes grey — a dead key has to explain itself, and there is no room on a phone for the sentence.
    */
+  readonly canCut = computed(() => this.#sessions.active()?.status === TimerStatus.running);
+  /** Past the finish the keys exist only to hand out the times still without a name. */
   readonly finished = computed(() => this.#sessions.active()?.status === TimerStatus.finished);
-  readonly keysHint = computed(() => (this.finished() ? null : tapeKeysHintText(this.canCut())));
 
   /**
    * Whom each half can hand a time to, and which time each of them takes. Only people the core would

@@ -148,7 +148,13 @@
           </button>
         }
 
-        <app-timer-tape [openRequest]="queueRequest()" (panelOpen)="onTapePanel($event)" />
+        <app-timer-race-key />
+
+        <!-- Nothing to cut and nothing to hand out before the mass start, and the tape is `flex: 1`:
+        left in, it would eat the floor and shove the two keys that do matter off to the left. -->
+        @if (current.status !== statuses.idle) {
+          <app-timer-tape [openRequest]="queueRequest()" (panelOpen)="onTapePanel($event)" />
+        }
       </div>
     }
 

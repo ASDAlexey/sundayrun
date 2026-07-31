@@ -14,6 +14,7 @@ import { TimerConfirm } from './confirm-dialog/confirm-dialog';
 import { TimerFinishBoard } from './finish-board/finish-board';
 import { TimerInstall } from './install-prompt/install-prompt';
 import { TimerLapBoard } from './lap-board/lap-board';
+import { TimerRaceKey } from './race-key/race-key';
 import { TimerRunnerCard } from './runner-details/runner-details';
 import { TimerGrid } from './runner-grid/runner-grid';
 import { TimerTileView } from './runner-grid/runner-grid.interface';
@@ -53,6 +54,7 @@ import { buildTimerHeader } from './timer-page.view';
     TimerLapBoard,
     TimerPicker,
     TimerPublish,
+    TimerRaceKey,
     TimerRunnerCard,
     TimerSessions,
     TimerTape,

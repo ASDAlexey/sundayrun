@@ -284,3 +284,14 @@
   letter-spacing: 0.24em;
   text-transform: uppercase;
 }
+
+// The word inside the round «Старт» / «Стоп» key: the same instrument face, but the tracking of
+// «ОТСЕЧКА» is cut to a quarter — a bar can spend that width on air, a circle cannot.
+@mixin timer-key-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

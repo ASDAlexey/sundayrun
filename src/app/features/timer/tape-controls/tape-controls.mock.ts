@@ -43,6 +43,3 @@ export const TAPE_SECOND_SPLIT_ID_TAIL = '-000002';
 
 /** «Разобрать» asked for once from the publish card; the sheet has to be open at that. */
 export const TAPE_ONE_OPEN_REQUEST = 1;
-
-/** What the panel says while the race has not started — the reason «ОТСЕЧКА» is dead. */
-export const TAPE_IDLE_HINT = 'Нажмите «Старт» — до старта отсечки не пишутся';

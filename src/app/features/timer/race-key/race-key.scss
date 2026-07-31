@@ -1,0 +1,60 @@
+@use 'styles/buttons' as b;
+@use 'styles/typography' as t;
+
+// `contents`, so the key itself is the flex item of the cockpit's floor and lines up with «ОТСЕЧКА»
+// without a wrapper of its own deciding anything about the row. The size is the floor's to give —
+// this key and «ОТСЕЧКА» are a pair, and a pair that disagrees about its height reads as two panels.
+:host {
+  display: contents;
+}
+
+// A circle, and the biggest thing on the floor: at the mass start the organiser is looking at the
+// runners and not at the phone, so the key has to be found by the thumb alone. The two keys beside
+// it stay rectangles, so the shape alone tells them apart.
+.timer-key {
+  @include b.button-accent;
+
+  flex: none;
+  width: var(--timer-floor-key);
+  height: var(--timer-floor-key);
+  padding: 0;
+  border-radius: 50%;
+  box-shadow: 0 6px 20px var(--accent-glow);
+  touch-action: manipulation;
+  transition:
+    background var(--transition-time) var(--ease),
+    transform var(--time-spring) var(--spring-tap);
+
+  &:active {
+    transform: scale(0.94);
+    transition: transform var(--time-press) var(--ease);
+  }
+
+  // The stop is not a second accent key: by then the race is over and the eye should land on
+  // «Сохранить», so this one steps back to an outline in the warm colour the cockpit already uses.
+  &_stop {
+    @include b.button-outline;
+
+    width: var(--timer-floor-key);
+    height: var(--timer-floor-key);
+    padding: 0;
+    border-radius: 50%;
+    border-color: var(--accent-warm);
+    box-shadow: none;
+    color: var(--accent-warm);
+  }
+
+  // The same refusal «ОТСЕЧКА» draws right beside it — an outline gone grey, not a filled slug. A
+  // dead key that keeps its fill reads as a hole in the bar rather than as a key waiting for a roster.
+  &:disabled {
+    border-color: var(--border);
+    background: none;
+    box-shadow: none;
+    color: var(--text-muted);
+    cursor: default;
+  }
+}
+
+.timer-key__label {
+  @include t.timer-key-label;
+}

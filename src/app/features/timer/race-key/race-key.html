@@ -1,0 +1,20 @@
+@if (session(); as active) {
+  @if (shown()) {
+    <button
+      class="timer-key"
+      type="button"
+      [class.timer-key_stop]="active.status === statuses.running"
+      [disabled]="active.status === statuses.idle && !canStart()"
+      (click)="onPress(active)"
+    >
+      @switch (active.status) {
+        @case (statuses.idle) {
+          <span class="timer-key__label" i18n="@@timer.start">Старт</span>
+        }
+        @case (statuses.running) {
+          <span class="timer-key__label" i18n="@@timer.stop">Стоп</span>
+        }
+      }
+    </button>
+  }
+}
