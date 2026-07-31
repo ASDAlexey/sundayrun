@@ -10,6 +10,7 @@ import { Directive, ElementRef, afterNextRender, inject, output } from '@angular
   selector: 'dialog[appTimerSheet]',
   host: {
     class: 'timer-sheet',
+    tabindex: '-1',
     '(cancel)': 'onDismiss()',
     '(click)': 'onBackdrop($event)',
   },
@@ -21,7 +22,17 @@ export class TimerSheet {
   readonly closed = output<void>();
 
   constructor() {
-    afterNextRender(() => this.#element.nativeElement.showModal());
+    afterNextRender(() => {
+      const dialog = this.#element.nativeElement;
+
+      dialog.showModal();
+
+      // `showModal()` hands the focus to the first button in the list, and the focus ring made the
+      // top surname look picked out of the queue — a list where one row is drawn differently is a
+      // list where a time goes to the wrong man. The sheet itself takes the focus instead: Escape
+      // and the trap keep working, and a keyboard walks into the list with the first Tab.
+      dialog.focus();
+    });
   }
 
   onDismiss(): void {

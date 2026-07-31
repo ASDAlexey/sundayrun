@@ -99,16 +99,22 @@
     border-bottom: 1px solid var(--border-soft);
   }
 
+  // «Разобрать круг» is two words the head must never break: broken in half it stopped looking like
+  // the title of the sheet. The hint beside it gives way instead — it may take two lines of its own.
   &__sheet-title {
     @include t.text('title', 'medium');
 
+    flex: none;
     margin: 0;
     color: var(--text);
+    white-space: nowrap;
   }
 
   &__sheet-hint {
     @include t.mono-caption;
 
+    flex: 1;
+    min-width: 0;
     margin: 0;
     color: var(--text-secondary);
     text-align: right;
@@ -137,7 +143,7 @@
 
   &__runner {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     width: 100%;
     min-height: 52px;
