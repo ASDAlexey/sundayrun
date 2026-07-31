@@ -16,6 +16,9 @@ export const LAP_DONE_MIN_SPLITS = 1;
 /** An empty count: nobody tapped, nothing recorded, nothing waiting. */
 export const NOTHING_RECORDED = 0;
 
+/** One man left out on the lap — then a nameless time has only one owner it could belong to. */
+export const SOLE_LAP_CANDIDATE = 1;
+
 /** Fields the timer never fills in: the note is computed on publish, the club is not asked for. */
 export const EMPTY_TEXT = '';
 

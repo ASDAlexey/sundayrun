@@ -95,7 +95,9 @@ describe('TimerTape', () => {
 
     expect(cut.splits).toHaveLength(TIMER_SESSION.splits.length + 1);
     expect(recorded.atMs).toBe(CLOCK_MOCK_NOW_MS);
-    expect(recorded.runnerId, 'the cut goes into the queue, not onto a runner').toBeNull();
+    expect(recorded.runnerId, 'one man is still out on the lap, so the cut has one owner and is handed straight to him').toBe(
+      KUZNETSOV_RUNNER_ID,
+    );
     expect(recorded.id.endsWith(TAPE_FIRST_SPLIT_ID_TAIL)).toBe(true);
     expect(haptics.play, 'a nameless cut is answered like any other').toHaveBeenCalledExactlyOnceWith(TimerFeedback.lap);
 
@@ -106,6 +108,14 @@ describe('TimerTape', () => {
 
     expect(prevented, 'a keyboard cut must not double as a click').toHaveBeenCalledOnce();
     expect(applyLastChange(TIMER_SESSION).splits.at(-1)?.id.endsWith(TAPE_SECOND_SPLIT_ID_TAIL)).toBe(true);
+
+    sessions.active.set(TIMER_SESSION_ONLY_QUEUE);
+    tape.onCut();
+
+    expect(
+      applyLastChange(TIMER_SESSION_ONLY_QUEUE).splits.at(-1)?.runnerId,
+      'with the whole field still out on the lap the cut is a question, and it waits for a surname',
+    ).toBeNull();
   });
 
   it('hands each half the times that can be its own, and closes a half it has served out', () => {

@@ -2,6 +2,7 @@ import { Component, computed, inject, input, linkedSignal, output, untracked } f
 
 import { formatRaceTime } from '../../../core/time/duration';
 import { assignNextUnnamed, recordUnnamedSplit } from '../../../core/timer/session-actions';
+import { handOutSoleLapSplit } from '../../../core/timer/session-auto-handout';
 import { nextSplitForRunner, runnerSplitTimesMs, runnerStage, unassignedSplits } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
 import { TIMER_ID_RANDOM_RANGE } from '../../../core/timer/timer-id.constant';
@@ -137,7 +138,9 @@ export class TimerTape {
 
     const atMs = this.#clock.nowMs();
 
-    this.#sessions.updateActive((session) => recordUnnamedSplit(session, atMs, this.#nextId(atMs)));
+    // With one man still out on the lap the cut has one possible owner, so it goes to him at once —
+    // the queue is a safety net for a pack, not a form to fill in for the straggler.
+    this.#sessions.updateActive((session) => handOutSoleLapSplit(recordUnnamedSplit(session, atMs, this.#nextId(atMs))));
     this.#haptics.play(TimerFeedback.lap);
   }
 
@@ -190,7 +193,7 @@ export class TimerTape {
   /** One handout: the buzz that says it landed, and the change the journal keeps. */
   #hand(runnerId: string): void {
     this.#haptics.play(TimerFeedback.lap);
-    this.#sessions.updateActive((session) => assignNextUnnamed(session, runnerId));
+    this.#sessions.updateActive((session) => handOutSoleLapSplit(assignNextUnnamed(session, runnerId)));
   }
 
   /** Where an outside «Разобрать» lands: the lap while anybody is still out on it, the finish after. */
