@@ -8,6 +8,7 @@ import { MEME_THRESHOLDS } from '../../core/history/meme-thresholds.constant';
 import { MemeThreshold } from '../../core/history/meme-thresholds.interface';
 import { RivalRun } from '../../core/history/rivals.interface';
 import { SeasonBestRow } from '../../core/history/season-ranks.interface';
+import { RaceDay } from '../../state/track-sync.interface';
 import { Season } from '../../core/history/seasons.enum';
 import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { AthleteYearBadges } from '../../core/history/year-badges';
@@ -15,7 +16,7 @@ import { YearBadge } from '../../core/history/year-badges.enum';
 import { YearBestRow } from '../../core/history/year-ranks.interface';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { Gender } from '../../core/models/gender.enum';
-import { formatDuration } from '../../core/time/duration';
+import { formatRaceTime } from '../../core/time/duration';
 import { VERSUS_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { SELF_MEME_KEY } from './athlete-page.constant';
@@ -53,7 +54,7 @@ const FIRST_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-1',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-1'],
   dateShort: '27.12.2025',
-  timeText: '25:00',
+  timeText: '25:00,00',
   lapText: '11:50',
   // A stored place with no finisher tally renders bare, and 5th is off the podium.
   placeText: '5',
@@ -65,7 +66,7 @@ const SECOND_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-2',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'],
   dateShort: '03.01.2026',
-  timeText: '24:00',
+  timeText: '24:00,00',
   lapText: '11:00',
   placeText: '1/8',
   isPodium: true,
@@ -76,7 +77,7 @@ const THIRD_RUN_BASE: RunViewBase = {
   slug: 'kuzminki-3',
   raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-3'],
   dateShort: '10.01.2026',
-  timeText: '25:00',
+  timeText: '25:00,00',
   lapText: '11:40',
   placeText: '—',
   isPodium: false,
@@ -99,11 +100,11 @@ export const EXPECTED_RUN_YEAR_OPTIONS = ['2026', '2025'];
 
 /** The 2026 best equals the all-time record, so its cell carries the accent mark. */
 export const EXPECTED_YEAR_BEST_VIEWS: YearBestView[] = [
-  { year: '2026', timeText: '24:00', raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'], isAllTime: true },
-  { year: '2025', timeText: '25:00', raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-1'], isAllTime: false },
+  { year: '2026', timeText: '24:00,00', raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'], isAllTime: true },
+  { year: '2025', timeText: '25:00,00', raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-1'], isAllTime: false },
 ];
 
-export const EXPECTED_BEST_TIME_TEXT = '24:00';
+export const EXPECTED_BEST_TIME_TEXT = '24:00,00';
 
 /** The best first-lap split the service stub serves for `REPEAT_RUNNER_KEY`. */
 export const ATHLETE_BEST_FIRST_LAP: AthleteFirstLap = { dateIso: '2026-01-03', slug: 'kuzminki-2', lapMs: 660000 };
@@ -140,7 +141,7 @@ export const EXPECTED_SHORT_RUNNER_VIEWS: AthleteRunView[] = [
     raceLink: [RACE_PAGE_BASE_LINK, 'kuzminki-2'],
     rank: 1,
     dateShort: '03.01.2026',
-    timeText: '23:20',
+    timeText: '23:20,00',
     lapText: '—',
     placeText: '—',
     isPodium: false,
@@ -281,7 +282,7 @@ const memeRow = (threshold: MemeThreshold, isBeaten: boolean, gapText: string | 
   key: threshold.key,
   name: threshold.name,
   note: threshold.note,
-  timeText: formatDuration(threshold.timeMs),
+  timeText: formatRaceTime(threshold.timeMs),
   isBeaten,
   isSelf: false,
   gapText,
@@ -294,8 +295,8 @@ export const EXPECTED_MEME_ROWS: MemeRowView[] = [
   memeRow(HIPPO, false, null),
   memeRow(CHEPTEGEI, false, null),
   memeRow(TSEGAY, false, null),
-  memeRow(KIPTUM, false, '9:43'),
-  { key: SELF_MEME_KEY, name: 'Иванов Иван', note: null, timeText: '24:00', isBeaten: false, isSelf: true, gapText: null },
+  memeRow(KIPTUM, false, '9:43,00'),
+  { key: SELF_MEME_KEY, name: 'Иванов Иван', note: null, timeText: '24:00,00', isBeaten: false, isSelf: true, gapText: null },
   memeRow(RAMSAY, true, null),
   memeRow(BUSH, true, null),
   memeRow(FERRELL, true, null),
@@ -356,4 +357,14 @@ export const RIVAL_SEASON_FILTER = '2026';
 export const EXPECTED_SEASON_RIVAL_VIEWS: RivalView[] = [
   { ...EXPECTED_RIVAL_VIEWS[0], closeText: '2 раза рядом', score: '1:0' },
   { ...EXPECTED_RIVAL_VIEWS[1] },
+];
+
+/** The visitor picked themselves as the athlete this spec opens — what turns the watch sync on. */
+export const SELF_PICK_MOCK = { key: REPEAT_RUNNER_KEY, displayName: 'Иванов Иван' };
+
+/** Every race day of that athlete, as the watch sync receives them. */
+export const EXPECTED_OWN_RACE_DAYS: RaceDay[] = [
+  { slug: 'kuzminki-1', dateIso: '2025-12-27' },
+  { slug: 'kuzminki-2', dateIso: '2026-01-03' },
+  { slug: 'kuzminki-3', dateIso: '2026-01-10' },
 ];

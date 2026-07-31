@@ -16,6 +16,10 @@
         <h1 class="athlete__title">{{ displayName() }}</h1>
 
         <a class="athlete__versus" i18n="@@athlete.versusLink" matButton="outlined" [routerLink]="versusLink()">Очные встречи</a>
+
+        @if (isSelf()) {
+          <app-watch-sync [races]="ownRaceDays()" />
+        }
       </header>
 
       <section class="athlete__profile">
@@ -23,14 +27,14 @@
           <p class="athlete__pb">
             <span class="athlete__pb-caption" i18n="@@athlete.pbCaption">Личный рекорд · 5 км</span>
 
-            <span class="athlete__pb-value">{{ bestTimeText() }}</span>
+            <span class="athlete__pb-value"><app-race-time [value]="bestTimeText()" /></span>
           </p>
 
           @if (firstLap(); as lap) {
             <p class="athlete__pb">
               <span class="athlete__pb-caption" i18n="@@athlete.firstLapCaption">Лучший первый круг · 2,3 км</span>
 
-              <a class="athlete__lap-value" [routerLink]="lap.raceLink">{{ lap.timeText }}</a>
+              <a class="athlete__lap-value" [routerLink]="lap.raceLink"><app-race-time [value]="lap.timeText" /></a>
             </p>
           }
 
@@ -73,7 +77,9 @@
                       }
                     </span>
 
-                    <span class="athlete__year-time" [class.athlete__year-time_record]="best.isAllTime">{{ best.timeText }}</span>
+                    <span class="athlete__year-time" [class.athlete__year-time_record]="best.isAllTime"
+                      ><app-race-time [value]="best.timeText"
+                    /></span>
                   </a>
                 </li>
               }
@@ -97,7 +103,9 @@
                       }
                     </span>
 
-                    <span class="athlete__year-time" [class.athlete__year-time_record]="best.isAllTime">{{ best.timeText }}</span>
+                    <span class="athlete__year-time" [class.athlete__year-time_record]="best.isAllTime"
+                      ><app-race-time [value]="best.timeText"
+                    /></span>
                   </a>
                 </li>
               }
@@ -240,9 +248,9 @@
                     }
                   </span>
 
-                  <span class="athlete__run-time">{{ run.timeText }}</span>
+                  <span class="athlete__run-time"><app-race-time [value]="run.timeText" /></span>
 
-                  <span class="athlete__run-lap">{{ run.lapText }}</span>
+                  <span class="athlete__run-lap"><app-race-time [value]="run.lapText" /></span>
 
                   <span class="athlete__run-place" [class.athlete__run-place_podium]="run.isPodium">{{ run.placeText }}</span>
                 </a>
@@ -334,7 +342,7 @@
           <ol class="athlete__memes-list">
             @for (meme of memes(); track meme.key) {
               <li class="athlete__meme" [class.athlete__meme_self]="meme.isSelf">
-                <span class="athlete__meme-time">{{ meme.timeText }}</span>
+                <span class="athlete__meme-time"><app-race-time [value]="meme.timeText" /></span>
 
                 <span class="athlete__meme-name" [class.athlete__meme-name_self]="meme.isSelf">{{ meme.name }}</span>
 

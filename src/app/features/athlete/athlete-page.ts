@@ -39,11 +39,14 @@ import { CLOSE_FINISH_GAP_MS } from '../../core/history/rivals.constant';
 import { Rival } from '../../core/history/rivals.interface';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
 import { GenderType } from '../../core/models/gender.enum';
-import { formatDuration } from '../../core/time/duration';
+import { lapTimeTextOf } from '../../core/protocol/race-time-cells';
+import { formatRaceTime } from '../../core/time/duration';
 import { MS_IN_SECOND } from '../../core/time/duration.constant';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateNumeric } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
+import { SelfAthleteService } from '../../state/self-athlete.service';
+import { RaceDay } from '../../state/track-sync.interface';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
@@ -80,7 +83,9 @@ import { LifetimeCard } from './lifetime-card';
 import { PacingCard } from './pacing-card';
 import { ProgressChart } from './progress-chart';
 import { RatingCard } from './rating-card';
+import { WatchSync } from './watch-sync/watch-sync';
 import { WeatherCard } from './weather-card';
+import { RaceTime } from '../../shared/race-time/race-time';
 
 /** One athlete's history: participation counters, 5 km records, and every 5 km run with a year filter. */
 @Component({
@@ -100,14 +105,17 @@ import { WeatherCard } from './weather-card';
     ReloadButton,
     RouterLink,
     ScrollingModule,
+    WatchSync,
     WeatherCard,
     YearBadgeChip,
+    RaceTime,
   ],
   templateUrl: './athlete-page.html',
   styleUrl: './athlete-page.scss',
 })
 export class AthletePage {
   readonly #athletes = inject(AthletesService);
+  readonly #selfAthlete = inject(SelfAthleteService);
   readonly #record = signal<AthletePageState['record']>(null);
   readonly #firstEventDateByYear = signal<AthletePageState['firstEventDateByYear']>({});
   readonly #eventSlugs = signal<AthletePageState['eventSlugs']>([]);
@@ -277,7 +285,7 @@ export class AthletePage {
       .sort(([left], [right]) => right.localeCompare(left))
       .map(([year, lap]) => ({
         year,
-        timeText: formatDuration(lap.lapMs),
+        timeText: lapTimeTextOf(lap.lapMs),
         raceLink: [RACE_PAGE_BASE_LINK, lap.slug],
         isAllTime: lap.lapMs === bestLapMs,
       }));
@@ -310,6 +318,19 @@ export class AthletePage {
 
   /** The duel page with this athlete preselected: «сколько раз встречались и кто был впереди». */
   readonly versusLink = computed(() => [VERSUS_PAGE_LINK, this.#record()?.key ?? '']);
+
+  /**
+   * Whether this profile is the visitor's own pick — the watch sync belongs only here.
+   * On somebody else's page «Подключить часы» would be an offer to sync a stranger's runs.
+   */
+  readonly isSelf = computed(() => {
+    const self = this.#selfAthlete.self();
+
+    return self !== null && self.key === this.#record()?.key;
+  });
+
+  /** The races the sync may ask the watch about: only days this athlete actually ran. */
+  readonly ownRaceDays = computed<RaceDay[]>(() => this.allRuns().map((run) => ({ slug: run.slug, dateIso: run.dateIso })));
 
   protected readonly statuses = AthleteStatus;
   protected readonly athletesLink = ATHLETES_PAGE_LINK;
@@ -475,8 +496,8 @@ function toRunView(
     raceLink: [RACE_PAGE_BASE_LINK, run.slug],
     rank,
     dateShort: formatRussianDateNumeric(run.dateIso),
-    timeText: formatDuration(run.timeMs),
-    lapText: lapMs === undefined ? NO_LAP_TEXT : formatDuration(lapMs),
+    timeText: formatRaceTime(run.timeMs),
+    lapText: lapMs === undefined ? NO_LAP_TEXT : lapTimeTextOf(lapMs),
     placeText: placeText(place, finisherCounts[run.slug], gender),
     isPodium: place !== undefined && place <= PODIUM_PLACE,
     isMonthFinal: monthFinals.has(run.slug),
@@ -498,14 +519,14 @@ function placeText(place: number | undefined, finishers: EventGenderFinishers | 
 function toYearBestView(entry: YearBestEntry, bestMs: number | null): YearBestView {
   return {
     year: entry.year,
-    timeText: formatDuration(entry.timeMs),
+    timeText: formatRaceTime(entry.timeMs),
     raceLink: [RACE_PAGE_BASE_LINK, entry.slug],
     isAllTime: entry.timeMs === bestMs,
   };
 }
 
 function toTimeText(bestMs: number | null): string {
-  return bestMs === null ? NO_BEST_TIME_TEXT : formatDuration(bestMs);
+  return bestMs === null ? NO_BEST_TIME_TEXT : formatRaceTime(bestMs);
 }
 
 function toFirstLapView(lap: AthletePageState['bestFirstLap']): FirstLapView | null {
@@ -513,7 +534,7 @@ function toFirstLapView(lap: AthletePageState['bestFirstLap']): FirstLapView | n
     return null;
   }
 
-  return { timeText: formatDuration(lap.lapMs), raceLink: [RACE_PAGE_BASE_LINK, lap.slug] };
+  return { timeText: lapTimeTextOf(lap.lapMs), raceLink: [RACE_PAGE_BASE_LINK, lap.slug] };
 }
 
 function toPlacementsView(placements: AthletePlacements): PlacementsView {
@@ -569,7 +590,7 @@ function toMemeRows(standings: MemeStanding[], bestMs: number, displayName: stri
     key: SELF_MEME_KEY,
     name: displayName,
     note: null,
-    timeText: formatDuration(bestMs),
+    timeText: formatRaceTime(bestMs),
     isBeaten: false,
     isSelf: true,
     gapText: null,
@@ -583,10 +604,10 @@ function toMemeRow(standing: MemeStanding): MemeRowView {
     key: standing.key,
     name: standing.name,
     note: standing.note,
-    timeText: formatDuration(standing.timeMs),
+    timeText: formatRaceTime(standing.timeMs),
     isBeaten: standing.isBeaten,
     isSelf: false,
-    gapText: standing.isNext ? formatDuration(standing.gapMs) : null,
+    gapText: standing.isNext ? formatRaceTime(standing.gapMs) : null,
   };
 }
 

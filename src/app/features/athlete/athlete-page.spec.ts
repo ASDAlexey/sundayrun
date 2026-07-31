@@ -7,6 +7,7 @@ import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
+import { SELF_ATHLETE_STORAGE_KEY } from '../../state/self-athlete.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { polyfillDialogModal } from '../spec-utils/dialog-polyfill';
 import { settle } from '../spec-utils/settle';
@@ -38,6 +39,7 @@ import {
   EXPECTED_FIRST_LAP_VIEW,
   EXPECTED_LEGEND_VIEW,
   EXPECTED_MEME_ROWS,
+  EXPECTED_OWN_RACE_DAYS,
   EXPECTED_RANK_YEAR_BADGES,
   EXPECTED_RIVAL_VIEWS,
   EXPECTED_RUN_YEAR_OPTIONS,
@@ -55,6 +57,7 @@ import {
   SHORT_RUNNER_KEY_PARAM,
   STUB_BADGE_RARITY,
   STUB_RUN_FINISHER_COUNTS,
+  SELF_PICK_MOCK,
   STUB_RUN_PLACES,
   UNKNOWN_KEY_PARAM,
 } from './athlete-page.mock';
@@ -450,5 +453,18 @@ describe('AthletePage', () => {
 
     expect(page.status(), 'the weather is garnish — the page still renders').toBe(AthleteStatus.ready);
     expect(page.weatherRows()).toEqual([]);
+  });
+
+  it('offers the watch sync on the visitor own profile, with that athlete race days', async () => {
+    // The pick has to be in place before the page builds: the service reads it once, on creation.
+    localStorage.setItem(SELF_ATHLETE_STORAGE_KEY, JSON.stringify(SELF_PICK_MOCK));
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+
+    expect(page.isSelf()).toBe(true);
+    expect(page.ownRaceDays()).toEqual(EXPECTED_OWN_RACE_DAYS);
+
+    localStorage.removeItem(SELF_ATHLETE_STORAGE_KEY);
   });
 });

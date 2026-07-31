@@ -1,0 +1,164 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+// ===========================================================
+//  «Подключить часы» — the device-local watch sync at the top
+//  of your own profile: a toggle, a link form, and the state
+//  of what this device already holds.
+// ===========================================================
+
+.watch-sync {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+
+  &__toggle {
+    @include t.text('label', 'medium');
+
+    padding: 9px 16px;
+    border: 1px dashed var(--border-hover);
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--accent-line);
+      color: var(--text);
+    }
+  }
+
+  &__linked {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px 16px;
+    gap: 12px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+  }
+
+  &__badge {
+    @include t.text('label', 'medium');
+
+    color: var(--text);
+  }
+
+  &__count {
+    @include t.text('label', 'small');
+
+    color: var(--text-secondary);
+  }
+
+  &__action {
+    @include t.text('label', 'small');
+
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color var(--transition-time) var(--ease);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+
+  &__notice {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__panel {
+    @include c.card;
+
+    display: flex;
+    flex-direction: column;
+    width: min(420px, 100%);
+    padding: 16px;
+    gap: 12px;
+  }
+
+  &__hint {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__warning {
+    @include t.text('body', 'medium');
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__label {
+    @include t.text('label', 'small');
+
+    color: var(--text-secondary);
+  }
+
+  &__input {
+    @include t.text('body', 'medium');
+
+    padding: 8px 12px;
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  &__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__submit {
+    @include t.text('label', 'medium');
+
+    padding: 9px 16px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+  }
+
+  &__import {
+    @include t.text('label', 'small');
+
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  &__file {
+    display: none;
+  }
+
+  &__status {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+}

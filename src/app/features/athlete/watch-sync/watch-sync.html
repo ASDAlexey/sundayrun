@@ -1,0 +1,107 @@
+<div class="watch-sync">
+  @if (linked()) {
+    <span class="watch-sync__linked">
+      <span class="watch-sync__badge" i18n="@@watchSync.linked">Часы подключены</span>
+
+      <span class="watch-sync__count">
+        @if (status() === statuses.syncing) {
+          <span i18n="@@watchSync.syncing">синхронизируем…</span>
+        } @else {
+          {{ trackCount() }}
+          <span i18n="@@watchSync.tracks">треков</span>
+        }
+      </span>
+
+      @if (trackCount() > 0) {
+        <button class="watch-sync__action" i18n="@@watchSync.export" type="button" (click)="exportTracks()">Выгрузить всё</button>
+      }
+
+      <button class="watch-sync__action" i18n="@@watchSync.unlink" type="button" (click)="unlink()">Отвязать</button>
+    </span>
+
+    @if (status() === statuses.expired) {
+      <p class="watch-sync__notice" i18n="@@watchSync.expired">Часы отключились — нужно подключить их заново.</p>
+    }
+
+    @if (status() === statuses.failed) {
+      <p class="watch-sync__notice" i18n="@@watchSync.failed">Не удалось забрать треки. Попробуем при следующем заходе.</p>
+    }
+  } @else {
+    <button class="watch-sync__toggle" i18n="@@watchSync.toggle" type="button" [attr.aria-expanded]="formOpen()" (click)="toggleForm()">
+      Подключить часы
+    </button>
+  }
+
+  @if (formOpen() && !linked()) {
+    <div class="watch-sync__panel">
+      <p class="watch-sync__hint" i18n="@@watchSync.hint">
+        Треки твоих забегов подтянутся из Coros и останутся на этом устройстве: на сайт они не загружаются и никому, кроме тебя, не видны.
+      </p>
+
+      <p class="watch-sync__warning" i18n="@@watchSync.passwordWarning">
+        Нужен пароль от аккаунта Coros. Он используется один раз для входа и нигде не сохраняется — но вводить пароль от своих аккаунтов на
+        чужих сайтах вообще стоит с осторожностью.
+      </p>
+
+      <label class="watch-sync__field">
+        <span class="watch-sync__label" i18n="@@watchSync.email">Почта Coros</span>
+
+        <input
+          #emailInput
+          autocomplete="username"
+          class="watch-sync__input"
+          type="email"
+          [value]="email()"
+          (input)="onEmail(emailInput.value)"
+        />
+      </label>
+
+      <label class="watch-sync__field">
+        <span class="watch-sync__label" i18n="@@watchSync.password">Пароль</span>
+
+        <input
+          #passwordInput
+          autocomplete="current-password"
+          class="watch-sync__input"
+          type="password"
+          [value]="password()"
+          (input)="onPassword(passwordInput.value)"
+        />
+      </label>
+
+      <label class="watch-sync__field">
+        <span class="watch-sync__label" i18n="@@watchSync.region">Регион аккаунта</span>
+
+        <select #regionSelect class="watch-sync__input" [value]="region()" (change)="onRegion(regionSelect.value)">
+          @for (option of regionOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="watch-sync__buttons">
+        <button class="watch-sync__submit" i18n="@@watchSync.submit" type="button" [disabled]="linking()" (click)="link()">
+          Подключить
+        </button>
+
+        <label class="watch-sync__import">
+          <span i18n="@@watchSync.import">Загрузить архив</span>
+
+          <input
+            #archiveInput
+            accept=".zip"
+            class="watch-sync__file"
+            type="file"
+            (change)="importTracks(archiveInput.files?.item(0) ?? null)"
+          />
+        </label>
+      </div>
+
+      <div aria-live="polite" class="watch-sync__status" role="status">
+        @if (linkFailed()) {
+          <span i18n="@@watchSync.linkFailed">Не удалось войти. Проверь почту, пароль и регион.</span>
+        }
+      </div>
+    </div>
+  }
+</div>
