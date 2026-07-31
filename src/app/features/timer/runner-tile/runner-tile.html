@@ -26,3 +26,11 @@
     <span aria-hidden="true" class="timer-tile__ripple" (animationend)="onRippleEnd()"></span>
   }
 </button>
+
+<!-- A sibling of the tile, never a child: the key above fires its split on `pointerdown`, and a «×»
+inside it would cut a time on the way to removing the man it belongs to. -->
+@if (removable()) {
+  <button class="timer-tile__remove" type="button" [attr.aria-label]="removeLabel()" (click)="remove.emit()">
+    <span aria-hidden="true" i18n="@@timerTile.removeGlyph">×</span>
+  </button>
+}

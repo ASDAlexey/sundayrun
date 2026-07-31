@@ -2,7 +2,8 @@ import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray 
 import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
 import { formatRaceTime } from '../../../core/time/duration';
-import { recordSplit, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
+import { recordSplit, removeRunner, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
+import { handOutSoleLapSplit } from '../../../core/timer/session-auto-handout';
 import { hasDuplicateSurnames } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
 import { TimerRunnerStage, TimerStatus } from '../../../core/timer/timer-session.enum';
@@ -102,8 +103,12 @@ export class TimerGrid {
   protected readonly resolvedDensity = computed(() => resolveTimerDensity(this.runnerCount()));
   protected readonly scrolling = computed(() => this.runnerCount() >= TIMER_SCROLL_MIN_RUNNERS);
   protected readonly recording = computed(() => this.#status() === TimerStatus.running);
-  /** Reordering by hand belongs to the minute before the start; during the race a drag is a misstap. */
+  /**
+   * Reordering by hand and removing a person both belong to the minute before the start: during the
+   * race a drag is a misstap, and a «×» under the thumb is a lost split and the man it belonged to.
+   */
   protected readonly draggable = computed(() => this.#status() === TimerStatus.idle);
+  protected readonly removable = this.draggable;
   protected readonly tiles = computed(() =>
     this.#shelved() ? this.#views().filter((view) => view.stage !== TimerRunnerStage.finished) : this.#views(),
   );
@@ -130,7 +135,9 @@ export class TimerGrid {
     const splitId = createTimerId(atMs, () => Math.random());
     const finishing = view.stage === TimerRunnerStage.waitingFinish;
 
-    this.#sessions.updateActive((current) => recordSplit(current, view.runner.id, atMs, splitId));
+    // The tap that gives the second-to-last man his lap leaves exactly one runner out on the course:
+    // whatever is queued nameless is then his, and the core hands it over without being asked.
+    this.#sessions.updateActive((current) => handOutSoleLapSplit(recordSplit(current, view.runner.id, atMs, splitId)));
     this.#lastTap.set({ atMs, runnerId: view.runner.id, splitId });
     this.#haptics.play(finishing ? TimerFeedback.finish : TimerFeedback.lap);
     this.announce.emit({
@@ -165,6 +172,16 @@ export class TimerGrid {
 
   protected onDetails(view: TimerTileView): void {
     this.details.emit(view);
+  }
+
+  /**
+   * The «×» of the minute before the start: a surname misheard at the sign-up table, a newcomer
+   * typed in twice. No question is asked — nothing has been timed yet, and the roster sheet puts
+   * the person back in one tap, so a confirmation here would only cost the organiser a second in
+   * the cold for a mistake that costs nothing.
+   */
+  protected onRemove(view: TimerTileView): void {
+    this.#sessions.updateActive((current) => removeRunner(current, view.runner.id));
   }
 
   /** One drag before the start, so the fast runners can sit under the thumb. */

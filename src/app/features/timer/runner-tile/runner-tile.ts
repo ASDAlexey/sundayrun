@@ -3,6 +3,7 @@ import { Component, computed, input, output, signal } from '@angular/core';
 import { TimerRunnerStage, TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
 import { TimerRunner } from '../../../core/timer/timer-session.interface';
 import { TimerTilePress, TimerTileTimeFrame } from './runner-tile.interface';
+import { tileRemoveLabelText } from './runner-tile.text';
 import {
   TIMER_DOUBLE_TAP_GUARD_MS,
   TIMER_SWIPE_MAX_DRIFT_PX,
@@ -42,11 +43,19 @@ export class TimerTile {
   readonly timeText = input.required<string>();
   /** 1…15 — the personal ink stripe, `var(--chart-N)` picked by the name hash. */
   readonly accentIndex = input.required<number>();
+  /**
+   * Whether the tile carries its own «×». Before the mass start it does: a newcomer is typed in by
+   * ear, and a misheard surname has to be undoable where it is seen — on the tile — and not only
+   * behind a long press or two screens away in the roster sheet. Once the clock runs it goes: there
+   * the same corner is a split waiting to be lost.
+   */
+  readonly removable = input(false);
 
   readonly tap = output<void>();
   readonly retire = output<void>();
   readonly undo = output<void>();
   readonly details = output<void>();
+  readonly remove = output<void>();
 
   protected readonly stages = TimerRunnerStage;
   protected readonly tapX = signal(TIMER_TILE_RIPPLE_ORIGIN);
@@ -59,6 +68,7 @@ export class TimerTile {
   protected readonly tileClass = computed(() => `timer-tile timer-tile_ink-${this.accentIndex()}`);
   /** The label says the whole name even when the tile shows «Попов А.» or an ellipsised surname. */
   protected readonly fullName = computed(() => this.runner().fullName);
+  protected readonly removeLabel = computed(() => tileRemoveLabelText(this.fullName()));
   /** Zero or one frame: a new time changes the `track` key, so the fly-in plays from scratch. */
   protected readonly timeFrames = computed<TimerTileTimeFrame[]>(() =>
     this.timeText() === TIMER_TILE_NO_TIME ? [] : [{ text: this.timeText() }],

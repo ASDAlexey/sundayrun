@@ -49,6 +49,7 @@ import {
   GRID_QUIET_ELAPSED_MS,
   GRID_SPELLED_GIVEN,
   GRID_TAP_TIME_TEXT,
+  PLAIN_LEADER_ID,
   PLAIN_SECOND_ID,
   gridDropEvent,
 } from './runner-grid.mock';
@@ -270,5 +271,31 @@ describe('TimerGrid', () => {
     await fixture.whenStable();
 
     expect(textOf('.timer-tile__surname'), 'a hand-made order outranks the archive from then on').toEqual(GRID_DRAGGED_SURNAMES);
+  });
+
+  it('carries a «×» on every tile before the start and none once the clock runs', async () => {
+    sessions.active.set(GRID_PLAIN_SESSION);
+    await create();
+
+    const removes: HTMLElement[] = [...fixture.nativeElement.querySelectorAll('.timer-tile__remove')];
+
+    expect(removes.length, 'a surname misheard at the sign-up table is undone where it is seen').toBe(GRID_PLAIN_SESSION.runners.length);
+
+    removes[0].click();
+
+    const shortened: TimerSession = sessions.updateActive.mock.calls[0][0](GRID_PLAIN_SESSION);
+
+    expect(
+      shortened.runners.map((runner) => runner.id),
+      'the man goes and nothing is asked — nothing has been timed yet',
+    ).not.toContain(PLAIN_LEADER_ID);
+
+    sessions.active.set(GRID_PLAIN_RUNNING);
+    await fixture.whenStable();
+
+    expect(
+      fixture.nativeElement.querySelector('.timer-tile__remove'),
+      'mid-race the same corner would be a split lost under the thumb',
+    ).toBeNull();
   });
 });

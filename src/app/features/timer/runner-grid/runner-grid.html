@@ -23,11 +23,13 @@ is now sized like a tile, which is not what a list of finishers needs. -->
         <app-timer-tile
           [accentIndex]="view.accentIndex"
           [givenName]="view.givenName"
+          [removable]="removable()"
           [runner]="view.runner"
           [stage]="view.stage"
           [surname]="view.surname"
           [timeText]="view.timeText"
           (details)="onDetails(view)"
+          (remove)="onRemove(view)"
           (retire)="onRetire(view)"
           (tap)="onTap(view)"
           (undo)="onUndo(view)"
