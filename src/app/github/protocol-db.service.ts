@@ -1,53 +1,58 @@
 import { isPlatformBrowser } from '@angular/common';
 import { DOCUMENT, PLATFORM_ID, Service, inject } from '@angular/core';
 
-import type { SQLiteHTTPPool } from 'sqlite-wasm-http';
+import type { Database } from '@sqlite.org/sqlite-wasm';
 
 import { environment } from '../../environments/environment';
 import { pinnedProtocolDbPath } from '../core/github/protocol-db-path';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { DbSource } from '../core/sqlite/db-source.enum';
+import { deserializeDbInto } from '../core/sqlite/deserialize-db';
 import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
+import { loadSqlite3 } from '../core/sqlite/sqlite-loader';
 import { CdnRefService } from './cdn-ref.service';
 import { DbFreshnessService } from './db-freshness.service';
 import { narrowValues } from '../core/sqlite/protocol-db-narrow';
 import {
   PROTOCOL_DB_BROWSER_ONLY_ERROR,
-  PROTOCOL_DB_HTTP_OPTIONS,
-  PROTOCOL_DB_LOCAL_POOL_REF,
+  PROTOCOL_DB_FETCH_ERROR_PREFIX,
+  PROTOCOL_DB_LOCAL_DB_REF,
   PROTOCOL_DB_QUERY_ATTEMPTS,
-  PROTOCOL_DB_WORKER_COUNT,
 } from './protocol-db.service.constant';
-import { SQLITE_HTTP_LOADER } from './sqlite-http-loader';
 
 /**
- * A virtual SQLite connection to `data/sundayrun.db`: the WASM engine (loaded lazily,
- * browser-only) fetches just the db pages a statement touches via HTTP range requests, so a
- * keyed lookup moves kilobytes instead of whole JSON files. The db is read same-origin — the
- * copy bundled into the GitHub Pages deploy in production, or the dev server's on-disk copy in
- * local development (which skips the CDN ref lookup entirely). Same-origin is deliberate: the
- * public CDNs mangle range requests (jsDelivr ranges over the brotli-compressed file; others
- * stall on deep offsets or 403 the HEAD), while GitHub Pages' own host serves clean ranges.
- * Any failure — the worker bootstrap, an unsupported range request, a missing db, the statement
- * itself — is retried once over a fresh pool and then rejects into the caller's error state; there
- * is no JSON mirror left to fall back to. During prerender `query` rejects before touching the wasm
- * module, keeping the static build clean.
+ * A SQLite connection to `data/sundayrun.db`, held in memory for the session: the file is fetched
+ * whole, once, and handed to the wasm engine with `sqlite3_deserialize`. Every statement after that
+ * runs against RAM.
  *
- * Cache freshness rides on the file *name*, not a query string: SQLite parses the open target as
- * a URI and strips any `?…` before the VFS sees it, so a `?v=` buster never reaches HTTP. Instead
- * the deploy bundles a copy named by the data commit (see `pinnedProtocolDbPath`), and the plain
- * name is the fallback read while `DbFreshnessService` reports that copy's deploy still in flight.
+ * It used to be a range-reading VFS (`sqlite-wasm-http`) that fetched only the pages a statement
+ * touched — the right shape when the db is large and every query is keyed. This one is neither. The
+ * whole archive is 1.2 MB (261 KB gzipped) while the range VFS alone cost 3.4 MB of unoptimized wasm
+ * (1.7 MB gzipped) plus half a megabyte of workers, and the client-rendered routes issue a dozen
+ * archive-wide queries whose full scans became hundreds of sequential 4 KB round-trips — one worker,
+ * one page per request, and a `max-age=600` that makes the second visit pay again. Fetching the
+ * whole file costs two requests and a quarter of the bytes.
+ *
+ * The db is read same-origin — the copy bundled into the GitHub Pages deploy in production, or the
+ * dev server's on-disk copy in local development (which skips the CDN ref lookup entirely). Any
+ * failure — the wasm module, the download, the statement itself — is retried once over a fresh
+ * connection and then rejects into the caller's error state; there is no JSON mirror left to fall
+ * back to. During prerender `queryValues` rejects before touching the wasm module, keeping the
+ * static build clean.
+ *
+ * Cache freshness rides on the file *name*: the deploy bundles a copy named by the data commit (see
+ * `pinnedProtocolDbPath`), and the plain name is the fallback read while `DbFreshnessService`
+ * reports that copy's deploy still in flight.
  */
 @Service()
 export class ProtocolDbService {
   readonly #cdnRef = inject(CdnRefService);
   readonly #freshness = inject(DbFreshnessService);
-  readonly #loadSqliteHttp = inject(SQLITE_HTTP_LOADER);
   readonly #document = inject(DOCUMENT);
   readonly #isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  #poolUrl = '';
-  #pool: Promise<SQLiteHTTPPool> | null = null;
+  #connectionUrl = '';
+  #connection: Promise<Database> | null = null;
 
   /** Rows as positional value arrays for the columns of `sql`, narrowed to the db's value kinds. */
   async queryValues(sql: string, params: readonly ProtocolDbValue[]): Promise<ProtocolDbValue[][]> {
@@ -59,15 +64,15 @@ export class ProtocolDbService {
   }
 
   /**
-   * A failed attempt evicts the half-made pool (see `#poolFor`), so retrying reconnects over a fresh
-   * pool — enough to ride out a single transient range failure now that no JSON fallback follows.
+   * A failed attempt evicts the half-made connection (see `#connectionFor`), so the retry downloads
+   * and deserializes from scratch — enough to ride out one transient network failure now that no
+   * JSON fallback follows.
    */
   async #queryWithRetry(sql: string, params: readonly ProtocolDbValue[], attemptsLeft: number): Promise<ProtocolDbValue[][]> {
     try {
-      const pool = await this.#poolFor(await this.#resolveRef());
-      const results = await pool.exec(sql, [...params], { rowMode: 'array' });
+      const db = await this.#connectionFor(await this.#resolveRef());
 
-      return results.map((result) => narrowValues(result.row));
+      return db.exec(sql, { bind: [...params], rowMode: 'array', returnValue: 'resultRows' }).map(narrowValues);
     } catch (error) {
       if (attemptsLeft <= 1) {
         throw error;
@@ -78,29 +83,29 @@ export class ProtocolDbService {
   }
 
   /**
-   * One pool per db url, cached for the session like the JSON reads: a `pin` after a publication
-   * swaps in a pool over the new sha, and the url flipping from the plain fallback to the sha copy
-   * (the moment the deploy lands) reopens over the fresh file — both let the old pool close in the
-   * background. A failed open is evicted from the cache, so a later query can retry the connection.
+   * One connection per db url, cached for the session: a `pin` after a publication swaps in the new
+   * sha, and the url flipping from the plain fallback to the sha copy (the moment the deploy lands)
+   * re-downloads the fresh file — both let the superseded connection close in the background. A
+   * failed open is evicted from the cache, so a later query can retry it.
    */
-  async #poolFor(ref: string): Promise<SQLiteHTTPPool> {
+  async #connectionFor(ref: string): Promise<Database> {
     const url = await this.#dbUrl(ref);
 
-    if (this.#pool === null || this.#poolUrl !== url) {
-      void this.#pool?.then((pool) => pool.close()).catch(() => undefined);
-      this.#poolUrl = url;
-      this.#pool = this.#openPool(url).catch((error: unknown) => {
-        this.#pool = null;
+    if (this.#connection === null || this.#connectionUrl !== url) {
+      void this.#connection?.then((db) => db.close()).catch(() => undefined);
+      this.#connectionUrl = url;
+      this.#connection = this.#open(url).catch((error: unknown) => {
+        this.#connection = null;
         throw error;
       });
     }
 
-    return this.#pool;
+    return this.#connection;
   }
 
   /** Local reads a fixed on-disk url, so it needs no sha; Pages uses the data sha as a cache-buster. */
   #resolveRef(): Promise<string> {
-    return environment.dbSource === DbSource.Local ? Promise.resolve(PROTOCOL_DB_LOCAL_POOL_REF) : this.#cdnRef.resolve();
+    return environment.dbSource === DbSource.Local ? Promise.resolve(PROTOCOL_DB_LOCAL_DB_REF) : this.#cdnRef.resolve();
   }
 
   /**
@@ -119,18 +124,32 @@ export class ProtocolDbService {
     return new URL(path, this.#document.baseURI).href;
   }
 
-  /** The dynamic import keeps every wasm/worker byte out of the initial bundle and the prerender. */
-  async #openPool(url: string): Promise<SQLiteHTTPPool> {
-    const { createSQLiteHTTPPool } = await this.#loadSqliteHttp();
-    const pool = await createSQLiteHTTPPool({ workers: PROTOCOL_DB_WORKER_COUNT, httpOptions: PROTOCOL_DB_HTTP_OPTIONS });
+  /**
+   * The download and the wasm module are fetched in parallel: neither needs the other, and on a cold
+   * visit they are the only two things standing between the page and its data. The dynamic import
+   * inside `loadSqlite3` keeps every wasm byte out of the initial bundle and out of the prerender.
+   */
+  async #open(url: string): Promise<Database> {
+    const [sqlite3, dbBytes] = await Promise.all([loadSqlite3(), this.#fetchDb(url)]);
+    const db = new sqlite3.oo1.DB();
 
     try {
-      await pool.open(url);
+      deserializeDbInto(sqlite3, db, dbBytes);
     } catch (error) {
-      void pool.close().catch(() => undefined);
+      db.close();
       throw error;
     }
 
-    return pool;
+    return db;
+  }
+
+  async #fetchDb(url: string): Promise<Uint8Array> {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`${PROTOCOL_DB_FETCH_ERROR_PREFIX}${response.status}`);
+    }
+
+    return new Uint8Array(await response.arrayBuffer());
   }
 }

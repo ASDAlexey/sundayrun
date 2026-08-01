@@ -1,11 +1,6 @@
-import { vi } from 'vitest';
-
 import { pinnedProtocolDbPath } from '../core/github/protocol-db-path';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { CDN_REF_SHA_MOCK } from './cdn-ref.service.mock';
-import { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK } from './spec-utils/fake-sqlite-pool';
-
-export { POOL_CLOSE_MOCK, POOL_EXEC_MOCK, POOL_MOCK, POOL_OPEN_MOCK };
 
 /** The deploy base href the fake DOCUMENT reports, mirroring the `/sundayrun/` Pages sub-path. */
 export const DB_BASE_URI_MOCK = 'https://sundayrun.example/sundayrun/';
@@ -18,13 +13,13 @@ function sameOriginDbUrl(path: string): string {
   return new URL(path, DB_BASE_URI_MOCK).href;
 }
 
-/** The sha-named url the Pages `dbSource` opens once the session's data commit is deployed. */
+/** The sha-named url the Pages `dbSource` downloads once the session's data commit is deployed. */
 export const PROTOCOL_DB_URL = sameOriginDbUrl(pinnedProtocolDbPath(CDN_REF_SHA_MOCK));
 
 /** The plain-named url read while the deploy carrying the session's data commit is in flight. */
 export const FALLBACK_PROTOCOL_DB_URL = sameOriginDbUrl(PROTOCOL_DB_PATH);
 
-/** The commit an admin publication pins mid-session, re-pointing the pool. */
+/** The commit an admin publication pins mid-session, re-pointing the connection. */
 export const PINNED_SHA_MOCK = 'freshly-published-sha';
 
 export const PINNED_PROTOCOL_DB_URL = sameOriginDbUrl(pinnedProtocolDbPath(PINNED_SHA_MOCK));
@@ -32,8 +27,8 @@ export const PINNED_PROTOCOL_DB_URL = sameOriginDbUrl(pinnedProtocolDbPath(PINNE
 /** The dev-server url the local `dbSource` reads directly, without a base-href resolve. */
 export const LOCAL_DB_URL_MOCK = '/data/sundayrun.db';
 
-/** The `createSQLiteHTTPPool` the mocked `loadSqliteHttp` hands back (see `sqlite-http-loader.mock`). */
-export const CREATE_POOL_MOCK = vi.fn();
+/** Stand-in for the downloaded db image; the fake wasm engine never parses it. */
+export const DB_BYTES_MOCK = new Uint8Array([83, 81, 76, 105]);
 
 export const DB_SQL_MOCK = 'SELECT slug, number, note, digest FROM events WHERE full_name = ?';
 
@@ -41,8 +36,8 @@ export const DB_SQL_MOCK = 'SELECT slug, number, note, digest FROM events WHERE 
 export const DB_PARAMS_MOCK = ['иванов иван'];
 
 /**
- * The raw worker rows the wasm boundary returns as positional value arrays, spanning every value kind
- * the service must narrow: a string, a number, a SQL null and a blob (a non number|string|null that
+ * The raw rows the wasm boundary returns as positional value arrays, spanning every value kind the
+ * service must narrow: a string, a number, a SQL null and a blob (a non number|string|null that
  * folds to null).
  */
 export const DB_RAW_ROWS_MOCK = [
@@ -56,16 +51,14 @@ export const DB_ROWS_MOCK = [
   ['2026-06-28', 42, null, null],
 ];
 
-/** The worker1 `exec` answer shape the service unwraps: one `{ row, … }` envelope per raw row. */
-export const DB_EXEC_RESULTS_MOCK = DB_RAW_ROWS_MOCK.map((row, index) => ({ type: 'exec', row, rowNumber: index + 1 }));
+/** What Pages answers for a db path that is not deployed yet. */
+export const DB_MISSING_STATUS = 404;
 
-export const POOL_CREATE_ERROR_MESSAGE = 'worker bootstrap failed';
+export const DB_NETWORK_ERROR_MESSAGE = 'connection reset';
 
-export const POOL_OPEN_ERROR_MESSAGE = 'range requests unsupported';
+export const DB_EXEC_ERROR_MESSAGE = 'statement failed';
 
-export const POOL_EXEC_ERROR_MESSAGE = 'statement failed';
+export const DB_CLOSE_ERROR_MESSAGE = 'close failed';
 
-export const POOL_CLOSE_ERROR_MESSAGE = 'close timed out';
-
-/** The generic db failure the service specs use to drive the JSON fallback. */
+/** The generic db failure the consumer service specs use to drive their error states. */
 export const PROTOCOL_DB_ERROR_MESSAGE = 'sundayrun.db unreachable';
