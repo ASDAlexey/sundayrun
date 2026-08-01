@@ -2,6 +2,7 @@ import {
   bestFinishMs,
   finishDoneCount,
   hasDuplicateSurnames,
+  indexSplitsByRunner,
   isRaceComplete,
   lapDoneCount,
   runnerSplitTimesMs,
@@ -49,6 +50,33 @@ describe('session splits selectors', () => {
       'equal times keep the tap order',
     ).toEqual(EXPECTED_TIED_SPLIT_IDS);
     expect(TIMER_SESSION.splits, 'the journal is only ever read').toEqual(journal);
+  });
+
+  it('groups the whole journal in one pass and answers exactly the same with that index as without it', () => {
+    const journal = structuredClone(TIMER_SESSION.splits);
+    const index = indexSplitsByRunner(TIMER_SESSION);
+
+    expect(
+      (index.get(TROILIN_RUNNER_ID) ?? []).map((split) => split.id),
+      'own taps stand under the runner`s id',
+    ).toEqual(EXPECTED_TROILIN_SPLIT_IDS);
+    expect(
+      (index.get(null) ?? []).map((split) => split.id),
+      'the unnamed queue is a group of its own',
+    ).toEqual(EXPECTED_UNASSIGNED_SPLIT_IDS);
+    expect(index.has(KUZNETSOV_RUNNER_ID), 'a runner nobody tapped gets no group at all').toBe(false);
+    expect(
+      (indexSplitsByRunner(TIED_SPLITS_SESSION).get(null) ?? []).map((split) => split.id),
+      'equal times keep the tap order in the index too',
+    ).toEqual(EXPECTED_TIED_SPLIT_IDS);
+    expect(runnerSplits(TIMER_SESSION, TROILIN_RUNNER_ID, index)).toEqual(runnerSplits(TIMER_SESSION, TROILIN_RUNNER_ID));
+    expect(runnerSplits(TIMER_SESSION, UNKNOWN_RUNNER_ID, index), 'an id with no group holds no taps').toEqual([]);
+    expect(unassignedSplits(TIMER_SESSION, index)).toEqual(unassignedSplits(TIMER_SESSION));
+    expect(runnerSplitTimesMs(TIMER_SESSION, TROILIN_RUNNER_ID, index)).toEqual(EXPECTED_TROILIN_SPLIT_TIMES_MS);
+    expect(runnerStage(TIMER_SESSION, KUZNETSOV_RUNNER_ID, index), 'the stage of a man with no group is still read off the roster').toBe(
+      runnerStage(TIMER_SESSION, KUZNETSOV_RUNNER_ID),
+    );
+    expect(TIMER_SESSION.splits, 'grouping only ever reads the journal').toEqual(journal);
   });
 
   it('stages every runner by taps and outcome and counts who is through the lap and the finish', () => {

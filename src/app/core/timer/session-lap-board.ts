@@ -1,5 +1,5 @@
 import { LapBoardRow } from './session-lap-board.interface';
-import { runnerSplits, unassignedSplits } from './session-splits';
+import { SplitsByRunner, indexSplitsByRunner, runnerSplits, unassignedSplits } from './session-splits';
 import {
   FINISH_SPLIT_INDEX,
   FIRST_POSITION,
@@ -25,17 +25,18 @@ import { TimerSession, TimerSplit } from './timer-session.interface';
  * between are nobody's yet. The place is held instead, and the surname drops into it on handout.
  */
 export function buildLapBoard(session: TimerSession): LapBoardRow[] {
+  const index = indexSplitsByRunner(session);
   const timed: LapBoardRow[] = [];
 
   for (const runner of session.runners) {
-    const splits = runnerSplits(session, runner.id);
+    const splits = runnerSplits(session, runner.id, index);
 
     if (splits.length >= LAP_DONE_MIN_SPLITS) {
       timed.push(buildRow(splits[LAP_SPLIT_INDEX], runner.id, runner.fullName));
     }
   }
 
-  for (const split of lapCandidates(session)) {
+  for (const split of lapCandidates(session, index)) {
     timed.push(buildRow(split, null, null));
   }
 
@@ -59,26 +60,26 @@ export function buildLapBoard(session: TimerSession): LapBoardRow[] {
  *   likelier to be a finish than a first lap, and a phantom line in the lap table is worse than a
  *   missing one — the chips of the queue are on screen anyway.
  */
-function lapCandidates(session: TimerSession): TimerSplit[] {
+function lapCandidates(session: TimerSession, index: SplitsByRunner): TimerSplit[] {
   const waiting = session.runners.filter(
-    (runner) => runner.outcome === TimerRunnerOutcome.active && runnerSplits(session, runner.id).length === NOTHING_RECORDED,
+    (runner) => runner.outcome === TimerRunnerOutcome.active && runnerSplits(session, runner.id, index).length === NOTHING_RECORDED,
   ).length;
 
   if (waiting === NOTHING_RECORDED) {
     return [];
   }
 
-  const firstFinishMs = earliestFinishMs(session);
+  const firstFinishMs = earliestFinishMs(session, index);
 
-  return unassignedSplits(session)
+  return unassignedSplits(session, index)
     .filter((split) => firstFinishMs === null || split.atMs < firstFinishMs)
     .slice(0, waiting);
 }
 
 /** When the first 5 km of the race was recorded, or null while everybody is still out there. */
-function earliestFinishMs(session: TimerSession): number | null {
+function earliestFinishMs(session: TimerSession, index: SplitsByRunner): number | null {
   const finishes = session.runners.reduce<number[]>((times, runner) => {
-    const splits = runnerSplits(session, runner.id);
+    const splits = runnerSplits(session, runner.id, index);
 
     return splits.length < MAX_SPLITS_PER_RUNNER ? times : [...times, splits[FINISH_SPLIT_INDEX].atMs];
   }, []);
