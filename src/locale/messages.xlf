@@ -4871,193 +4871,228 @@
           <context context-type="linenumber">45,48</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="timerPicker.undoAdded" datatype="html">
+        <source>Убрать</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
+          <context context-type="linenumber">56,60</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="timerPicker.newcomerTitle" datatype="html">
         <source>Новый участник</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">66,69</context>
+          <context context-type="linenumber">76,79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.newcomerKnown" datatype="html">
         <source> Такой уже есть в справочнике — возьмите его из списка выше, если это он. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">70,74</context>
+          <context context-type="linenumber">80,84</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.addNewcomer" datatype="html">
         <source> Добавить «<x id="INTERPOLATION" equiv-text="{{ newcomerName() }}"/>» </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">97,98</context>
+          <context context-type="linenumber">107,108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.newcomerHint" datatype="html">
         <source>Нужны фамилия и имя — например «Тестов Тест».</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">102,107</context>
+          <context context-type="linenumber">112,117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.previous" datatype="html">
         <source> Как в прошлый раз · <x id="INTERPOLATION" equiv-text="{{ previousCount() }}"/> </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">110,111</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="timerPicker.regularsTitle" datatype="html">
-        <source>Постоянные участники</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">116,118</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="timerPicker.regularsEmpty" datatype="html">
-        <source>Справочник пока пуст — впишите участника в поле поиска.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">133,137</context>
+          <context context-type="linenumber">120,121</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.rosterTitle" datatype="html">
         <source>В составе · <x id="INTERPOLATION" equiv-text="{{ runnerCount() }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">138,140</context>
+          <context context-type="linenumber">129,131</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.removeLabel" datatype="html">
         <source>Убрать из состава</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">162,163</context>
+          <context context-type="linenumber">153,154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.rosterEmpty" datatype="html">
         <source>Пока никого — найдите первого в справочнике.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">174,178</context>
+          <context context-type="linenumber">165,169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerPicker.regularsTitle" datatype="html">
+        <source>Постоянные участники</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
+          <context context-type="linenumber">170,172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerPicker.regularsEmpty" datatype="html">
+        <source>Справочник пока пуст — впишите участника в поле поиска.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
+          <context context-type="linenumber">187,191</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.duplicateSurname" datatype="html">
         <source>В составе уже есть <x id="INTERPOLATION" equiv-text="{{ surname }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.html</context>
-          <context context-type="linenumber">179,182</context>
+          <context context-type="linenumber">192,195</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.metaMale" datatype="html">
         <source>М</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">349</context>
+          <context context-type="linenumber">381</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.metaFemale" datatype="html">
         <source>Ж</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">352</context>
+          <context context-type="linenumber">384</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.metaUnknownGender" datatype="html">
         <source>пол не указан</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">352</context>
+          <context context-type="linenumber">384</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.appearancesOne" datatype="html">
         <source><x id="count" equiv-text="count"/> забег</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">357</context>
+          <context context-type="linenumber">389</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.appearancesFew" datatype="html">
         <source><x id="count" equiv-text="count"/> забега</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">358</context>
+          <context context-type="linenumber">390</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.appearancesMany" datatype="html">
         <source><x id="count" equiv-text="count"/> забегов</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">359</context>
+          <context context-type="linenumber">391</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.addChecked" datatype="html">
         <source>Добавить · <x id="count" equiv-text="count"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">365</context>
+          <context context-type="linenumber">397</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.done" datatype="html">
         <source>Готово · <x id="count" equiv-text="count"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">370</context>
+          <context context-type="linenumber">402</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerPicker.justAddedOne" datatype="html">
+        <source>Добавили «<x id="name" equiv-text="first.fullName"/>»</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
+          <context context-type="linenumber">414</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerPicker.justAddedManyOne" datatype="html">
+        <source>Добавили <x id="count" equiv-text="count"/> человек</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
+          <context context-type="linenumber">420</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerPicker.justAddedManyFew" datatype="html">
+        <source>Добавили <x id="count" equiv-text="count"/> человека</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
+          <context context-type="linenumber">421</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerPicker.justAddedManyMany" datatype="html">
+        <source>Добавили <x id="count" equiv-text="count"/> человек</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
+          <context context-type="linenumber">422</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.missingGenderOne" datatype="html">
         <source>Уточните пол: <x id="count" equiv-text="count"/> человек</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">376</context>
+          <context context-type="linenumber">429</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.missingGenderFew" datatype="html">
         <source>Уточните пол: <x id="count" equiv-text="count"/> человека</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">377</context>
+          <context context-type="linenumber">430</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.missingGenderMany" datatype="html">
         <source>Уточните пол: <x id="count" equiv-text="count"/> человек</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">378</context>
+          <context context-type="linenumber">431</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.rosterAge" datatype="html">
         <source>Справочник от <x id="date" equiv-text="dateText"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">386</context>
+          <context context-type="linenumber">439</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.genderMale" datatype="html">
         <source>М</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">393</context>
+          <context context-type="linenumber">446</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.genderMaleLabel" datatype="html">
         <source>Мужской</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">394</context>
+          <context context-type="linenumber">447</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.genderFemale" datatype="html">
         <source>Ж</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">398</context>
+          <context context-type="linenumber">451</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.genderFemaleLabel" datatype="html">
         <source>Женский</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-picker/runner-picker.ts</context>
-          <context context-type="linenumber">399</context>
+          <context context-type="linenumber">452</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerTile.removeGlyph" datatype="html">
@@ -5358,53 +5393,46 @@
           <context context-type="linenumber">97,99</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="timerList.export" datatype="html">
-        <source>Экспорт в Excel</source>
+      <trans-unit id="timerList.send" datatype="html">
+        <source>Отправить забег</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-list/session-list.html</context>
-          <context context-type="linenumber">99,101</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="timerList.share" datatype="html">
-        <source>Поделиться</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/timer/session-list/session-list.html</context>
-          <context context-type="linenumber">101,103</context>
+          <context context-type="linenumber">102,104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerList.publish" datatype="html">
         <source>Опубликовать</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-list/session-list.html</context>
-          <context context-type="linenumber">104,106</context>
+          <context context-type="linenumber">105,107</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerList.publishWithKey" datatype="html">
         <source> Опубликовать — нужен ключ </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-list/session-list.html</context>
-          <context context-type="linenumber">107,111</context>
+          <context context-type="linenumber">108,112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerList.remove" datatype="html">
         <source> Удалить замер </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-list/session-list.html</context>
-          <context context-type="linenumber">118,119</context>
+          <context context-type="linenumber">119,120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerList.removeAction" datatype="html">
         <source>Удалить замер</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-list/session-list.html</context>
-          <context context-type="linenumber">127,129</context>
+          <context context-type="linenumber">132,134</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerList.removeHeading" datatype="html">
         <source>Удалить замер?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-list/session-list.html</context>
-          <context context-type="linenumber">129,130</context>
+          <context context-type="linenumber">134,135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerList.runnersOne" datatype="html">
@@ -5554,39 +5582,53 @@
           <context context-type="linenumber">97,101</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="timerPublish.share" datatype="html">
+        <source>Отправить забег</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.html</context>
+          <context context-type="linenumber">106,108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerPublish.shareNote" datatype="html">
+        <source>Excel · Телеграм · MAX</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.html</context>
+          <context context-type="linenumber">108,112</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="timerPublish.previewLink" datatype="html">
         <source>Проверить перед публикацией</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.html</context>
-          <context context-type="linenumber">101,104</context>
+          <context context-type="linenumber">112,115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPublish.remove" datatype="html">
         <source>Удалить замер</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.html</context>
-          <context context-type="linenumber">105,107</context>
+          <context context-type="linenumber">116,118</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPublish.removeHint" datatype="html">
         <source>«Сброс» в меню «⋮» стирает только времена — состав остаётся</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.html</context>
-          <context context-type="linenumber">107,111</context>
+          <context context-type="linenumber">118,122</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPublish.removeAction" datatype="html">
         <source>Удалить замер</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.html</context>
-          <context context-type="linenumber">113,115</context>
+          <context context-type="linenumber">128,130</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPublish.removeHeading" datatype="html">
         <source>Удалить замер?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.html</context>
-          <context context-type="linenumber">115,116</context>
+          <context context-type="linenumber">130,131</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPublish.unnamedOne" datatype="html">
@@ -5643,6 +5685,146 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/session-publish/session-publish.text.ts</context>
           <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.title" datatype="html">
+        <source>Отправить забег</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">3,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.fileGroup" datatype="html">
+        <source>Файл с временами</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.markXls" datatype="html">
+        <source>XLS</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">14,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.sendFile" datatype="html">
+        <source>Отправить файл</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.saveFile" datatype="html">
+        <source>Скачать файл</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.markDownload" datatype="html">
+        <source>↓</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">32,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.saveToPhone" datatype="html">
+        <source>Сохранить в файлы</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">34,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.chatGroup" datatype="html">
+        <source>Списком в чат</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">43,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.markTelegram" datatype="html">
+        <source>TG</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.telegram" datatype="html">
+        <source>Телеграм</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">49,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.markMax" datatype="html">
+        <source>MAX</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">53,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.max" datatype="html">
+        <source>MAX</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">55,58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.copied" datatype="html">
+        <source>Скопировано</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">63,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.copy" datatype="html">
+        <source>Скопировать</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">65,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.keeps" datatype="html">
+        <source>Замер остаётся в «Мои замеры» — выгрузить его можно ещё раз в любой момент.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.html</context>
+          <context context-type="linenumber">74,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.messageTitle" datatype="html">
+        <source>Воскресный пробег · <x id="date" equiv-text="dateText"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.text.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.messageFiveKm" datatype="html">
+        <source>5 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.text.ts</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.messageTwoThreeKm" datatype="html">
+        <source>2,3 км</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.text.ts</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.messageDnf" datatype="html">
+        <source>Не финишировали</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.text.ts</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="timerShare.fileCaption" datatype="html">
+        <source>Протокол забега <x id="date" equiv-text="dateText"/> · <x id="meta" equiv-text="metaText"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/session-share/session-share.text.ts</context>
+          <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.tapeToggleLap" datatype="html">
