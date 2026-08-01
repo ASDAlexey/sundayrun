@@ -112,6 +112,39 @@
           Если забег загружен по ошибке — удалите его: протокол, результаты и рекорды пересчитаются без него.
         </p>
 
+        <!--
+          The confirmation stands outside the list, and before it: the delete key of a row opens it
+          through this reference, and a reference is only readable from views the browser builds
+          after the element it points at — the virtualized rows and the states of the switch are.
+        -->
+        <dialog
+          #deleteModal
+          aria-labelledby="admin-delete-title"
+          class="admin__modal"
+          (cancel)="cancelDelete(deleteModal)"
+          (click)="onModalBackdrop($event, deleteModal)"
+        >
+          @if (pendingRace(); as race) {
+            <div class="admin__modal-body">
+              <h2 class="admin__modal-title" i18n="@@admin.deleteModalTitle" id="admin-delete-title">Вы уверены?</h2>
+
+              <p class="admin__modal-text" i18n="@@admin.deleteModalText">
+                Забег № {{ race.number }} ({{ race.dateLong }}) будет удалён. Протокол, результаты и рекорды пересчитаются без него.
+              </p>
+
+              <div class="admin__modal-actions">
+                <button class="admin__race-cancel" i18n="@@admin.raceCancel" type="button" (click)="cancelDelete(deleteModal)">
+                  Отмена
+                </button>
+
+                <button class="admin__race-confirm" i18n="@@admin.raceConfirm" type="button" (click)="confirmDelete(deleteModal)">
+                  Точно удалить
+                </button>
+              </div>
+            </div>
+          }
+        </dialog>
+
         @switch (displayStatus()) {
           @case (raceStatuses.loading) {
             <div class="admin__progress">
@@ -203,7 +236,7 @@
                           type="button"
                           [attr.aria-label]="race.deleteLabel"
                           [disabled]="deleteState() === publishStates.publishing"
-                          (click)="askDelete(race.slug)"
+                          (click)="askDelete(race.slug, deleteModal)"
                         >
                           <svg
                             aria-hidden="true"
@@ -266,32 +299,6 @@
             }
           }
         </div>
-
-        @if (pendingRace(); as race) {
-          <div class="admin__modal-backdrop" (click)="cancelDelete()">
-            <div
-              aria-labelledby="admin-delete-title"
-              aria-modal="true"
-              class="admin__modal"
-              role="dialog"
-              (click)="$event.stopPropagation()"
-            >
-              <h2 class="admin__modal-title" i18n="@@admin.deleteModalTitle" id="admin-delete-title">Вы уверены?</h2>
-
-              <p class="admin__modal-text" i18n="@@admin.deleteModalText">
-                Забег № {{ race.number }} ({{ race.dateLong }}) будет удалён. Протокол, результаты и рекорды пересчитаются без него.
-              </p>
-
-              <div class="admin__modal-actions">
-                <button class="admin__race-cancel" i18n="@@admin.raceCancel" type="button" (click)="cancelDelete()">Отмена</button>
-
-                <button class="admin__race-confirm" i18n="@@admin.raceConfirm" type="button" (click)="confirmDelete()">
-                  Точно удалить
-                </button>
-              </div>
-            </div>
-          </div>
-        }
       </section>
     </div>
   } @else {

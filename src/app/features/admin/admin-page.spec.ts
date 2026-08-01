@@ -1,4 +1,4 @@
-import { DOCUMENT, PLATFORM_ID, signal } from '@angular/core';
+import { PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, Router, provideRouter } from '@angular/router';
 
@@ -280,7 +280,9 @@ describe('AdminPage', () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
-    const doc = TestBed.inject(DOCUMENT);
+    const modal: HTMLDialogElement = fixture.nativeElement.querySelector('dialog');
+    const showModal = vi.spyOn(modal, 'showModal');
+    const close = vi.spyOn(modal, 'close');
 
     expect(pendingArchive.reconcile, 'a reload retires the pending changes the archive now reflects').toHaveBeenCalledWith(
       [NEWER_ENTRY.slug, OLDER_ENTRY.slug],
@@ -290,34 +292,53 @@ describe('AdminPage', () => {
     expect(page.races()).toEqual(EXPECTED_ADMIN_RACES);
     expect(page.filteredRaces(), 'a blank query keeps the full list').toEqual(EXPECTED_ADMIN_RACES);
 
-    page.askDelete(NEWER_ENTRY.slug);
+    page.askDelete(NEWER_ENTRY.slug, modal);
 
+    expect(showModal, 'the question is opened as a platform modal, so Escape and the focus trap are free').toHaveBeenCalledOnce();
+    expect(modal.open, 'the dialog is in the top layer, which is what freezes the list behind it').toBe(true);
     expect(page.pendingSlug()).toBe(NEWER_ENTRY.slug);
     expect(page.pendingRace(), 'the modal resolves the pending race for its message').toEqual(EXPECTED_ADMIN_RACES[0]);
 
-    doc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    // Escape reaches the page as the dialog's own `cancel`, no document-wide key listener involved.
+    modal.dispatchEvent(new Event('cancel'));
 
     expect(page.pendingSlug(), 'escape backs out of the modal').toBeNull();
     expect(page.pendingRace()).toBeNull();
+    expect(close, 'backing out closes the dialog itself, not just the signal').toHaveBeenCalledOnce();
+    expect(modal.open).toBe(false);
 
-    // Escape with nothing pending is a harmless no-op.
-    doc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    page.askDelete(NEWER_ENTRY.slug);
-    page.cancelDelete();
+    page.askDelete(NEWER_ENTRY.slug, modal);
+    fixture.detectChanges();
+
+    const card = modal.querySelector('.admin__modal-body');
+
+    expect(card?.textContent, 'the question names the race it is about to destroy').toContain(String(NEWER_ENTRY.number));
+
+    card?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(page.pendingSlug(), 'a click on the card itself is not a click on the backdrop').toBe(NEWER_ENTRY.slug);
+
+    modal.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(page.pendingSlug(), 'a click on the backdrop backs out').toBeNull();
+
+    page.askDelete(NEWER_ENTRY.slug, modal);
+    page.cancelDelete(modal);
 
     expect(page.pendingSlug(), 'cancel backs out without deleting').toBeNull();
     expect(deleteRace).not.toHaveBeenCalled();
 
-    await page.confirmDelete();
+    await page.confirmDelete(modal);
 
     expect(deleteRace, 'no pending race — nothing to confirm').not.toHaveBeenCalled();
 
     // Fake timers from here: the deletion wait counter must tick under the controllable clock.
     vi.useFakeTimers();
-    page.askDelete(NEWER_ENTRY.slug);
-    await page.confirmDelete();
+    page.askDelete(NEWER_ENTRY.slug, modal);
+    await page.confirmDelete(modal);
 
     expect(deleteRace).toHaveBeenCalledWith(NEWER_ENTRY.slug);
+    expect(modal.open, 'confirming closes the question before the commit goes out').toBe(false);
     expect(page.pendingSlug()).toBeNull();
     expect(page.deletingSlug(), 'the badge clears once the deletion lands').toBeNull();
     expect(pendingArchive.addDeletion, 'the pinned db still serves the event, so the deletion is remembered').toHaveBeenCalledWith({
@@ -443,9 +464,10 @@ describe('AdminPage', () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
+    const modal: HTMLDialogElement = fixture.nativeElement.querySelector('dialog');
 
-    page.askDelete(NEWER_ENTRY.slug);
-    await page.confirmDelete();
+    page.askDelete(NEWER_ENTRY.slug, modal);
+    await page.confirmDelete(modal);
 
     expect(page.races(), 'a failed deletion removes nothing').toEqual(EXPECTED_ADMIN_RACES);
 
@@ -464,9 +486,10 @@ describe('AdminPage', () => {
     fixture = await createPage();
 
     const page = fixture.componentInstance;
+    const modal: HTMLDialogElement = fixture.nativeElement.querySelector('dialog');
 
-    page.askDelete(NEWER_ENTRY.slug);
-    await page.confirmDelete();
+    page.askDelete(NEWER_ENTRY.slug, modal);
+    await page.confirmDelete(modal);
 
     expect(pendingArchive.addDeletion, 'a pending pointer still means the event is gone').toHaveBeenCalledWith({
       slug: NEWER_ENTRY.slug,

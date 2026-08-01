@@ -49,7 +49,6 @@ import { resolveAdminReturnUrl } from './admin-return';
   imports: [MatProgressSpinnerModule, ProtocolDropzone, RouterLink, ScrollingModule],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
-  host: { '(document:keydown.escape)': 'onEscapeKey()' },
 })
 export class AdminPage {
   readonly #adminToken = inject(AdminTokenService);
@@ -258,22 +257,27 @@ export class AdminPage {
     }
   }
 
-  askDelete(slug: string): void {
+  /**
+   * `showModal()` and not a `position: fixed` overlay: the top layer brings Escape, the focus trap,
+   * the `::backdrop` and the `body:has(dialog[open])` scroll lock of `styles.scss` with it. The
+   * `<div>` this replaced left the race list scrolling behind a window that stayed put.
+   *
+   * The element is handed in by the template rather than read through a view query: the row's key,
+   * «Отмена» and the backdrop all sit in the same template, and the page keeps no reference to a
+   * node that only exists while the organiser panel is rendered.
+   */
+  askDelete(slug: string, modal: HTMLDialogElement): void {
     this.pendingSlug.set(slug);
+    modal.showModal();
   }
 
-  cancelDelete(): void {
+  /** Escape (the dialog's own `cancel`), the backdrop and «Отмена» are the same way out. */
+  cancelDelete(modal: HTMLDialogElement): void {
+    modal.close();
     this.pendingSlug.set(null);
   }
 
-  /** Escape backs out of the confirm modal, matching the backdrop click and the Отмена button. */
-  onEscapeKey(): void {
-    if (this.pendingSlug() !== null) {
-      this.cancelDelete();
-    }
-  }
-
-  async confirmDelete(): Promise<void> {
+  async confirmDelete(modal: HTMLDialogElement): Promise<void> {
     const slug = this.pendingSlug();
 
     if (slug === null) {
@@ -281,6 +285,7 @@ export class AdminPage {
     }
 
     // Close the modal at once; the row dims to «удаляется…» while the feedback strip reports progress.
+    modal.close();
     this.pendingSlug.set(null);
     this.deletingSlug.set(slug);
     this.#startDeleteTicking();
@@ -300,6 +305,13 @@ export class AdminPage {
     }
 
     this.deletingSlug.set(null);
+  }
+
+  /** A native dialog reports a click on its backdrop as a click on the dialog element itself. */
+  protected onModalBackdrop(event: MouseEvent, modal: HTMLDialogElement): void {
+    if (event.target === modal) {
+      this.cancelDelete(modal);
+    }
   }
 
   async #loadMeta(): Promise<void> {

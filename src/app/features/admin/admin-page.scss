@@ -397,26 +397,33 @@
     color: var(--text-muted);
   }
 
-  &__modal-backdrop {
-    display: flex;
-    z-index: 100;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
-    inset: 0;
-    padding: 24px;
-    background: color-mix(in srgb, var(--black) 65%, transparent);
+  // A real `<dialog>`: the top layer draws it above everything without a z-index, `::backdrop`
+  // replaces the overlay div, and the platform hands over Escape and the focus trap.
+  //
+  // No `display` here — an author rule beats the UA `dialog:not([open]) { display: none }` whatever
+  // its specificity, and the confirmation would then stand open on the page forever. The panel
+  // spacing lives on the body below, which also keeps a click on the padding off the backdrop
+  // branch. `--radius`, matching the stopwatch confirmation, not the `--radius-md` this used to
+  // carry — the same question in two places must not round differently.
+  &__modal {
+    width: min(440px, calc(100vw - 48px));
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--black) 65%, transparent);
+    }
   }
 
-  &__modal {
+  &__modal-body {
     display: flex;
     flex-direction: column;
-    width: min(440px, 100%);
     padding: 24px;
     gap: 16px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--surface);
   }
 
   &__modal-title {
