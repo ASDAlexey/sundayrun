@@ -2,7 +2,7 @@ import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray 
 import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
 import { formatRaceTime } from '../../../core/time/duration';
-import { recordSplit, removeRunner, setRunnerOutcome } from '../../../core/timer/session-actions';
+import { recordSplit, removeRunner, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
 import { handOutSoleLapSplit } from '../../../core/timer/session-auto-handout';
 import { hasDuplicateSurnames } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
@@ -27,7 +27,7 @@ import {
   TIMER_TILE_EMPTY_TIME,
 } from './runner-grid.constant';
 import { TimerDensity } from './runner-grid.enum';
-import { TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid.interface';
+import { TimerLastSplit, TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid.interface';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
@@ -117,6 +117,13 @@ export class TimerGrid {
   );
 
   /**
+   * The receipt of the newest tap: which split it wrote, and for whom. Nothing renders from it, so
+   * it stays a plain field — a signal here would only add a change-detection round to a value read
+   * exactly once, inside the pointer handler that follows.
+   */
+  #lastSplit: TimerLastSplit | null = null;
+
+  /**
    * A tap on a tile: the first time is the 2.3 km lap, the second the finish. Nothing else — a tap
    * never deletes.
    *
@@ -135,6 +142,10 @@ export class TimerGrid {
     const atMs = this.#clock.nowMs();
 
     if (!this.recording() || view.stage === TimerRunnerStage.finished || view.stage === TimerRunnerStage.retired) {
+      // A refused tap wrote nothing, so it must leave no receipt behind: the `pointercancel` of the
+      // scroll it belonged to would otherwise cash in the receipt of the tap before it and delete a
+      // finish somebody really did record.
+      this.#lastSplit = null;
       // Twice sharply: the tap was refused, and a thumb has to learn that without looking down.
       this.#haptics.play(TimerFeedback.error);
 
@@ -148,12 +159,40 @@ export class TimerGrid {
     // whatever is queued nameless is then his, and the core hands it over without being asked.
     this.#sessions.updateActive((current) => handOutSoleLapSplit(recordSplit(current, view.runner.id, atMs, splitId)));
     this.#lastTap.set({ atMs, runnerId: view.runner.id });
+    this.#lastSplit = { runnerId: view.runner.id, splitId };
     this.#haptics.play(finishing ? TimerFeedback.finish : TimerFeedback.lap);
     this.announce.emit({
       kind: finishing ? TimerAnnouncementKind.finish : TimerAnnouncementKind.lap,
       name: view.runner.fullName,
       timeText: formatRaceTime(atMs),
     });
+  }
+
+  /**
+   * The browser has taken the pointer away: the press was the start of a scroll, not a tap, and the
+   * split it wrote 100 ms too early was never meant. Exactly that split goes — by its own id, never
+   * «the newest one», which after a scroll across a full field is somebody else's time.
+   *
+   * The receipt has to name this runner too. Two thumbs work the grid at once, and the second one can
+   * write its own split between this press landing and the browser cancelling it; deleting that one
+   * would trade a phantom for a real finish. The stale phantom stays instead — «Отменить» and the
+   * runner's own card are still there for it.
+   *
+   * Silent on purpose: no haptic, no announcement. The organiser asked for nothing here, and a buzz
+   * for a scroll would read as a refused tap. `#lastTap` is deliberately left standing — a finger
+   * that has just dragged the field is the busiest finger there is, and the shelf must go on waiting
+   * out its quiet seconds before it moves anything under it.
+   */
+  protected onCancel(view: TimerTileView): void {
+    const last = this.#lastSplit;
+
+    this.#lastSplit = null;
+
+    if (last?.runnerId !== view.runner.id) {
+      return;
+    }
+
+    this.#sessions.updateActive((current) => removeSplit(current, last.splitId));
   }
 
   /**
@@ -166,6 +205,9 @@ export class TimerGrid {
     const timeText = last !== null && last.runnerId === view.runner.id ? formatRaceTime(last.atMs) : view.timeText;
 
     this.#lastTap.set(null);
+    // The newest split is on its way out here, so the receipt of the tap that wrote it is spent: a
+    // `pointercancel` still to come must not take a second one away.
+    this.#lastSplit = null;
     this.#sessions.updateActive((current) => removeNewestSplit(current, view.runner.id));
 
     if (timeText !== TIMER_TILE_EMPTY_TIME) {

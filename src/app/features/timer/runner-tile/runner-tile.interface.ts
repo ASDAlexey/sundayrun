@@ -10,6 +10,12 @@ export interface TimerTileTimeFrame {
 /** Where and when the finger landed — everything the gesture reader needs on `pointerup`. */
 export interface TimerTilePress {
   atMs: number;
+  /**
+   * Whether this press actually emitted `tap`. Only a press that wrote something may take it back
+   * when the browser cancels the pointer: the double-tap guard swallows some presses without
+   * emitting, and rolling one of those back would delete the cut before it, which nobody asked for.
+   */
+  tapped: boolean;
   x: number;
   y: number;
 }

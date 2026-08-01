@@ -19,14 +19,21 @@ import {
  * nothing about laps or finishes and says nothing about records — surname, first name and one time,
  * exactly as docs/TIMER.md §4 demands («плитка молчит»).
  *
- * Every gesture is read off plain pointer events; `hammerjs` is in the project but stays out of the
- * hot path — one `pointerdown` handler is cheaper than a recogniser and the tap must land in the
- * same frame the finger does.
+ * Every gesture is read off plain pointer events, with no recogniser library behind them: one
+ * `pointerdown` handler is cheaper than a recogniser and the tap must land in the same frame the
+ * finger does. (`hammerjs` is in `allowedCommonJsDependencies` for `chartjs-plugin-zoom`, which
+ * reaches for it transitively — nothing here has ever used it.)
  *
  * `tap` fires on `pointerdown`, some 100 ms before a click would. A press that turns out to be a
  * swipe therefore cannot un-fire it, so a swipe always emits `undo` first to roll its own tap back,
  * and a leftward one then retires the runner on top of that. `details` needs the press to stay put,
  * so it can never race a swipe.
+ *
+ * The browser can also take the press away before the finger lifts: from 33 runners the grid scrolls,
+ * and the whole scroll surface is tiles, so the first vertical drag of a full field arrives here as a
+ * `pointercancel` with a phantom lap already written. That press emits `cancel`, and the grid deletes
+ * the one split it produced — an undo would take the newest split of the session instead, which after
+ * a scroll is somebody else's.
  */
 @Component({
   selector: 'app-timer-tile',
@@ -52,6 +59,8 @@ export class TimerTile {
   readonly removable = input(false);
 
   readonly tap = output<void>();
+  /** This press wrote a split and then turned out to be a scroll: take exactly that split back. */
+  readonly cancel = output<void>();
   readonly retire = output<void>();
   readonly undo = output<void>();
   readonly details = output<void>();
@@ -79,9 +88,13 @@ export class TimerTile {
 
   /** The cut is taken here — `pointerdown` beats `click` by about 100 ms. */
   protected onPointerDown(event: PointerEvent): void {
-    this.#press = { atMs: event.timeStamp, x: event.clientX, y: event.clientY };
+    const cutting = !this.#isDoubleTap(event.timeStamp);
 
-    if (this.#isDoubleTap(event.timeStamp)) {
+    // The press remembers whether it cut, and not merely that it happened: a cancel may only undo
+    // what this very press wrote.
+    this.#press = { atMs: event.timeStamp, tapped: cutting, x: event.clientX, y: event.clientY };
+
+    if (!cutting) {
       return;
     }
 
@@ -113,9 +126,19 @@ export class TimerTile {
     }
   }
 
-  /** A pointer the browser took away (a scroll took over) leaves the tap that already fired alone. */
+  /**
+   * The browser took the pointer away — a scroll took over, and the gesture was never a tap. The
+   * split the press wrote 100 ms too early has to go back with it; a press the double-tap guard
+   * swallowed wrote nothing, and staying silent for it is the whole point of the `tapped` flag.
+   */
   protected onPointerCancel(): void {
+    const press = this.#press;
+
     this.#press = null;
+
+    if (press?.tapped) {
+      this.cancel.emit();
+    }
   }
 
   /** The long press must open our own card, not the platform's «скопировать» sheet. */

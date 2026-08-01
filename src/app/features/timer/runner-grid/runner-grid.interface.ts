@@ -34,3 +34,15 @@ export interface TimerLastTap {
   atMs: number;
   runnerId: string;
 }
+
+/**
+ * The split the newest tap actually wrote down, if it wrote one. Deliberately not folded into
+ * `TimerLastTap`: that one has to survive a rollback — the shelf keeps waiting out its three quiet
+ * seconds after a swipe-right, and the undo still announces the time it took back — while this one
+ * is a one-shot receipt that every path which removes the split has to tear up at once, or a second
+ * removal would land on somebody else's time.
+ */
+export interface TimerLastSplit {
+  runnerId: string;
+  splitId: string;
+}

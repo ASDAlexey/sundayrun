@@ -28,6 +28,7 @@ is now sized like a tile, which is not what a list of finishers needs. -->
           [stage]="view.stage"
           [surname]="view.surname"
           [timeText]="view.timeText"
+          (cancel)="onCancel(view)"
           (details)="onDetails(view)"
           (remove)="onRemove(view)"
           (retire)="onRetire(view)"

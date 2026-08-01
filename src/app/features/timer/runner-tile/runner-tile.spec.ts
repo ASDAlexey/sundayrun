@@ -31,6 +31,7 @@ describe('TimerTile', () => {
   const undos = vi.fn();
   const retires = vi.fn();
   const details = vi.fn();
+  const cancels = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -46,6 +47,7 @@ describe('TimerTile', () => {
     fixture.componentInstance.undo.subscribe(undos);
     fixture.componentInstance.retire.subscribe(retires);
     fixture.componentInstance.details.subscribe(details);
+    fixture.componentInstance.cancel.subscribe(cancels);
     fixture.detectChanges();
     button = fixture.nativeElement.querySelector('.timer-tile');
   });
@@ -129,6 +131,26 @@ describe('TimerTile', () => {
     button.dispatchEvent(tilePointerEvent('pointerup', TILE_UP_LONG));
 
     expect(details, 'a release with no press behind it decides nothing').toHaveBeenCalledOnce();
+    expect(cancels, 'and the press in between was swallowed by the guard, so it had nothing to take back').not.toHaveBeenCalled();
+  });
+
+  it('takes its own cut back when the browser hands the press to a scroll, and stays quiet when the guard swallowed it', () => {
+    button.dispatchEvent(tilePointerEvent('pointerdown', TILE_DOWN));
+    button.dispatchEvent(tilePointerEvent('pointercancel', TILE_UP_DIAGONAL));
+
+    expect(taps, 'the cut left on pointerdown, a hundred milliseconds before the browser decided').toHaveBeenCalledOnce();
+    expect(cancels, 'a hundred pixels down is a scroll here too, only the browser says so first').toHaveBeenCalledOnce();
+    expect(undos, 'the grid deletes this one split by id; the blunt newest-split rollback is not it').not.toHaveBeenCalled();
+
+    button.dispatchEvent(tilePointerEvent('pointercancel', TILE_UP_DIAGONAL));
+
+    expect(cancels, 'a cancel with no press behind it takes nothing back').toHaveBeenCalledOnce();
+
+    button.dispatchEvent(tilePointerEvent('pointerdown', TILE_DOWN_REPEAT));
+    button.dispatchEvent(tilePointerEvent('pointercancel', TILE_DOWN_REPEAT));
+
+    expect(taps, 'a repeat inside 400 ms is a stutter and writes nothing').toHaveBeenCalledOnce();
+    expect(cancels, 'so cancelling it must not delete the cut before it').toHaveBeenCalledOnce();
   });
 
   it('cuts from the keyboard with the wave centred, greys out a finished runner and blocks the platform menu', async () => {

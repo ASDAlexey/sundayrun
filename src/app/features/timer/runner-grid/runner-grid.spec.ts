@@ -40,6 +40,7 @@ import {
   GRID_PLAIN_AFTER_FINISH,
   GRID_PLAIN_AFTER_LAP,
   GRID_PLAIN_INITIALS,
+  GRID_PLAIN_LAP_SPLIT,
   GRID_PLAIN_RETIRED,
   GRID_PLAIN_RUNNERS,
   GRID_PLAIN_RUNNING,
@@ -224,6 +225,35 @@ describe('TimerGrid', () => {
 
     expect(announced, 'there was nothing to take back, so nothing is read out').not.toHaveBeenCalled();
     expect(haptics.play, 'and nothing is felt either').toHaveBeenLastCalledWith(TimerFeedback.error);
+  });
+
+  it('takes the phantom split of a scroll back by its own id, and none at all after a refused tap', async () => {
+    sessions.active.set(GRID_PLAIN_AFTER_LAP);
+    await create();
+
+    tiles()[0].dispatchEvent(tilePointerEvent('pointerdown', TILE_DOWN));
+
+    const written: TimerSession = sessions.updateActive.mock.calls[0][0](GRID_PLAIN_AFTER_LAP);
+
+    expect(written.splits.length, 'the finish is on paper before the browser has decided what the gesture was').toBe(2);
+
+    announced.mockClear();
+    haptics.play.mockClear();
+    tiles()[0].dispatchEvent(tilePointerEvent('pointercancel', TILE_DOWN));
+
+    expect(sessions.updateActive.mock.calls[1][0](written).splits, 'exactly that split goes, and the lap under it stays').toEqual([
+      GRID_PLAIN_LAP_SPLIT,
+    ]);
+    expect(announced, 'the organiser never meant this tap, so nothing is read out').not.toHaveBeenCalled();
+    expect(haptics.play, 'and nothing is felt: a buzz for a scroll would read as a refused tap').not.toHaveBeenCalled();
+
+    sessions.active.set(GRID_PLAIN_AFTER_FINISH);
+    await fixture.whenStable();
+    tiles()[0].dispatchEvent(tilePointerEvent('pointerdown', TILE_DOWN_LATE));
+    tiles()[0].dispatchEvent(tilePointerEvent('pointercancel', TILE_DOWN_LATE));
+
+    expect(haptics.play, 'a spent tile refuses the tap').toHaveBeenCalledExactlyOnceWith(TimerFeedback.error);
+    expect(sessions.updateActive, 'and a refused tap leaves nothing for the cancel to cash in').toHaveBeenCalledTimes(2);
   });
 
   it('moves the finishers to the shelf only in the quiet, and takes one back on a tap', async () => {
