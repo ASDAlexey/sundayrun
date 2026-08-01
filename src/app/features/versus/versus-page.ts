@@ -11,6 +11,7 @@ import { buildHeadToHead } from '../../core/history/head-to-head';
 import { HeadToHead, HeadToHeadMeeting } from '../../core/history/head-to-head.interface';
 import { meetingSplitLeads } from '../../core/history/pacing';
 import { MeetingSplits } from '../../core/history/pacing.interface';
+import { pluralText } from '../../core/i18n/plural-text';
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
@@ -19,6 +20,7 @@ import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
+import { PageMetaService } from '../../shared/seo/page-meta.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
@@ -43,6 +45,7 @@ export class VersusPage {
   readonly #athletes = inject(AthletesService);
   readonly #router = inject(Router);
   readonly #selfAthlete = inject(SelfAthleteService);
+  readonly #pageMeta = inject(PageMetaService);
   readonly #options = signal<AthleteRecord[]>([]);
   readonly #left = signal<AthleteRecord | null>(null);
   readonly #right = signal<AthleteRecord | null>(null);
@@ -183,6 +186,9 @@ export class VersusPage {
     this.#leftLaps.set(next.leftLaps);
     this.#rightLaps.set(next.rightLaps);
     this.duelStatus.set(next.status);
+    // `/vs/:left/:right` is the link people share («наша дуэль»), so its preview names the pair and
+    // the score. The side views read the signals just set above, so the sentence is never stale.
+    this.#pageMeta.setDescription(duelDescriptionOf(this.leftSide(), this.rightSide(), this.meetingCount()));
   }
 
   async #resolveDuel(leftKey: string, rightKey: string): Promise<VersusDuelState> {
@@ -204,6 +210,25 @@ export class VersusPage {
       return { status: DuelStatus.error, left: null, right: null, leftLaps: [], rightLaps: [] };
     }
   }
+}
+
+/**
+ * The link-preview sentence of a settled duel — «Петров Пётр против Сидоровой Анны — 3 очные
+ * встречи, счёт 1 : 1». A half-filled picker has no duel to describe and returns empty, which
+ * restores the site description.
+ */
+function duelDescriptionOf(left: DuelSideView | null, right: DuelSideView | null, meetingCount: number): string {
+  if (left === null || right === null) {
+    return '';
+  }
+
+  const meetings = pluralText(meetingCount, {
+    one: $localize`:@@versus.metaMeetingsOne:${meetingCount}:count: очная встреча`,
+    few: $localize`:@@versus.metaMeetingsFew:${meetingCount}:count: очные встречи`,
+    many: $localize`:@@versus.metaMeetingsMany:${meetingCount}:count: очных встреч`,
+  });
+
+  return $localize`:@@versus.metaDescription:${left.displayName}:left: против ${right.displayName}:right: — ${meetings}:meetings:, счёт ${left.wins}:leftWins: : ${right.wins}:rightWins:`;
 }
 
 function toDuel(left: AthleteRecord | null, right: AthleteRecord | null): HeadToHead | null {

@@ -45,6 +45,8 @@ import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { RaceTime } from '../../shared/race-time/race-time';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { PAGE_META_CLAUSE_SEPARATOR } from '../../shared/seo/page-meta.constant';
+import { PageMetaService } from '../../shared/seo/page-meta.service';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import {
   EMPTY_CELL_TEXT,
@@ -89,6 +91,7 @@ export class RacePage {
   readonly #athletes = inject(AthletesService);
   readonly #protocolPdf = inject(ProtocolPdfService);
   readonly #selfAthlete = inject(SelfAthleteService);
+  readonly #pageMeta = inject(PageMetaService);
 
   /** The visitor's own row gets the highlight; empty when nobody is picked, so no row matches. */
   readonly selfKey = computed(() => this.#selfAthlete.self()?.key ?? '');
@@ -156,6 +159,9 @@ export class RacePage {
 
     this.race.set(state.race);
     this.status.set(state.status);
+    // This protocol is what the link pasted into Telegram or VK points at, so the preview has to
+    // describe it — and under prerender this still runs before the static HTML is serialized.
+    this.#pageMeta.setDescription(raceDescriptionOf(state.race));
   }
 
   /**
@@ -196,6 +202,23 @@ export class RacePage {
       ),
     };
   }
+}
+
+/**
+ * The link-preview sentence of one protocol — «Протокол №249 от 26 июля 2026 г. — 12 финишёров,
+ * 2 новичка, 3 личных рекорда, лучшее время 17:31,07». Empty for a state carrying no protocol
+ * (loading, notFound, a failed read), which restores the site description.
+ */
+function raceDescriptionOf(race: RaceView | null): string {
+  if (race === null) {
+    return '';
+  }
+
+  const bestTimeText = bestTimeTextOf(race.rows);
+  const bestClause =
+    bestTimeText === null ? '' : PAGE_META_CLAUSE_SEPARATOR + $localize`:@@race.metaBestTime:лучшее время ${bestTimeText}:time:`;
+
+  return $localize`:@@race.metaDescription:Протокол №${race.number}:number: от ${race.dateLong}:date: — ${race.summaryText}:summary:${bestClause}:best:`;
 }
 
 function toRaceView(
@@ -376,6 +399,25 @@ function summaryTextOf(rows: ProtocolRow[]): string {
       many: $localize`:@@race.summaryRecordsMany:${personalRecordCount}:count: личных рекордов`,
     }),
   ].join(SUMMARY_PART_SEPARATOR);
+}
+
+/**
+ * The winning 5 km time of the protocol, read back from the formatted column: the view keeps
+ * preformatted cells only, and the rows follow the organisers' numbering rather than the finish
+ * order. Empty and DNF cells never parse, so a race nobody finished returns null.
+ */
+function bestTimeTextOf(rows: RaceRowView[]): string | null {
+  const times = rows.reduce<number[]>((acc, row) => {
+    const timeMs = parseDuration(row.time5);
+
+    if (timeMs !== null) {
+      acc.push(timeMs);
+    }
+
+    return acc;
+  }, []);
+
+  return times.length === 0 ? null : formatRaceTime(Math.min(...times));
 }
 
 /** Median of the 5 km times for one gender; one-lap runners and DNF are excluded, null when nobody qualifies. */

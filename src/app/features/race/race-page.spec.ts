@@ -11,6 +11,8 @@ import { CdnRefService } from '../../github/cdn-ref.service';
 import { cdnRefServiceMock } from '../../github/cdn-ref.service.mock';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
+import { PageMetaService } from '../../shared/seo/page-meta.service';
+import { pageMetaServiceMock } from '../../shared/seo/page-meta.service.mock';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
@@ -61,6 +63,7 @@ describe('RacePage', () => {
   const loadPhotos = vi.fn();
   const loadEventSlugs = vi.fn();
   const download = vi.fn();
+  const pageMeta = pageMetaServiceMock();
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -89,6 +92,7 @@ describe('RacePage', () => {
         { provide: ProtocolPdfService, useValue: { download } },
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
         { provide: SelfAthleteService, useValue: { self: selfSignal } },
+        { provide: PageMetaService, useValue: pageMeta },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });
@@ -344,6 +348,31 @@ describe('RacePage', () => {
     await settle();
 
     expect(page.race()?.weatherText, 'a windless reading keeps the temperature but drops the wind').toBe(EXPECTED_WINDLESS_WEATHER_TEXT);
+  });
+
+  it('describes the protocol for link previews and hands the site description back without one', async () => {
+    fixture = await createPage();
+
+    const page = fixture.componentInstance;
+    const described = pageMeta.setDescription.mock.lastCall?.[0] ?? '';
+
+    expect(described, 'a shared link previews the race by its number').toContain(EXPECTED_RACE_VIEW.number);
+    expect(described, 'and by its date, so the preview reads without opening the page').toContain(EXPECTED_RACE_VIEW.dateLong);
+    expect(described, 'the parkrun-style summary carries over verbatim').toContain(EXPECTED_RACE_VIEW.summaryText);
+    expect(described, 'the winning 5 km time closes the sentence').toContain(EXPECTED_RACE_VIEW.rows[0].time5);
+
+    loadResults.mockResolvedValueOnce(buildEventResultsFile(RACE_EVENT, PROTOCOL_ROWS.slice(1)));
+    routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });
+    await settle();
+
+    const timeless = pageMeta.setDescription.mock.lastCall?.[0] ?? '';
+
+    expect(timeless.endsWith(page.race()?.summaryText ?? ''), 'nobody ran the 5 km — the sentence stops at the summary').toBe(true);
+
+    routeStub.setParams({ [SLUG_ROUTE_PARAM]: MALFORMED_RACE_SLUG });
+    await settle();
+
+    expect(pageMeta.setDescription, 'a page with no protocol must not lend the next visitor this one').toHaveBeenLastCalledWith('');
   });
 
   it('shows notFound for a malformed slug without touching the CDN', async () => {

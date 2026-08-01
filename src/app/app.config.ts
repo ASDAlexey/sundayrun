@@ -8,7 +8,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay, withI18nSupport } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withI18nSupport, withIncrementalHydration } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 
@@ -17,6 +17,7 @@ import { routes } from './app.routes';
 import { NotifyingErrorHandler } from './core/error/notifying-error-handler';
 import { RouteErrorNotifier } from './core/error/route-error-notifier';
 import { CanonicalLinkService } from './shared/seo/canonical-link.service';
+import { PageMetaService } from './shared/seo/page-meta.service';
 import { AppUpdateService } from './state/app-update.service';
 
 export const appConfig: ApplicationConfig = {
@@ -29,6 +30,9 @@ export const appConfig: ApplicationConfig = {
     // Eagerly instantiated so every navigation (and each prerendered page) carries its canonical url.
     provideAppInitializer(() => {
       inject(CanonicalLinkService);
+      // Same deal for the link-preview tags: og:url, og:title and the description follow the route
+      // rather than sitting frozen on the home page's, and the prerender bakes them into each file.
+      inject(PageMetaService);
       // The route-error watcher (stale-chunk reload + toasts) only makes sense in the browser.
       if (isPlatformBrowser(inject(PLATFORM_ID))) {
         inject(RouteErrorNotifier);
@@ -37,7 +41,9 @@ export const appConfig: ApplicationConfig = {
       }
     }),
     // Public pages are prerendered (see app.routes.server.ts); hydration reuses that HTML.
-    provideClientHydration(withEventReplay(), withI18nSupport()),
+    // `withIncrementalHydration` is Angular 22's default, but the `@defer (hydrate on viewport)`
+    // blocks on /races and the home page depend on it, so it is spelled out rather than assumed.
+    provideClientHydration(withEventReplay(), withI18nSupport(), withIncrementalHydration()),
     // Offline shell for the race stopwatch (docs/TIMER.md §12). `ngsw-config.json` is wired into
     // the production build only, so `ngsw-worker.js` simply does not exist in dev — hence the
     // `production` gate. Being browser-only needs no extra guard here: this config is shared with

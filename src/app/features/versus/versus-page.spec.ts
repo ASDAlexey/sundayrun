@@ -4,6 +4,8 @@ import { ActivatedRoute, Params, Router, provideRouter } from '@angular/router';
 
 import { AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
+import { PageMetaService } from '../../shared/seo/page-meta.service';
+import { pageMetaServiceMock } from '../../shared/seo/page-meta.service.mock';
 import { SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { VERSUS_PAGE_LINK } from '../../app.constant';
@@ -39,6 +41,7 @@ describe('VersusPage', () => {
   const loadRecord = vi.fn();
   const loadRecords = vi.fn();
   const loadFirstLaps = vi.fn();
+  const pageMeta = pageMetaServiceMock();
   const routeParams: Params = {};
 
   let platformId = BROWSER_PLATFORM_ID;
@@ -61,6 +64,7 @@ describe('VersusPage', () => {
         provideRouter([]),
         { provide: AthletesService, useValue: { loadRecord, loadRecords, loadFirstLaps } },
         { provide: SelfAthleteService, useValue: { self: selfSignal } },
+        { provide: PageMetaService, useValue: pageMeta },
         { provide: ActivatedRoute, useValue: routeStub },
         { provide: PLATFORM_ID, useFactory: () => platformId },
       ],
@@ -95,6 +99,13 @@ describe('VersusPage', () => {
     expect(page.meetings()).toEqual(EXPECTED_MEETING_VIEWS);
     expect(page.splitLeadText(), 'one split lead each over the two split-bearing meetings').toBe(EXPECTED_SPLIT_LEAD_TEXT);
     expect(page.pickerOpen(), 'a settled duel hides the search box').toBe(false);
+
+    const described = pageMeta.setDescription.mock.lastCall?.[0] ?? '';
+
+    expect(described, 'the shared duel link previews both duelists by name').toContain(EXPECTED_LEFT_SIDE.displayName);
+    expect(described).toContain(EXPECTED_RIGHT_SIDE.displayName);
+    expect(described, 'and the score they carry into it').toContain(`${EXPECTED_LEFT_SIDE.wins} : ${EXPECTED_RIGHT_SIDE.wins}`);
+    expect(described, 'together with how many times they met').toContain(String(EXPECTED_MEETING_VIEWS.length));
 
     page.onQueryChange(SUGGESTION_QUERY);
 
@@ -150,6 +161,7 @@ describe('VersusPage', () => {
     expect(page.duelStatus(), 'one filled slot keeps the duel idle').toBe(DuelStatus.idle);
     expect(page.leftSide()?.displayName).toBe(EXPECTED_LEFT_SIDE.displayName);
     expect(page.rightSide()).toBeNull();
+    expect(pageMeta.setDescription, 'a half-filled picker has no duel to preview').toHaveBeenLastCalledWith('');
 
     page.onQueryChange(SHARED_PREFIX_QUERY);
 

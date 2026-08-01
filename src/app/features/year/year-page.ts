@@ -11,6 +11,8 @@ import { YearReviewService } from '../../github/year-review.service';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
+import { PAGE_META_CLAUSE_SEPARATOR } from '../../shared/seo/page-meta.constant';
+import { PageMetaService } from '../../shared/seo/page-meta.service';
 import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
@@ -36,6 +38,7 @@ import {
 })
 export class YearPage {
   readonly #reviews = inject(YearReviewService);
+  readonly #pageMeta = inject(PageMetaService);
 
   readonly status = signal<YearStatusType>(YearStatus.loading);
   readonly years = signal<string[]>([]);
@@ -81,6 +84,8 @@ export class YearPage {
     this.years.set(state.years);
     this.view.set(state.view);
     this.status.set(state.status);
+    // «Итоги года» is shared as a link of its own, so its preview describes the season, not the site.
+    this.#pageMeta.setDescription(yearDescriptionOf(state.view));
   }
 
   /**
@@ -99,6 +104,45 @@ export class YearPage {
 
     return { status: YearStatus.ready, years, view: toReviewView(review) };
   }
+}
+
+/**
+ * The link-preview sentence of one season — «Итоги 2026 года — Воскресный парковый пробег в
+ * Таганроге. Лучшее время сезона: у мужчин 24:00,00 (Иванов Иван), у женщин 27:00,00 (Петрова
+ * Вера)». Empty for a state carrying no review, which restores the site description.
+ */
+function yearDescriptionOf(view: YearReviewView | null): string {
+  if (view === null) {
+    return '';
+  }
+
+  const headline = $localize`:@@year.metaHeadline:Итоги ${view.year}:year: года — Воскресный парковый пробег в Таганроге`;
+  const bests = bestClausesOf(view).join(PAGE_META_CLAUSE_SEPARATOR);
+
+  if (bests === '') {
+    return headline;
+  }
+
+  return $localize`:@@year.metaWithBests:${headline}:headline:. Лучшее время сезона: ${bests}:bests:`;
+}
+
+/** «у мужчин 24:00,00 (Иванов Иван)» per gender; a season nobody finished contributes no clause. */
+function bestClausesOf(view: YearReviewView): string[] {
+  const clauses: string[] = [];
+
+  if (view.bestMen.length > 0) {
+    const best = view.bestMen[0];
+
+    clauses.push($localize`:@@year.metaBestMale:у мужчин ${best.timeText}:time: (${best.displayName}:name:)`);
+  }
+
+  if (view.bestWomen.length > 0) {
+    const best = view.bestWomen[0];
+
+    clauses.push($localize`:@@year.metaBestFemale:у женщин ${best.timeText}:time: (${best.displayName}:name:)`);
+  }
+
+  return clauses;
 }
 
 function toReviewView(review: YearReview): YearReviewView {

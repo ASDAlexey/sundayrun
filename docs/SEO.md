@@ -9,9 +9,14 @@
   JSON-LD (`WebSite`, `SportsOrganization` КЛБ «Легенда» с `sameAs` на VK, `EventSeries` пробега);
   `preconnect`/`dns-prefetch` к `cdn.jsdelivr.net`.
 - **Заголовки страниц** — `title` у каждого маршрута в `app.routes.ts` (локализованы через `$localize`).
-- **`public/sitemap.xml`** — главная, «Все забеги» и «Участники» (ru).
-  Страницы забегов (`/races/<slug>`) в sitemap не перечислены — поисковики находят их по внутренним
-  ссылкам с главной; генерация полного sitemap при публикации забега — идея на будущее (ROADMAP).
+- **`public/sitemap.xml`** — генерируется `scripts/build-sitemap.ts` перед каждой сборкой (`bun run build`,
+  `bun run start`) из той же локальной БД `data/sundayrun.db`, которую читает `getPrerenderParams`,
+  поэтому карта не расходится с набором реально пререндеренных файлов. Внутри: разделы
+  (`/`, `/races`, `/records`, `/year`, `/vs`, `/guide`), все протоколы (`/races/<slug>`) и все обзоры года
+  (`/year/<год>`) с `<lastmod>` из `events.date_iso`. `/timer` и `/admin` не перечислены намеренно —
+  инструменты организатора, индексировать нечего. Файл закоммичен: на свежем чекауте карта уже валидна.
+  Клиентские маршруты (`/athletes/<ключ>`, `/vs/<a>/<b>`) в карту не попадают, пока не пререндерятся, —
+  URL из sitemap, отвечающий 404, портит оценку обхода всему сайту.
 - **Графика** — favicon (`favicon.ico`, `logo-mark.png`), `apple-touch-icon.png`, `og-image.jpg`
   собраны из официального логотипа пробега (исходники в `assets/branding/`).
 
@@ -53,9 +58,11 @@ LCP выглядит хуже: локальные шрифты успевают 
 
 ## Ограничения GitHub Pages (важно понимать)
 
-- Публичные страницы пререндерены в статический HTML (SSG) — индексируются без рендеринга JS;
-  протоколы забегов (`/ru/races/…`) — клиентские, для них поисковикам нужен JS-рендеринг.
-  Prerender/SSG — кандидат в ROADMAP, если понадобится глубокая индексация протоколов.
+- Публичные страницы пререндерены в статический HTML (SSG) и индексируются без рендеринга JS —
+  включая протоколы забегов (`/races/<slug>`) и обзоры года (`/year/<год>`): их слаги перечисляет
+  `getPrerenderParams` в `src/app/app.routes.server.ts`. Клиентскими остались страница атлета
+  (`/athletes/<ключ>`) и дуэль (`/vs/<a>/<b>`) — на Pages по ним отдаётся `404.html`, поэтому
+  в sitemap их нет (см. `docs/AUDIT.md` § 46).
 - `robots.txt` работает только в корне домена (`asdalexey.github.io`) и принадлежит
   корневому сайту-портфолио, а не этому репозиторию. Он не обязателен: страницы и так
   индексируются, а sitemap отправляется напрямую в консоли поисковиков.
@@ -66,7 +73,8 @@ LCP выглядит хуже: локальные шрифты успевают 
 1. **Google Search Console** — <https://search.google.com/search-console>:
    добавьте ресурс «URL prefix» `https://asdalexey.github.io/sundayrun/`,
    подтвердите правами на аккаунт GitHub Pages (HTML-тег можно добавить в `index.html`),
-   затем Sitemaps → отправьте `https://asdalexey.github.io/sundayrun/ru/sitemap.xml`.
+   затем Sitemaps → отправьте `https://asdalexey.github.io/sundayrun/sitemap.xml`
+   (без `/ru/` — префикс локали исчез с переходом на `--base-href /sundayrun/`, `i18n.subPath` пустой).
 2. **Яндекс Вебмастер** — <https://webmaster.yandex.ru>:
    добавьте сайт, подтвердите метатегом (`<meta name="yandex-verification" ...>` в `index.html`),
    отправьте тот же sitemap; в «Регионах» укажите Таганрог.

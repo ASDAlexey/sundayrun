@@ -3,6 +3,8 @@ import { ActivatedRoute, Params, provideRouter } from '@angular/router';
 
 import { YearReview } from '../../core/history/year-review.interface';
 import { YearReviewService } from '../../github/year-review.service';
+import { PageMetaService } from '../../shared/seo/page-meta.service';
+import { pageMetaServiceMock } from '../../shared/seo/page-meta.service.mock';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
 import { settle } from '../spec-utils/settle';
 import { YearPage } from './year-page';
@@ -24,6 +26,7 @@ import {
 describe('YearPage', () => {
   const loadYears = vi.fn(() => Promise.resolve(AVAILABLE_YEARS));
   const loadReview = vi.fn((year: string) => Promise.resolve(year === REQUESTED_YEAR ? REQUESTED_YEAR_REVIEW : YEAR_REVIEW));
+  const pageMeta = pageMetaServiceMock();
   const routeParams: Params = {};
 
   let routeStub: ActivatedRouteStub;
@@ -37,6 +40,7 @@ describe('YearPage', () => {
       providers: [
         provideRouter([]),
         { provide: YearReviewService, useValue: { loadYears, loadReview } },
+        { provide: PageMetaService, useValue: pageMeta },
         { provide: ActivatedRoute, useValue: routeStub },
       ],
     });
@@ -77,6 +81,12 @@ describe('YearPage', () => {
       'the progress board formats the gain and the median pair',
     ).toEqual([[1, PROGRESS_DELTA_TEXT, PROGRESS_MEDIANS_TEXT]]);
 
+    const described = pageMeta.setDescription.mock.lastCall?.[0] ?? '';
+
+    expect(described, 'a shared «Итоги года» link previews the season it belongs to').toContain(YEAR_REVIEW.year);
+    expect(described, 'with the fastest time of the men’s board').toContain(fixture.componentInstance.view()?.bestMen[0].timeText ?? '');
+    expect(described, 'and the woman who leads hers').toContain(fixture.componentInstance.view()?.bestWomen[0].displayName ?? '');
+
     routeStub.setParams({ [YEAR_ROUTE_PARAM]: REQUESTED_YEAR });
     await settle();
 
@@ -88,6 +98,7 @@ describe('YearPage', () => {
 
     expect(fixture.componentInstance.status()).toBe(YearStatus.notFound);
     expect(fixture.componentInstance.view()).toBeNull();
+    expect(pageMeta.setDescription, 'an unknown year has no season to preview').toHaveBeenLastCalledWith('');
   });
 
   it('maps an empty archive to notFound, hides the missing bests and medians, and drops a stale review', async () => {
@@ -108,6 +119,10 @@ describe('YearPage', () => {
     expect(page.view()?.bestWomen).toEqual([]);
     expect(page.view()?.stats.length, 'unknown medians never become stat tiles').toBe(BESTLESS_STAT_COUNT);
 
+    const headlineOnly = pageMeta.setDescription.mock.lastCall?.[0] ?? '';
+
+    expect(headlineOnly, 'an empty season still previews as itself').toContain(BESTLESS_YEAR_REVIEW.year);
+
     let resolveStale: (review: YearReview) => void = vi.fn();
 
     loadReview.mockImplementationOnce(
@@ -121,6 +136,10 @@ describe('YearPage', () => {
     await settle();
 
     expect(page.view()?.year).toBe(AVAILABLE_YEARS[0]);
+    expect(
+      (pageMeta.setDescription.mock.lastCall?.[0] ?? '').startsWith(headlineOnly),
+      'the best-results clause only extends the headline an empty season stops at',
+    ).toBe(true);
 
     resolveStale(REQUESTED_YEAR_REVIEW);
     await settle();
