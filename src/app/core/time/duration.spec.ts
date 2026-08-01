@@ -5,7 +5,11 @@ import {
   FORMAT_DURATION_PRECISE_CASES,
   FORMAT_DURATION_PRECISE_ROUNDING_CASES,
   FORMAT_RACE_TIME_CASES,
+  NEGATIVE_MS_CASES,
   PARSE_DURATION_CASES,
+  ZERO_DURATION_TEXT,
+  ZERO_PRECISE_TEXT,
+  ZERO_RACE_TIME_TEXT,
 } from './duration.mock';
 
 describe('duration', () => {
@@ -36,6 +40,14 @@ describe('duration', () => {
 
     for (const [label, ms, expected] of FORMAT_DURATION_PRECISE_ROUNDING_CASES) {
       expect(formatDurationPrecise(ms), `formatDurationPrecise(${ms}) — ${label}`).toBe(expected);
+    }
+  });
+
+  it('clamps a negative duration to zero rather than drawing a signed remainder', () => {
+    for (const ms of NEGATIVE_MS_CASES) {
+      expect(formatDuration(ms), `formatDuration(${ms})`).toBe(ZERO_DURATION_TEXT);
+      expect(formatRaceTime(ms), `formatRaceTime(${ms})`).toBe(ZERO_RACE_TIME_TEXT);
+      expect(formatDurationPrecise(ms), `formatDurationPrecise(${ms})`).toBe(ZERO_PRECISE_TEXT);
     }
   });
 });

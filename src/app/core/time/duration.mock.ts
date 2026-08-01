@@ -78,3 +78,15 @@ export const FORMAT_DURATION_PRECISE_ROUNDING_CASES: readonly (readonly [string,
   ['rounds half up', 1143027.5, '19:03,028'],
   ['rounds down', 1143027.4, '19:03,027'],
 ];
+
+/**
+ * A system clock nudged backwards while a `Date.now() - startedAtMs` ticker was running. `%` keeps
+ * the sign and `padStart` does not eat it, so an unclamped formatter drew `0:-1` and `0:00,-50`.
+ */
+export const NEGATIVE_MS_CASES: readonly number[] = [-1, -500, -1500, -3_600_000];
+
+export const ZERO_DURATION_TEXT = '0:00';
+
+export const ZERO_RACE_TIME_TEXT = '0:00,00';
+
+export const ZERO_PRECISE_TEXT = '0:00,000';

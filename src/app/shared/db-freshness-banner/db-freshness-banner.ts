@@ -54,7 +54,8 @@ export class DbFreshnessBanner {
     const startedAtMs = Date.now();
 
     this.#elapsedMs.set(0);
-    this.#tickId = setInterval(() => this.#elapsedMs.set(Date.now() - startedAtMs), UPDATING_TICK_INTERVAL_MS);
+    // Clamped: a system clock nudged backwards mid-wait would otherwise count down through zero.
+    this.#tickId = setInterval(() => this.#elapsedMs.set(Math.max(0, Date.now() - startedAtMs)), UPDATING_TICK_INTERVAL_MS);
   }
 
   #stopTicking(): void {

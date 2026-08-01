@@ -8,6 +8,7 @@ import {
   MINUTES_IN_HOUR,
   MS_IN_HUNDREDTH,
   MS_IN_SECOND,
+  NO_ELAPSED_MS,
   PAD_CHAR,
   SECONDS_IN_MINUTE,
   TIME_UNIT_LENGTH,
@@ -45,7 +46,7 @@ export function parseDuration(raw: string): number | null {
  * belongs in `formatRaceTime`.
  */
 export function formatDuration(ms: number): string {
-  return clockText(Math.round(ms / MS_IN_SECOND));
+  return clockText(Math.round(nonNegative(ms) / MS_IN_SECOND));
 }
 
 /**
@@ -60,7 +61,7 @@ export function formatDuration(ms: number): string {
  * '19:26,00' rather than '19:25,100'.
  */
 export function formatRaceTime(ms: number): string {
-  const totalHundredths = Math.round(ms / MS_IN_HUNDREDTH);
+  const totalHundredths = Math.round(nonNegative(ms) / MS_IN_HUNDREDTH);
   const hundredths = totalHundredths % HUNDREDTHS_IN_SECOND;
   const totalSeconds = (totalHundredths - hundredths) / HUNDREDTHS_IN_SECOND;
   const paddedHundredths = String(hundredths).padStart(HUNDREDTHS_LENGTH, PAD_CHAR);
@@ -91,12 +92,23 @@ function clockText(totalSeconds: number): string {
  * the xlsx export; fractional input is rounded to whole milliseconds first.
  */
 export function formatDurationPrecise(ms: number): string {
-  const totalMs = Math.round(ms);
+  const totalMs = Math.round(nonNegative(ms));
   const milliseconds = totalMs % MS_IN_SECOND;
   const totalSeconds = (totalMs - milliseconds) / MS_IN_SECOND;
   const paddedMilliseconds = String(milliseconds).padStart(FRACTION_LENGTH, PAD_CHAR);
 
   return `${clockText(totalSeconds)}${FRACTION_SEPARATOR}${paddedMilliseconds}`;
+}
+
+/**
+ * The floor under all three formatters. A duration is a length of time and has no negative form, but
+ * two callers subtract wall clocks (`Date.now() - startedAtMs`), so a system clock nudged backwards
+ * during a wait used to reach the digits: `%` keeps the sign and `padStart` does not eat it, which
+ * printed `0:-1` and `0:00,-50`. The tickers clamp at their own source as well — this is the guard
+ * that holds whatever else subtracts two timestamps next.
+ */
+function nonNegative(ms: number): number {
+  return Math.max(NO_ELAPSED_MS, ms);
 }
 
 function toMs(totalMinutes: number, seconds: string, fraction: string | undefined): number {

@@ -28,3 +28,6 @@ export const PAD_CHAR = '0';
 
 /** Separator before the fractional part when formatting; the timer exports use a comma. */
 export const FRACTION_SEPARATOR = ',';
+
+/** The floor every formatter clamps to: a length of time has no negative form. */
+export const NO_ELAPSED_MS = 0;
