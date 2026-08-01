@@ -8,6 +8,7 @@ import { WORKSHEET_NOT_FOUND_MESSAGE } from './xlsx-reader.constant';
 import {
   BROKEN_XLSX_FILES,
   EXPECTED_HEADER_ROW,
+  EXPECTED_OVERSIZED_COLUMN_ROWS,
   EXPECTED_SYNTHETIC_ROWS,
   FIXTURE_14_FILE_NAME,
   FIXTURE_14_FIRST_DATA_ROW,
@@ -15,6 +16,7 @@ import {
   FIXTURE_24_FILE_NAME,
   FIXTURE_24_ROW_COUNT,
   FIXTURES_DIR_FROM_ROOT,
+  OVERSIZED_COLUMN_XLSX_FILES,
   SYNTHETIC_XLSX_FILES,
 } from './xlsx-reader.mock';
 
@@ -49,5 +51,9 @@ describe('xlsx-reader', () => {
   it('handles inlineStr, str, default, gap and r-less cells without sharedStrings; throws on a missing worksheet relationship', () => {
     expect(readXlsxRows(buildXlsx(SYNTHETIC_XLSX_FILES))).toEqual(EXPECTED_SYNTHETIC_ROWS);
     expect(() => readXlsxRows(buildXlsx(BROKEN_XLSX_FILES))).toThrow(WORKSHEET_NOT_FOUND_MESSAGE);
+    expect(
+      readXlsxRows(buildXlsx(OVERSIZED_COLUMN_XLSX_FILES)),
+      'a reference past the last Excel column is placed by position instead of padding the row to it',
+    ).toEqual(EXPECTED_OVERSIZED_COLUMN_ROWS);
   });
 });

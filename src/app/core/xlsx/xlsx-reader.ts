@@ -8,6 +8,7 @@ import {
   COLUMN_RADIX,
   EMPTY_CELL,
   INLINE_STRING_CELL_TYPE,
+  MAX_XLSX_COLUMN_INDEX,
   RELATIONSHIP_ID_ATTRIBUTE,
   RELATIONSHIP_TAG,
   RELATIONSHIP_TARGET_ATTRIBUTE,
@@ -99,7 +100,11 @@ function columnIndexOf(cell: Element, fallbackIndex: number): number {
     index = index * COLUMN_RADIX + digit + 1;
   }
 
-  return index - 1;
+  const columnIndex = index - 1;
+
+  // Clamped rather than thrown: the rest of the reader degrades softly, and one impossible reference
+  // in a hand-edited sheet should cost that cell its position, not the whole upload.
+  return columnIndex > MAX_XLSX_COLUMN_INDEX ? fallbackIndex : columnIndex;
 }
 
 function cellValueOf(cell: Element, sharedStrings: string[]): string {

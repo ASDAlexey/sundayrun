@@ -57,6 +57,27 @@ export const SYNTHETIC_XLSX_FILES: Record<string, string> = {
 
 export const EXPECTED_SYNTHETIC_ROWS: string[][] = [['inline text', '', 'formula result', '', '42', '7'], []];
 
+/**
+ * A reference no spreadsheet can produce: 'AAAAAAAA' is column 8 353 082 582, and padding a row out
+ * to it costs the tab its memory. The reader must place the cell by position instead — after the one
+ * before it — so the sheet still reads as two ordinary cells.
+ */
+const OVERSIZED_COLUMN_SHEET_XML =
+  '<worksheet><sheetData>' +
+  '<row r="1">' +
+  '<c r="A1" t="inlineStr"><is><t>first</t></is></c>' +
+  '<c r="AAAAAAAA1" t="inlineStr"><is><t>past the last column</t></is></c>' +
+  '</row>' +
+  '</sheetData></worksheet>';
+
+export const OVERSIZED_COLUMN_XLSX_FILES: Record<string, string> = {
+  [WORKBOOK_PATH]: SYNTHETIC_WORKBOOK_XML,
+  [WORKBOOK_RELS_PATH]: SYNTHETIC_RELS_XML,
+  [SYNTHETIC_SHEET_PATH]: OVERSIZED_COLUMN_SHEET_XML,
+};
+
+export const EXPECTED_OVERSIZED_COLUMN_ROWS: string[][] = [['first', 'past the last column']];
+
 /** The workbook references a relationship id that is absent from the rels file. */
 export const BROKEN_XLSX_FILES: Record<string, string> = {
   [WORKBOOK_PATH]: SYNTHETIC_WORKBOOK_XML.replace('rId7', 'rId9'),

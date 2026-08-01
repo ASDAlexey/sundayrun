@@ -46,4 +46,11 @@ export const COLUMN_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export const COLUMN_RADIX = 26;
 
+/**
+ * Excel's own last column is XFD, index 16383. A reference past it never came out of a spreadsheet,
+ * and taking it at face value makes the row pad itself with billions of empty cells — the tab dies
+ * by memory before the dropzone's try/catch can call the file invalid.
+ */
+export const MAX_XLSX_COLUMN_INDEX = 16383;
+
 export const WORKSHEET_NOT_FOUND_MESSAGE = 'xlsx: first worksheet relationship not found';
