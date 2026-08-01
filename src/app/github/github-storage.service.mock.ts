@@ -1,6 +1,6 @@
 import { HTTP_NOT_FOUND } from '../core/github/github-api.constant';
 import { GithubFetchFn } from '../core/github/github-fetch.type';
-import { DB_CONTENTS_KEY } from '../core/github/protocol-db-file.mock';
+import { dbContentsKey } from '../core/github/protocol-db-file.mock';
 import { PUBLISH_SHAS } from '../core/github/publish-event.mock';
 import { createGitDataRoutes } from '../core/github/spec-utils/git-data-routes';
 import { routeFetch, statusResponse } from '../core/github/spec-utils/github-fetch-router';
@@ -15,7 +15,7 @@ export const NETWORK_ERROR_MESSAGE = 'network down';
  */
 export function createPublishSuccessFetch(): GithubFetchFn {
   return routeFetch({
-    [DB_CONTENTS_KEY]: () => statusResponse(HTTP_NOT_FOUND),
+    [dbContentsKey(PUBLISH_SHAS.headSha)]: () => statusResponse(HTTP_NOT_FOUND),
     ...createGitDataRoutes(PUBLISH_SHAS),
   });
 }

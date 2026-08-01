@@ -52,7 +52,7 @@ describe('commitFilesAtomically', () => {
   }
 
   beforeEach(() => {
-    buildFiles.mockClear();
+    buildFiles.mockReset();
   });
 
   afterEach(() => {
@@ -68,6 +68,24 @@ describe('commitFilesAtomically', () => {
     expect(bodiesOf(fetchFn, POST_METHOD, GIT_TREES_URL)).toEqual([EXPECTED_TREE_BODY]);
     expect(bodiesOf(fetchFn, POST_METHOD, GIT_COMMITS_URL)).toEqual([EXPECTED_COMMIT_BODY]);
     expect(bodiesOf(fetchFn, PATCH_METHOD, GIT_REF_UPDATE_URL)).toEqual([EXPECTED_REF_UPDATE_BODY]);
+  });
+
+  it('reads the head ref before building the files and hands them the sha they will hang off', async () => {
+    const fetchFn = createFetch();
+    let refReadsWhileBuilding = 0;
+
+    buildFiles.mockImplementation(() => {
+      refReadsWhileBuilding = refReads(fetchFn);
+
+      return Promise.resolve(COMMIT_FILES);
+    });
+
+    await expect(commit(fetchFn)).resolves.toBe(GIT_DATA_SHAS.newCommitSha);
+    expect(
+      refReadsWhileBuilding,
+      'building first leaves a window where a publication lands during the download and is committed away without a conflict',
+    ).toBe(1);
+    expect(buildFiles).toHaveBeenCalledWith(GIT_DATA_SHAS.headSha);
   });
 
   it('maps 401/403 on any step to GithubAuthError', async () => {

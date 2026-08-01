@@ -32,7 +32,7 @@ import { OK_STATUS } from './github-commit.mock';
 import { GithubAuthError } from './github-errors';
 import { GithubFetchFn } from './github-fetch.type';
 import { JSDELIVR_PURGE_BASE_URL } from './jsdelivr.constant';
-import { CURRENT_DB_BYTES, DB_CONTENTS_KEY } from './protocol-db-file.mock';
+import { CURRENT_DB_BYTES, dbContentsKey } from './protocol-db-file.mock';
 import { VERSION_JSON_PATH } from './protocols-repo.constant';
 import { createGitDataRoutes } from './spec-utils/git-data-routes';
 import {
@@ -58,7 +58,7 @@ function createDeleteFetch(overrides: Record<string, RouteHandler> = {}): Mock<G
     routeFetch({
       ...createGitDataRoutes(DELETE_SHAS),
       [`GET ${EXPECTED_VERSION_PURGE_URL}`]: () => statusResponse(OK_STATUS),
-      [DB_CONTENTS_KEY]: () => new Response(CURRENT_DB_BYTES),
+      [dbContentsKey(DELETE_SHAS.headSha)]: () => new Response(CURRENT_DB_BYTES),
       [SOURCE_XLSX_HEAD_KEY]: () => statusResponse(OK_STATUS),
       ...overrides,
     }),
@@ -127,7 +127,7 @@ describe('deleteEvent', () => {
   });
 
   it('still succeeds when no db is published yet, rewriting it from scratch', async () => {
-    const fetchFn = createDeleteFetch({ [DB_CONTENTS_KEY]: () => statusResponse(HTTP_NOT_FOUND) });
+    const fetchFn = createDeleteFetch({ [dbContentsKey(DELETE_SHAS.headSha)]: () => statusResponse(HTTP_NOT_FOUND) });
 
     await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn)).resolves.toEqual({
       commitSha: DELETE_SHAS.newCommitSha,

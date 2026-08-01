@@ -21,7 +21,7 @@ import { OK_STATUS } from './github-commit.mock';
 import { GithubAuthError } from './github-errors';
 import { GithubFetchFn } from './github-fetch.type';
 import { JSDELIVR_PURGE_BASE_URL } from './jsdelivr.constant';
-import { CURRENT_DB_BYTES, DB_CONTENTS_KEY } from './protocol-db-file.mock';
+import { CURRENT_DB_BYTES, dbContentsKey } from './protocol-db-file.mock';
 import { VERSION_JSON_PATH } from './protocols-repo.constant';
 import { publishEvent, publishEvents } from './publish-event';
 import {
@@ -67,7 +67,7 @@ function createPublishFetch(overrides: Record<string, RouteHandler> = {}): Mock<
     routeFetch({
       ...createGitDataRoutes(PUBLISH_SHAS),
       [`GET ${EXPECTED_VERSION_PURGE_URL}`]: () => statusResponse(OK_STATUS),
-      [DB_CONTENTS_KEY]: () => new Response(CURRENT_DB_BYTES),
+      [dbContentsKey(PUBLISH_SHAS.headSha)]: () => new Response(CURRENT_DB_BYTES),
       ...overrides,
     }),
   );
@@ -191,7 +191,7 @@ describe('publishEvent', () => {
   });
 
   it('creates a fresh db from scratch when none is published yet', async () => {
-    const fetchFn = createPublishFetch({ [DB_CONTENTS_KEY]: () => statusResponse(HTTP_NOT_FOUND) });
+    const fetchFn = createPublishFetch({ [dbContentsKey(PUBLISH_SHAS.headSha)]: () => statusResponse(HTTP_NOT_FOUND) });
 
     await expect(publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT, fetchFn)).resolves.toEqual({ commitSha: PUBLISH_SHAS.newCommitSha });
 

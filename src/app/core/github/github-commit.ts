@@ -23,25 +23,30 @@ import { assertAuthorized, assertOk, githubBodyHeaders, githubJson } from './git
 
 /**
  * Creates ONE commit containing all files produced by `buildFiles` via the Git Data API and
- * fast-forwards the branch: read head ref → read base commit (tree sha) → upload blobs in
- * parallel (a `base64Content: null` file becomes a `sha: null` tree entry, i.e. a deletion)
- * → create tree → create commit → update ref. Returns the new commit sha. 401/403
- * anywhere → `GithubAuthError`. A 409/422 on the ref update means the branch moved, so the
+ * fast-forwards the branch: read head ref → build the files against THAT sha → read base commit
+ * (tree sha) → upload blobs in parallel (a `base64Content: null` file becomes a `sha: null` tree
+ * entry, i.e. a deletion) → create tree → create commit → update ref. Returns the new commit sha.
+ * 401/403 anywhere → `GithubAuthError`. A 409/422 on the ref update means the branch moved, so the
  * WHOLE cycle is retried — `buildFiles` is re-invoked on every attempt, so the content is
  * rebuilt against the fresh repository state and a concurrent commit is never overwritten.
  * After `MAX_COMMIT_ATTEMPTS` a `GithubRequestError` with the last ref-update status is thrown.
  * Other non-OK responses throw `GithubRequestError` immediately.
+ *
+ * The head ref is read BEFORE `buildFiles`, and its sha is handed to it, because the guarantee above
+ * needs both halves. Building first and reading the ref afterwards used to leave a window in which a
+ * publication landing during the download fast-forwarded without conflict while the tree carried a
+ * db assembled from the older bytes — the other event then disappeared with no error at all.
  */
 export async function commitFilesAtomically(
   token: string,
-  buildFiles: () => Promise<CommitFile[]>,
+  buildFiles: (parentSha: string) => Promise<CommitFile[]>,
   message: string,
   fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
 ): Promise<string> {
   let lastRefStatus: number = HTTP_CONFLICT;
 
   for (let attempt = 0; attempt < MAX_COMMIT_ATTEMPTS; attempt += 1) {
-    const outcome = await attemptCommit(fetchFn, token, await buildFiles(), message);
+    const outcome = await attemptCommit(fetchFn, token, buildFiles, message);
 
     if (typeof outcome === 'string') {
       return outcome;
@@ -54,8 +59,14 @@ export async function commitFilesAtomically(
 }
 
 /** One full commit cycle; returns the new commit sha or the 409/422 status when the ref update was rejected. */
-async function attemptCommit(fetchFn: GithubFetchFn, token: string, files: CommitFile[], message: string): Promise<number | string> {
+async function attemptCommit(
+  fetchFn: GithubFetchFn,
+  token: string,
+  buildFiles: (parentSha: string) => Promise<CommitFile[]>,
+  message: string,
+): Promise<number | string> {
   const headSha = (await githubJson<GitRefResponse>(fetchFn, token, GIT_REF_URL)).object.sha;
+  const files = await buildFiles(headSha);
   const baseCommit = await githubJson<GitCommitResponse>(fetchFn, token, `${GIT_COMMITS_URL}/${headSha}`);
   const treeEntries = await Promise.all(files.map((file) => createTreeEntry(fetchFn, token, file)));
   const tree = await githubJson<GitTreeResponse>(

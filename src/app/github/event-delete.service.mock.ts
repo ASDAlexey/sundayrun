@@ -3,7 +3,7 @@ import { Mock, vi } from 'vitest';
 import { DELETE_SHAS, SOURCE_XLSX_HEAD_KEY } from '../core/github/delete-event.mock';
 import { OK_STATUS } from '../core/github/github-commit.mock';
 import { GithubFetchFn } from '../core/github/github-fetch.type';
-import { CURRENT_DB_BYTES, DB_CONTENTS_KEY } from '../core/github/protocol-db-file.mock';
+import { CURRENT_DB_BYTES, dbContentsKey } from '../core/github/protocol-db-file.mock';
 import { createGitDataRoutes } from '../core/github/spec-utils/git-data-routes';
 import { RouteHandler, routeFetch, statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { EXPECTED_VERSION_PURGE_URL } from '../core/github/version-pointer.mock';
@@ -18,7 +18,7 @@ export function createEventDeleteFetch(overrides: Record<string, RouteHandler> =
     routeFetch({
       ...createGitDataRoutes(DELETE_SHAS),
       [`GET ${EXPECTED_VERSION_PURGE_URL}`]: () => statusResponse(OK_STATUS),
-      [DB_CONTENTS_KEY]: () => new Response(CURRENT_DB_BYTES),
+      [dbContentsKey(DELETE_SHAS.headSha)]: () => new Response(CURRENT_DB_BYTES),
       [SOURCE_XLSX_HEAD_KEY]: () => statusResponse(OK_STATUS),
       ...overrides,
     }),

@@ -34,7 +34,7 @@ export async function deleteEvent(
 
   const commitSha = await commitFilesAtomically(
     token,
-    () => buildCommitFiles(fetchFn, token, slug, paths),
+    (parentSha) => buildCommitFiles(fetchFn, token, slug, paths, parentSha),
     `${DELETE_COMMIT_MESSAGE_PREFIX}${slug}`,
     fetchFn,
   );
@@ -59,9 +59,15 @@ export async function deleteEvent(
  * rejects a deletion of a path that is not there, so the workbook is probed (per attempt too — the
  * repository can move between attempts) and only an existing one joins the commit.
  */
-async function buildCommitFiles(fetchFn: GithubFetchFn, token: string, slug: string, paths: EventFilePaths): Promise<CommitFile[]> {
+async function buildCommitFiles(
+  fetchFn: GithubFetchFn,
+  token: string,
+  slug: string,
+  paths: EventFilePaths,
+  parentSha: string,
+): Promise<CommitFile[]> {
   const [dbFile, sourceXlsxExists] = await Promise.all([
-    buildProtocolDbCommitFile(token, (dbBytes) => removeEventFromDb(dbBytes, { slug }), fetchFn),
+    buildProtocolDbCommitFile(token, (dbBytes) => removeEventFromDb(dbBytes, { slug }), fetchFn, parentSha),
     repoFileExists(token, paths.sourceXlsx, fetchFn),
   ]);
 

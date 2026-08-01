@@ -55,7 +55,7 @@ export async function publishEvents(
   const slug = batchSlug(ordered);
   const commitSha = await commitFilesAtomically(
     token,
-    () => buildCommitFiles(fetchFn, token, ordered, weathers),
+    (parentSha) => buildCommitFiles(fetchFn, token, ordered, weathers, parentSha),
     `${COMMIT_MESSAGE_PREFIX}${slug}`,
     fetchFn,
   );
@@ -85,6 +85,7 @@ async function buildCommitFiles(
   token: string,
   ordered: PublishEventInput[],
   weathers: (EventWeather | null)[],
+  parentSha: string,
 ): Promise<CommitFile[]> {
   const dbFile = await buildProtocolDbCommitFile(
     token,
@@ -94,6 +95,7 @@ async function buildCommitFiles(
         ordered.map((input, index) => ({ event: input.event, rows: input.rows, weather: weathers[index] })),
       ),
     fetchFn,
+    parentSha,
   );
 
   return [...ordered.flatMap(sourceXlsxCommitFile), dbFile];

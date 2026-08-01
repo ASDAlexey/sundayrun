@@ -20,7 +20,14 @@ export const GIT_COMMITS_URL = `${PROTOCOLS_REPO_API_URL}/git/commits`;
 /** Contents API base; append the file path and `CONTENTS_REF_QUERY`. */
 export const REPO_CONTENTS_URL = `${PROTOCOLS_REPO_API_URL}/contents/`;
 
-export const CONTENTS_REF_QUERY = `?ref=${PROTOCOLS_REPO_BRANCH}`;
+/**
+ * The Contents API resolves `?ref=` against anything git can name, so a commit sha pins the read to
+ * an exact tree. A publication uses that to download the db at the very commit its own commit will
+ * be a child of; everything else reads the branch tip.
+ */
+export const CONTENTS_REF_QUERY_PREFIX = '?ref=';
+
+export const CONTENTS_REF_QUERY = `${CONTENTS_REF_QUERY_PREFIX}${PROTOCOLS_REPO_BRANCH}`;
 
 export const GITHUB_JSON_ACCEPT = 'application/vnd.github+json';
 
