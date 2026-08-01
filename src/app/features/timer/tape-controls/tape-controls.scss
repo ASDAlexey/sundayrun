@@ -1,6 +1,27 @@
 @use 'styles/buttons' as b;
 @use 'styles/typography' as t;
 
+// -------------------------------------------------------------------------------------------------
+//  ОТКЛЮЧЕНО 31.07.2026 — очередь безымянных отсечек.
+//
+//  «ОТСЕЧКА», «Разобрать круг» и «Разобрать финиш» сняты с экрана на время обкатки: судья работает
+//  одними плитками, и один способ записать время проще объяснить и труднее перепутать, чем два.
+//
+//  Снято **только стилями**. Ядро (`core/timer/session-actions.ts`, `session-auto-handout.ts`),
+//  лист раздачи, разбор очереди на карточке публикации и все спеки остались нетронутыми, поэтому
+//  вернуть механику — это удалить одно объявление ниже. Уже сохранённые в localStorage замеры с
+//  безымянными временами при этом не запираются: «Разобрать / Выбросить» на карточке сохранения
+//  живёт отдельно от этого компонента и продолжает работать.
+//
+//  `display: none`, а не `visibility` или `opacity`: скрытая кнопка не должна оставаться в порядке
+//  табуляции и в дереве доступности — иначе она нажимается с клавиатуры и читается скринридером.
+// -------------------------------------------------------------------------------------------------
+:host {
+  display: none;
+}
+
+// Ниже — исходная раскладка, она ждёт возвращения механики.
+//
 // The host has to carry the width, not the div inside it: as a flex item of the bottom bar an
 // unstyled host sizes to its content, and «ОТСЕЧКА» shrank to the width of the word while «+ ещё
 // один» broke onto two lines. 640 px is the ceiling — the keys stay big, but a key the width of a
@@ -8,12 +29,13 @@
 //
 // Centring is left to the bar itself (`.timer__actions`): an auto margin here would centre the keys
 // inside their own slot and push the pair off the middle whenever the roster key stands beside them.
-:host {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  max-width: 640px;
-}
+//
+// :host {
+//   display: flex;
+//   flex: 1;
+//   min-width: 0;
+//   max-width: 640px;
+// }
 
 .timer-tape {
   display: flex;
