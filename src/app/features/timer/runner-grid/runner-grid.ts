@@ -2,7 +2,7 @@ import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray 
 import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
 import { formatRaceTime } from '../../../core/time/duration';
-import { recordSplit, removeRunner, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
+import { recordSplit, removeRunner, setRunnerOutcome } from '../../../core/timer/session-actions';
 import { handOutSoleLapSplit } from '../../../core/timer/session-auto-handout';
 import { hasDuplicateSurnames } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
@@ -25,7 +25,6 @@ import {
   TIMER_SCROLL_MIN_RUNNERS,
   TIMER_SHELF_MIN_RUNNERS,
   TIMER_TILE_EMPTY_TIME,
-  TIMER_UNDO_WINDOW_MS,
 } from './runner-grid.constant';
 import { TimerDensity } from './runner-grid.enum';
 import { TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid.interface';
@@ -117,13 +116,23 @@ export class TimerGrid {
     this.#shelved() ? this.#views().filter((view) => view.stage === TimerRunnerStage.finished) : [],
   );
 
-  /** A tap on a tile: first time is the 2.3 km lap, second the finish, a quick repeat takes it back. */
+  /**
+   * A tap on a tile: the first time is the 2.3 km lap, the second the finish. Nothing else — a tap
+   * never deletes.
+   *
+   * It used to: a repeat inside three seconds took the last record back (docs/TIMER.md §4). That
+   * rule made the two taps of one runner impossible to place less than three seconds apart, and the
+   * finish of the last man is exactly where they land close together — the organiser tapped, saw
+   * nothing happen, tapped again, and every second press quietly deleted the press before it. The
+   * race could not be ended at all, and the deletions were invisible: the live region that was
+   * supposed to say «отменено» is read out by screen readers and by nobody else.
+   *
+   * Undo stays where it can be seen and cannot fire by accident — «Отменить» in the top bar, the
+   * swipe right on the tile, and the runner's own card. The finger stutter that the rule was really
+   * guarding against is caught 100 ms earlier and one layer down, by the tile's own 400 ms guard.
+   */
   protected onTap(view: TimerTileView): void {
     const atMs = this.#clock.nowMs();
-
-    if (this.#undoRecent(view, atMs)) {
-      return;
-    }
 
     if (!this.recording() || view.stage === TimerRunnerStage.finished || view.stage === TimerRunnerStage.retired) {
       // Twice sharply: the tap was refused, and a thumb has to learn that without looking down.
@@ -138,7 +147,7 @@ export class TimerGrid {
     // The tap that gives the second-to-last man his lap leaves exactly one runner out on the course:
     // whatever is queued nameless is then his, and the core hands it over without being asked.
     this.#sessions.updateActive((current) => handOutSoleLapSplit(recordSplit(current, view.runner.id, atMs, splitId)));
-    this.#lastTap.set({ atMs, runnerId: view.runner.id, splitId });
+    this.#lastTap.set({ atMs, runnerId: view.runner.id });
     this.#haptics.play(finishing ? TimerFeedback.finish : TimerFeedback.lap);
     this.announce.emit({
       kind: finishing ? TimerAnnouncementKind.finish : TimerAnnouncementKind.lap,
@@ -191,21 +200,5 @@ export class TimerGrid {
     moveItemInArray(order, event.previousIndex, event.currentIndex);
     this.#orderedIds.set(order);
     this.#manualOrder.set(true);
-  }
-
-  /** A repeat tap inside the undo window cancels the record instead of adding the next one. */
-  #undoRecent(view: TimerTileView, atMs: number): boolean {
-    const last = this.#lastTap();
-
-    if (last?.runnerId !== view.runner.id || atMs - last.atMs > TIMER_UNDO_WINDOW_MS) {
-      return false;
-    }
-
-    this.#lastTap.set(null);
-    this.#sessions.updateActive((current) => removeSplit(current, last.splitId));
-    this.#haptics.play(TimerFeedback.cancel);
-    this.announce.emit({ kind: TimerAnnouncementKind.undo, name: view.runner.fullName, timeText: formatRaceTime(last.atMs) });
-
-    return true;
   }
 }

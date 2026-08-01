@@ -117,7 +117,7 @@ describe('TimerGrid', () => {
     expect(tiles(), 'no measurement, no keyboard').toEqual([]);
   });
 
-  it('records the lap, records again once the window has passed, and takes the last one back inside it', async () => {
+  it('records on every tap of the same tile and never deletes one', async () => {
     sessions.active.set(GRID_PLAIN_RUNNING);
     await create();
 
@@ -136,21 +136,22 @@ describe('TimerGrid', () => {
 
     const recorded: TimerSession = sessions.updateActive.mock.calls[1][0](GRID_PLAIN_RUNNING);
 
-    expect(announced, 'three seconds later the same tile is a new time, not an undo').toHaveBeenLastCalledWith({
+    expect(announced, 'a second press on the same tile is the next time, not an undo').toHaveBeenLastCalledWith({
       kind: TimerAnnouncementKind.lap,
       name: GRID_PLAIN_RUNNERS[0].fullName,
       timeText: GRID_LATE_TAP_TIME_TEXT,
     });
+    expect(recorded.splits.length).toBe(1);
 
     tiles()[0].dispatchEvent(tilePointerEvent('pointerdown', TILE_DOWN_THIRD));
 
-    expect(announced).toHaveBeenLastCalledWith({
-      kind: TimerAnnouncementKind.undo,
+    expect(announced, 'and so is a third, however fast they follow each other').toHaveBeenLastCalledWith({
+      kind: TimerAnnouncementKind.lap,
       name: GRID_PLAIN_RUNNERS[0].fullName,
       timeText: GRID_LATE_TAP_TIME_TEXT,
     });
     expect(sessions.updateActive).toHaveBeenCalledTimes(3);
-    expect(sessions.updateActive.mock.calls[2][0](recorded).splits, 'the undo drops exactly what the tap wrote').toEqual([]);
+    expect(sessions.updateActive.mock.calls[2][0](recorded).splits.length, 'a tap only ever adds').toBe(2);
 
     tiles()[1].dispatchEvent(tilePointerEvent('pointerdown', TILE_DOWN_FOURTH));
     tiles()[1].dispatchEvent(tilePointerEvent('pointerup', TILE_UP_LONG_LATE));

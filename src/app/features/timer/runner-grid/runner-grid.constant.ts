@@ -13,9 +13,6 @@ export const TIMER_SHELF_MIN_RUNNERS = 25;
 /** Past thirty-two the grid is expected to scroll on a phone, so the last row gets air above the keys. */
 export const TIMER_SCROLL_MIN_RUNNERS = 33;
 
-/** A second tap on the same tile inside this window cancels the last record instead of adding one. */
-export const TIMER_UNDO_WINDOW_MS = 3_000;
-
 /** Deferred recompaction waits for this much silence before anything moves under the finger. */
 export const TIMER_QUIET_BEFORE_RELAYOUT_MS = 3_000;
 

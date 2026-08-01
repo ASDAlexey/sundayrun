@@ -176,7 +176,7 @@ export const GRID_PLAIN_AFTER_FINISH: TimerSession = {
   splits: [GRID_PLAIN_LAP_SPLIT, { id: 'split-plain-finish', atMs: FINISH_MS, runnerId: PLAIN_LEADER_ID }],
 };
 
-/** The monotonic «сейчас» of a second tap that has left the three-second undo window behind. */
+/** The monotonic «сейчас» of every tap after the first one in a sequence. */
 export const GRID_LATE_TAP_MS = 1_300_000;
 
 /** The time a tap at the stubbed clock writes down, and the one a late tap writes instead. */

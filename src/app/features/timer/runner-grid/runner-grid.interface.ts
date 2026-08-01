@@ -25,9 +25,12 @@ export interface TimerTileOrderSource {
   runners: readonly TimerRunner[];
 }
 
-/** The newest tap, kept so the next one inside the undo window can take it back. */
+/**
+ * The newest tap. It buys the grid two things: the shelf waits for a few seconds of silence before
+ * anything moves under the finger, and a swipe-right undo announces the time it has just taken back
+ * even when the tile is already showing the next one.
+ */
 export interface TimerLastTap {
   atMs: number;
   runnerId: string;
-  splitId: string;
 }
