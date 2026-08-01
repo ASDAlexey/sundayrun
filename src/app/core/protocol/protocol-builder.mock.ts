@@ -24,9 +24,15 @@ function buildParticipant(
   };
 }
 
+/** The one row a hand-edited or foreign sheet produces: a total time with no laps under it. */
+export const NO_SPLITS_PARTICIPANT_NAME = 'Гостев Семён';
+
 /**
  * Covers: a gender-less fastest finisher (no place), a male tie on total time (stable input order),
- * a finisher without the lap 1 split, 2.3 km-only runners (sorted, no places) and two DNF (input order).
+ * a finisher without the lap 1 split, 2.3 km-only runners (sorted, no places), two DNF (input order)
+ * and a timed participant with no splits at all, which neither distance can claim.
+ *
+ * Appended, never inserted: `auto-note-input.mock.ts` addresses this roster by index.
  */
 export const PROTOCOL_PARTICIPANTS: Participant[] = [
   buildParticipant(1, 'Иванов Иван', 1398000, [660000, 738000], Gender.male, 'Парсек'),
@@ -38,6 +44,7 @@ export const PROTOCOL_PARTICIPANTS: Participant[] = [
   buildParticipant(7, 'Быстрова Яна', 600000, [600000], Gender.female),
   buildParticipant(8, 'Сошедший Первый', null, [660000], Gender.male),
   buildParticipant(9, 'Сошедшая Вторая', null, [], Gender.female),
+  buildParticipant(10, NO_SPLITS_PARTICIPANT_NAME, 1450000, [], Gender.male),
 ];
 
 /**
@@ -53,6 +60,24 @@ export const TIMED_PARTICIPANTS: Participant[] = [
 export const EXPECTED_TIMED_LAP_TEXTS = ['8:48,31', '15:49,00'];
 
 export const EXPECTED_TIMED_FINISH_TEXTS = ['19:25,06', '32:08,45'];
+
+/**
+ * Neither distance claimed this one, so it lands in the tail in input order, after both DNF, and is
+ * drawn like them: no time, no distance, no place. The point is that it is drawn at all.
+ */
+export const EXPECTED_NO_SPLITS_ROW: ProtocolRow = {
+  index: 10,
+  fullName: NO_SPLITS_PARTICIPANT_NAME,
+  time23: '',
+  time5: '',
+  totalMs: null,
+  distanceKm: null,
+  gender: Gender.male,
+  placeM: null,
+  placeF: null,
+  club: '',
+  note: '',
+};
 
 export const EXPECTED_PROTOCOL_ROWS: ProtocolRow[] = [
   {
@@ -172,4 +197,5 @@ export const EXPECTED_PROTOCOL_ROWS: ProtocolRow[] = [
     club: '',
     note: '',
   },
+  EXPECTED_NO_SPLITS_ROW,
 ];

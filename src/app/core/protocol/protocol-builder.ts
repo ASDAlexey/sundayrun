@@ -11,7 +11,13 @@ import { TimedParticipant } from './protocol-builder.type';
  * Builds display-ready protocol rows:
  * 5 km finishers by total time ascending (places 1..N per gender, stable ties, genders interleaved),
  * then 2.3 km-only runners by total time ascending (no places),
- * then DNF in input order (empty times, no places).
+ * then everyone the two distances did not claim, in input order (empty times, no places).
+ *
+ * That last group is DNF in every protocol the stopwatch or a well-formed sheet produces, but it is
+ * defined as the leftovers rather than as `totalMs === null` on purpose: a hand-edited or foreign
+ * xlsx can hand over a total time with no laps under it, and such a row has no distance to be
+ * placed at. Showing it timeless — where the operator can see it and fix the laps — beats dropping
+ * it, and it keeps one row per participant, which /preview relies on to pair rows back by index.
  */
 export function buildProtocolRows(participants: Participant[]): ProtocolRow[] {
   const places: Record<GenderType, number> = { [Gender.male]: 0, [Gender.female]: 0 };
@@ -29,7 +35,7 @@ export function buildProtocolRows(participants: Participant[]): ProtocolRow[] {
       return toTwoThreeKmRow(participant, index + FIRST_ROW_INDEX, lapHundredths);
     }
 
-    return toDnfRow(participant, index + FIRST_ROW_INDEX);
+    return toUntimedRow(participant, index + FIRST_ROW_INDEX);
   });
 }
 
@@ -44,14 +50,20 @@ function lapReadingOf(participant: Participant): number | null {
 
 /**
  * The exact participant order behind `buildProtocolRows`, exported so an editing view can map
- * each built row back to its source participant by index.
+ * each built row back to its source participant by index. The result is a permutation of the input:
+ * the tail is the complement of the two timed groups, so nobody is silently left out of it.
  */
 export function orderProtocolParticipants(participants: Participant[]): Participant[] {
   return [
     ...sortByTotalMs(participants.filter(isFiveKmFinisher)),
     ...sortByTotalMs(participants.filter(isTwoThreeKmRunner)),
-    ...participants.filter((participant) => participant.totalMs === null),
+    ...participants.filter(isUntimedRow),
   ];
+}
+
+/** Neither distance claimed them: DNF, or a total time with no laps to place it on. */
+function isUntimedRow(participant: Participant): boolean {
+  return !isFiveKmFinisher(participant) && !isTwoThreeKmRunner(participant);
 }
 
 function isFiveKmFinisher(participant: Participant): participant is TimedParticipant {
@@ -108,7 +120,11 @@ function toTwoThreeKmRow(participant: TimedParticipant, index: number, lapHundre
   };
 }
 
-function toDnfRow(participant: Participant, index: number): ProtocolRow {
+/**
+ * A row with no distance behind it. DNF as a rule, but also a total time the laps cannot place:
+ * the time is dropped rather than filed under a distance the protocol cannot vouch for.
+ */
+function toUntimedRow(participant: Participant, index: number): ProtocolRow {
   return {
     index,
     fullName: participant.fullName,
