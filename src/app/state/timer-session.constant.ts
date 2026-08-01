@@ -21,3 +21,10 @@ export const TIMER_SESSION_SSR_NOW_MS = 0;
 
 /** The `randomFn` stand-in of the same prerender path. */
 export const TIMER_SESSION_SSR_RANDOM = 0;
+
+/**
+ * Said once per tab when the device refuses the write (a full quota, a locked origin). The race goes
+ * on either way — the wording has to promise exactly that and no more, because the one thing at risk
+ * is the reload, not the next tap.
+ */
+export const TIMER_SESSION_STORAGE_ERROR_MESSAGE = $localize`:@@timerSession.storageFailed:Не удалось сохранить замер на устройстве. Отсечки пишутся дальше, но пропадут при перезагрузке — опубликуйте гонку, не закрывая вкладку.`;

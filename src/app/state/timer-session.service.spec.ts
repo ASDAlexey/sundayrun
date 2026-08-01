@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { NotificationService } from '../shared/notification/notification.service';
+import { NotificationMock, notificationMock } from '../shared/notification/notification.service.mock';
 import { PADDED_TIMER_ID, TIMER_ID } from '../core/timer/timer-id.mock';
 import { TIMER_SESSION, TIMER_SESSION_ID } from '../core/timer/timer-session.mock';
 import { TIMER_SESSION_STORAGE_KEY } from './timer-session.constant';
@@ -22,13 +24,21 @@ describe('TimerSessionService', () => {
   const getItem = vi.fn((): string | null => null);
   const setItem = vi.fn();
   let view: TimerViewMock;
+  let notification: NotificationMock;
 
   beforeEach(() => {
     vi.clearAllMocks();
     getItem.mockReturnValue(null);
+    setItem.mockImplementation(() => undefined);
     view = timerViewMock();
+    notification = notificationMock();
     vi.stubGlobal('localStorage', { getItem, setItem });
-    TestBed.configureTestingModule({ providers: [{ provide: DOCUMENT, useValue: { defaultView: view } }] });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DOCUMENT, useValue: { defaultView: view } },
+        { provide: NotificationService, useValue: notification },
+      ],
+    });
   });
 
   afterEach(() => {
@@ -140,6 +150,24 @@ describe('TimerSessionService', () => {
 
     expect(service.sessions()).toHaveLength(1);
     expect(setItem).toHaveBeenCalledOnce();
+  });
+
+  it('keeps the race running and says so once when the device refuses to store it', () => {
+    setItem.mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+
+    const service = TestBed.inject(TimerSessionService);
+
+    service.create(CREATE_TIMER_SESSION_INPUT);
+
+    expect(service.sessions(), 'the signal is set before the device is asked, so the tap survives').toHaveLength(1);
+
+    view.Date.now.mockReturnValue(VIEW_NOW_MS + SECOND_CREATE_NOW_MS_STEP);
+    service.create(SECOND_CREATE_INPUT);
+
+    expect(service.sessions(), 'and the next one lands too, instead of throwing again').toHaveLength(2);
+    expect(notification.error, 'the organiser hears about it once, not on every tap').toHaveBeenCalledOnce();
   });
 
   it('writes the measurement on a browser with no Storage API at all', () => {

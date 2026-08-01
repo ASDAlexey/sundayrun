@@ -1,11 +1,13 @@
-import { DOCUMENT, Service, computed, inject, signal } from '@angular/core';
+import { DOCUMENT, Injector, Service, computed, inject, signal } from '@angular/core';
 
 import { createSession } from '../core/timer/session-actions';
 import { createTimerId } from '../core/timer/timer-id';
+import { NotificationService } from '../shared/notification/notification.service';
 import {
   TIMER_SESSION_SSR_NOOP_STORAGE,
   TIMER_SESSION_SSR_NOW_MS,
   TIMER_SESSION_SSR_RANDOM,
+  TIMER_SESSION_STORAGE_ERROR_MESSAGE,
   TIMER_SESSION_STORAGE_KEY,
 } from './timer-session.constant';
 import { CreateTimerSessionInput, TimerSessionState } from './timer-session.interface';
@@ -24,6 +26,8 @@ import { TimerStorage } from './timer-storage.type';
 @Service()
 export class TimerSessionService {
   readonly #view = inject(DOCUMENT).defaultView;
+  /** Resolved on demand, like `NotifyingErrorHandler` does it: MatSnackBar has no business in a prerender. */
+  readonly #injector = inject(Injector);
   readonly #state = signal<TimerSessionState>(readTimerSessionState(this.#storage.getItem(TIMER_SESSION_STORAGE_KEY)));
 
   readonly sessions = computed(() => this.#state().sessions);
@@ -32,6 +36,7 @@ export class TimerSessionService {
   readonly hasActive = computed(() => this.active() !== null);
 
   #persistenceRequested = false;
+  #storageFailureReported = false;
 
   /** Starts a fresh measurement for the given race date and opens it; returns its local id. */
   create(input: CreateTimerSessionInput): string {
@@ -105,10 +110,31 @@ export class TimerSessionService {
     }
   }
 
+  /**
+   * The signal first, the device second — the same order the reading side documents and the roster
+   * cache already follows. A `setItem` that throws (a full quota, an origin where storage is denied)
+   * would otherwise take the tap with it: the signal would never update, the split would vanish from
+   * the screen, and every following tap on the finish line would throw again. Here it costs one
+   * toast, said once, and the race carries on in memory.
+   */
   #write(state: TimerSessionState): void {
-    this.#storage.setItem(TIMER_SESSION_STORAGE_KEY, serializeTimerSessionState(state));
-    this.#requestPersistence();
     this.#state.set(state);
+
+    try {
+      this.#storage.setItem(TIMER_SESSION_STORAGE_KEY, serializeTimerSessionState(state));
+      this.#requestPersistence();
+    } catch {
+      this.#reportStorageFailure();
+    }
+  }
+
+  #reportStorageFailure(): void {
+    if (this.#storageFailureReported) {
+      return;
+    }
+
+    this.#storageFailureReported = true;
+    this.#injector.get(NotificationService).error(TIMER_SESSION_STORAGE_ERROR_MESSAGE);
   }
 
   #nowMs(): number {
