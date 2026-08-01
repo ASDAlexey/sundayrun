@@ -18,6 +18,9 @@ export const TIMER_PICKER_NO_APPEARANCES = 0;
 /** A full name needs a surname and a first name: «Попов» alone is not a participant. */
 export const TIMER_PICKER_MIN_NAME_PARTS = 2;
 
+/** One person added: the confirmation strip spells the name out instead of counting people. */
+export const TIMER_PICKER_SINGLE_ADDITION = 1;
+
 /** Empty search box, empty newcomer box — one shared blank so no stray `''` sits in the code. */
 export const TIMER_PICKER_EMPTY_TEXT = '';
 

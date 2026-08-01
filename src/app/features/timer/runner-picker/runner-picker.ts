@@ -25,6 +25,7 @@ import {
   TIMER_PICKER_PROBE_ID,
   TIMER_PICKER_REGULARS_LIMIT,
   TIMER_PICKER_ROSTER_DATE_FORMAT,
+  TIMER_PICKER_SINGLE_ADDITION,
   TIMER_PICKER_SSR_NOW_MS,
   TIMER_PICKER_SSR_RANDOM,
   TIMER_PICKER_SUGGESTION_LIMIT,
@@ -57,6 +58,13 @@ export class TimerPicker {
   readonly #view = inject(DOCUMENT).defaultView;
   readonly #duplicateSurname = signal<string | null>(null);
   readonly #checkedKeys = signal<ReadonlySet<string>>(new Set<string>());
+  /**
+   * Whom the newest «Добавить» put in the line-up. A newcomer is typed in by ear at a sign-up table,
+   * so the surname arrives misheard often enough that taking it back has to cost one tap — and the
+   * roster list that already holds a «×» per person sits below a directory of thirty regulars, which
+   * on a phone is a scroll away from the key that has just been pressed.
+   */
+  readonly #justAddedIds = signal<readonly string[]>([]);
   readonly #runners = computed(() => this.#sessions.active()?.runners ?? []);
   readonly #pickedKeys = computed(() =>
     this.#runners().reduce<string[]>((keys, runner) => (runner.athleteKey === null ? keys : [...keys, runner.athleteKey]), []),
@@ -103,6 +111,18 @@ export class TimerPicker {
 
   readonly runners = this.#runners;
   readonly runnerCount = computed(() => this.#runners().length);
+  /**
+   * The line that says what the last press did and offers it back. Derived from the roster rather
+   * than remembered as text, so a person removed by the «×» below drops out of it by himself and the
+   * strip can never offer to undo something that is no longer there.
+   */
+  readonly justAdded = computed(() => {
+    const ids = this.#justAddedIds();
+    const added = this.#runners().filter((runner) => ids.includes(runner.id));
+
+    return added.length === 0 ? null : justAddedText(added);
+  });
+
   readonly warningSurname = this.#duplicateSurname.asReadonly();
   readonly suggestions = computed(() =>
     this.#toOptions(suggestAthletes(this.#roster.records(), this.query(), this.#pickedKeys(), TIMER_PICKER_SUGGESTION_LIMIT)),
@@ -231,6 +251,18 @@ export class TimerPicker {
   }
 
   /**
+   * «Убрать» on the confirmation strip: everybody the last press added leaves again. One press
+   * against one press — a batch of thirty regulars goes back the same way the newcomer does.
+   */
+  undoJustAdded(): void {
+    const ids = this.#justAddedIds();
+
+    this.#justAddedIds.set([]);
+    this.#duplicateSurname.set(null);
+    this.#sessions.updateActive((session) => ids.reduce((current, id) => removeRunner(current, id), session));
+  }
+
+  /**
    * The one write path of the sheet. Ids are minted off the injected clock with the index folded in,
    * so a batch of thirty gets thirty distinct ids from one reading — `addRunner` drops a repeated id,
    * and a shared one would silently swallow twenty-nine people.
@@ -241,11 +273,11 @@ export class TimerPicker {
     }
 
     const nowMs = this.#nowMs();
+    const minted = candidates.map((candidate, index) => ({ ...candidate, id: this.#nextId(nowMs + index) }));
 
     this.#duplicateSurname.set(this.#twinSurname(this.#runners(), candidates));
-    this.#sessions.updateActive((session) =>
-      candidates.reduce((current, candidate, index) => addRunner(current, { ...candidate, id: this.#nextId(nowMs + index) }), session),
-    );
+    this.#sessions.updateActive((session) => minted.reduce((current, runner) => addRunner(current, runner), session));
+    this.#justAddedIds.set(minted.map((runner) => runner.id));
   }
 
   /**
@@ -368,6 +400,27 @@ function addCheckedText(count: number): string {
 /** «Готово · 12» — nothing pending, so the button answers with the line-up it closes on. */
 function readyText(count: number): string {
   return $localize`:@@timerPicker.done:Готово · ${count}:count:`;
+}
+
+/**
+ * «Добавили „Тестов Тест"» for one, «Добавили 12 человек» for a batch. The single name is spelled
+ * out on purpose: a misheard surname is the whole reason the strip exists, and it can only be caught
+ * by reading the name back.
+ */
+function justAddedText(added: readonly TimerRunner[]): string {
+  const [first] = added;
+
+  if (added.length === TIMER_PICKER_SINGLE_ADDITION) {
+    return $localize`:@@timerPicker.justAddedOne:Добавили «${first.fullName}:name:»`;
+  }
+
+  const count = added.length;
+
+  return pluralText(count, {
+    one: $localize`:@@timerPicker.justAddedManyOne:Добавили ${count}:count: человек`,
+    few: $localize`:@@timerPicker.justAddedManyFew:Добавили ${count}:count: человека`,
+    many: $localize`:@@timerPicker.justAddedManyMany:Добавили ${count}:count: человек`,
+  });
 }
 
 /** «Уточните пол: 2 человека» — the line that keeps «Готово» locked until it is gone. */

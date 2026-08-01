@@ -47,6 +47,16 @@
       }
     </div>
 
+    <!-- The receipt of the last press, right where the press was: a surname typed in by ear is
+    misheard often enough that taking it back must not cost a scroll past thirty regulars. -->
+    @if (justAdded(); as added) {
+      <p class="timer-picker__added" role="status">
+        <span class="timer-picker__added-text">{{ added }}</span>
+
+        <button class="timer-picker__added-undo" i18n="@@timerPicker.undoAdded" type="button" (click)="undoJustAdded()">Убрать</button>
+      </p>
+    }
+
     @if (suggestions().length > 0) {
       <ul class="timer-picker__list">
         @for (option of suggestions(); track option.key) {
@@ -112,28 +122,9 @@
       </div>
     }
 
-    <section class="timer-picker__section">
-      <h3 class="timer-picker__section-title" i18n="@@timerPicker.regularsTitle">Постоянные участники</h3>
-
-      @if (regulars().length > 0) {
-        <ul class="timer-picker__list">
-          @for (option of regulars(); track option.key) {
-            <li>
-              <label class="timer-picker__item" [class.timer-picker__item_picked]="option.checked">
-                <input class="timer-picker__check" type="checkbox" [checked]="option.checked" (change)="toggleRegular(option)" />
-
-                <span class="timer-picker__item-name">{{ option.displayName }}</span>
-
-                <span class="timer-picker__item-meta">{{ option.metaText }}</span>
-              </label>
-            </li>
-          }
-        </ul>
-      } @else {
-        <p class="timer-picker__empty" i18n="@@timerPicker.regularsEmpty">Справочник пока пуст — впишите участника в поле поиска.</p>
-      }
-    </section>
-
+    <!-- The line-up comes before the directory it is built from. The other way round the thirty
+    regulars stood between the key that adds a person and the list that shows they arrived, so on a
+    phone every addition had to be verified by scrolling — and a misheard surname was never checked. -->
     <section class="timer-picker__section">
       <h3 class="timer-picker__section-title" i18n="@@timerPicker.rosterTitle">В составе · {{ runnerCount() }}</h3>
 
@@ -172,6 +163,28 @@
         </ul>
       } @else {
         <p class="timer-picker__empty" i18n="@@timerPicker.rosterEmpty">Пока никого — найдите первого в справочнике.</p>
+      }
+    </section>
+
+    <section class="timer-picker__section">
+      <h3 class="timer-picker__section-title" i18n="@@timerPicker.regularsTitle">Постоянные участники</h3>
+
+      @if (regulars().length > 0) {
+        <ul class="timer-picker__list">
+          @for (option of regulars(); track option.key) {
+            <li>
+              <label class="timer-picker__item" [class.timer-picker__item_picked]="option.checked">
+                <input class="timer-picker__check" type="checkbox" [checked]="option.checked" (change)="toggleRegular(option)" />
+
+                <span class="timer-picker__item-name">{{ option.displayName }}</span>
+
+                <span class="timer-picker__item-meta">{{ option.metaText }}</span>
+              </label>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="timer-picker__empty" i18n="@@timerPicker.regularsEmpty">Справочник пока пуст — впишите участника в поле поиска.</p>
       }
     </section>
 

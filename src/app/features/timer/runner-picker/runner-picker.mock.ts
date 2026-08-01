@@ -157,3 +157,9 @@ export const PICKER_ADD_CHECKED_TEXT = 'Добавить · 2';
 
 /** The same footer once the two joined the pair already standing there. */
 export const PICKER_DONE_TEXT = 'Готово · 4';
+
+/** The receipt of one newcomer, of a pair added at once, and of what is left when one of them goes. */
+export const PICKER_JUST_ADDED_ONE_TEXT = 'Добавили «Попов Игорь»';
+export const PICKER_JUST_ADDED_BATCH = 2;
+export const PICKER_JUST_ADDED_BATCH_TEXT = 'Добавили 2 человека';
+export const PICKER_JUST_ADDED_LEFT_TEXT = 'Добавили «Троилин Антон»';

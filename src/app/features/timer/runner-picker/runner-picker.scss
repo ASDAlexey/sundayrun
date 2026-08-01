@@ -123,6 +123,42 @@
     cursor: pointer;
   }
 
+  // The receipt of the last press. Warm rather than green: it is not a success banner, it is the
+  // one second in which the organiser reads the surname back and decides whether it was heard right.
+  &__added {
+    display: flex;
+    flex: none;
+    align-items: center;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 4px 0 12px;
+    gap: 8px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: var(--accent-glow);
+  }
+
+  &__added-text {
+    @include t.text('label', 'medium');
+
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__added-undo {
+    @include b.button-toggle;
+
+    flex: none;
+    min-height: 36px;
+    padding: 0 12px;
+    border-color: var(--accent-line);
+    color: var(--accent-warm);
+  }
+
   &__quick {
     display: flex;
     flex: none;

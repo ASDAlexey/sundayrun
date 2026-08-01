@@ -27,6 +27,10 @@ import {
   PICKER_CACHED_AT_MS,
   PICKER_DONE_TEXT,
   PICKER_EMPTY_SESSION,
+  PICKER_JUST_ADDED_BATCH,
+  PICKER_JUST_ADDED_BATCH_TEXT,
+  PICKER_JUST_ADDED_LEFT_TEXT,
+  PICKER_JUST_ADDED_ONE_TEXT,
   PICKER_MISSING_GENDER_TEXT,
   PICKER_PREVIOUS_SESSION,
   PICKER_QUERY,
@@ -236,6 +240,42 @@ describe('TimerPicker', () => {
 
     expect(picker.runners().at(-1)?.gender, 'the tap wins over the guess').toBe(Gender.male);
     expect(picker.warningSurname(), 'a surname nobody shares clears the warning').toBeNull();
+  });
+
+  it('names the person the last press added and takes that press back whole', () => {
+    const picker = fixture.componentInstance;
+    const roster = picker.runners().length;
+
+    expect(picker.justAdded(), 'nothing has been pressed yet').toBeNull();
+
+    picker.query.set(NEWCOMER_RAW_NAME);
+    picker.addNewcomer();
+
+    expect(picker.justAdded(), 'a misheard surname is caught only by reading it back').toBe(PICKER_JUST_ADDED_ONE_TEXT);
+
+    picker.undoJustAdded();
+
+    expect(picker.runners().length, 'one press in, one press out').toBe(roster);
+    expect(picker.justAdded(), 'and the strip goes with the person').toBeNull();
+    expect(picker.warningSurname()).toBeNull();
+
+    const [top, second] = picker.regulars();
+
+    picker.toggleRegular(top);
+    picker.toggleRegular(second);
+    picker.addRegulars();
+
+    expect(picker.justAdded(), 'a batch is counted, not spelled out').toBe(PICKER_JUST_ADDED_BATCH_TEXT);
+
+    const [, newest] = picker.runners().slice(-PICKER_JUST_ADDED_BATCH);
+
+    picker.remove(newest);
+
+    expect(picker.justAdded(), 'a «×» below narrows the strip instead of stranding it').toBe(PICKER_JUST_ADDED_LEFT_TEXT);
+
+    picker.undoJustAdded();
+
+    expect(picker.runners().length, '«Убрать» clears whatever is left of that press').toBe(roster);
   });
 
   it('holds «Готово» until every gender is answered for, and lets a mistake be removed', () => {
