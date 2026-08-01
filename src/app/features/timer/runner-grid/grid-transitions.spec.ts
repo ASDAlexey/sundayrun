@@ -1,5 +1,11 @@
 import { TimerRunnerOutcome } from '../../../core/timer/timer-session.enum';
-import { KUZNETSOV_RUNNER_ID, TIMER_SESSION, TROILIN_FINISH_SPLIT_ID, TROILIN_RUNNER_ID } from '../../../core/timer/timer-session.mock';
+import {
+  KUZNETSOV_RUNNER_ID,
+  POPOV_IGOR_RUNNER_ID,
+  TIMER_SESSION,
+  TROILIN_FINISH_SPLIT_ID,
+  TROILIN_RUNNER_ID,
+} from '../../../core/timer/timer-session.mock';
 import { removeNewestSplit, retireOutcome } from './grid-transitions';
 
 describe('removeNewestSplit', () => {
@@ -13,8 +19,12 @@ describe('removeNewestSplit', () => {
 });
 
 describe('retireOutcome', () => {
-  it('keeps the lap of somebody who ran one and calls the rest a plain DNF', () => {
-    expect(retireOutcome(TIMER_SESSION, TROILIN_RUNNER_ID)).toBe(TimerRunnerOutcome.lapOnly);
+  it('keeps the lap of somebody who ran one, calls the rest a plain DNF and leaves a finisher in the race', () => {
+    expect(retireOutcome(TIMER_SESSION, POPOV_IGOR_RUNNER_ID)).toBe(TimerRunnerOutcome.lapOnly);
     expect(retireOutcome(TIMER_SESSION, KUZNETSOV_RUNNER_ID)).toBe(TimerRunnerOutcome.dnf);
+    expect(
+      retireOutcome(TIMER_SESSION, TROILIN_RUNNER_ID),
+      'a man already home keeps his finish: `lapOnly` now outranks the tap count when the protocol is built',
+    ).toBe(TimerRunnerOutcome.active);
   });
 });

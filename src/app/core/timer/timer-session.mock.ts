@@ -126,6 +126,18 @@ export const TIMER_SESSION_FINISHED: TimerSession = {
 /** A session with a roster but an empty journal, for the "nothing recorded yet" branches. */
 export const TIMER_SESSION_WITHOUT_SPLITS: TimerSession = { ...TIMER_SESSION, splits: [] };
 
+/**
+ * The organiser's word against the tap counter: Троилин carries both a lap and a finish, and is
+ * nevertheless marked «только круг» from his card. The screen already says «сошёл» — the protocol
+ * has to agree.
+ */
+export const TIMER_SESSION_LAP_ONLY_OVER_TWO_TAPS: TimerSession = {
+  ...TIMER_SESSION_FINISHED,
+  runners: TIMER_SESSION_RUNNERS.map((runner) =>
+    runner.id === TROILIN_RUNNER_ID ? { ...runner, outcome: TimerRunnerOutcome.lapOnly } : runner,
+  ),
+};
+
 /** Nothing but the queue: the whole active field is still waiting for its very first tap. */
 export const TIMER_SESSION_ONLY_QUEUE: TimerSession = {
   ...TIMER_SESSION,

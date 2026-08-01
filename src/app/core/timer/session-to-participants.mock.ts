@@ -51,3 +51,10 @@ export const EXPECTED_UNTIMED_PARTICIPANTS: Participant[] = EXPECTED_TIMER_PARTI
   totalMs: null,
   lapsMs: [],
 }));
+
+/** «Только круг» over two taps: the finish is dropped and the lap becomes the whole race. */
+export const EXPECTED_LAP_ONLY_TROILIN: Participant = {
+  ...EXPECTED_TIMER_PARTICIPANTS[0],
+  totalMs: TROILIN_LAP_MS,
+  lapsMs: [TROILIN_LAP_MS],
+};

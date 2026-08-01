@@ -1,6 +1,6 @@
 import { removeSplit } from '../../../core/timer/session-actions';
 import { runnerSplitTimesMs, runnerSplits } from '../../../core/timer/session-splits';
-import { LAP_DONE_MIN_SPLITS, LAST_ENTRY_INDEX } from '../../../core/timer/timer-session.constant';
+import { LAP_DONE_MIN_SPLITS, LAST_ENTRY_INDEX, MAX_SPLITS_PER_RUNNER } from '../../../core/timer/timer-session.constant';
 import { TimerRunnerOutcome, TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
 import { TimerSession } from '../../../core/timer/timer-session.interface';
 
@@ -23,7 +23,18 @@ export function removeNewestSplit(session: TimerSession, runnerId: string): Time
 /**
  * What «сошёл» means for this runner: somebody who already has a 2.3 km time stopped after the lap
  * and keeps it, somebody who has nothing recorded is a plain DNF.
+ *
+ * A runner who is already home stays in the race. The gesture reaches him only when the rollback
+ * that precedes it did not fire, and `lapOnly` now outranks the tap count when the protocol is built
+ * — so answering anything else here would quietly turn his finish into a lap. The card's explicit
+ * «только круг» is the way to say that on purpose.
  */
 export function retireOutcome(session: TimerSession, runnerId: string): TimerRunnerOutcomeType {
-  return runnerSplitTimesMs(session, runnerId).length >= LAP_DONE_MIN_SPLITS ? TimerRunnerOutcome.lapOnly : TimerRunnerOutcome.dnf;
+  const recorded = runnerSplitTimesMs(session, runnerId).length;
+
+  if (recorded >= MAX_SPLITS_PER_RUNNER) {
+    return TimerRunnerOutcome.active;
+  }
+
+  return recorded >= LAP_DONE_MIN_SPLITS ? TimerRunnerOutcome.lapOnly : TimerRunnerOutcome.dnf;
 }
