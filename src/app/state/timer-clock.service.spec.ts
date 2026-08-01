@@ -6,6 +6,7 @@ import { TIMER_CLOCK_IDLE_MS, TIMER_TICK_INTERVAL_MS } from './timer-clock.const
 import { TimerClockService } from './timer-clock.service';
 import {
   CLOCK_MOCK_NOW_MS,
+  FROZEN_ELAPSED_MS,
   MONOTONIC_STEP_MS,
   RESTORED_ELAPSED_MS,
   ROUNDED_STEP_MS,
@@ -48,6 +49,11 @@ describe('TimerClockService', () => {
     service.stop();
 
     expect(view.clearInterval, 'stopping twice clears one timer').toHaveBeenCalledOnce();
+
+    service.freeze(FROZEN_ELAPSED_MS);
+
+    expect(service.elapsedMs(), 'a race that is over shows how long it took, with nothing ticking').toBe(FROZEN_ELAPSED_MS);
+    expect(service.nowMs(), 'and the monotonic base is untouched, so «Отменить» can resume the race').toBe(ROUNDED_STEP_MS);
   });
 
   it('resumes a race restored from localStorage where the dropped tab left it', () => {

@@ -9,7 +9,8 @@ import { HapticsService } from './haptics.service';
 import { HapticsServiceMock, hapticsServiceMock } from './haptics.service.mock';
 import { TimerClockService } from './timer-clock.service';
 import { TimerClockServiceMock, timerClockServiceMock } from './timer-clock.service.mock';
-import { RACE_ELAPSED_MS, RACE_EMPTY_SESSION, RACE_START_EPOCH_MS } from './timer-race.service.mock';
+import { TIMER_CLOCK_IDLE_MS } from './timer-clock.constant';
+import { RACE_ELAPSED_MS, RACE_EMPTY_SESSION, RACE_FINISHED_SESSION, RACE_START_EPOCH_MS } from './timer-race.service.mock';
 import { TimerRaceService } from './timer-race.service';
 import { TimerSessionService } from './timer-session.service';
 import { TimerSessionServiceMock, timerSessionServiceMock } from './timer-session.service.mock';
@@ -118,5 +119,17 @@ describe('TimerRaceService', () => {
     });
     expect(clock.stop, 'the digits stop with the race, not when somebody remembers the key').toHaveBeenCalledOnce();
     expect(wakeLock.release, 'and the screen goes back to the phone').toHaveBeenCalledOnce();
+
+    clock.freeze.mockClear();
+    service.sync(RACE_FINISHED_SESSION);
+
+    expect(clock.freeze, 'a measurement opened again tomorrow says how long the race took').toHaveBeenCalledExactlyOnceWith(
+      RACE_ELAPSED_MS,
+    );
+
+    clock.freeze.mockClear();
+    service.sync(TIMER_SESSION_IDLE);
+
+    expect(clock.freeze, 'and one that never started is back at zero').toHaveBeenCalledExactlyOnceWith(TIMER_CLOCK_IDLE_MS);
   });
 });

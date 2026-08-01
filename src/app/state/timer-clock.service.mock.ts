@@ -8,6 +8,7 @@ export interface TimerClockServiceMock {
   elapsedMs: WritableSignal<number>;
   start: Mock;
   stop: Mock;
+  freeze: Mock;
   nowMs: Mock;
 }
 
@@ -20,6 +21,7 @@ export function timerClockServiceMock(): TimerClockServiceMock {
     elapsedMs: signal(TIMER_CLOCK_IDLE_MS),
     start: vi.fn(),
     stop: vi.fn(),
+    freeze: vi.fn(),
     nowMs: vi.fn(() => CLOCK_MOCK_NOW_MS),
   };
 }
@@ -35,3 +37,6 @@ export const RESTORED_ELAPSED_MS = 600_000;
 
 /** A wall clock that jumped backwards behind the tab's back; the elapsed time must stay at zero. */
 export const SKEWED_EPOCH_STEP_MS = -60_000;
+
+/** What a finished measurement reopened tomorrow puts on the digits — its own stopped reading. */
+export const FROZEN_ELAPSED_MS = 1_143_260;

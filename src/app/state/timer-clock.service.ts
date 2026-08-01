@@ -49,6 +49,19 @@ export class TimerClockService implements OnDestroy {
     this.#stopTick = null;
   }
 
+  /**
+   * Puts a reading on the digits that nothing is measuring. A measurement opened again tomorrow is
+   * `finished`, so no tick ever runs for it — and without this the headline figure of a race that
+   * took twenty minutes reads «00:00,00» while the line under it says five people finished.
+   *
+   * The monotonic base is deliberately left where it was: «Отменить» can put a finished race back on
+   * the clock, and the digits then have to resume from the mass start, never from this number.
+   */
+  freeze(elapsedMs: number): void {
+    this.stop();
+    this.#elapsedMs.set(elapsedMs);
+  }
+
   /** Monotonic «сейчас» since the mass start — the `atMs` of a split, read inside `pointerdown`. */
   nowMs(): number {
     if (this.#baseMs === null) {

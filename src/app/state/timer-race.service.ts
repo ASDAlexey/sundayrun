@@ -6,6 +6,7 @@ import { TimerStatus } from '../core/timer/timer-session.enum';
 import { TimerSession } from '../core/timer/timer-session.interface';
 import { TimerFeedback } from './haptics.enum';
 import { HapticsService } from './haptics.service';
+import { TIMER_CLOCK_IDLE_MS } from './timer-clock.constant';
 import { TimerClockService } from './timer-clock.service';
 import { TIMER_EMPTY_ROSTER } from './timer-race.constant';
 import { TimerSessionService } from './timer-session.service';
@@ -62,6 +63,10 @@ export class TimerRaceService {
   sync(session: TimerSession | null): void {
     if (session?.status !== TimerStatus.running) {
       this.#idle();
+      // Nothing is ticking here, so the digits have to be told what to show: how long the race took
+      // if it is over, and zero for one that has not started. Reopening a finished measurement
+      // otherwise puts «00:00,00» over a line that says five people finished.
+      this.#clock.freeze(session?.stoppedAtMs ?? TIMER_CLOCK_IDLE_MS);
 
       return;
     }
