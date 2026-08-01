@@ -27,4 +27,7 @@ export const UNUSABLE_WATCH_ACCOUNT_JSONS = [
   JSON.stringify({ email: WATCH_EMAIL_MOCK }),
   JSON.stringify({ token: WATCH_TOKEN_MOCK }),
   JSON.stringify({ token: WATCH_TOKEN_MOCK, email: WATCH_EMAIL_MOCK }),
+  // A region that is a string but not one of the three hosts: `COROS_REGION_API_URLS` answers
+  // `undefined` for it, and the api templates would then send the session token to our own origin.
+  JSON.stringify({ ...STORED_WATCH_ACCOUNT, region: 'moon' }),
 ];

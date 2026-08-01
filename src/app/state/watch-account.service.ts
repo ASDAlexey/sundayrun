@@ -1,7 +1,7 @@
 import { computed, inject, Service, signal } from '@angular/core';
 
 import { CorosClient } from '../core/coros/coros.client';
-import { CorosRegionType } from '../core/coros/coros-region.enum';
+import { CorosRegion, CorosRegionType } from '../core/coros/coros-region.enum';
 import { SelfAthleteStorage } from './self-athlete.type';
 import { clearTracks } from './athlete-track.storage';
 import { TrackSource } from './track-source.enum';
@@ -82,5 +82,15 @@ function isWatchAccount(value: unknown): value is WatchAccount {
   const email = 'email' in value ? value.email : undefined;
   const region = 'region' in value ? value.region : undefined;
 
-  return typeof token === 'string' && token !== '' && typeof email === 'string' && typeof region === 'string';
+  return typeof token === 'string' && token !== '' && typeof email === 'string' && isCorosRegion(region);
+}
+
+/**
+ * The region has to be one of the hosts we know, not merely a string. `COROS_REGION_API_URLS` is
+ * keyed by the enum, so a foreign value resolves to `undefined` and the api templates build a
+ * relative url — which would send the watch session token to our own origin, into GitHub's logs,
+ * and report it as an ordinary api failure instead of «перепривяжите часы».
+ */
+function isCorosRegion(value: unknown): boolean {
+  return Object.values(CorosRegion).some((region) => region === value);
 }
