@@ -18,6 +18,16 @@
         <a class="athlete__versus" i18n="@@athlete.versusLink" matButton="outlined" [routerLink]="versusLink()">Очные встречи</a>
 
         @if (isSelf()) {
+          <!--
+            Eager, though a `@defer (on interaction)` would fit it perfectly: a device-local tool
+            nobody but this visitor can use, and a crawler least of all. It is not deferred because
+            it is the only component this page holds that nothing else references, so the compiler
+            emits a dependency loader for it — and that generated arrow maps back onto the class
+            declaration as a function no test can reach (measured: it survives both
+            `getDeferBlocks().render()` and a real press), which would cost this whole 600-line file
+            its place in the coverage gate. Thirteen kilobytes are not worth that trade. The same AOT
+            mapping quirk is documented for `viewChild` in `vitest-base.config.ts`.
+          -->
           <app-watch-sync [races]="ownRaceDays()" />
         }
       </header>

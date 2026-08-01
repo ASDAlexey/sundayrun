@@ -1,4 +1,29 @@
 import { pluralText } from '../../core/i18n/plural-text';
+import { NO_BEST_TIME_TEXT } from './athlete-page.constant';
+
+/**
+ * The link-preview sentence of one profile — «Попов Алексей — 42 финиша на 5 км, личный рекорд
+ * 19:12,07». The profile link is the one people actually paste to each other («посмотри мой
+ * профиль»), so its preview has to name them rather than the site. Empty while there is nobody to
+ * describe, which is what restores the site-wide description on a missing or failed profile.
+ */
+export function athleteDescriptionText(displayName: string, finishCount: number, bestTimeText: string): string {
+  if (displayName === '') {
+    return '';
+  }
+
+  const finishes = pluralText(finishCount, {
+    one: $localize`:@@athlete.metaFinishesOne:${finishCount}:count: финиш на 5 км`,
+    few: $localize`:@@athlete.metaFinishesFew:${finishCount}:count: финиша на 5 км`,
+    many: $localize`:@@athlete.metaFinishesMany:${finishCount}:count: финишей на 5 км`,
+  });
+
+  if (bestTimeText === NO_BEST_TIME_TEXT) {
+    return $localize`:@@athlete.metaDescription:${displayName}:name: — ${finishes}:finishes:`;
+  }
+
+  return $localize`:@@athlete.metaDescriptionWithBest:${displayName}:name: — ${finishes}:finishes:, личный рекорд ${bestTimeText}:best:`;
+}
 
 /** «1 раз / 2 раза / 5 раз рядом» — each plural form is a separate translatable message. */
 export function closeTimesText(count: number): string {

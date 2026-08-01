@@ -465,6 +465,12 @@ describe('AthletePage', () => {
     expect(page.isSelf()).toBe(true);
     expect(page.ownRaceDays()).toEqual(EXPECTED_OWN_RACE_DAYS);
 
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement;
+
+    expect(element.querySelector('app-watch-sync'), 'the watch tool is offered on your own profile only').not.toBeNull();
+
     localStorage.removeItem(SELF_ATHLETE_STORAGE_KEY);
   });
 });
