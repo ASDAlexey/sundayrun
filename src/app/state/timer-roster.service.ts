@@ -6,7 +6,8 @@ import { buildLapStats } from '../core/timer/lap-stats';
 import { AthletesService } from '../github/athletes.service';
 import { TIMER_ROSTER_SSR_NOOP_STORAGE, TIMER_ROSTER_SSR_NOW_MS, TIMER_ROSTER_STORAGE_KEY } from './timer-roster.constant';
 import { TimerRosterStatus, TimerRosterStatusType } from './timer-roster.enum';
-import { readTimerRosterCache, serializeTimerRosterCache } from './timer-roster.storage';
+import { TimerRosterSnapshot } from './timer-roster.interface';
+import { readTimerRosterCache, serializeTimerRosterCache, toMinimalRecord } from './timer-roster.storage';
 import { TimerStorage } from './timer-storage.type';
 
 /**
@@ -56,21 +57,45 @@ export class TimerRosterService {
     this.#status.set(TimerRosterStatus.loading);
 
     try {
-      const [records, pacingRows] = await Promise.all([this.#athletes.loadRecords(), this.#athletes.loadPacingRows()]);
-      const stats = buildLapStats(pacingRows);
+      const roster = await this.#readRoster();
       const savedAtMs = this.#nowMs();
 
-      this.#records.set(records);
-      this.#expectedLapMs.set(stats.expectedLapMs);
-      this.#bestLapMs.set(stats.bestLapMs);
-      this.#appearanceCount.set(stats.appearanceCount);
-      this.#courseRecordLapMs.set(stats.courseRecordLapMs);
+      this.#records.set(roster.records);
+      this.#expectedLapMs.set(roster.expectedLapMs);
+      this.#bestLapMs.set(roster.bestLapMs);
+      this.#appearanceCount.set(roster.appearanceCount);
+      this.#courseRecordLapMs.set(roster.courseRecordLapMs);
       this.#cachedAtMs.set(savedAtMs);
       this.#status.set(TimerRosterStatus.ready);
-      this.#storage.setItem(TIMER_ROSTER_STORAGE_KEY, serializeTimerRosterCache({ records, ...stats, savedAtMs }));
+      this.#storage.setItem(TIMER_ROSTER_STORAGE_KEY, serializeTimerRosterCache({ ...roster, savedAtMs }));
     } catch {
       this.#status.set(TimerRosterStatus.error);
     }
+  }
+
+  /**
+   * One keyed `meta` row where the archive carries the materialised directory, the two full scans
+   * it always ran where it does not — an archive published by an earlier release still fills the
+   * sheet, it just pays the ~130 range requests for it. Both branches end in the same four maps:
+   * the publish path builds them with the very `buildLapStats` the fallback calls here, over the
+   * very rows `loadPacingRows` returns, so which one answered is invisible from here on.
+   */
+  async #readRoster(): Promise<TimerRosterSnapshot> {
+    const summary = await this.#athletes.loadTimerRoster();
+
+    if (summary !== null) {
+      return {
+        records: summary.athletes.map(toMinimalRecord),
+        expectedLapMs: summary.expectedLapMs,
+        bestLapMs: summary.bestLapMs,
+        appearanceCount: summary.appearanceCount,
+        courseRecordLapMs: summary.courseRecordLapMs,
+      };
+    }
+
+    const [records, pacingRows] = await Promise.all([this.#athletes.loadRecords(), this.#athletes.loadPacingRows()]);
+
+    return { records, ...buildLapStats(pacingRows) };
   }
 
   #nowMs(): number {

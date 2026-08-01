@@ -74,6 +74,10 @@ describe('AthletesService', () => {
     await expect(service.loadSeasonRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_RUNS);
     await expect(service.loadSeasonLapRuns(SEASON_RUNS_YEAR)).resolves.toEqual(EXPECTED_SEASON_LAP_RUNS);
     await expect(service.loadPacingRows()).resolves.toEqual(EXPECTED_DB_PACING_ROWS);
+    await expect(
+      service.loadTimerRoster(),
+      'a seed written without the materialised roster sends /timer down the two-scan fallback',
+    ).resolves.toBeNull();
   });
 
   it('propagates a db failure from every read so the page can show a distinct error state', async () => {

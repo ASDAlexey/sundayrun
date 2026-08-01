@@ -13,6 +13,7 @@ import { RaceEvent } from '../models/race-event.interface';
 import { EventWeather } from '../weather/event-weather.interface';
 import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
 import { PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION } from './protocol-db-schema.constant';
+import { TimerRosterSummary } from './protocol-db-summary';
 import { ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
 
 /** Publishes `RACE_EVENT` (slug 2026-06-28) with its publish-time weather; the write reads the previous state back out of the db. */
@@ -362,4 +363,31 @@ export const EXPECTED_DNF_ONLY_HISTORY: AthletesHistory = {
     bestMs: null,
     bestMsByYear: {},
   },
+};
+
+/** Мария's stored '11:30' split in milliseconds — the only readable first lap in `PROTOCOL_ROWS`. */
+const MARIA_LAP_MS = 690000;
+
+/**
+ * The stopwatch directory materialised into `meta` by a publication of `DB_UPDATE_MOCK`. Only the
+ * 5 km finisher earns an entry — the 2.3 km runner and the DNF have no best, exactly as
+ * `selectAthleteRecords` would have filtered them — and only her row carries a split, so she holds
+ * the women's first lap while the men's stays open. The seeds carry no `results` rows of their own,
+ * so this whole roster comes out of the published event.
+ */
+export const EXPECTED_TIMER_ROSTER: TimerRosterSummary = {
+  athletes: [{ key: MARIA_BATCH_KEY, displayName: PROTOCOL_ROWS[0].fullName, gender: Gender.female }],
+  expectedLapMs: new Map([[MARIA_BATCH_KEY, MARIA_LAP_MS]]),
+  bestLapMs: new Map([[MARIA_BATCH_KEY, MARIA_LAP_MS]]),
+  appearanceCount: new Map([[MARIA_BATCH_KEY, 1]]),
+  courseRecordLapMs: { [Gender.male]: null, [Gender.female]: MARIA_LAP_MS },
+};
+
+/** A DNF-only publication leaves nobody with a 5 km best and no split to read: the row is written empty. */
+export const EXPECTED_DNF_ONLY_TIMER_ROSTER: TimerRosterSummary = {
+  athletes: [],
+  expectedLapMs: new Map(),
+  bestLapMs: new Map(),
+  appearanceCount: new Map(),
+  courseRecordLapMs: { [Gender.male]: null, [Gender.female]: null },
 };

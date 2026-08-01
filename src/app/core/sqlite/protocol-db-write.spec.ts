@@ -7,6 +7,7 @@ import { selectEventResults, selectOverallStats } from '../../github/protocol-db
 import { selectEventVkPostUrl } from '../../github/protocol-db-vk';
 import { selectEventWeather } from '../../github/protocol-db-weather';
 import { readHistory, readIndexFile } from './protocol-db-read';
+import { selectTimerRoster } from './protocol-db-summary';
 import {
   BATCH_SECOND_ROWS,
   BATCH_SECOND_SLUG,
@@ -20,7 +21,9 @@ import {
   EXISTING_DB_SEED,
   EXPECTED_APPLIED_EVENTS,
   EXPECTED_DNF_ONLY_HISTORY,
+  EXPECTED_DNF_ONLY_TIMER_ROSTER,
   EXPECTED_MIGRATED_WEATHER,
+  EXPECTED_TIMER_ROSTER,
   EXPECTED_PRE_BASELINE_EVENTS,
   EXPECTED_STORED_ROWS,
   PRE_V6_DB_SEED,
@@ -78,6 +81,7 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
       await expect(selectOverallStats(db), 'the overall totals are materialised into the meta row').resolves.toEqual(
         computeOverallStats(EXPECTED_PUBLISHED_HISTORY),
       );
+      await expect(selectTimerRoster(db), 'and so is the whole stopwatch roster, laps included').resolves.toEqual(EXPECTED_TIMER_ROSTER);
       expect((await readIndexFile(db)).events).toEqual(EXPECTED_APPLIED_EVENTS);
       await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(
         buildEventResultsFile(RENUMBERED_RACE_EVENT, EXPECTED_STORED_ROWS),
@@ -196,6 +200,9 @@ describe('protocol-db-write (real-engine roundtrip)', () => {
 
       await expect(readHistory(db)).resolves.toEqual(EXPECTED_DNF_ONLY_HISTORY);
       await expect(selectEventResults(db, RACE_EVENT.dateIso)).resolves.toEqual(buildEventResultsFile(SOLE_RACE_EVENT, [PROTOCOL_ROWS[2]]));
+      await expect(selectTimerRoster(db), 'a run-less athlete is no more a name to search than on the records page').resolves.toEqual(
+        EXPECTED_DNF_ONLY_TIMER_ROSTER,
+      );
     },
     ROUNDTRIP_TIMEOUT_MS,
   );

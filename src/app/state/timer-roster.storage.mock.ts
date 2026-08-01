@@ -1,6 +1,7 @@
 import { Gender, GenderType } from '../core/models/gender.enum';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
 import { PacingRow } from '../core/history/pacing.interface';
+import { TimerRosterSummary } from '../core/sqlite/protocol-db-summary';
 import {
   POPOV_ALEKSEY_ATHLETE_KEY,
   ROMANENKO_ATHLETE_KEY,
@@ -103,6 +104,18 @@ const CACHED_ENTRIES = CACHED_ROSTER_RECORDS.map((record) => ({
   displayName: record.displayName,
   gender: record.gender,
 }));
+
+/**
+ * The same directory as the published archive materialised it into `meta`: the three stored fields
+ * per athlete and the four maps, so one keyed read replaces `ROSTER_RECORDS` + `ROSTER_PACING_ROWS`.
+ */
+export const ROSTER_SUMMARY: TimerRosterSummary = {
+  athletes: CACHED_ENTRIES,
+  expectedLapMs: new Map(ROSTER_EXPECTED_LAP_ENTRIES),
+  bestLapMs: new Map(ROSTER_BEST_LAP_ENTRIES),
+  appearanceCount: new Map(ROSTER_APPEARANCE_ENTRIES),
+  courseRecordLapMs: ROSTER_COURSE_RECORD_LAP_MS,
+};
 
 /** A healthy payload, field by field; every broken variant below overrides one field of it. */
 const STORED_ROSTER_FIELDS: Record<string, unknown> = {

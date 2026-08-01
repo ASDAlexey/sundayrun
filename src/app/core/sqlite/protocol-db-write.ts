@@ -14,7 +14,7 @@ import { deserializeDbInto } from './deserialize-db';
 import { narrowValues } from './protocol-db-narrow';
 import { recomputeStoredNotes } from './protocol-db-notes';
 import { storeOverallStats } from './protocol-db-overall-stats';
-import { recomputeEventSummaryCounts } from './protocol-db-summary';
+import { recomputeEventSummaryCounts, storeTimerRoster } from './protocol-db-summary';
 import {
   athletes,
   eventPhoto,
@@ -180,6 +180,11 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     // Site-wide totals for the home page, materialised from the same rollup the tables were written
     // from, so a single keyed `meta` read replaces the full-table aggregate scans on the client.
     await storeOverallStats(ddb, target.history);
+    // The stopwatch's whole directory, materialised from the same rollup and the same `results` the
+    // tables were just written from. /timer is the one route built for a park with no signal, and
+    // this row is what spares its first open on a device the two unindexed archive scans it used to
+    // pay for — ~130 sequential range requests before a single name could be searched.
+    await storeTimerRoster(ddb, target.history);
     await ddb
       .insert(meta)
       .values({ key: PROTOCOL_DB_META_SCHEMA_VERSION_KEY, value: PROTOCOL_DB_SCHEMA_VERSION })

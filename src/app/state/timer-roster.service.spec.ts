@@ -16,6 +16,7 @@ import {
   ROSTER_PACING_ROWS,
   ROSTER_RECORDS,
   ROSTER_SAVED_AT_MS,
+  ROSTER_SUMMARY,
   STORED_ROSTER_JSON,
 } from './timer-roster.storage.mock';
 import { SSR_DOCUMENT_MOCK, TimerViewMock, VIEW_NOW_MS, timerViewMock } from './timer-view.mock';
@@ -25,6 +26,7 @@ describe('TimerRosterService', () => {
   const setItem = vi.fn();
   const loadRecords = vi.fn();
   const loadPacingRows = vi.fn();
+  const loadTimerRoster = vi.fn();
   let view: TimerViewMock;
 
   beforeEach(() => {
@@ -32,12 +34,13 @@ describe('TimerRosterService', () => {
     getItem.mockReturnValue(null);
     loadRecords.mockResolvedValue(ROSTER_RECORDS);
     loadPacingRows.mockResolvedValue(ROSTER_PACING_ROWS);
+    loadTimerRoster.mockResolvedValue(ROSTER_SUMMARY);
     view = timerViewMock();
     vi.stubGlobal('localStorage', { getItem, setItem });
     TestBed.configureTestingModule({
       providers: [
         { provide: DOCUMENT, useValue: { defaultView: view } },
-        { provide: AthletesService, useValue: { loadRecords, loadPacingRows } },
+        { provide: AthletesService, useValue: { loadRecords, loadPacingRows, loadTimerRoster } },
       ],
     });
   });
@@ -46,7 +49,7 @@ describe('TimerRosterService', () => {
     vi.unstubAllGlobals();
   });
 
-  it('reads the directory, boils the archived splits down to expected laps and caches both', async () => {
+  it('fills the directory from the materialised meta row alone, caching it without touching the archive scans', async () => {
     const service = TestBed.inject(TimerRosterService);
 
     expect(getItem).toHaveBeenCalledWith(TIMER_ROSTER_STORAGE_KEY);
@@ -60,9 +63,11 @@ describe('TimerRosterService', () => {
 
     await Promise.all([first, service.load()]);
 
-    expect(loadRecords, 'a second call while one is in flight joins the first').toHaveBeenCalledOnce();
+    expect(loadTimerRoster, 'a second call while one is in flight joins the first').toHaveBeenCalledOnce();
+    expect(loadRecords, 'the whole runs chronology is exactly what the meta row spares /timer').not.toHaveBeenCalled();
+    expect(loadPacingRows, 'and so is the full results scan behind the laps').not.toHaveBeenCalled();
     expect(service.status()).toBe(TimerRosterStatus.ready);
-    expect(service.records()).toEqual(ROSTER_RECORDS);
+    expect(service.records(), 'the three stored fields rebuild the same minimal records').toEqual(CACHED_ROSTER_RECORDS);
     expect([...service.expectedLapMs()]).toEqual(ROSTER_EXPECTED_LAP_ENTRIES);
     expect([...service.bestLapMs()]).toEqual(ROSTER_BEST_LAP_ENTRIES);
     expect([...service.appearanceCount()]).toEqual(ROSTER_APPEARANCE_ENTRIES);
@@ -71,7 +76,7 @@ describe('TimerRosterService', () => {
     expect(setItem).toHaveBeenCalledWith(
       TIMER_ROSTER_STORAGE_KEY,
       serializeTimerRosterCache({
-        records: ROSTER_RECORDS,
+        records: CACHED_ROSTER_RECORDS,
         expectedLapMs: service.expectedLapMs(),
         bestLapMs: service.bestLapMs(),
         appearanceCount: service.appearanceCount(),
@@ -82,12 +87,29 @@ describe('TimerRosterService', () => {
 
     await service.load();
 
-    expect(loadRecords, 'a later call refreshes the directory again').toHaveBeenCalledTimes(2);
+    expect(loadTimerRoster, 'a later call refreshes the directory again').toHaveBeenCalledTimes(2);
+  });
+
+  it('falls back to the two archive scans on an archive published before the meta row existed', async () => {
+    loadTimerRoster.mockResolvedValue(null);
+
+    const service = TestBed.inject(TimerRosterService);
+
+    await service.load();
+
+    expect(loadRecords, 'the directory still has to come from somewhere').toHaveBeenCalledOnce();
+    expect(loadPacingRows).toHaveBeenCalledOnce();
+    expect(service.status()).toBe(TimerRosterStatus.ready);
+    expect(service.records(), 'the fallback keeps the full records the leaderboard read returns').toEqual(ROSTER_RECORDS);
+    expect([...service.expectedLapMs()], 'and boils the splits down to the very same laps').toEqual(ROSTER_EXPECTED_LAP_ENTRIES);
+    expect([...service.bestLapMs()]).toEqual(ROSTER_BEST_LAP_ENTRIES);
+    expect([...service.appearanceCount()]).toEqual(ROSTER_APPEARANCE_ENTRIES);
+    expect(service.courseRecordLapMs()).toEqual(ROSTER_COURSE_RECORD_LAP_MS);
   });
 
   it('starts from the offline cache and keeps it when the network read fails', async () => {
     getItem.mockReturnValue(STORED_ROSTER_JSON);
-    loadRecords.mockRejectedValue(new Error(ROSTER_LOAD_ERROR_MESSAGE));
+    loadTimerRoster.mockRejectedValue(new Error(ROSTER_LOAD_ERROR_MESSAGE));
 
     const service = TestBed.inject(TimerRosterService);
 
@@ -134,15 +156,17 @@ describe('TimerRosterService', () => {
 describe('TimerRosterService without a window', () => {
   const loadRecords = vi.fn();
   const loadPacingRows = vi.fn();
+  const loadTimerRoster = vi.fn();
 
   beforeEach(() => {
     loadRecords.mockResolvedValue(ROSTER_RECORDS);
     loadPacingRows.mockResolvedValue(ROSTER_PACING_ROWS);
+    loadTimerRoster.mockResolvedValue(ROSTER_SUMMARY);
     vi.stubGlobal('localStorage', undefined);
     TestBed.configureTestingModule({
       providers: [
         { provide: DOCUMENT, useValue: SSR_DOCUMENT_MOCK },
-        { provide: AthletesService, useValue: { loadRecords, loadPacingRows } },
+        { provide: AthletesService, useValue: { loadRecords, loadPacingRows, loadTimerRoster } },
       ],
     });
   });

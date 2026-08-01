@@ -16,6 +16,7 @@ import { EventWeatherRow } from '../core/history/weather-records.interface';
 import { YearBestRow } from '../core/history/year-ranks.interface';
 import { createQueryCache } from '../core/cache/query-cache';
 import { AthleteRecord } from '../core/models/athlete-history.interface';
+import { selectTimerRoster, TimerRosterSummary } from '../core/sqlite/protocol-db-summary';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectSeasonBestRows, selectYearBadgeRarity, selectYearBestRows } from './protocol-db-badges';
 import { selectAthleteBestFirstLap, selectAthleteFirstLaps } from './protocol-db-first-lap';
@@ -155,5 +156,14 @@ export class AthletesService {
   /** Every 5 km finish with a recorded split; feeds the pacing nominations on the records page. */
   loadPacingRows(): Promise<PacingRow[]> {
     return this.#cache('pacingRows', () => selectPacingRows(this.#db));
+  }
+
+  /**
+   * The stopwatch's whole directory as one keyed `meta` row (see `storeTimerRoster`). Null on an
+   * archive published before that row existed — `TimerRosterService` then falls back to
+   * `loadRecords` + `loadPacingRows`, the two full scans this read exists to avoid.
+   */
+  loadTimerRoster(): Promise<TimerRosterSummary | null> {
+    return this.#cache('timerRoster', () => selectTimerRoster(this.#db));
   }
 }

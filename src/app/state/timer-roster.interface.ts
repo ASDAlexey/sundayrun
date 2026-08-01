@@ -15,11 +15,16 @@ export interface CachedAthleteEntry {
 
 /**
  * The directory as the service holds it: records for the search plus the whole archive read of the
- * first laps — the tile order, the two marks of the live «Круг» table and the regularity count. All
- * of it survives a reload without network, which is the only state the park ever sees.
+ * first laps — the tile order, the two marks of the live «Круг» table and the regularity count.
+ * Named apart from the cache because either source can produce it — the materialised `meta` row of
+ * the archive or, on an archive published without one, the two full scans it replaces.
  */
-export interface TimerRosterCache extends LapStats {
+export interface TimerRosterSnapshot extends LapStats {
   records: AthleteRecord[];
+}
+
+/** A snapshot on its way through localStorage, which is the only state a park with no signal sees. */
+export interface TimerRosterCache extends TimerRosterSnapshot {
   /** When the cache was written; null while the device has never read the directory. */
   savedAtMs: number | null;
 }

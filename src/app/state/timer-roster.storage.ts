@@ -70,8 +70,13 @@ function toRecords(value: unknown): AthleteRecord[] {
   return entries.flatMap((entry) => (isCachedAthleteEntry(entry) ? [toMinimalRecord(entry)] : []));
 }
 
-/** Enough of an `AthleteRecord` for the search and the tile order; the history stays in the archive. */
-function toMinimalRecord(entry: CachedAthleteEntry): AthleteRecord {
+/**
+ * Enough of an `AthleteRecord` for the search and the tile order; the history stays in the archive.
+ * Exported because the materialised `meta` row stores the same three fields and has to rebuild the
+ * same minimal records — a directory that differed by its source would make the sheet behave
+ * differently offline than online.
+ */
+export function toMinimalRecord(entry: CachedAthleteEntry): AthleteRecord {
   return {
     key: entry.key,
     displayName: entry.displayName,
