@@ -3,6 +3,11 @@
 @use 'styles/status' as st;
 @use 'styles/typography' as t;
 
+// The height a race card occupies. Two features have to agree on it: `content-visibility` needs it
+// to lay out the cards it skips, and the deferred seasons show a skeleton of the same size while
+// they wait to hydrate. One number, quoted twice.
+$card-reserved-height: 280px;
+
 .races {
   @include s.section;
 
@@ -152,13 +157,24 @@
   // cards in a two-column grid don't have — and it would drop the prerendered
   // list from the static HTML.
   &__race {
-    contain-intrinsic-size: auto 280px;
+    // Interpolated: stylelint's value parser does not know `contain-intrinsic-size`'s two-part
+    // grammar and refuses a bare Sass variable in the second slot.
+    contain-intrinsic-size: auto #{$card-reserved-height};
     content-visibility: auto;
     // Paint containment (implied by content-visibility) clips to the padding
     // edge, so reserve 2px of headroom for the card's hover lift — otherwise
     // translateY(-2px) cuts off the card's top border.
     margin-top: -2px;
     padding-top: 2px;
+  }
+
+  // Stands in for a card while its season waits to hydrate. Dashed and unlit like the loading
+  // panel above: it is a reserved slot, not a card that failed to draw itself.
+  &__card-skeleton {
+    height: $card-reserved-height;
+    border: 1px dashed var(--border-soft);
+    border-radius: var(--radius);
+    background: var(--bg-subtle);
   }
 
   @media (width <= 860px) {

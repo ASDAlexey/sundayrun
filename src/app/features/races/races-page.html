@@ -56,10 +56,40 @@
           </h2>
 
           <ul class="races__list">
-            @for (race of group.races; track race.slug) {
-              <li class="races__race">
-                <app-race-card [race]="race" />
-              </li>
+            @if ($first) {
+              @for (race of group.races; track race.slug) {
+                <li class="races__race">
+                  <app-race-card [race]="race" />
+                </li>
+              }
+            } @else {
+              <!--
+                The archive is 271 cards deep and every one of them is baked into the prerendered
+                document, so hydrating the whole list at once is the heaviest main-thread job on
+                this route. Only the freshest season is worth that on arrival; every older one waits
+                until it is scrolled to. It has to be `hydrate on viewport` rather than a plain
+                `on viewport`: the plain form would strip the cards out of the static HTML that
+                `app.routes.server.ts` builds on purpose, while the hydrate form leaves the markup
+                untouched and postpones nothing but the wiring.
+              -->
+              @defer (hydrate on viewport) {
+                @for (race of group.races; track race.slug) {
+                  <li class="races__race">
+                    <app-race-card [race]="race" />
+                  </li>
+                }
+              } @placeholder {
+                <!--
+                  Only a client-side arrival ever sees this — a prerendered load keeps the real
+                  cards on screen the whole time. One skeleton per race gives the season the height
+                  it is about to have, so scrolling past a waking block moves nothing below it.
+                -->
+                @for (race of group.races; track race.slug) {
+                  <li aria-hidden="true" class="races__race">
+                    <div class="races__card-skeleton"></div>
+                  </li>
+                }
+              }
             }
           </ul>
         </section>

@@ -1,5 +1,5 @@
 import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { EMPTY_INDEX, EXISTING_INDEX } from '../../core/github/archive-index.mock';
@@ -38,6 +38,10 @@ describe('RacesPage', () => {
     platformId = BROWSER_PLATFORM_ID;
     loadIndex.mockResolvedValue(EXISTING_INDEX);
     TestBed.configureTestingModule({
+      // The older seasons hydrate on viewport. A test has no viewport and no prerendered markup, so
+      // the block falls back to its implicit `on idle` trigger — driving it by hand instead keeps
+      // the assertions about the placeholder from racing an idle callback.
+      deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
         provideRouter([]),
         { provide: ArchiveService, useValue: { loadIndex } },
@@ -155,6 +159,18 @@ describe('RacesPage', () => {
 
     expect(chips.map((chip) => chip.textContent?.trim())).toEqual(['Все годы', ...EXPECTED_YEARS]);
     expect(chips[0].getAttribute('aria-pressed'), 'the all-years chip is pressed by default').toBe('true');
+    expect(element.querySelectorAll('app-race-card').length, 'only the freshest season is hydrated on arrival').toBe(1);
+    expect(
+      element.querySelectorAll('.races__card-skeleton').length,
+      'the season below it reserves one card-sized slot per race, so hydrating it shifts nothing',
+    ).toBe(1);
+
+    const [olderSeason] = await fixture.getDeferBlocks();
+
+    await olderSeason.render(DeferBlockState.Complete);
+
+    expect(element.querySelectorAll('app-race-card').length, 'scrolling a season into view swaps its skeletons for cards').toBe(2);
+    expect(element.querySelectorAll('.races__card-skeleton').length, 'a hydrated season keeps no placeholders').toBe(0);
 
     chips[2].click();
     fixture.detectChanges();

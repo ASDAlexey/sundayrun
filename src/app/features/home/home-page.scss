@@ -368,6 +368,17 @@
     overflow: hidden;
   }
 
+  // Holds the deferred map's box on a client-side arrival; a prerendered visit shows the real map
+  // from the first frame and never renders this. The geometry is `.course-track`'s own — an 18px
+  // plate margin around the 1542 / 964 viewBox — and the bottom rung stands in for the caption bar
+  // of legend labels underneath it.
+  &__course-track-placeholder {
+    aspect-ratio: 1542 / 964;
+    margin: 18px 18px 62px;
+    border-radius: var(--radius-sm);
+    background: var(--map-paper);
+  }
+
   &__course-info {
     display: grid;
     padding: 32px 32px 4px;
@@ -532,7 +543,7 @@
   }
 }
 
-// One of the two infinite loops the design language allows — a light falling down the hint line.
+// A light falling down the hint line, on the slowest of the three loop tempos in _tokens.scss.
 @keyframes home-scroll-hint {
   0% {
     transform: translateY(-9px);
