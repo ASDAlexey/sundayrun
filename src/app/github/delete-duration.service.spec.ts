@@ -2,16 +2,14 @@ import { TestBed } from '@angular/core/testing';
 
 import { DELETE_DURATIONS_STORAGE_KEY } from './delete-duration.constant';
 import { DeleteDurationService } from './delete-duration.service';
-import { PUBLISH_DURATIONS_MOCK, PUBLISH_DURATIONS_STORED_RAW, PUBLISH_DURATION_AVERAGE_MOCK } from './publish-duration.service.mock';
+import { DURATION_HISTORY_AVERAGE_MOCK, DURATION_HISTORY_MOCK, DURATION_HISTORY_STORED_RAW } from './duration-history.mock';
 
 describe('DeleteDurationService', () => {
   const getItem = vi.fn<(key: string) => string | null>(() => null);
   const setItem = vi.fn();
 
-  let service: DeleteDurationService;
-
   beforeEach(() => {
-    getItem.mockReset().mockReturnValue(null);
+    getItem.mockReset().mockReturnValue(DURATION_HISTORY_STORED_RAW);
     setItem.mockReset();
     vi.stubGlobal('localStorage', { getItem, setItem });
   });
@@ -20,31 +18,18 @@ describe('DeleteDurationService', () => {
     vi.unstubAllGlobals();
   });
 
-  it('starts empty, records durations under its own key and rebuilds from the stored history', () => {
-    service = TestBed.inject(DeleteDurationService);
+  // Reading, averaging and capping are the shared history's job (duration-history.spec.ts);
+  // all this service owns is the key that keeps delete timings out of the publish average.
+  it('rebuilds from and persists to the delete key alone', () => {
+    const service = TestBed.inject(DeleteDurationService);
 
-    expect(service.averageMs(), 'no history yet').toBeNull();
+    expect(getItem, 'the delete key seeds the history').toHaveBeenCalledWith(DELETE_DURATIONS_STORAGE_KEY);
+    expect(service.averageMs(), 'the stored history survives a reload, garbage dropped').toBe(DURATION_HISTORY_AVERAGE_MOCK);
 
-    PUBLISH_DURATIONS_MOCK.forEach((duration) => service.record(duration));
+    service.record(DURATION_HISTORY_AVERAGE_MOCK);
 
-    expect(service.averageMs()).toBe(PUBLISH_DURATION_AVERAGE_MOCK);
-    expect(setItem).toHaveBeenLastCalledWith(DELETE_DURATIONS_STORAGE_KEY, JSON.stringify(PUBLISH_DURATIONS_MOCK));
+    const stored = JSON.stringify([...DURATION_HISTORY_MOCK, DURATION_HISTORY_AVERAGE_MOCK]);
 
-    TestBed.resetTestingModule();
-    getItem.mockReturnValue(PUBLISH_DURATIONS_STORED_RAW);
-    service = TestBed.inject(DeleteDurationService);
-
-    expect(service.averageMs(), 'the stored history survives a reload, garbage dropped').toBe(PUBLISH_DURATION_AVERAGE_MOCK);
-  });
-
-  it('falls back to a noop storage during prerender where localStorage is absent', () => {
-    vi.stubGlobal('localStorage', undefined);
-    service = TestBed.inject(DeleteDurationService);
-
-    expect(service.averageMs()).toBeNull();
-
-    service.record(PUBLISH_DURATION_AVERAGE_MOCK);
-
-    expect(service.averageMs(), 'recording still works in memory').toBe(PUBLISH_DURATION_AVERAGE_MOCK);
+    expect(setItem, 'a new measurement is appended under the delete key').toHaveBeenLastCalledWith(DELETE_DURATIONS_STORAGE_KEY, stored);
   });
 });
