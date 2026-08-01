@@ -1,8 +1,22 @@
-echo '----------- Type-check (app + specs) --------------'
+echo '----------- Type-check (app + specs + scripts) --------------'
 bunx tsc -p tsconfig.app.json --noEmit
 bunx tsc -p tsconfig.spec.json --noEmit
+bunx tsc -p tsconfig.scripts.json --noEmit
+
+echo '----------- ESLint --------------'
+bun run eslint
 
 echo '----------- Stylelint --------------'
 bun run stylelint:check
+
+echo '----------- Circular dependencies (madge) --------------'
+bun run madge
+
+# Off by default: the suite with its 100% coverage gate costs 60-70 s, too much to pay on every
+# push. Opt in with `HUSKY_RUN_TESTS=1 git push` before a batch of work lands; CI runs it regardless.
+if [ "$HUSKY_RUN_TESTS" = "1" ]; then
+  echo '----------- Unit tests + 100% coverage --------------'
+  bun run test:coverage
+fi
 
 echo '----------- Pre-push checks done --------------'
