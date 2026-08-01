@@ -11,5 +11,7 @@ export const WATCH_REGION_OPTIONS: WatchRegionOption[] = [
 /** Name of the archive «Выгрузить всё» produces. */
 export const TRACK_EXPORT_FILE_NAME = 'sundayrun-tracks.zip';
 
+export const TRACK_ARCHIVE_MIME_TYPE = 'application/zip';
+
 /** What the archive carries beside the GPX files, so an import knows what it is looking at. */
 export const TRACK_EXPORT_MANIFEST_NAME = 'manifest.json';

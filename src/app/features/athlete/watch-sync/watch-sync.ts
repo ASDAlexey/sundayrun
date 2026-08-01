@@ -1,13 +1,14 @@
 import { Component, DOCUMENT, computed, effect, inject, input, signal } from '@angular/core';
 
 import { CorosRegion, CorosRegionType } from '../../../core/coros/coros-region.enum';
+import { triggerBlobDownload } from '../../../pdf/blob-download';
 import { saveTrack } from '../../../state/athlete-track.storage';
 import { buildTrackArchive, readTrackArchive } from '../../../state/track-archive';
 import { TrackSyncStatus } from '../../../state/track-sync.enum';
 import { RaceDay } from '../../../state/track-sync.interface';
 import { TrackSyncService } from '../../../state/track-sync.service';
 import { WatchAccountService } from '../../../state/watch-account.service';
-import { TRACK_EXPORT_FILE_NAME, WATCH_REGION_OPTIONS } from './watch-sync.constant';
+import { TRACK_ARCHIVE_MIME_TYPE, TRACK_EXPORT_FILE_NAME, WATCH_REGION_OPTIONS } from './watch-sync.constant';
 
 /**
  * «Привязать часы» at the top of your own profile.
@@ -111,13 +112,8 @@ export class WatchSync {
     // Copied into a fresh array: fflate types its output over any buffer kind, and `Blob` only
     // accepts one backed by a plain `ArrayBuffer`.
     const archive = new Uint8Array(buildTrackArchive(this.tracks()));
-    const url = URL.createObjectURL(new Blob([archive], { type: 'application/zip' }));
-    const link = this.#document.createElement('a');
 
-    link.href = url;
-    link.download = TRACK_EXPORT_FILE_NAME;
-    link.click();
-    URL.revokeObjectURL(url);
+    triggerBlobDownload(this.#document, new Blob([archive], { type: TRACK_ARCHIVE_MIME_TYPE }), TRACK_EXPORT_FILE_NAME);
   }
 
   async importTracks(file: File | null): Promise<void> {

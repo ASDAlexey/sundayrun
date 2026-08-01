@@ -11,8 +11,15 @@ import { TrackSyncService } from '../../../state/track-sync.service';
 import { WatchAccountService } from '../../../state/watch-account.service';
 import { STORED_WATCH_ACCOUNT } from '../../../state/watch-account.service.mock';
 import { CorosRegion } from '../../../core/coros/coros-region.enum';
+import { BLOB_URL_REVOKE_DELAY_MS } from '../../../pdf/blob-download.constant';
 import { WatchSync } from './watch-sync';
-import { WATCH_FORM_EMAIL_MOCK, WATCH_FORM_PASSWORD_MOCK, WATCH_RACES_MOCK } from './watch-sync.mock';
+import {
+  TRACK_BLOB_URL_MOCK,
+  TRACK_IMPORT_FILE_NAME,
+  WATCH_FORM_EMAIL_MOCK,
+  WATCH_FORM_PASSWORD_MOCK,
+  WATCH_RACES_MOCK,
+} from './watch-sync.mock';
 
 describe('WatchSync', () => {
   const account = signal<typeof STORED_WATCH_ACCOUNT | null>(null);
@@ -101,31 +108,43 @@ describe('WatchSync', () => {
     expect(load).toHaveBeenCalled();
   });
 
-  it('exports the tracks as a download and imports an archive back', async () => {
+  it('exports the tracks through the shared helper, which outlives the click', () => {
+    vi.useFakeTimers();
+
     const component = fixture.componentInstance;
-    const createObjectURL = vi.fn(() => 'blob:tracks');
-    const revokeObjectURL = vi.fn();
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue(TRACK_BLOB_URL_MOCK);
+    const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
     // The anchor is real; only the navigation it would trigger is stubbed away.
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
 
     tracks.set([ARCHIVED_TRACK_MOCK]);
-    vi.stubGlobal('URL', { createObjectURL, revokeObjectURL });
-
     component.exportTracks();
 
     expect(component.trackCount()).toBe(1);
-    expect(click).toHaveBeenCalled();
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:tracks');
+    expect(createObjectURL).toHaveBeenCalledOnce();
+    expect(click).toHaveBeenCalledOnce();
+    expect(revokeObjectURL, 'revoking inside the click turn is what makes Safari cancel the download').not.toHaveBeenCalled();
 
+    vi.advanceTimersByTime(BLOB_URL_REVOKE_DELAY_MS);
+
+    expect(revokeObjectURL).toHaveBeenCalledExactlyOnceWith(TRACK_BLOB_URL_MOCK);
+
+    createObjectURL.mockRestore();
+    revokeObjectURL.mockRestore();
+    click.mockRestore();
+    vi.useRealTimers();
+  });
+
+  it('imports an archive back into the device collection', async () => {
+    const component = fixture.componentInstance;
     const archive = new Uint8Array(buildTrackArchive([ARCHIVED_TRACK_MOCK]));
 
     await component.importTracks(null);
 
     expect(await readTracks()).toEqual([]);
 
-    await component.importTracks(new File([archive], 'tracks.zip'));
+    await component.importTracks(new File([archive], TRACK_IMPORT_FILE_NAME));
 
     expect((await readTracks())[0].slug).toBe(ARCHIVED_TRACK_MOCK.slug);
-    click.mockRestore();
   });
 });
