@@ -174,7 +174,7 @@ for (const row of fixed
 console.log('\nsummaries:');
 
 for (const row of fixed
-  .query<{ slug: string; newcomer_count: number | null; personal_record_count: number | null }, []>(
+  .query<{ slug: string; newcomer_count: number | null; personal_record_count: number | null }, string[]>(
     `SELECT slug, newcomer_count, personal_record_count FROM events WHERE slug IN (${slugs.map(() => '?').join(', ')})`,
   )
   .all(...slugs)) {

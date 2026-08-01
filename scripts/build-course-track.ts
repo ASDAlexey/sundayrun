@@ -506,7 +506,7 @@ function iconOf(name: string, kind: string): string {
 }
 
 /** A named place, already projected into viewBox units. */
-async function readLandmarks(): Promise<{ name: string; icon: string; labelled: boolean; lat: number; lon: number }[]> {
+async function readLandmarks(): Promise<{ above: boolean; icon: string; labelled: boolean; lat: number; lon: number; name: string }[]> {
   const raw = JSON.parse(await readFile(LANDMARKS_INPUT_PATH, 'utf8')) as {
     elements?: { lat?: number; lon?: number; center?: { lat: number; lon: number }; tags?: Record<string, string> }[];
   };
@@ -516,8 +516,16 @@ async function readLandmarks(): Promise<{ name: string; icon: string; labelled: 
       const tags = node.tags ?? {};
       // The park's main fountain carries no name in OpenStreetMap, only its type. It is the
       // circle the small lap runs around, so it is worth naming even if the database will not.
-      const name = tags.name ?? tags.description ?? (tags.amenity === 'fountain' ? 'Фонтан' : '');
-      const kind = tags.attraction ?? tags.tourism ?? tags.leisure ?? tags.amenity ?? tags.historic ?? tags.natural ?? tags.man_made ?? '';
+      const name = tags['name'] ?? tags['description'] ?? (tags['amenity'] === 'fountain' ? 'Фонтан' : '');
+      const kind =
+        tags['attraction'] ??
+        tags['tourism'] ??
+        tags['leisure'] ??
+        tags['amenity'] ??
+        tags['historic'] ??
+        tags['natural'] ??
+        tags['man_made'] ??
+        '';
 
       return {
         name,
@@ -556,15 +564,15 @@ async function readAreas(): Promise<AreaWay[]> {
 }
 
 function layerOf(tags: Record<string, string>): AreaWay['layer'] | null {
-  if (tags.building !== undefined) {
+  if (tags['building'] !== undefined) {
     return 'building';
   }
 
-  if (tags.natural === 'wood' || tags.natural === 'scrub') {
+  if (tags['natural'] === 'wood' || tags['natural'] === 'scrub') {
     return 'wood';
   }
 
-  if (tags.leisure !== undefined || tags.landuse !== undefined) {
+  if (tags['leisure'] !== undefined || tags['landuse'] !== undefined) {
     return 'green';
   }
 
