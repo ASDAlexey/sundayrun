@@ -2,6 +2,30 @@
 
 Список проверенных дефектов и улучшений с точными ссылками на файлы; каждый пункт самодостаточен — берите любой раздел и правьте, не перечитывая проект целиком.
 
+## Статус (01.08.2026)
+
+Разобраны **44 пункта из 47**. Тесты: 729 зелёных, покрытие 100 % по всем четырём метрикам; `tsc` (app + spec + scripts), eslint, stylelint и madge чистые; продакшн-сборка пререндерит 287 маршрутов.
+
+Не сделано — по решению владельца вынесено в отдельные задачи:
+
+- **28** — PAT остаётся в `localStorage`. Уход в память означает ввод токена при каждой перезагрузке.
+- **46** — `/athletes/:key` и `/vs/*` по-прежнему отдают 404. Перевод дуэлей на query-параметры ломает уже расшаренные ссылки.
+- **29** — разделение на data-репозиторий. Документная половина пункта (текст `docs/ADMIN_TOKEN.md`, срок токена 90 → 30 дней) сделана.
+
+Три решения, принятых по ходу и отличных от буквы аудита:
+
+- **12, частично.** `@defer (hydrate on viewport)` получил только `course-track` на главной. Для `watch-sync`, `badge-catalog`, `bump-chart` и `photo-strip` отложенная загрузка означала бы, что компонент больше нигде не используется эагерно — тогда AOT генерирует загрузчик зависимостей, а он ложится на объявление класса как функция, недостижимая ни одним тестом (проверено: не покрывается ни `getDeferBlocks().render()`, ни настоящим нажатием). Цена — снятие с покрытия целого файла страницы; 13–18 КБ этого не стоят. Тот же артефакт маппинга уже описан для `viewChild` в `vitest-base.config.ts`. Аудит сам предлагал «замерить дельту, потом решать по остальным» — замерили, решили.
+- **7.** Индекс сплитов сделан, но пункт был обусловлен профилированием на целевом телефоне, которого не было; изменение чисто внутреннее и поведение не меняет.
+- **6, SW-половина.** Sha-именованная БД в service worker не кладётся: копия создаётся в CI уже после сборки, поэтому в hash-таблицу ngsw не попадает, а плоское имя изменчиво. Главное из пункта — отказ от сотен range-запросов — решено транспортом из п. 9.
+
+Измеренный эффект по весу (пп. 9 + 6 + 10):
+
+| Что                       | Было                                        | Стало                                 |
+| ------------------------- | ------------------------------------------- | ------------------------------------- |
+| Код чтения БД             | 3,4 МБ wasm + 530 КБ воркеров (1,9 МБ gzip) | 845 КБ wasm (391 КБ gzip)             |
+| Запросов на чтение архива | сотни range-запросов по 4 КБ                | 2 (wasm + БД целиком, 255 КБ gzip)    |
+| Прекеш service worker     | ~3,9 МБ                                     | 1,76 МБ (2,11 МБ переведено в `lazy`) |
+
 ## Кратко
 
 | #   | Приоритет | Что                                                                                                               | Где                                                                                            | Трудозатраты |
@@ -425,11 +449,13 @@ bun run stylelint:check
 bun run eslint
 bun run madge
 
-# Точечные тесты по затронутому участку
-npx ng test --test-path-pattern=src/app/core/timer
-npx ng test --test-path-pattern=src/app/features/timer
-npx ng test --test-path-pattern=src/app/core/protocol
-npx ng test --test-path-pattern=src/app/features/result
+# Точечные тесты по затронутому участку.
+# Флага --test-path-pattern у @angular/build:unit-test нет — область задаётся через --include,
+# который принимает glob и повторяется столько раз, сколько нужно участков.
+npx ng test --include='src/app/core/timer/**/*.spec.ts' --coverage=false --watch=false
+npx ng test --include='src/app/features/timer/**/*.spec.ts' --coverage=false --watch=false
+npx ng test --include='src/app/core/protocol/**/*.spec.ts' --coverage=false --watch=false
+npx ng test --include='src/app/features/result/**/*.spec.ts' --coverage=false --watch=false
 
 # Полный прогон с порогом покрытия — перед пушем волны целиком
 bun run test:coverage
@@ -438,7 +464,12 @@ bun run test:coverage
 bun run build
 ls -l dist/parkrun/browser/index.html dist/parkrun/browser/data/sundayrun.db
 find dist/parkrun/browser/races -mindepth 2 -name index.html | wc -l   # ожидается > 0
-grep -c '<app-race-card' dist/parkrun/browser/races/index.html          # после п.11 — падает
+find dist/parkrun/browser/year -mindepth 2 -name index.html | wc -l    # ожидается > 0
+test -f dist/parkrun/browser/timer/index.html                          # холодный офлайн-старт
+# Число `<app-race-card>` в /races после п.11 НЕ падает и падать не должно: инкрементальная
+# гидрация на то и инкрементальная, что разметка остаётся в статике, а откладывается гидрация.
+# Проверять надо теги: `ngh=` на карточках и собственный og:url у протокола.
+grep -o '<meta [^>]*property="og:url"[^>]*>' dist/parkrun/browser/races/*/index.html | head -1
 
 # После правок в scripts/
 bunx tsc -p tsconfig.scripts.json --noEmit

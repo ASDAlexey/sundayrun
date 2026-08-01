@@ -15,7 +15,7 @@
 - [docs/TIMER.md](docs/TIMER.md) — собственный секундомер `/timer` (замена стороннего приложения): решения, реализация, отложенное
 - [docs/IDEAS.md](docs/IDEAS.md) — банк идей на будущее (исследование аналогов, статистика, геймификация, аналитика)
 
-Английское имя проекта и публичного репозитория — **sundayrun** (бренд SundayRUN используется сообществом пробега); URL деплоя `https://asdalexey.github.io/sundayrun/` захардкожен в `src/index.html`, `public/sitemap.xml` и `TOKEN_HELP_URL` — при другом имени репозитория обновить их.
+Английское имя проекта и публичного репозитория — **sundayrun** (бренд SundayRUN используется сообществом пробега); URL деплоя `https://asdalexey.github.io/sundayrun/` захардкожен в `src/index.html`, `src/app/shared/seo/canonical-link.constant.ts` (оттуда его берёт и генератор `public/sitemap.xml`) и `TOKEN_HELP_URL` — при другом имени репозитория обновить их.
 
 ## Роли
 
