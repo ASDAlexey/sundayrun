@@ -17,15 +17,24 @@ export const RACE_FINISHED_SESSION: TimerSession = { ...TIMER_SESSION, status: T
 /** The measurement nobody has been added to yet — «Старт» has nothing to time. */
 export const RACE_EMPTY_SESSION: TimerSession = { ...TIMER_SESSION_IDLE, runners: [], splits: [] };
 
-/** The stand-in the cockpit gets: two flags the spec drives, three bare spies it asserts on. */
+/**
+ * The very same running race arriving as a fresh object: every tap rebuilds the session, so the store
+ * hands the service a new reference several times a minute and the tick must survive all of them.
+ */
+export const RACE_RUNNING_AGAIN: TimerSession = { ...TIMER_SESSION };
+
+/**
+ * The stand-in the cockpit gets: two flags the spec drives, two bare spies it asserts on. There is no
+ * `sync` here any more — the service follows the measurement through its own effect, so the only
+ * calls a view still makes are the two the round key presses.
+ */
 export interface TimerRaceServiceMock {
   canStart: WritableSignal<boolean>;
   woke: WritableSignal<boolean>;
   start: Mock;
   stop: Mock;
-  sync: Mock;
 }
 
 export function timerRaceServiceMock(): TimerRaceServiceMock {
-  return { canStart: signal(true), woke: signal(false), start: vi.fn(), stop: vi.fn(), sync: vi.fn() };
+  return { canStart: signal(true), woke: signal(false), start: vi.fn(), stop: vi.fn() };
 }

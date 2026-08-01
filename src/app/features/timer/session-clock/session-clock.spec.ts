@@ -56,7 +56,7 @@ describe('TimerClock', () => {
     fixture.destroy();
   });
 
-  it('spells the running figure, the counters and the bar, and hands the race to the service', async () => {
+  it('spells the running figure, the counters and the bar, and wakes the digits on the mass start', async () => {
     sessions.active.set(TIMER_SESSION);
     clock.elapsedMs.set(CLOCK_ELAPSED_MS);
     fixture = TestBed.createComponent(TimerClock);
@@ -65,7 +65,6 @@ describe('TimerClock', () => {
     const element: HTMLElement = fixture.nativeElement;
     const values = [...element.querySelectorAll('.timer-clock__counter-value')];
 
-    expect(race.sync, 'the digits follow the measurement, they do not drive it').toHaveBeenCalledWith(TIMER_SESSION);
     expect(element.querySelector('.timer-clock__figure')?.textContent?.trim()).toBe(CLOCK_READOUT_TEXT);
     expect(element.querySelector('.timer-clock__fraction')?.textContent?.trim(), 'the hundredths are their own span').toBe(
       CLOCK_FRACTION_TEXT,

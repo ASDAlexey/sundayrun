@@ -1,4 +1,4 @@
-import { Service, computed, inject, signal } from '@angular/core';
+import { Service, computed, effect, inject, signal } from '@angular/core';
 
 import { startSession, stopSession } from '../core/timer/session-actions';
 import { isRaceComplete } from '../core/timer/session-splits';
@@ -36,6 +36,20 @@ export class TimerRaceService {
   /** Whether the interval is running right now, so a tap does not restart the tick on every split. */
   #ticking = false;
 
+  /**
+   * Watching the measurement is the job of whoever owns the clock, so it is done here rather than in
+   * the view that shows the digits. It used to live in `TimerClock`'s constructor, and that component
+   * sits inside `@if (session(); as current)`: «←» closed the cockpit and destroyed the effect's view
+   * in the same template pass, so the effect never got to run with `null` — the wake lock was never
+   * given back and the 30 ms interval kept ticking behind a screen nobody was looking at.
+   *
+   * The service is still built lazily, on the first cockpit that injects it; from then on it is a
+   * root singleton and outlives every view of the timer.
+   */
+  constructor() {
+    effect(() => this.#sync(this.#sessions.active()));
+  }
+
   /** Public so the specs can prove the refusal: a disabled key cannot be clicked. */
   start(session: TimerSession): void {
     if (!this.canStart()) {
@@ -60,7 +74,7 @@ export class TimerRaceService {
    * remembers the key (docs/TIMER.md §14). It stays reversible — undoing the last tap puts the race
    * back on the clock.
    */
-  sync(session: TimerSession | null): void {
+  #sync(session: TimerSession | null): void {
     if (session?.status !== TimerStatus.running) {
       this.#idle();
       // Nothing is ticking here, so the digits have to be told what to show: how long the race took

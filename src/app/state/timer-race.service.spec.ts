@@ -4,13 +4,20 @@ import { vi } from 'vitest';
 import { COMPLETE_SESSION } from '../core/timer/session-splits.mock';
 import { TimerStatus } from '../core/timer/timer-session.enum';
 import { TIMER_SESSION, TIMER_SESSION_IDLE } from '../core/timer/timer-session.mock';
+import { settle } from '../features/spec-utils/settle';
 import { TimerFeedback } from './haptics.enum';
 import { HapticsService } from './haptics.service';
 import { HapticsServiceMock, hapticsServiceMock } from './haptics.service.mock';
 import { TimerClockService } from './timer-clock.service';
 import { TimerClockServiceMock, timerClockServiceMock } from './timer-clock.service.mock';
 import { TIMER_CLOCK_IDLE_MS } from './timer-clock.constant';
-import { RACE_ELAPSED_MS, RACE_EMPTY_SESSION, RACE_FINISHED_SESSION, RACE_START_EPOCH_MS } from './timer-race.service.mock';
+import {
+  RACE_ELAPSED_MS,
+  RACE_EMPTY_SESSION,
+  RACE_FINISHED_SESSION,
+  RACE_RUNNING_AGAIN,
+  RACE_START_EPOCH_MS,
+} from './timer-race.service.mock';
 import { TimerRaceService } from './timer-race.service';
 import { TimerSessionService } from './timer-session.service';
 import { TimerSessionServiceMock, timerSessionServiceMock } from './timer-session.service.mock';
@@ -39,6 +46,8 @@ describe('TimerRaceService', () => {
         { provide: WakeLockService, useValue: wakeLock },
       ],
     });
+    // Injecting the service is what arms its effect — nothing else in the timer subscribes to the
+    // measurement, so a spec that never asks for the service watches a race nobody is following.
     service = TestBed.inject(TimerRaceService);
   });
 
@@ -73,27 +82,32 @@ describe('TimerRaceService', () => {
     expect(clock.start, 'and the code behind the key refuses it too').not.toHaveBeenCalled();
   });
 
-  it('picks a restored race up, stops it on the key, and stops itself when the last runner is home', () => {
+  it('picks a restored race up, stops it on the key, and owes a reopened measurement its own time', async () => {
     clock.elapsedMs.set(RACE_ELAPSED_MS);
-    service.sync(null);
+    await settle();
 
     expect(clock.stop, 'nothing is open, so there is nothing to stop either').not.toHaveBeenCalled();
 
-    service.sync(TIMER_SESSION);
-    service.sync(TIMER_SESSION);
+    sessions.active.set(TIMER_SESSION);
+    await settle();
+    sessions.active.set(RACE_RUNNING_AGAIN);
+    await settle();
 
     expect(clock.start, 'a race restored from localStorage is already running, and only started once').toHaveBeenCalledExactlyOnceWith(
       TIMER_SESSION,
     );
     expect(wakeLock.request, 'a race picked up mid-flight keeps the screen lit too').toHaveBeenCalledOnce();
 
-    service.sync(TIMER_SESSION_IDLE);
+    sessions.active.set(TIMER_SESSION_IDLE);
+    await settle();
 
     expect(clock.stop, 'a race put back to idle gives the tick up').toHaveBeenCalledOnce();
+    expect(clock.freeze, 'and one that never started stands at zero').toHaveBeenLastCalledWith(TIMER_CLOCK_IDLE_MS);
 
     clock.stop.mockClear();
     wakeLock.release.mockClear();
-    service.sync(TIMER_SESSION);
+    sessions.active.set(TIMER_SESSION);
+    await settle();
 
     service.stop(TIMER_SESSION);
 
@@ -106,11 +120,21 @@ describe('TimerRaceService', () => {
       stoppedAtMs: RACE_ELAPSED_MS,
     });
 
-    sessions.updateActive.mockClear();
-    clock.stop.mockClear();
-    wakeLock.release.mockClear();
-    service.sync(TIMER_SESSION);
-    service.sync(COMPLETE_SESSION);
+    clock.freeze.mockClear();
+    sessions.active.set(RACE_FINISHED_SESSION);
+    await settle();
+
+    expect(clock.freeze, 'a measurement opened again tomorrow says how long the race took').toHaveBeenCalledExactlyOnceWith(
+      RACE_ELAPSED_MS,
+    );
+  });
+
+  it('stops itself when the last runner is home and lets the screen go, both with the cockpit closed', async () => {
+    clock.elapsedMs.set(RACE_ELAPSED_MS);
+    sessions.active.set(TIMER_SESSION);
+    await settle();
+    sessions.active.set(COMPLETE_SESSION);
+    await settle();
 
     expect(sessions.updateActive.mock.calls[0][0](COMPLETE_SESSION), 'the stop is the same one the key does').toEqual({
       ...COMPLETE_SESSION,
@@ -120,16 +144,18 @@ describe('TimerRaceService', () => {
     expect(clock.stop, 'the digits stop with the race, not when somebody remembers the key').toHaveBeenCalledOnce();
     expect(wakeLock.release, 'and the screen goes back to the phone').toHaveBeenCalledOnce();
 
-    clock.freeze.mockClear();
-    service.sync(RACE_FINISHED_SESSION);
+    clock.stop.mockClear();
+    wakeLock.release.mockClear();
+    sessions.active.set(TIMER_SESSION);
+    await settle();
 
-    expect(clock.freeze, 'a measurement opened again tomorrow says how long the race took').toHaveBeenCalledExactlyOnceWith(
-      RACE_ELAPSED_MS,
-    );
+    // «←» on a running race: `closeActive()` empties the store and the cockpit is torn down with it.
+    // This is the pass the old view-effect never survived — it died before it could run with `null`.
+    sessions.active.set(null);
+    await settle();
 
-    clock.freeze.mockClear();
-    service.sync(TIMER_SESSION_IDLE);
-
-    expect(clock.freeze, 'and one that never started is back at zero').toHaveBeenCalledExactlyOnceWith(TIMER_CLOCK_IDLE_MS);
+    expect(clock.stop, 'the 30 ms interval must not tick on behind a closed cockpit').toHaveBeenCalledOnce();
+    expect(wakeLock.release, 'and the phone gets its auto-lock back the moment the race is left').toHaveBeenCalledOnce();
+    expect(clock.freeze, 'nothing is open, so the digits are back at nought').toHaveBeenLastCalledWith(TIMER_CLOCK_IDLE_MS);
   });
 });

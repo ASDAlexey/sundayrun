@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, output } from '@angular/core';
+import { Component, computed, inject, output } from '@angular/core';
 
 import { formatRussianDateChip } from '../../../core/time/russian-date';
 import { bestFinishMs, finishDoneCount, lapDoneCount } from '../../../core/timer/session-splits';
@@ -18,6 +18,10 @@ import { bestFinishText, finishedCountText } from './session-clock.text';
  * The figure is `aria-hidden` and repaints ten times a second, so it is never announced; the counters
  * below it are the polite live region that tells a screen reader where the race stands. The key that
  * starts and stops it all stands on the floor of the screen instead — see `race-key`.
+ *
+ * Nothing here drives the measurement: the component only reads. Following the life of a race — the
+ * tick, the wake lock, the automatic stop — is `TimerRaceService`'s own effect, because this view is
+ * torn down the moment the cockpit closes and an effect that dies with it never sees the closing.
  */
 @Component({
   selector: 'app-timer-clock',
@@ -85,9 +89,4 @@ export class TimerClock {
       finishedText: finishedCountText(finishDoneCount(session)),
     };
   });
-
-  /** The digits are driven by the state of the measurement, and the race service is what reads it. */
-  constructor() {
-    effect(() => this.#race.sync(this.#sessions.active()));
-  }
 }
