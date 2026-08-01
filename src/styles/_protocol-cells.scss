@@ -6,6 +6,59 @@
 
 @use 'typography' as t;
 
+// One grid template for both protocols — the published one (/races) and the upload preview
+// (/preview) — so a column added to one cannot silently drift out of line in the other. The
+// eleven tracks are tuned to fit the section's 1032px content box without a horizontal scroll:
+// the flexible name/club/note tracks absorb the slack and narrow headers wrap to two lines.
+// The three time tracks carry hundredths, so they are cut for 'mm:ss,cc' rather than 'mm:ss'.
+//
+// The «Пол» track is the one parameter: the protocol prints a single chip, the preview holds two
+// editable М/Ж toggles and needs the extra 18px.
+@function columns($gender: 44px) {
+  @return 32px minmax(112px, 1.3fr) 84px 84px 76px $gender 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
+}
+
+// The pinned header. It pins against the *window* — both tables hand their scrolling to
+// `scrollWindow`, so the row has to clear the sticky masthead rather than sit at the top of a
+// viewport of its own. A wrapper with a scroll container of its own defeats this (see the
+// narrow-screen media queries in both callers), which is why the offset is a token, not zero.
+@mixin header-row($columns) {
+  display: grid;
+  z-index: 1;
+  position: sticky;
+  top: var(--shell-header-height);
+  grid-template-columns: $columns;
+  align-items: end;
+  padding: 14px 12px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  // Opaque: the rows pass underneath it, not through it.
+  background: var(--surface);
+}
+
+@mixin header-cell {
+  @include t.text('label', 'medium');
+
+  color: var(--text-secondary);
+  text-align: left;
+
+  // Narrow columns wrap their label to two lines instead of overflowing the fixed track.
+  &_center {
+    text-align: center;
+  }
+}
+
+// Both tables are `autosize` virtual scrolls, so the row height is whatever the content needs —
+// padding, never a fixed height (that is what `vt.row` is for, and why these two do not use it).
+@mixin row($columns) {
+  display: grid;
+  grid-template-columns: $columns;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+}
+
 // The «Пол» chip: boys cool blue, girls warm pink — a light wash, not a flag.
 // The male/female washes are standalone mixins so the preview's editable toggles
 // can wear the exact same tint on their active state.

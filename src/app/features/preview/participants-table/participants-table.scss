@@ -2,45 +2,30 @@
 @use 'styles/protocol-cells' as p;
 @use 'styles/typography' as t;
 
-// Header and rows share this template so the columns line up; the gender column is a touch
-// wider to hold both М/Ж toggles. Tuned to fit the card width without horizontal scroll on
-// desktop; the flexible name/club/note tracks absorb the slack, narrow headers wrap.
-// The three time tracks carry hundredths, so they are cut for 'mm:ss,cc' rather than 'mm:ss'.
-$columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 62px 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
+// The published protocol's own template, one track wider in the «Пол» column: here it holds two
+// editable М/Ж toggles rather than a printed chip. Everything else stays shared, so a column
+// added to /races reaches this table too.
+$columns: p.columns(62px);
 
 .participants-table {
   @include c.card;
 
-  // On a narrow screen the wrapper scrolls horizontally rather than crushing the columns.
+  // `clip` rather than `auto`: the wrapper only has to keep the header row's square corners and a
+  // hovered last row inside the card's radius, and `auto` would make it a scroll container — one
+  // permanently at scrollTop 0, since the rows are scrolled by the window (`scrollWindow`). Its
+  // own scrollport would then hold the header row where it stands and let it leave the screen.
   &__scroll {
-    overflow-x: auto;
+    overflow: clip;
   }
 
   // Pinned above the scrolling rows; a solid surface fill keeps the rows from
   // bleeding through as they pass under it.
   &__header-row {
-    display: grid;
-    z-index: 1;
-    position: sticky;
-    top: 0;
-    grid-template-columns: $columns;
-    align-items: end;
-    padding: 14px 12px;
-    gap: 12px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
+    @include p.header-row($columns);
   }
 
   &__header {
-    @include t.text('label', 'medium');
-
-    color: var(--text-secondary);
-    text-align: left;
-
-    // Narrow columns wrap their label to two lines instead of overflowing the fixed track.
-    &_center {
-      text-align: center;
-    }
+    @include p.header-cell;
   }
 
   // The window drives the scroll (`scrollWindow`), so the viewport keeps no scrollbar of its own.
@@ -49,12 +34,8 @@ $columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 62px 76px 76px 60px minmax(48
   }
 
   &__row {
-    display: grid;
-    grid-template-columns: $columns;
-    align-items: center;
-    padding: 10px 12px;
-    gap: 12px;
-    border-top: 1px solid var(--border);
+    @include p.row($columns);
+
     transition: background var(--transition-time) var(--ease);
 
     &:hover {
@@ -164,5 +145,21 @@ $columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 62px 76px 76px 60px minmax(48
 
   &__note-icon-fill {
     @include p.note-icon-fill;
+  }
+
+  // The eleven tracks need 1004px inside the card (860px of track minimums, ten 12px gaps and the
+  // row's own 24px of padding), and the section hands them `min(100vw, --maxw) - 48px` — so from
+  // about 1052px of viewport down they stop fitting and the wrapper has to scroll sideways again.
+  // That turns it back into a scroll container (a `clip` axis next to an `auto` one computes to
+  // `hidden`), and a sticky box at the top of a scrollport that never scrolls is pushed *down* by
+  // its own inset, so the header row goes back to a zero offset here — it cannot pin anyway.
+  @media (width <= 1080px) {
+    &__scroll {
+      overflow-x: auto;
+    }
+
+    &__header-row {
+      top: 0;
+    }
   }
 }

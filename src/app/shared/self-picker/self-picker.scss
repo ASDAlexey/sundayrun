@@ -63,7 +63,7 @@
       border-radius: 50%;
       background: var(--accent);
       content: '';
-      animation: self-picker-pulse 2.4s var(--ease) infinite;
+      animation: self-picker-pulse var(--time-breathe) var(--ease) infinite;
     }
 
     &:hover {

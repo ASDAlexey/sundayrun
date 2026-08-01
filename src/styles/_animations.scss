@@ -33,3 +33,28 @@
     transition: none;
   }
 }
+
+// The two «we are working» loops the app draws in more than one place: a ring turning in a spinner
+// (the freshness banner, the PDF button) and a highlight crossing a surface (the PDF button while
+// it renders, a photo tile while its picture arrives). Both were written out twice, byte for byte,
+// and drifted in duration only — hence one copy here, on --time-spin / --time-sheen.
+//
+// Consumers name these frames but do not `@use` this partial: it carries top-level CSS (the
+// `.reveal` rules above), and Sass emits a module's CSS into every stylesheet that uses it, so
+// four component sheets would each grow their own scoped copy of the reveal choreography.
+// `@keyframes` names are global, so referencing them from a component costs nothing.
+//
+// The hue and the size stay with the caller on purpose: the banner's ring is drawn in
+// --accent-line/--accent on the page background, while the PDF button's sits on an accent fill
+// and has to borrow `currentcolor` to stay legible on it.
+@keyframes spin-turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes sheen-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}

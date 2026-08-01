@@ -1,11 +1,15 @@
 // ===========================================================
-//  Virtual data table — one shared look and behaviour for every
-//  scrolling table on the site (athlete runs, race protocol,
-//  preview participants). A pinned header row sits above a
+//  Virtual data table — the shared look and behaviour of the
+//  fixed-height scrolling tables (the athlete's runs, the records
+//  boards, the admin archive). A pinned header row sits above a
 //  `cdk-virtual-scroll-viewport`; both share one grid column
 //  template so the columns line up. Keep the row height in sync
 //  with the feature's *_ROW_HEIGHT_PX constant — the virtual
 //  scroll strategy assumes every row is exactly that tall.
+//
+//  The two autosize protocol tables (`/races/:slug` and the
+//  /preview participants) do NOT use this partial: their rows grow
+//  with their notes, so they share `_protocol-cells.scss` instead.
 // ===========================================================
 
 @use 'typography' as t;

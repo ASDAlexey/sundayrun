@@ -39,16 +39,16 @@
       border-color: var(--accent-line);
     }
 
-    // The placeholder: a slow sheen crossing an empty frame, the same «working» language the
-    // PDF button speaks while it generates. It is painted by the tile itself, so nothing shifts
-    // when the photograph finally arrives.
+    // The placeholder: a slow sheen crossing an empty frame — literally the same sweep the PDF
+    // button runs while it generates (`sheen-sweep`, styles/_animations.scss), only tinted for a
+    // dark tile. It is painted by the tile itself, so nothing shifts when the photograph arrives.
     &_loading::after {
       position: absolute;
       inset: 0;
       transform: translateX(-100%);
       background: linear-gradient(100deg, transparent 30%, var(--surface-hover) 50%, transparent 70%);
       content: '';
-      animation: photo-strip-sheen 1.6s ease-in-out infinite;
+      animation: sheen-sweep var(--time-sheen) ease-in-out infinite;
     }
   }
 
@@ -78,12 +78,6 @@
     inset: 0;
     background: rgb(0, 0, 0, 0.55);
     color: var(--white);
-  }
-}
-
-@keyframes photo-strip-sheen {
-  to {
-    transform: translateX(100%);
   }
 }
 

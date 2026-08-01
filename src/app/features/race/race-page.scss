@@ -5,11 +5,9 @@
 @use 'styles/table' as tbl;
 @use 'styles/typography' as t;
 
-// One shared grid template for the pinned header and every virtual row, so the eleven
-// columns line up. Tuned to fit the card width without horizontal scroll on desktop; the
-// flexible name/club/note tracks absorb the slack, and narrow headers wrap to two lines.
-// The three time tracks carry hundredths, so they are cut for 'mm:ss,cc' rather than 'mm:ss'.
-$race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
+// The header and every virtual row read the eleven tracks from the same shared template as
+// /preview (`p.columns`), so a column added here cannot drift out of line there.
+$race-columns: p.columns();
 
 .race {
   @include s.section;
@@ -111,7 +109,7 @@ $race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minm
         transform: translateX(-100%);
         background: linear-gradient(100deg, transparent 25%, color-mix(in srgb, var(--accent-light) 55%, transparent) 50%, transparent 75%);
         content: '';
-        animation: race-pdf-sheen 1.4s ease-in-out infinite;
+        animation: sheen-sweep var(--time-sheen) ease-in-out infinite;
       }
     }
   }
@@ -128,8 +126,9 @@ $race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minm
     height: 16px;
     border: 2px solid color-mix(in srgb, currentcolor 30%, transparent);
     border-radius: 50%;
+    // `currentcolor`, not the accent: this ring turns on the accent fill of the button itself.
     border-top-color: currentcolor;
-    animation: race-pdf-spin 900ms linear infinite;
+    animation: spin-turn var(--time-spin) linear infinite;
   }
 
   &__pdf-error {
@@ -153,7 +152,7 @@ $race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minm
     min-height: 40px;
     padding: 0 18px;
     gap: 8px;
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
     text-decoration: none;
@@ -180,37 +179,23 @@ $race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minm
     @include st.error-text;
   }
 
-  // On a narrow screen the wrapper scrolls horizontally rather than crushing the columns.
+  // `clip` rather than `auto`: the wrapper only has to keep the header row's square corners and a
+  // highlighted last row inside the card's radius, and `auto` would make it a scroll container —
+  // one permanently at scrollTop 0, since the rows are scrolled by the window (`scrollWindow`).
+  // Its own scrollport would then hold the header row where it stands and let it leave the screen.
   &__table-wrap {
     @include c.card;
 
-    overflow-x: auto;
+    overflow: clip;
   }
 
   // The pinned header — always visible above the scrolling rows, sharing the row grid.
   &__thead-row {
-    display: grid;
-    z-index: 1;
-    position: sticky;
-    top: 0;
-    grid-template-columns: $race-columns;
-    align-items: end;
-    padding: 14px 12px;
-    gap: 12px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
+    @include p.header-row($race-columns);
   }
 
   &__th {
-    @include t.text('label', 'medium');
-
-    color: var(--text-secondary);
-    text-align: left;
-
-    // Narrow columns wrap their label to two lines instead of overflowing the fixed track.
-    &_center {
-      text-align: center;
-    }
+    @include p.header-cell;
   }
 
   // The window drives the scroll (`scrollWindow`), so the viewport never grows its own
@@ -220,13 +205,9 @@ $race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minm
   }
 
   &__row {
-    display: grid;
+    @include p.row($race-columns);
+
     position: relative;
-    grid-template-columns: $race-columns;
-    align-items: center;
-    padding: 10px 12px;
-    gap: 12px;
-    border-top: 1px solid var(--border);
   }
 
   // The visitor's own row («Выбери себя» in the header) — a calm accent wash over the cells.
@@ -367,16 +348,20 @@ $race-columns: 32px minmax(112px, 1.3fr) 84px 84px 76px 44px 76px 76px 60px minm
     align-items: flex-start;
     gap: 16px;
   }
-}
 
-@keyframes race-pdf-spin {
-  to {
-    transform: rotate(1turn);
-  }
-}
+  // The eleven tracks need 986px inside the card (842px of track minimums, ten 12px gaps and the
+  // row's own 24px of padding), and the section hands them `min(100vw, --maxw) - 48px` — so from
+  // about 1036px of viewport down they stop fitting and the wrapper has to scroll sideways again.
+  // That turns it back into a scroll container (a `clip` axis next to an `auto` one computes to
+  // `hidden`), and a sticky box at the top of a scrollport that never scrolls is pushed *down* by
+  // its own inset, so the header row goes back to a zero offset here — it cannot pin anyway.
+  @media (width <= 1080px) {
+    &__table-wrap {
+      overflow-x: auto;
+    }
 
-@keyframes race-pdf-sheen {
-  to {
-    transform: translateX(100%);
+    &__thead-row {
+      top: 0;
+    }
   }
 }

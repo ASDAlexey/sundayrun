@@ -18,10 +18,12 @@
     flex: none;
     width: 14px;
     height: 14px;
+    // The accent on the page background, where the ring can afford the brand colour — the same
+    // turn as the PDF button's spinner (`spin-turn`, styles/_animations.scss), a different hue.
     border: 2px solid var(--accent-line);
     border-radius: 50%;
     border-top-color: var(--accent);
-    animation: db-freshness-banner-spin 900ms linear infinite;
+    animation: spin-turn var(--time-spin) linear infinite;
   }
 
   &__text {
@@ -32,7 +34,7 @@
     @include t.text('label', 'medium');
 
     flex: none;
-    color: var(--text-tertiary);
+    color: var(--text-muted);
     font-variant-numeric: tabular-nums;
   }
 
@@ -45,11 +47,5 @@
     background: var(--accent);
     color: var(--accent-contrast);
     cursor: pointer;
-  }
-}
-
-@keyframes db-freshness-banner-spin {
-  to {
-    transform: rotate(1turn);
   }
 }

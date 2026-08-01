@@ -33,7 +33,11 @@
   --accent-contrast: #1a0e02; // dark ink for text on warm-accent fills
   --accent-gradient: linear-gradient(96deg, #ffb35c 0%, #f0912d 55%, #e06e1b 100%);
 
+  // The two verdict colours. Both are light enough to serve twice: as ink on the near-black page
+  // and as a fill under `--accent-contrast` ink (the error toast), so neither needs a second shade.
   --green: #3ecf8e;
+  --red: #ff5f56;
+
   --white: #fff;
   --black: #000;
 
@@ -60,6 +64,13 @@
   --radius-xs: 6px;
 
   --maxw: 1080px;
+
+  // The masthead is `position: sticky` with z-index 50 (app.scss), so anything else that pins to
+  // the top of the window has to start below it. One row of the brand lockup: the 44px mark plus
+  // the toolbar's 2×18px padding plus the hairline border. A constant rather than a measurement —
+  // the only boxes that pin against it (the protocol header rows) do so on wide screens, where
+  // the header never wraps to a second line.
+  --shell-header-height: 81px;
 
   --font: 'Inter Variable', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
   --font-display: 'Unbounded Variable', 'Inter Variable', -apple-system, sans-serif;
@@ -93,8 +104,13 @@
   --time-press: 0.06s; // finger goes down — has to land within 3-4 frames
   --time-tap: 0.12s; // ceiling for any «it registered» feedback
   --time-spring: 0.24s; // finger comes up — the spring settles
-  --time-hold: 0.6s; // long-press ring guarding a destructive action
-  --time-breathe: 2s; // the only two infinite loops we allow
+
+  // The three tempos every infinite loop in the app runs on. A loop that never stops is a
+  // background noise, so the project keeps a scale of three rather than a duration per effect:
+  // grep for `infinite` in src/ and every hit must resolve to one of these.
+  --time-spin: 0.9s; // one full turn of a loading ring
+  --time-sheen: 1.4s; // one pass of a «we are working» sheen — and the beat of a dot saying the same
+  --time-breathe: 2s; // the slow ambient rung: breathing, drifting, sweeping
 
   // Course map. An inset printed map on a dark page, so it carries a light palette of its own
   // rather than the site's — white alleys on green read instantly, the same lines in grey on

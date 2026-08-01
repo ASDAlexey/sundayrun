@@ -219,7 +219,7 @@
     gap: 12px;
     background:
       radial-gradient(70% 130% at 0% 50%, color-mix(in srgb, var(--duel-left) 7%, transparent) 0%, transparent 60%),
-      radial-gradient(70% 130% at 100% 50%, color-mix(in srgb, var(--duel-right) 7%, transparent) 0%, transparent 60%), var(--card-bg);
+      radial-gradient(70% 130% at 100% 50%, color-mix(in srgb, var(--duel-right) 7%, transparent) 0%, transparent 60%), var(--surface);
   }
 
   &__scoreboard {

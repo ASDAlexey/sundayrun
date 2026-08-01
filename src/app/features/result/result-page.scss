@@ -151,7 +151,7 @@
 
     &_scanning {
       width: 40%;
-      animation: result-deploy-scan 1.8s ease-in-out infinite alternate;
+      animation: result-deploy-scan var(--time-breathe) ease-in-out infinite alternate;
     }
   }
 
@@ -196,7 +196,7 @@
       &::before {
         border-color: var(--accent);
         background: var(--accent);
-        animation: result-deploy-pulse 1.4s ease-in-out infinite;
+        animation: result-deploy-pulse var(--time-sheen) ease-in-out infinite;
       }
     }
   }
