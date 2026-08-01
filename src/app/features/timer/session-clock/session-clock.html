@@ -1,7 +1,8 @@
 <div class="timer-clock">
   <div class="timer-clock__row">
+    <!-- `role="timer"` implies `aria-live="off"`, so exposing it costs no reading on the tick — but it
+    makes the main state of the cockpit reachable at all, which `aria-hidden` used to forbid. -->
     <span
-      aria-hidden="true"
       class="timer-clock__figure"
       role="timer"
       [class.timer-clock__figure_idle]="session()?.status === statuses.idle"

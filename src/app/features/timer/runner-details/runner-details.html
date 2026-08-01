@@ -1,4 +1,7 @@
-<div class="timer-runner-card" role="group" tabindex="-1" [attr.aria-label]="fullName()" (keydown.escape)="onClose()">
+<!-- The group, its label, the focus stop and Escape all live on the host now: the card is opened from
+outside its own subtree, so a handler on this inner box only ever heard a key press once the focus
+had already been walked into it by hand. -->
+<div class="timer-runner-card">
   <div class="timer-runner-card__head">
     <span class="timer-runner-card__name">{{ fullName() }}</span>
 

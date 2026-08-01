@@ -21,6 +21,8 @@ export interface TimerHistoryRemove {
 
 /** One roster line of the history: the reassignment target and the owner of an outcome. */
 export interface TimerHistoryRunner {
+  /** «Карточка: Ширшов Денис» — precomputed, because a template must not call a function. */
+  cardLabel: string;
   fullName: string;
   id: string;
   outcome: TimerRunnerOutcomeType;

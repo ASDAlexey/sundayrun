@@ -16,6 +16,7 @@ import { normalizeFullNameCase } from '../../../core/xlsx/full-name-case';
 import { TimerRosterStatus } from '../../../state/timer-roster.enum';
 import { TimerRosterService } from '../../../state/timer-roster.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
+import { TimerSheet } from '../handout-sheet/handout-sheet';
 import {
   TIMER_PICKER_EMPTY_TEXT,
   TIMER_PICKER_GENDERS,
@@ -44,11 +45,17 @@ import { TimerGenderOption, TimerPickerCandidate, TimerPickerOption } from './ru
  * query, the newcomer draft and which regulars are ticked. Its single output is `close`; where the
  * sheet lives and when it opens is the page's business, never its own.
  *
+ * The surface is a native `<dialog>` opened with `showModal()` (`TimerSheet`), so the scrim, the
+ * focus trap, Escape and the return of the focus are the platform's job. That matters here more than
+ * anywhere else in the feature: the sheet is rendered beside the cockpit rather than inside it, so a
+ * hand-rolled `(keydown.escape)` never saw the key press that opened it.
+ *
  * The directory refresh fires on creation and is allowed to fail: with no signal in the park the
  * cached names stay on screen and the sheet says how old they are.
  */
 @Component({
   selector: 'app-timer-picker',
+  imports: [TimerSheet],
   templateUrl: './runner-picker.html',
   styleUrl: './runner-picker.scss',
 })
@@ -237,6 +244,22 @@ export class TimerPicker {
    */
   commit(): void {
     this.addRegulars();
+    this.close.emit();
+  }
+
+  /**
+   * «Готово». The dialog is closed by hand and not merely unmounted: only `close()` gives the focus
+   * back to «Добавить атлета», and a modal that is torn out of the DOM instead leaves it on `<body>`
+   * — which on a keyboard means starting the tab order of the cockpit from the top again.
+   */
+  done(sheet: HTMLDialogElement): void {
+    sheet.close();
+    this.commit();
+  }
+
+  /** «×» — the same exit with nothing added, so whatever was ticked is dropped along with the sheet. */
+  dismiss(sheet: HTMLDialogElement): void {
+    sheet.close();
     this.close.emit();
   }
 

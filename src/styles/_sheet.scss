@@ -1,7 +1,11 @@
 // ===========================================================
-//  Bottom sheet — the one surface «Атлеты» and the actions
-//  of «Мои замеры» share: a dimming scrim and a panel that
-//  rises from the bottom edge of the phone.
+//  Bottom sheet — the one surface «Атлеты», the actions of
+//  «Мои замеры» and the tap journal share: a panel that rises
+//  from the bottom edge of the phone. Each of them is a native
+//  modal `<dialog>`, so the platform draws the dimming layer
+//  (`::backdrop`), traps the focus and answers Escape; the
+//  hand-rolled root and scrim these mixins used to provide went
+//  away with the conversion.
 // ===========================================================
 
 @use 'card' as c;
@@ -9,26 +13,6 @@
 
 // `dvh` rather than `vh`: on a phone the browser chrome comes and goes, and a sheet measured against
 // the large viewport hides its «Готово» under the address bar exactly when it is needed.
-@mixin sheet-root {
-  display: flex;
-  z-index: 70;
-  position: fixed;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  height: 100dvh;
-  inset: 0 0 auto;
-}
-
-// A button, not a div: closing by tapping outside must work from the keyboard too.
-@mixin sheet-scrim {
-  position: absolute;
-  inset: 0;
-  border: none;
-  background: color-mix(in srgb, var(--black) 62%, transparent);
-  cursor: pointer;
-}
-
 @mixin sheet-panel {
   @include c.card;
 

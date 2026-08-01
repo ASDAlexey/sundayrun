@@ -313,16 +313,23 @@ describe('TimerPicker', () => {
     expect(picker.rosterAgeText()).toMatch(PICKER_ROSTER_AGE_PATTERN);
   });
 
-  it('renders the sheet, reports the directory state and closes three ways', () => {
+  it('renders the sheet as a platform modal, reports the directory state and closes four ways', async () => {
     const picker = fixture.componentInstance;
     const closed = vi.fn();
 
     picker.close.subscribe(closed);
     sessions.sessions.set([PICKER_SESSION, PICKER_PREVIOUS_SESSION]);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement;
+    const sheet = (): HTMLDialogElement => element.querySelector('dialog.timer-picker');
 
+    expect(sheet().open, 'the roster opens as a platform modal, so the scrim and the focus trap are the platform job').toBe(true);
+    expect(
+      fixture.nativeElement.ownerDocument.activeElement,
+      'and the focus is inside before the first Tab, which is what made Escape dead',
+    ).toBe(sheet());
+    expect(element.querySelector('.timer-picker__scrim'), 'the hand-rolled scrim button went with the wrapper').toBeNull();
     expect(element.querySelector('.timer-picker__title').textContent.trim()).toBe('Атлеты');
     expect(element.querySelectorAll('.timer-picker__runner').length).toBe(2);
     expect(element.querySelector('.timer-picker__quick-button')).not.toBeNull();
@@ -354,11 +361,28 @@ describe('TimerPicker', () => {
 
     expect(element.querySelector('.timer-picker__status').textContent, 'offline is a state, not an error screen').toContain('Сети нет');
 
-    element.querySelector('.timer-picker__close').click();
-    element.querySelector('.timer-picker__scrim').click();
-    element.querySelector('.timer-picker').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    sheet().dispatchEvent(new Event('cancel'));
 
-    expect(closed).toHaveBeenCalledTimes(3);
+    expect(sheet().open, 'Escape reaches the dialog itself now, whatever the organiser last touched').toBe(false);
+    expect(closed).toHaveBeenCalledOnce();
+
+    sheet().showModal();
+    sheet().dispatchEvent(new MouseEvent('click'));
+
+    expect(sheet().open, 'a click on the backdrop is reported as a click on the dialog').toBe(false);
+
+    sheet().showModal();
+    element.querySelector('.timer-picker__close').click();
+
+    expect(sheet().open, '«×» closes it by hand, so the focus lands back on the key that opened it').toBe(false);
+
+    sheet().showModal();
+    picker.setGender(picker.runners()[1], Gender.female);
+    fixture.detectChanges();
+    element.querySelector('.timer-picker__done').click();
+
+    expect(sheet().open, '«Готово» spends the ticks and closes the very same way').toBe(false);
+    expect(closed).toHaveBeenCalledTimes(4);
   });
 
   it('renders both empty states when there is neither a directory nor a roster', () => {

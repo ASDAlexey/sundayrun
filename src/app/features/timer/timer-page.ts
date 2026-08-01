@@ -27,7 +27,7 @@ import { TimerTape } from './tape-controls/tape-controls';
 import { TimerAnnouncementKind } from './timer-announcement.enum';
 import { TimerAnnouncement } from './timer-announcement.interface';
 import { TimerFarewellService } from './timer-farewell.service';
-import { TIMER_FIRST_QUEUE_REQUEST } from './timer-page.constant';
+import { TIMER_FIRST_QUEUE_REQUEST, TIMER_PANEL_ID, TIMER_TAB_IDS } from './timer-page.constant';
 import { TimerTab, TimerTabType } from './timer-page.enum';
 import { clearRosterNoteText, resetNoteText, toggleStateText } from './timer-page.text';
 import { buildTimerHeader } from './timer-page.view';
@@ -70,6 +70,8 @@ export class TimerPage {
   readonly #farewell = inject(TimerFarewellService);
 
   protected readonly tabs = TimerTab;
+  protected readonly tabIds = TIMER_TAB_IDS;
+  protected readonly panelId = TIMER_PANEL_ID;
   protected readonly kinds = TimerAnnouncementKind;
   protected readonly statuses = TimerStatus;
   protected readonly session = this.#sessions.active;
@@ -101,6 +103,22 @@ export class TimerPage {
   protected readonly pickerOpen = signal(false);
   protected readonly historyOpen = signal(false);
   protected readonly announcement = signal<TimerAnnouncement | null>(null);
+
+  /**
+   * Which tab the area below is actually showing — and nothing at all while the journal is up. The
+   * journal is a modal that covers the whole screen and makes the strip behind it inert without
+   * touching `tab()`, so `tab()` alone answers «куда я вернусь», not «что сейчас на экране»; only the
+   * second question is what `aria-selected` asks, and a strip claiming «Финиш» from under an open
+   * journal misleads a reader worse than no roles would.
+   */
+  protected readonly selectedTab = computed<TimerTabType | null>(() => (this.historyOpen() ? null : this.tab()));
+
+  /** The panel is named by the tab it shows; the journal that covers it brings its own dialog label. */
+  protected readonly panelLabelId = computed(() => {
+    const selected = this.selectedTab();
+
+    return selected === null ? null : TIMER_TAB_IDS[selected];
+  });
 
   /** Whose card is up: the id rather than the tile view, so the times follow every later fix. */
   protected readonly detailsId = signal<string | null>(null);
@@ -187,7 +205,22 @@ export class TimerPage {
   }
 
   protected onDetails(view: TimerTileView): void {
-    this.detailsId.set(view.runner.id);
+    this.onCard(view.runner.id);
+  }
+
+  /**
+   * The same card, asked for by surname instead of by a long press on the right tile. «Поменять
+   * местами с…» lives only in that card and is the only repair for the commonest mistake of the
+   * cockpit — a tap on the neighbouring name — so it must not depend on a gesture that has to be
+   * both long enough and still enough.
+   *
+   * The journal goes when the card comes, and it has to: the journal is a modal `<dialog>`, and the
+   * card sits below the tab area, which a modal makes inert — left open, it would bury the very card
+   * it was asked for. The way back is one item of the «⋮» menu, and it reopens on the same journal.
+   */
+  protected onCard(runnerId: string): void {
+    this.historyOpen.set(false);
+    this.detailsId.set(runnerId);
   }
 
   protected onCloseDetails(): void {

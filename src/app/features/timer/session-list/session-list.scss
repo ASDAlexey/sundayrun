@@ -110,16 +110,19 @@
     }
   }
 
-  &__dialog {
-    @include sh.sheet-root;
-  }
-
-  &__scrim {
-    @include sh.sheet-scrim;
-  }
-
+  // The panel is the `<dialog>` itself: `showModal()` lifts it into the top layer, where `::backdrop`
+  // is the scrim the removed button used to draw and the auto margins pin it to the bottom edge.
   &__sheet {
     @include sh.sheet-panel;
+
+    width: min(560px, 100vw);
+    max-width: none;
+    margin: auto auto 0;
+    color: var(--text);
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--black) 62%, transparent);
+    }
   }
 
   &__handle {

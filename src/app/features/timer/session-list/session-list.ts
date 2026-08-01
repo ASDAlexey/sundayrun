@@ -8,6 +8,7 @@ import { TimerPublishService } from '../../../state/timer-publish.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { ADMIN_PAGE_LINK } from '../../admin/admin-page.constant';
 import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
+import { TimerSheet } from '../handout-sheet/handout-sheet';
 import { TIMER_ADMIN_RETURN_PARAMS } from '../session-publish/session-publish.constant';
 import { TimerShare } from '../session-share/session-share';
 import { TIMER_SESSIONS_NONE, TIMER_SESSIONS_TITLE_ID } from './session-list.constant';
@@ -23,8 +24,9 @@ import { buildTimerSessionRows } from './session-list.view';
  *
  * The actions of a row live in a bottom sheet over the screen rather than inside the card: unfolded
  * in place they pushed the measurement off the top of the phone and turned a five-row list into a
- * scroll. The sheet is the same surface «Атлеты» uses (`styles/sheet`), because two languages of
- * surface in one feature is one too many.
+ * scroll. The sheet is the same surface «Атлеты» uses (`styles/sheet`) and the same native
+ * `<dialog>` (`TimerSheet`), because two languages of surface in one feature is one too many — and
+ * because the scrim, the focus trap, Escape and the focus that goes back to «⋮» are all free there.
  *
  * Getting the race out of the phone is one entrance and not two — `TimerShare` owns the workbook,
  * the chats and the preview of what it is about to send, and the finish screen opens the very same
@@ -32,7 +34,7 @@ import { buildTimerSessionRows } from './session-list.view';
  */
 @Component({
   selector: 'app-timer-sessions',
-  imports: [RouterLink, TimerConfirm, TimerShare],
+  imports: [RouterLink, TimerConfirm, TimerShare, TimerSheet],
   templateUrl: './session-list.html',
   styleUrl: './session-list.scss',
 })
@@ -67,8 +69,8 @@ export class TimerSessions {
     this.#sessions.create({ dateIso: isoToday() });
   }
 
-  protected onOpen(row: TimerSessionRow): void {
-    this.menuId.set(null);
+  protected onOpen(row: TimerSessionRow, sheet: HTMLDialogElement): void {
+    this.onDismiss(sheet);
     this.open.emit(row.session.id);
   }
 
@@ -76,19 +78,30 @@ export class TimerSessions {
     this.menuId.set(row.session.id);
   }
 
+  /** Escape and the backdrop go through the dialog itself, so it is already closed by the time we hear. */
   protected onCloseMenu(): void {
     this.menuId.set(null);
   }
 
-  /** The workbook, the chats and the preview of the message, all in one sheet over the row. */
-  protected onSend(row: TimerSessionRow): void {
+  /**
+   * Every way the sheet is dismissed from inside itself, and each of them closes the dialog by hand
+   * rather than merely unmounting it: a modal torn out of the DOM leaves the focus on `<body>`, while
+   * `close()` hands it back to the «⋮» of the row — the one place a keyboard can carry on from.
+   */
+  protected onDismiss(sheet: HTMLDialogElement): void {
+    sheet.close();
     this.menuId.set(null);
+  }
+
+  /** The workbook, the chats and the preview of the message, all in one sheet over the row. */
+  protected onSend(row: TimerSessionRow, sheet: HTMLDialogElement): void {
+    this.onDismiss(sheet);
     this.sendId.set(row.session.id);
   }
 
   /** Publishing an already saved measurement: «сохраняли без сети» or simply changed their mind. */
-  protected onPublish(row: TimerSessionRow): void {
-    this.menuId.set(null);
+  protected onPublish(row: TimerSessionRow, sheet: HTMLDialogElement): void {
+    this.onDismiss(sheet);
     void this.#publish.publish(row.session);
   }
 

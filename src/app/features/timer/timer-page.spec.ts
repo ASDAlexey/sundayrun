@@ -36,6 +36,7 @@ import { wakeLockServiceMock } from '../../state/wake-lock.service.mock';
 import { TimerFarewellService } from './timer-farewell.service';
 import { TimerFarewellServiceMock, timerFarewellServiceMock } from './timer-farewell.service.mock';
 import { TimerPage } from './timer-page';
+import { TIMER_PANEL_ID, TIMER_TAB_IDS } from './timer-page.constant';
 import {
   FAREWELL_BEST_TEXT,
   PAGE_UNNAMED_SPLIT_ID,
@@ -203,18 +204,24 @@ describe('TimerPage', () => {
     await create();
 
     expect(element().querySelector('app-timer-grid')).not.toBeNull();
+    expect(element().querySelector('.timer__aside app-timer-lap-board'), 'with the lap table beside it on a wide screen').not.toBeNull();
 
     click('.timer__tabs .timer__tab:nth-child(2)');
     await fixture.whenStable();
 
     expect(element().querySelector('app-timer-grid')).toBeNull();
     expect(element().querySelector('.timer-lap-board__row'), 'the live lap table is the tab itself').not.toBeNull();
+    expect(
+      element().querySelector('.timer__aside'),
+      'and the wide-screen column is left out of the DOM here, because it would be that very table again',
+    ).toBeNull();
 
     click('.timer__tabs .timer__tab:nth-child(3)');
     await fixture.whenStable();
 
     expect(element().querySelectorAll('.timer__tab_on').length, 'exactly one filter is on').toBe(1);
     expect(element().querySelector('.timer-finish-board__row'), 'and «Финиш» is the protocol as it will go to the site').not.toBeNull();
+    expect(element().querySelector('.timer__aside app-timer-lap-board'), 'beside the protocol the column is back').not.toBeNull();
 
     click('.timer__menu');
     await fixture.whenStable();
@@ -222,12 +229,67 @@ describe('TimerPage', () => {
     await fixture.whenStable();
 
     expect(element().querySelector('app-timer-history'), 'the journal is reachable, not «скоро»').not.toBeNull();
-    expect(element().querySelector('app-timer-finish-board'), 'and it takes the whole tab area').toBeNull();
+    expect(
+      element().querySelector<HTMLDialogElement>('dialog.timer-history')?.open,
+      'and it comes up as a platform modal over the race, not as a page that replaces it',
+    ).toBe(true);
+    expect(element().querySelector('app-timer-finish-board'), 'so the protocol stays rendered behind it').not.toBeNull();
 
     click('.timer-history__close');
     await fixture.whenStable();
 
-    expect(element().querySelector('app-timer-finish-board')).not.toBeNull();
+    expect(element().querySelector('app-timer-history')).toBeNull();
+  });
+
+  it('ties the three tabs to the one panel and stops claiming one while the journal covers it', async () => {
+    sessions.active.set(TIMER_SESSION);
+    await create();
+
+    const tabs = (): HTMLElement[] => [...element().querySelectorAll<HTMLElement>('.timer__tab')];
+    const panel = (): HTMLElement | null => element().querySelector('.timer__body');
+    const attrOf = (name: string): (string | null)[] => tabs().map((tab) => tab.getAttribute(name));
+
+    expect(element().querySelector('.timer__tabs')?.getAttribute('aria-label'), 'the strip says what it filters').toBeTruthy();
+    expect(attrOf('id')).toEqual([TIMER_TAB_IDS.grid, TIMER_TAB_IDS.lap, TIMER_TAB_IDS.finish]);
+    expect(attrOf('aria-controls'), 'all three drive the one area below them').toEqual([TIMER_PANEL_ID, TIMER_PANEL_ID, TIMER_PANEL_ID]);
+    expect(panel()?.id).toBe(TIMER_PANEL_ID);
+    expect(attrOf('aria-selected')).toEqual(['true', 'false', 'false']);
+    expect(panel()?.getAttribute('aria-labelledby'), 'and the area is named by the tab it is showing').toBe(TIMER_TAB_IDS.grid);
+
+    click('.timer__tabs .timer__tab:nth-child(2)');
+    await fixture.whenStable();
+
+    expect(attrOf('aria-selected')).toEqual(['false', 'true', 'false']);
+    expect(panel()?.getAttribute('aria-labelledby')).toBe(TIMER_TAB_IDS.lap);
+
+    click('.timer__menu');
+    await fixture.whenStable();
+    menuItem(2);
+    await fixture.whenStable();
+
+    expect(attrOf('aria-selected'), 'the journal is not a tab, so no tab may claim the panel').toEqual(['false', 'false', 'false']);
+    expect(panel()?.getAttribute('aria-labelledby'), 'the modal over it carries its own name instead').toBeNull();
+    expect(element().querySelectorAll('.timer__tab_on'), 'the highlight still answers where closing the journal lands').toHaveLength(1);
+  });
+
+  it('opens the runner card from the journal, with no long press to aim', async () => {
+    sessions.active.set(TIMER_SESSION);
+    await create();
+
+    click('.timer__menu');
+    await fixture.whenStable();
+    menuItem(2);
+    await fixture.whenStable();
+
+    element().querySelectorAll<HTMLElement>('.timer-history__card')[1].click();
+    await fixture.whenStable();
+
+    expect(element().querySelector('.timer-runner-card__name')?.textContent?.trim()).toBe(TIMER_SESSION.runners[1].fullName);
+    expect(element().querySelector('.timer-runner-card__swap'), '«Поменять местами с…» is why the card had to be reachable').not.toBeNull();
+    expect(
+      element().querySelector('app-timer-history'),
+      'and the journal steps aside: it is a modal, and the card lives under the tab area it makes inert',
+    ).toBeNull();
   });
 
   it('arms the click from the menu and opens the roster sheet from it', async () => {
@@ -341,7 +403,8 @@ describe('TimerPage', () => {
 
     expect(element().querySelector('app-timer-picker'), 'before the start the roster shares the panel with the keys').not.toBeNull();
 
-    click('.timer-picker__scrim');
+    // A click landing on the dialog element itself is how a browser reports a click on the backdrop.
+    click('dialog.timer-picker');
     await fixture.whenStable();
 
     expect(element().querySelector('app-timer-picker')).toBeNull();

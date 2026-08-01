@@ -131,24 +131,49 @@ describe('TimerHistory', () => {
     );
   });
 
-  it('renders the journal, the roster picker and the close button', () => {
+  it('renders the journal as a modal, the roster picker and the two ways out', async () => {
     const closed: number[] = [];
+    const carded: string[] = [];
 
     history.close.subscribe(() => closed.push(1));
+    history.card.subscribe((runnerId: string) => carded.push(runnerId));
     sessions.active.set(TIMER_SESSION);
     history.onExpand(FIRST_UNNAMED_SPLIT_ID);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement;
+    const sheet = (): HTMLDialogElement => element.querySelector('dialog.timer-history');
+    const cardKey = (index: number): HTMLElement => element.querySelectorAll('.timer-history__card')[index];
 
+    expect(sheet().open, 'the journal is a platform modal, so the race behind it can take no stray tap').toBe(true);
+    expect(fixture.nativeElement.ownerDocument.activeElement, 'and the focus is among the rows being corrected from the start').toBe(
+      sheet(),
+    );
     expect(element.querySelectorAll('.timer-history__row')).toHaveLength(HISTORY_EXPECTED_LINES.length);
     expect(element.querySelector('.timer-history__nobody'), 'a nameless time says so').not.toBeNull();
     expect(element.querySelectorAll('.timer-history__pick')).toHaveLength(TIMER_SESSION.runners.length);
     expect(element.querySelectorAll('.timer-history__outcome')).toHaveLength(TIMER_SESSION.runners.length * 3);
+    expect(element.querySelectorAll('.timer-history__card'), 'everybody on the roster has a way into his card').toHaveLength(
+      TIMER_SESSION.runners.length,
+    );
+    expect(cardKey(0).getAttribute('aria-label'), 'a column of identical «Карточка» keys is spelled out by name').toContain(
+      TIMER_SESSION.runners[0].fullName,
+    );
+
+    cardKey(1).click();
+
+    expect(carded, 'the journal names the runner and leaves the card itself to the screen').toEqual([TIMER_SESSION.runners[1].id]);
 
     element.querySelector('.timer-history__close').click();
 
     expect(closed).toHaveLength(1);
+    expect(sheet().open, '«✕» closes the dialog by hand, so the focus goes back to the item that opened it').toBe(false);
+
+    sheet().showModal();
+    sheet().dispatchEvent(new Event('cancel'));
+
+    expect(closed, 'Escape reaches the dialog itself and is the second way out').toHaveLength(2);
+    expect(sheet().open).toBe(false);
 
     sessions.active.set(null);
     fixture.detectChanges();

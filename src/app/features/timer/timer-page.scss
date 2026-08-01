@@ -3,6 +3,36 @@
 @use 'styles/section' as s;
 @use 'styles/typography' as t;
 
+// «←» out of the cockpit and «⋮» into the menu are the same key drawn twice — a bare 44 px square
+// that carries a glyph and nothing else. They were written out twice, line for line, which is the
+// largest duplicate in the whole of `src` and the kind of pair where one side quietly stops matching
+// the other. Local to this file on purpose: the shape only means anything inside a top bar that has
+// already committed to a 44 px floor, and a shared partial would offer it to pages that have not.
+@mixin timer-icon-key {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--transition-time) var(--ease);
+
+  &:hover {
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
 .timer {
   display: flex;
   flex: 1;
@@ -54,28 +84,7 @@
   }
 
   &__back {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: var(--radius-xs);
-    background: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    touch-action: manipulation;
-    transition: color var(--transition-time) var(--ease);
-
-    &:hover {
-      color: var(--text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
+    @include timer-icon-key;
   }
 
   // The marking is the one elastic thing in the bar: it gives way to the two keys instead of pushing
@@ -117,28 +126,7 @@
   }
 
   &__menu {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: var(--radius-xs);
-    background: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    touch-action: manipulation;
-    transition: color var(--transition-time) var(--ease);
-
-    &:hover {
-      color: var(--text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
+    @include timer-icon-key;
   }
 
   &__menu-panel {
@@ -246,13 +234,6 @@
   // rule below is the only place it exists, so this is one state shown twice, not a second screen.
   &__aside {
     display: none;
-    min-width: 0;
-    min-height: 0;
-  }
-
-  // The journal is not a pane of the race — it replaces the whole area, both columns of it.
-  &__journal {
-    grid-column: 1 / -1;
     min-width: 0;
     min-height: 0;
   }
@@ -431,15 +412,12 @@
     }
 
     // A rule, not a card: the second column is the same screen seen from the side, and a border is
-    // all it takes to say so without turning the cockpit into a dashboard of panels.
+    // all it takes to say so without turning the cockpit into a dashboard of panels. «Круг» needs no
+    // counterpart to hide here — on that tab the column is not rendered at all (`timer-page.html`).
     &__aside {
       display: flex;
       padding-left: 12px;
       border-left: 1px solid var(--border-soft);
-    }
-
-    &__body_lap &__aside {
-      display: none;
     }
   }
 

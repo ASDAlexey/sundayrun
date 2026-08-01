@@ -1,23 +1,26 @@
 @use 'styles/buttons' as b;
+@use 'styles/sheet' as sh;
 @use 'styles/typography' as t;
 
+// The whole component is one top-layer `<dialog>`, so the host has nothing left to lay out: `contents`
+// keeps it from claiming a row of the cockpit's flex column for an element with no visible box.
 :host {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
+  display: contents;
 }
 
+// The same bottom sheet «Атлеты» and the actions of «Мои замеры» rise on — one surface for every
+// sheet of the feature — with the platform drawing the scrim and pinning it to the bottom edge.
 .timer-history {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-  padding: 0 0 12px;
-  overflow: hidden auto;
-  overscroll-behavior: contain;
-  gap: 8px;
-  background: var(--bg);
+  @include sh.sheet-panel;
+
+  width: min(560px, 100vw);
+  max-width: none;
+  margin: auto auto 0;
+  color: var(--text);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--black) 62%, transparent);
+  }
 
   &__head {
     display: flex;
@@ -27,7 +30,7 @@
     justify-content: space-between;
     min-height: 44px;
     gap: 8px;
-    background: var(--bg);
+    background: var(--surface);
   }
 
   &__title {
@@ -203,6 +206,19 @@
     gap: 4px;
   }
 
+  // Outlined and not a toggle: the three keys beside it record a fact about the race, this one only
+  // opens a card — and it is the swap's only door that a thumb does not have to hold still to find.
+  &__card {
+    @include b.button-outline;
+    @include t.mono-caption;
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 10px;
+  }
+
   &__outcome {
     @include b.button-toggle;
     @include t.mono-caption;
@@ -221,8 +237,15 @@
   &__owner:focus-visible,
   &__action:focus-visible,
   &__pick:focus-visible,
+  &__card:focus-visible,
   &__outcome:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
+
+@include sh.sheet-keyframes;

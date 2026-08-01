@@ -109,28 +109,35 @@ describe('TimerSessions', () => {
     fixture.componentInstance.open.subscribe(opened);
 
     const element = await openMenu();
+    const sheet = (): HTMLDialogElement | null => element.querySelector('dialog.timer-sessions__sheet');
 
-    expect(element.querySelector('.timer-sessions__sheet'), 'the actions come up over the screen, not inside the card').not.toBeNull();
+    expect(sheet()?.open, 'the actions come up as a platform modal over the screen, not inside the card').toBe(true);
+    expect(fixture.nativeElement.ownerDocument.activeElement, 'and the focus is inside it, so Escape needs no Tab first').toBe(sheet());
+    expect(element.querySelector('.timer-sessions__scrim'), 'the hand-rolled scrim button is gone with the wrapper').toBeNull();
     expect(element.querySelector('.timer-sessions__sheet-title')?.textContent?.trim(), 'and the sheet says which race').toBe(
       TIMER_ROW_DATE_TEXT,
     );
 
-    element.querySelector<HTMLButtonElement>('.timer-sessions__scrim')?.click();
+    sheet()?.dispatchEvent(new MouseEvent('click'));
     await fixture.whenStable();
 
-    expect(element.querySelector('.timer-sessions__sheet'), 'a tap outside closes it').toBeNull();
+    expect(sheet(), 'a tap outside is reported as a click on the dialog itself').toBeNull();
 
     await openMenu();
+
+    const closedByHand = sheet();
+
     element.querySelector<HTMLButtonElement>('.timer-sessions__sheet-close')?.click();
     await fixture.whenStable();
 
-    expect(element.querySelector('.timer-sessions__sheet'), 'and so does «×»').toBeNull();
+    expect(closedByHand?.open, '«×» closes the dialog by hand, so the focus goes back to the «⋮» of the row').toBe(false);
+    expect(sheet(), 'and the row lets go of its menu').toBeNull();
 
     await openMenu();
-    element.querySelector('.timer-sessions__dialog')?.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+    sheet()?.dispatchEvent(new Event('cancel'));
     await fixture.whenStable();
 
-    expect(element.querySelector('.timer-sessions__sheet'), 'Escape is the third way out').toBeNull();
+    expect(sheet(), 'Escape is the third way out').toBeNull();
 
     (await openMenu()).querySelector<HTMLButtonElement>('.timer-sessions__menu-item')?.click();
     await fixture.whenStable();

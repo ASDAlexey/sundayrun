@@ -67,13 +67,18 @@
 
     <app-timer-clock (roster)="onPicker()" />
 
-    <div class="timer__tabs" role="tablist">
+    <!-- `aria-selected` follows `selectedTab()` and the highlight follows `tab()`, and the two part
+    company on purpose while the journal is up: the lit tab says where closing it lands, the ARIA
+    state says which panel is on screen — and none is. -->
+    <div aria-label="Что показывать" class="timer__tabs" i18n-aria-label="@@timer.tabsLabel" role="tablist">
       <button
         class="timer__tab"
         role="tab"
         type="button"
-        [attr.aria-selected]="tab() === tabs.grid"
+        [attr.aria-controls]="panelId"
+        [attr.aria-selected]="selectedTab() === tabs.grid"
         [class.timer__tab_on]="tab() === tabs.grid"
+        [id]="tabIds.grid"
         (click)="onTab(tabs.grid)"
       >
         <ng-container i18n="@@timer.tabGrid">Сетка</ng-container>
@@ -85,8 +90,10 @@
         class="timer__tab"
         role="tab"
         type="button"
-        [attr.aria-selected]="tab() === tabs.lap"
+        [attr.aria-controls]="panelId"
+        [attr.aria-selected]="selectedTab() === tabs.lap"
         [class.timer__tab_on]="tab() === tabs.lap"
+        [id]="tabIds.lap"
         (click)="onTab(tabs.lap)"
       >
         <ng-container i18n="@@timer.tabLap">Круг</ng-container>
@@ -98,8 +105,10 @@
         class="timer__tab"
         role="tab"
         type="button"
-        [attr.aria-selected]="tab() === tabs.finish"
+        [attr.aria-controls]="panelId"
+        [attr.aria-selected]="selectedTab() === tabs.finish"
         [class.timer__tab_on]="tab() === tabs.finish"
+        [id]="tabIds.finish"
         (click)="onTab(tabs.finish)"
       >
         <ng-container i18n="@@timer.tabFinish">Финиш</ng-container>
@@ -111,26 +120,29 @@
     <div
       class="timer__body"
       role="tabpanel"
+      [attr.aria-labelledby]="panelLabelId()"
       [class.timer__body_finish]="tab() === tabs.finish"
       [class.timer__body_lap]="tab() === tabs.lap"
+      [id]="panelId"
     >
-      @if (historyOpen()) {
-        <app-timer-history class="timer__journal" (close)="historyOpen.set(false)" />
-      } @else {
-        @switch (tab()) {
-          @case (tabs.grid) {
-            <app-timer-grid [farewell]="farewellWave()" (announce)="onAnnounce($event)" (details)="onDetails($event)" />
-          }
-          @case (tabs.lap) {
-            <app-timer-lap-board />
-          }
-          @case (tabs.finish) {
-            <app-timer-finish-board />
-          }
+      @switch (tab()) {
+        @case (tabs.grid) {
+          <app-timer-grid [farewell]="farewellWave()" (announce)="onAnnounce($event)" (details)="onDetails($event)" />
         }
+        @case (tabs.lap) {
+          <app-timer-lap-board />
+        }
+        @case (tabs.finish) {
+          <app-timer-finish-board />
+        }
+      }
 
-        <!-- The second column of a wide screen. It is not a second interface: the tabs above still
-        own the state, and on a phone this whole branch is `display: none`. -->
+      <!-- The second column of a wide screen. It is not a second interface: the tabs above still own
+      the state, and on a phone the whole column is `display: none`. Left out of the DOM on «Круг»
+      rather than merely hidden by the stylesheet: the tab already IS that table, and a hidden copy
+      of it still rebuilt the whole board on every tap — all of it wasted on a phone, and the same
+      arithmetic twice on a wide screen. -->
+      @if (tab() !== tabs.lap) {
         <div class="timer__aside">
           <app-timer-lap-board />
         </div>
@@ -173,7 +185,10 @@
       </div>
     }
 
-    <p aria-live="assertive" class="timer__announcer" role="status">
+    <!-- Polite, via the implicit live setting of `role="status"`: this region is fed by every ordinary
+    lap and finish, and an assertive one interrupted whatever the reader was in the middle of on each
+    of them. The destructive actions all go through a confirmation dialog that names the numbers. -->
+    <p class="timer__announcer" role="status">
       @if (announcement(); as note) {
         <span>{{ note.name }}</span>
 
@@ -193,6 +208,14 @@
       }
     </p>
   </div>
+
+  <!-- Both sheets are rendered outside the cockpit and both are modal `<dialog>`s, so where they sit
+  in the DOM decides nothing: the platform lifts them into the top layer over the whole screen. The
+  race stays rendered behind them — a sheet is something laid over the cockpit, never a page that
+  replaces it, and rebuilding the grid every time the journal is folded away is work for nothing. -->
+  @if (historyOpen()) {
+    <app-timer-history (card)="onCard($event)" (close)="historyOpen.set(false)" />
+  }
 
   @if (pickerOpen()) {
     <app-timer-picker (close)="pickerOpen.set(false)" />

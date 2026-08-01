@@ -59,68 +59,56 @@
     </ul>
   }
 
+  <!-- The actions are a native `<dialog>`: the platform owns the scrim, the focus trap, Escape and
+  the return of the focus to the «⋮» that opened them, so the sheet keeps none of that by hand. -->
   @if (menuRow(); as row) {
-    <div
-      aria-modal="true"
-      class="timer-sessions__dialog"
-      role="dialog"
-      [attr.aria-labelledby]="sheetTitleId"
-      (keydown.escape)="onCloseMenu()"
-    >
-      <button
-        aria-label="Закрыть действия"
-        class="timer-sessions__scrim"
-        i18n-aria-label="@@timerList.sheetScrimLabel"
-        type="button"
-        (click)="onCloseMenu()"
-      ></button>
+    <dialog #sheet appTimerSheet class="timer-sessions__sheet" [attr.aria-labelledby]="sheetTitleId" (closed)="onCloseMenu()">
+      <span aria-hidden="true" class="timer-sessions__handle"></span>
 
-      <div class="timer-sessions__sheet">
-        <span aria-hidden="true" class="timer-sessions__handle"></span>
+      <div class="timer-sessions__sheet-head">
+        <h3 class="timer-sessions__sheet-title" [id]="sheetTitleId">{{ row.dateText }}</h3>
 
-        <div class="timer-sessions__sheet-head">
-          <h3 class="timer-sessions__sheet-title" [id]="sheetTitleId">{{ row.dateText }}</h3>
-
-          <button
-            aria-label="Закрыть"
-            class="timer-sessions__sheet-close"
-            i18n-aria-label="@@timerList.sheetCloseLabel"
-            type="button"
-            (click)="onCloseMenu()"
-          >
-            ×
-          </button>
-        </div>
-
-        <p class="timer-sessions__sheet-meta">{{ row.metaText }}</p>
-
-        <button class="timer-sessions__menu-item" i18n="@@timerList.open" type="button" (click)="onOpen(row)">Открыть</button>
-
-        <!-- One entrance instead of «Экспорт в Excel» and «Поделиться» side by side: the two were the
-        same measurement in two shapes, and choosing between them before seeing either is a choice
-        nobody can make. The sheet shows both and the message it is about to send. -->
-        <button class="timer-sessions__menu-item" i18n="@@timerList.send" type="button" (click)="onSend(row)">Отправить забег</button>
-
-        @if (isAdmin()) {
-          <button class="timer-sessions__menu-item" i18n="@@timerList.publish" type="button" (click)="onPublish(row)">Опубликовать</button>
-        } @else {
-          <a class="timer-sessions__menu-item" i18n="@@timerList.publishWithKey" [queryParams]="adminReturnParams" [routerLink]="adminLink">
-            Опубликовать — нужен ключ
-          </a>
-        }
-
-        <div class="timer-sessions__danger">
-          <button
-            class="timer-sessions__menu-item timer-sessions__menu-item_danger"
-            i18n="@@timerList.remove"
-            type="button"
-            (click)="onRemoveAsk(row)"
-          >
-            Удалить замер
-          </button>
-        </div>
+        <button
+          aria-label="Закрыть"
+          class="timer-sessions__sheet-close"
+          i18n-aria-label="@@timerList.sheetCloseLabel"
+          type="button"
+          (click)="onDismiss(sheet)"
+        >
+          ×
+        </button>
       </div>
-    </div>
+
+      <p class="timer-sessions__sheet-meta">{{ row.metaText }}</p>
+
+      <button class="timer-sessions__menu-item" i18n="@@timerList.open" type="button" (click)="onOpen(row, sheet)">Открыть</button>
+
+      <!-- One entrance instead of «Экспорт в Excel» and «Поделиться» side by side: the two were the
+      same measurement in two shapes, and choosing between them before seeing either is a choice
+      nobody can make. The sheet shows both and the message it is about to send. -->
+      <button class="timer-sessions__menu-item" i18n="@@timerList.send" type="button" (click)="onSend(row, sheet)">Отправить забег</button>
+
+      @if (isAdmin()) {
+        <button class="timer-sessions__menu-item" i18n="@@timerList.publish" type="button" (click)="onPublish(row, sheet)">
+          Опубликовать
+        </button>
+      } @else {
+        <a class="timer-sessions__menu-item" i18n="@@timerList.publishWithKey" [queryParams]="adminReturnParams" [routerLink]="adminLink">
+          Опубликовать — нужен ключ
+        </a>
+      }
+
+      <div class="timer-sessions__danger">
+        <button
+          class="timer-sessions__menu-item timer-sessions__menu-item_danger"
+          i18n="@@timerList.remove"
+          type="button"
+          (click)="onRemoveAsk(row)"
+        >
+          Удалить замер
+        </button>
+      </div>
+    </dialog>
   }
 
   @if (sendSession(); as session) {

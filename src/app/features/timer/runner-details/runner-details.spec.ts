@@ -60,6 +60,11 @@ describe('TimerRunnerCard', () => {
     sessions.active.set(TIMER_SESSION);
     await fixture.whenStable();
 
+    expect(fixture.nativeElement.ownerDocument.activeElement, 'the card takes the focus itself — nothing else here traps it').toBe(
+      element(),
+    );
+    expect(element().getAttribute('role'), 'a group and not a dialog: the tiles behind it stay tappable').toBe('group');
+    expect(element().getAttribute('aria-label'), 'and the group is named by the man it describes').toBe('Троилин Антон');
     expect(element().querySelector('.timer-runner-card__name')?.textContent?.trim()).toBe('Троилин Антон');
     expect(textOf('.timer-runner-card__time-value')).toEqual([CARD_LAP_TEXT, CARD_FINISH_TEXT]);
     expect(card.outcome()).toBe(TimerRunnerOutcome.active);
@@ -80,11 +85,11 @@ describe('TimerRunnerCard', () => {
 
     card.close.subscribe(closed);
     element()
-      .querySelector('.timer-runner-card')
+      .querySelector('.timer-runner-card__pick')
       ?.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
     element().querySelector<HTMLElement>('.timer-runner-card__close')?.click();
 
-    expect(closed, 'Escape and the × are the same way out').toHaveBeenCalledTimes(2);
+    expect(closed, 'Escape from anywhere inside and the × are the same way out').toHaveBeenCalledTimes(2);
   });
 
   it('swaps two mistapped runners, records an outcome and removes the runner on a full hold', async () => {

@@ -10,15 +10,19 @@
 //  current line-up, all in one bottom sheet.
 // ===========================================================
 
+// The panel is the `<dialog>` itself, so the fixed full-screen wrapper and the scrim button are
+// gone: `showModal()` lifts it into the top layer, where `::backdrop` is the scrim and the auto
+// margins pin it to the bottom edge of the phone — the same rise as before, drawn by the platform.
 .timer-picker {
-  @include sh.sheet-root;
+  @include sh.sheet-panel;
 
-  &__scrim {
-    @include sh.sheet-scrim;
-  }
+  width: min(560px, 100vw);
+  max-width: none;
+  margin: auto auto 0;
+  color: var(--text);
 
-  &__sheet {
-    @include sh.sheet-panel;
+  &::backdrop {
+    background: color-mix(in srgb, var(--black) 62%, transparent);
   }
 
   &__handle {
@@ -336,9 +340,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    &__sheet {
-      animation: none;
-    }
+    animation: none;
 
     &__quick-button,
     &__gender-option,

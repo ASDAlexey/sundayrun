@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, afterNextRender, computed, inject, input, output, signal } from '@angular/core';
 
 import { formatRaceTime } from '../../../core/time/duration';
 import { removeRunner, setRunnerOutcome, swapRunnerSplits } from '../../../core/timer/session-actions';
@@ -20,15 +20,28 @@ import { RaceTime } from '../../../shared/race-time/race-time';
  * A card of its own rather than a strip on the page: it owns which swap target list is open, it owns
  * the question the deletion goes through, and it reads the measurement itself — so the times keep up
  * with the swap that has just been made instead of freezing at the moment the press happened.
+ *
+ * The one overlay of the feature that is deliberately NOT a `<dialog>`: it is a `role="group"` that
+ * sits below the tab area rather than over it, so the tiles stay tappable while a mistake is being
+ * repaired — a modal here would block the very screen the repair is checked against. The two things
+ * a modal would have given for free are therefore done by hand: the host takes the focus when the
+ * card opens, and Escape is listened for on the host, so it fires wherever inside the focus landed.
  */
 @Component({
   selector: 'app-timer-runner-card',
   imports: [TimerConfirm, RaceTime],
   templateUrl: './runner-details.html',
   styleUrl: './runner-details.scss',
+  host: {
+    role: 'group',
+    tabindex: '-1',
+    '[attr.aria-label]': 'fullName()',
+    '(keydown.escape)': 'onClose()',
+  },
 })
 export class TimerRunnerCard {
   readonly #sessions = inject(TimerSessionService);
+  readonly #element = inject<ElementRef<HTMLElement>>(ElementRef);
   readonly #runner = computed(() => {
     const session = this.#sessions.active();
 
@@ -78,6 +91,14 @@ export class TimerRunnerCard {
   });
 
   protected readonly outcomes = TimerRunnerOutcome;
+
+  constructor() {
+    // The card is opened by a long press on a tile or by a key in the journal, and until now the
+    // focus stayed on whatever opened it — so Escape went to the page and the swap list was three
+    // tabs away. The card itself takes the focus instead of its first button: a ring around «бежит»
+    // reads as a chosen outcome, and this card exists to correct outcomes, not to suggest them.
+    afterNextRender(() => this.#element.nativeElement.focus());
+  }
 
   onClose(): void {
     this.close.emit();

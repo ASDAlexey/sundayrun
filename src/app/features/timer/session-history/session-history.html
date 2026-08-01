@@ -1,10 +1,13 @@
-<div
+<!-- The journal said `role="dialog"` long before it behaved like one. As a native `<dialog>` it
+finally is: the platform dims the race behind it, keeps the focus among the rows being corrected,
+answers Escape and hands the focus back to the «⋮» item that opened the journal. -->
+<dialog
+  #sheet
+  appTimerSheet
   aria-label="История отсечек"
   class="timer-history"
   i18n-aria-label="@@timerHistory.dialogLabel"
-  role="dialog"
-  tabindex="-1"
-  (keydown.escape)="onClose()"
+  (closed)="close.emit()"
 >
   <header class="timer-history__head">
     <h2 class="timer-history__title" i18n="@@timerHistory.title">История отсечек</h2>
@@ -14,7 +17,7 @@
       class="timer-history__close"
       i18n-aria-label="@@timerHistory.closeLabel"
       type="button"
-      (click)="onClose()"
+      (click)="onClose(sheet)"
     >
       ✕
     </button>
@@ -114,11 +117,24 @@
               сошёл
             </button>
           </div>
+
+          <!-- The way into the card without a long press on a tile: «Поменять местами с…» lives only
+          there, and this list already names everybody. The name is spelled into the label because a
+          column of identical «Карточка» buttons tells a screen reader nothing. -->
+          <button
+            class="timer-history__card"
+            i18n="@@timerHistory.card"
+            type="button"
+            [attr.aria-label]="runner.cardLabel"
+            (click)="onCard(runner.id)"
+          >
+            Карточка
+          </button>
         </div>
       }
     </section>
   }
-</div>
+</dialog>
 
 @if (removeAsk(); as ask) {
   <dialog
