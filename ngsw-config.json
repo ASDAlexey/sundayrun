@@ -10,11 +10,21 @@
           "/index.csr.html",
           "/site.webmanifest",
           "/*.css",
-          "/*.js",
+          "/main-*.js",
+          "/polyfills-*.js",
+          "/chunk-*.js",
           "!/ngsw-worker.js",
           "!/safety-worker.js",
           "!/worker-basic.min.js"
         ]
+      }
+    },
+    {
+      "name": "on-demand",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": ["/*.js", "!/ngsw-worker.js", "!/safety-worker.js", "!/worker-basic.min.js"]
       }
     },
     {
@@ -36,5 +46,5 @@
     }
   ],
   "index": "/index.html",
-  "navigationUrls": ["/", "/timer", "!/**/*.*", "!/**/*__*", "!/**/*__*/**", "!/data/**", "!/sqlite-http/**", "!/pdf/**"]
+  "navigationUrls": ["/", "/timer", "!/**/*.*", "!/**/*__*", "!/**/*__*/**", "!/data/**", "!/pdf/**"]
 }
