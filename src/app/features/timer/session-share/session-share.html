@@ -1,0 +1,75 @@
+<dialog appTimerSheet class="timer-share" [attr.aria-labelledby]="titleId" (closed)="closed.emit()">
+  <div class="timer-share__head">
+    <h2 class="timer-share__title" i18n="@@timerShare.title" [id]="titleId">Отправить забег</h2>
+
+    <p class="timer-share__meta">{{ row().dateText }} · {{ row().metaText }}</p>
+  </div>
+
+  <!-- The workbook first: it is the only shape of the race that comes back as a protocol, and the
+  file name is spelled out because a phone drops it into Downloads without asking. -->
+  <section class="timer-share__group">
+    <h3 class="timer-share__group-title" i18n="@@timerShare.fileGroup">Файл с временами</h3>
+
+    <button class="timer-share__action timer-share__action_lead" type="button" (click)="onShareFile()">
+      <span aria-hidden="true" class="timer-share__action-mark" i18n="@@timerShare.markXls">XLS</span>
+
+      <span class="timer-share__action-body">
+        <span class="timer-share__action-label">
+          @if (canShareFile()) {
+            <ng-container i18n="@@timerShare.sendFile">Отправить файл</ng-container>
+          } @else {
+            <ng-container i18n="@@timerShare.saveFile">Скачать файл</ng-container>
+          }
+        </span>
+
+        <span class="timer-share__action-note">{{ row().fileName }}</span>
+      </span>
+    </button>
+
+    @if (canShareFile()) {
+      <button class="timer-share__action" type="button" (click)="onDownload()">
+        <span aria-hidden="true" class="timer-share__action-mark" i18n="@@timerShare.markDownload">↓</span>
+
+        <span class="timer-share__action-body">
+          <span class="timer-share__action-label" i18n="@@timerShare.saveToPhone">Сохранить в файлы</span>
+        </span>
+      </button>
+    }
+  </section>
+
+  <!-- And the same race as words, because a chat cannot open a workbook: Telegram and MAX are
+  reached through a share url, and a share url carries text and a link, never a file. -->
+  <section class="timer-share__group">
+    <h3 class="timer-share__group-title" i18n="@@timerShare.chatGroup">Списком в чат</h3>
+
+    <div class="timer-share__row">
+      <button class="timer-share__chat" type="button" (click)="onTelegram()">
+        <span aria-hidden="true" class="timer-share__chat-mark" i18n="@@timerShare.markTelegram">TG</span>
+
+        <span class="timer-share__chat-label" i18n="@@timerShare.telegram">Телеграм</span>
+      </button>
+
+      <button class="timer-share__chat" type="button" (click)="onMax()">
+        <span aria-hidden="true" class="timer-share__chat-mark" i18n="@@timerShare.markMax">MAX</span>
+
+        <span class="timer-share__chat-label" i18n="@@timerShare.max">MAX</span>
+      </button>
+
+      <button class="timer-share__chat" type="button" [class.timer-share__chat_done]="copied()" (click)="onCopy()">
+        <span aria-hidden="true" class="timer-share__chat-mark">{{ copyMark() }}</span>
+
+        <span class="timer-share__chat-label">
+          @if (copied()) {
+            <ng-container i18n="@@timerShare.copied">Скопировано</ng-container>
+          } @else {
+            <ng-container i18n="@@timerShare.copy">Скопировать</ng-container>
+          }
+        </span>
+      </button>
+    </div>
+
+    <pre class="timer-share__preview">{{ messageText() }}</pre>
+  </section>
+
+  <p class="timer-share__keeps" i18n="@@timerShare.keeps">Замер остаётся в «Мои замеры» — выгрузить его можно ещё раз в любой момент.</p>
+</dialog>

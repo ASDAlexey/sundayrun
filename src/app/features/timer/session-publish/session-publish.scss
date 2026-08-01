@@ -90,6 +90,30 @@
     color: var(--accent-light);
   }
 
+  // Outlined against the filled «Сохранить»: the two are peers, and the eye must be able to tell
+  // «на сайт» from «себе» before reading either label. The subtitle names the three destinations,
+  // because a key that only says «Отправить» is opened once out of curiosity and never again.
+  &__share {
+    @include b.button-outline;
+
+    flex-direction: column;
+    min-height: 52px;
+    padding: 8px 16px;
+    gap: 2px;
+  }
+
+  &__share-label {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  &__share-note {
+    @include t.mono-caption;
+
+    color: var(--text-muted);
+  }
+
   &__saved {
     @include st.status-text;
 

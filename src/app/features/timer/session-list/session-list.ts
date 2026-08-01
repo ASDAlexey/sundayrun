@@ -1,20 +1,16 @@
-import { Component, DOCUMENT, computed, inject, output, signal } from '@angular/core';
+import { Component, computed, inject, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { isoToday } from '../../../core/time/iso-today';
-import { sessionToParticipants } from '../../../core/timer/session-to-participants';
 import { TimerPublishState } from '../../../core/timer/timer-session.enum';
-import { buildTimerExportRows } from '../../../core/xlsx/timer-export-builder';
-import { writeXlsxRows } from '../../../core/xlsx/xlsx-writer';
 import { AdminTokenService } from '../../../github/admin-token.service';
-import { triggerBlobDownload } from '../../../pdf/blob-download';
-import { ShareService } from '../../../share/share.service';
 import { TimerPublishService } from '../../../state/timer-publish.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { ADMIN_PAGE_LINK } from '../../admin/admin-page.constant';
 import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
 import { TIMER_ADMIN_RETURN_PARAMS } from '../session-publish/session-publish.constant';
-import { TIMER_EXPORT_MIME_TYPE, TIMER_SESSIONS_NONE, TIMER_SESSIONS_TITLE_ID } from './session-list.constant';
+import { TimerShare } from '../session-share/session-share';
+import { TIMER_SESSIONS_NONE, TIMER_SESSIONS_TITLE_ID } from './session-list.constant';
 import { TimerSessionRemove, TimerSessionRow } from './session-list.interface';
 import { removeSessionNoteText } from './session-list.text';
 import { buildTimerSessionRows } from './session-list.view';
@@ -22,20 +18,21 @@ import { buildTimerSessionRows } from './session-list.view';
 /**
  * «Мои замеры» — every measurement this device ever took, newest first (docs/TIMER.md §8). The list
  * prunes nothing by itself: a race is data until its owner says otherwise, so «Удалить замер» is the
- * only way out and it goes through a question that names what disappears.
+ * only way out and it goes through a question that names what disappears. Publishing spends nothing
+ * either: a race sent to the site stays right here, and «Отправить забег» works over it a year later.
  *
  * The actions of a row live in a bottom sheet over the screen rather than inside the card: unfolded
  * in place they pushed the measurement off the top of the phone and turned a five-row list into a
  * scroll. The sheet is the same surface «Атлеты» uses (`styles/sheet`), because two languages of
  * surface in one feature is one too many.
  *
- * The workbook of «Экспорт в Excel» and «Поделиться» is built at the press and kept nowhere — the
- * archive gets the session itself, and a file only exists while it travels to a chat (§3, §8). Where
- * the Web Share sheet cannot carry files, the same bytes are simply downloaded.
+ * Getting the race out of the phone is one entrance and not two — `TimerShare` owns the workbook,
+ * the chats and the preview of what it is about to send, and the finish screen opens the very same
+ * sheet (§3, §8).
  */
 @Component({
   selector: 'app-timer-sessions',
-  imports: [RouterLink, TimerConfirm],
+  imports: [RouterLink, TimerConfirm, TimerShare],
   templateUrl: './session-list.html',
   styleUrl: './session-list.scss',
 })
@@ -43,8 +40,6 @@ export class TimerSessions {
   readonly #sessions = inject(TimerSessionService);
   readonly #publish = inject(TimerPublishService);
   readonly #adminToken = inject(AdminTokenService);
-  readonly #share = inject(ShareService);
-  readonly #document = inject(DOCUMENT);
 
   /** The measurement to reopen; the page decides how (`TimerSessionService.open`). */
   readonly open = output<string>();
@@ -64,6 +59,10 @@ export class TimerSessions {
   /** The «Удалить замер?» question in flight — the measurement and the words that name the loss. */
   protected readonly removeAsk = signal<TimerSessionRemove | null>(null);
 
+  /** Which measurement the «Отправить забег» sheet is open over; null while it is closed. */
+  protected readonly sendId = signal<string | null>(null);
+  protected readonly sendSession = computed(() => this.rows().find((row) => row.session.id === this.sendId())?.session ?? null);
+
   protected onNew(): void {
     this.#sessions.create({ dateIso: isoToday() });
   }
@@ -81,24 +80,10 @@ export class TimerSessions {
     this.menuId.set(null);
   }
 
-  protected onExport(row: TimerSessionRow): void {
+  /** The workbook, the chats and the preview of the message, all in one sheet over the row. */
+  protected onSend(row: TimerSessionRow): void {
     this.menuId.set(null);
-    triggerBlobDownload(this.#document, this.#buildFile(row), row.fileName);
-  }
-
-  /** The system sheet where it exists; a browser without file sharing quietly saves the file instead. */
-  protected async onShare(row: TimerSessionRow): Promise<void> {
-    const file = this.#buildFile(row);
-
-    this.menuId.set(null);
-
-    if (this.#share.canShareFile(file)) {
-      await this.#share.shareFile(file, row.dateText, row.metaText);
-
-      return;
-    }
-
-    triggerBlobDownload(this.#document, file, row.fileName);
+    this.sendId.set(row.session.id);
   }
 
   /** Publishing an already saved measurement: «сохраняли без сети» or simply changed their mind. */
@@ -116,14 +101,5 @@ export class TimerSessions {
     this.removeAsk.set(null);
     this.menuId.set(null);
     this.#sessions.remove(id);
-  }
-
-  /** The six-column workbook `parseTimerExport` reads back, assembled here and stored nowhere. */
-  #buildFile(row: TimerSessionRow): File {
-    const bytes = writeXlsxRows(buildTimerExportRows(sessionToParticipants(row.session)));
-
-    // The copy is what makes the bytes a `BlobPart`: a zip writer hands back a view over an
-    // `ArrayBufferLike`, which may be shared, and `File` only accepts a plain buffer.
-    return new File([new Uint8Array(bytes)], row.fileName, { type: TIMER_EXPORT_MIME_TYPE });
   }
 }

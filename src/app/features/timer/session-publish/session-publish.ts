@@ -13,6 +13,7 @@ import { ADMIN_PAGE_LINK, RACE_PAGE_PREFIX } from '../../admin/admin-page.consta
 import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
 import { removeSessionNoteText } from '../session-list/session-list.text';
 import { buildTimerSessionRow } from '../session-list/session-list.view';
+import { TimerShare } from '../session-share/session-share';
 import { PREVIEW_PAGE_LINK, TIMER_ADMIN_RETURN_PARAMS, TIMER_PUBLISH_NOTHING } from './session-publish.constant';
 import { emptyRosterText, resolveFirstText, unknownGenderText, unnamedTimesText } from './session-publish.text';
 import { buildStepView } from './session-publish.view';
@@ -29,7 +30,7 @@ import { buildStepView } from './session-publish.view';
  */
 @Component({
   selector: 'app-timer-publish',
-  imports: [RouterLink, TimerConfirm],
+  imports: [RouterLink, TimerConfirm, TimerShare],
   templateUrl: './session-publish.html',
   styleUrl: './session-publish.scss',
 })
@@ -104,6 +105,16 @@ export class TimerPublish {
 
   /** The network came back after a failure: the organiser is offered the retry, never published behind their back. */
   protected readonly retryOffered = signal(false);
+
+  /**
+   * «Отправить» — the workbook and the message, both built from the measurement in hand. A peer of
+   * «Сохранить» and not a step after it: a guest has no key and never will, and the race they have
+   * just timed is theirs to send to a chat whether the site ever hears about it or not.
+   */
+  protected readonly shareOpen = signal(false);
+
+  /** Once the publication lands the message can carry the protocol's own address, not the site's. */
+  protected readonly shareSlug = this.#publish.publishedSlug;
 
   constructor() {
     const view = this.#view;

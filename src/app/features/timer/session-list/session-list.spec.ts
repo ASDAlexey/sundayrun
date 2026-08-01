@@ -100,7 +100,7 @@ describe('TimerSessions', () => {
     expect(element.querySelector('.timer-sessions__empty'), 'the invitation is gone').toBeNull();
   });
 
-  it('opens, exports, shares and publishes the row from its action sheet', async () => {
+  it('opens, sends and publishes the row from its action sheet', async () => {
     sessions.sessions.set(TIMER_SESSION_LIST);
     await fixture.whenStable();
 
@@ -138,29 +138,25 @@ describe('TimerSessions', () => {
     expect(opened).toHaveBeenCalledExactlyOnceWith(TIMER_SESSION_ID);
     expect(element.querySelector('.timer-sessions__sheet'), 'the sheet closes behind the action').toBeNull();
 
-    const items = [...(await openMenu()).querySelectorAll<HTMLElement>('.timer-sessions__menu-item')];
-
-    items[1].click();
-
-    const exported = vi.mocked(URL.createObjectURL).mock.calls[0][0];
-
-    expect(exported instanceof File && exported.name).toBe(TIMER_ROW_FILE_NAME);
-    expect(HTMLAnchorElement.prototype.click, 'the workbook is saved through a transient anchor').toHaveBeenCalledOnce();
-
-    (await openMenu()).querySelectorAll<HTMLElement>('.timer-sessions__menu-item')[2].click();
+    (await openMenu()).querySelectorAll<HTMLElement>('.timer-sessions__menu-item')[1].click();
     await fixture.whenStable();
 
-    expect(shareFile.mock.calls[0][1]).toBe(TIMER_ROW_DATE_TEXT);
-    expect(vi.mocked(URL.createObjectURL), 'a shared file is never downloaded as well').toHaveBeenCalledOnce();
+    expect(element.querySelector('.timer-share'), '«Отправить забег» hands the row to the share sheet').not.toBeNull();
+    expect(element.querySelector('.timer-share__action-note')?.textContent?.trim(), 'and the sheet names the workbook').toBe(
+      TIMER_ROW_FILE_NAME,
+    );
 
-    canShareFile.mockReturnValue(false);
-    (await openMenu()).querySelectorAll<HTMLElement>('.timer-sessions__menu-item')[2].click();
+    element.querySelector<HTMLElement>('.timer-share__action')?.click();
     await fixture.whenStable();
 
-    expect(shareFile, 'no sheet for files means the file is saved instead').toHaveBeenCalledOnce();
-    expect(vi.mocked(URL.createObjectURL)).toHaveBeenCalledTimes(2);
+    expect(shareFile.mock.calls[0][1], 'the system sheet carries the file itself where it can').toBe(TIMER_ROW_DATE_TEXT);
 
-    (await openMenu()).querySelectorAll<HTMLElement>('.timer-sessions__menu-item')[3].click();
+    element.querySelector<HTMLElement>('.timer-share')?.click();
+    await fixture.whenStable();
+
+    expect(element.querySelector('.timer-share'), 'and the sheet closes behind it').toBeNull();
+
+    (await openMenu()).querySelectorAll<HTMLElement>('.timer-sessions__menu-item')[2].click();
 
     expect(publish.publish).toHaveBeenCalledExactlyOnceWith(TIMER_SESSION_FINISHED);
 
@@ -168,7 +164,7 @@ describe('TimerSessions', () => {
 
     const guestItems = [...(await openMenu()).querySelectorAll('.timer-sessions__menu-item')];
 
-    expect(guestItems[3].getAttribute('href')).toBe(TIMER_ROW_ADMIN_HREF);
+    expect(guestItems[2].getAttribute('href')).toBe(TIMER_ROW_ADMIN_HREF);
   });
 
   it('asks what exactly disappears before it deletes a measurement', async () => {

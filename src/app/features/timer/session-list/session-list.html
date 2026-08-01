@@ -96,9 +96,10 @@
 
         <button class="timer-sessions__menu-item" i18n="@@timerList.open" type="button" (click)="onOpen(row)">Открыть</button>
 
-        <button class="timer-sessions__menu-item" i18n="@@timerList.export" type="button" (click)="onExport(row)">Экспорт в Excel</button>
-
-        <button class="timer-sessions__menu-item" i18n="@@timerList.share" type="button" (click)="onShare(row)">Поделиться</button>
+        <!-- One entrance instead of «Экспорт в Excel» and «Поделиться» side by side: the two were the
+        same measurement in two shapes, and choosing between them before seeing either is a choice
+        nobody can make. The sheet shows both and the message it is about to send. -->
+        <button class="timer-sessions__menu-item" i18n="@@timerList.send" type="button" (click)="onSend(row)">Отправить забег</button>
 
         @if (isAdmin()) {
           <button class="timer-sessions__menu-item" i18n="@@timerList.publish" type="button" (click)="onPublish(row)">Опубликовать</button>
@@ -120,6 +121,10 @@
         </div>
       </div>
     </div>
+  }
+
+  @if (sendSession(); as session) {
+    <app-timer-share [session]="session" (closed)="sendId.set(null)" />
   }
 
   @if (removeAsk(); as ask) {

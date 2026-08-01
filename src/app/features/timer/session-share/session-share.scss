@@ -1,0 +1,237 @@
+@use 'styles/typography' as t;
+
+// ================================================================================================
+//  «Отправить забег» — the printout of the instrument.
+//
+//  The cockpit is a chronometer, so the end of a race looks like what a chronometer produces: a
+//  strip of tape with the order on it. That is not decoration — it is the fastest way to say «вот
+//  что уедет в чат», and the organiser reads the preview instead of trusting a button labelled
+//  «Поделиться» and finding out in the chat what it sent.
+//
+//  Two tiers and no more. The workbook is the thing that comes back as a protocol, so it gets a row
+//  of its own with its file name spelled out. The chats get three equal keys — none of the three is
+//  easier to hit than the others, because none of them is the right one more often.
+// ================================================================================================
+.timer-share {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100vw);
+  max-height: 86dvh;
+  margin: auto auto 0;
+  padding: 14px 14px max(14px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--surface);
+  color: var(--text);
+  animation: timer-share-rise var(--transition-time) var(--ease) backwards;
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--black) 65%, transparent);
+  }
+
+  &__head {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    margin: 0;
+    color: var(--text);
+  }
+
+  &__meta {
+    @include t.mono-caption;
+
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  &__group {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    padding-top: 12px;
+    gap: 8px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  &__group-title {
+    @include t.eyebrow;
+
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  // A row and not a rectangle with a word in it: the file name is half the information, and a key
+  // that says which file it is about cannot be misread the way «Экспорт» can.
+  &__action {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    padding: 8px 12px;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--border-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    // The one thing on the sheet that is lit: whatever else happens here, this is the file with the
+    // times in it.
+    &_lead {
+      border-color: var(--accent-line);
+      background: var(--accent-glow);
+    }
+  }
+
+  &__action-mark {
+    @include t.mono-meta;
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 40px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-xs);
+    background: var(--surface);
+    color: var(--accent);
+  }
+
+  &__action-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  &__action-label {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  // The file name is allowed to be ellipsised but never to wrap: two lines of a latin dated name in
+  // the middle of a Russian sheet reads as an error message.
+  &__action-note {
+    @include t.mono-caption;
+
+    overflow: hidden;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  &__chat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 68px;
+    padding: 8px 4px;
+    gap: 6px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      border-color var(--transition-time) var(--ease),
+      color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    &_done {
+      border-color: var(--green);
+      color: var(--green);
+    }
+  }
+
+  &__chat-mark {
+    @include t.mono-meta;
+
+    color: inherit;
+  }
+
+  &__chat-label {
+    @include t.text('label', 'small');
+
+    overflow: hidden;
+    color: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // The tape itself. Dashed above rather than solid, because that is the one line on the sheet that
+  // is not a border between two controls — it is where the paper was torn off.
+  //
+  // `mono-meta` and not the smaller `mono-caption`: captions on this site are uppercase, and an
+  // uppercased preview is a lie about what the chat will receive — the surnames go out cased exactly
+  // as the archive spells them.
+  &__preview {
+    @include t.mono-meta;
+
+    max-height: 34dvh;
+    margin: 0;
+    padding: 10px 12px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--bg);
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    scrollbar-width: thin;
+  }
+
+  // The promise the whole sheet rests on: sending a race away never spends it.
+  &__keeps {
+    @include t.text('label', 'small');
+
+    flex: none;
+    margin: 0;
+    color: var(--text-muted);
+    text-align: center;
+  }
+}
+
+@keyframes timer-share-rise {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}

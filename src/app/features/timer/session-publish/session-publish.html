@@ -98,6 +98,17 @@
     }
   }
 
+  <!-- A peer of «Сохранить», not a step after it. «Сохранить» sends the race to the site and needs a
+  key; this one only needs the phone it was timed on, and it is what a guest reaches for. It survives
+  the publication too: once the race is in the archive the same sheet sends its link instead. -->
+  @if (!working()) {
+    <button class="timer-publish__share" type="button" (click)="shareOpen.set(true)">
+      <span class="timer-publish__share-label" i18n="@@timerPublish.share">Отправить забег</span>
+
+      <span class="timer-publish__share-note" i18n="@@timerPublish.shareNote">Excel · Телеграм · MAX</span>
+    </button>
+  }
+
   <a class="timer-publish__preview-link" i18n="@@timerPublish.previewLink" [routerLink]="previewLink">Проверить перед публикацией</a>
 
   @if (canRemove()) {
@@ -106,6 +117,10 @@
 
       <p class="timer-publish__remove-hint" i18n="@@timerPublish.removeHint">«Сброс» в меню «⋮» стирает только времена — состав остаётся</p>
     </div>
+  }
+
+  @if (shareOpen()) {
+    <app-timer-share [raceSlug]="shareSlug()" [session]="session()" (closed)="shareOpen.set(false)" />
   }
 
   @if (removeAsk()) {
