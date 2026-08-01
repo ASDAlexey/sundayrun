@@ -267,14 +267,6 @@
     outline-offset: 2px;
   }
 
-  // A phone on its side has 390 px of height for the whole cockpit. The keys give back the eight
-  // pixels they can spare and stop there: 48 px is still four above the floor of a tap target.
-  @media (height <= 560px) {
-    &__keys {
-      height: 48px;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     &__cut,
     &__runner,

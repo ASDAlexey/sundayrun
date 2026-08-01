@@ -38,13 +38,18 @@
     white-space: nowrap;
   }
 
+  // 44 px and not the 36 it used to be. Nothing forced the smaller square — the head row is one line
+  // of text and the name beside it is `flex: 1`, so the four extra pixels come out of an ellipsis
+  // that was never reached. Every other key of the timer already stands on the 44 px floor
+  // (`timer-page.scss`, `runner-grid.scss:149-150`), and «закрыть» is pressed with the same cold
+  // thumb as the rest of them.
   &__close {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: var(--radius-xs);
     background: none;

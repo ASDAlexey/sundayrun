@@ -41,9 +41,9 @@
   text-align: left;
   cursor: pointer;
   touch-action: manipulation;
-  transition:
-    transform var(--time-spring) var(--spring-tap),
-    opacity var(--transition-time) var(--ease);
+  // Transform only. The `opacity` leg was here for «финишировал»/«сошёл», and those states no longer
+  // fade the box — the tile keeps its full opacity and dims its own words instead (see `_done`).
+  transition: transform var(--time-spring) var(--spring-tap);
   user-select: none;
 
   // The personal ink stripe: an opacity-only layer, so «the edge brightens under the finger»
@@ -132,9 +132,17 @@
   }
 
   // Bottom right, because that corner is empty and stays empty: the time lands there, and the key
-  // is gone by the time there is one. The touch target is the full 32 px square; what is drawn is
-  // the muted glyph inside it, so a grid of thirty tiles does not turn into a grid of thirty
-  // crosses shouting over the surnames they are there to correct.
+  // is gone by the time there is one. What is drawn stays a 32 px square holding a muted glyph, so a
+  // grid of thirty tiles does not turn into a grid of thirty crosses shouting over the surnames they
+  // are there to correct — but what is pressed is the cockpit's usual 44 px, reached by an invisible
+  // `::before` 6 px past every edge. The square is already `position: absolute`, so it is its own
+  // containing block and the negative inset resolves against the glyph, not against the host.
+  //
+  // The reach costs nothing on either side. Outwards it leaves the tile by 4 px and lands in the
+  // grid's gutter — 8 px normally, 6 px at the densest (`runner-grid.scss`) — so it never overlaps
+  // the neighbour and a wider target cannot become somebody else's removal. Inwards it takes a 6 px
+  // band of the tile's own key, and the «×» exists only before the mass start, where a tap on the
+  // tile is refused anyway (`runner-grid.ts` `onTap`): what is lost is a buzz, not a split.
   &__remove {
     @include t.text('title', 'medium');
 
@@ -154,6 +162,12 @@
     cursor: pointer;
     touch-action: manipulation;
     transition: color var(--transition-time) var(--ease);
+
+    &::before {
+      position: absolute;
+      inset: -6px;
+      content: '';
+    }
 
     &:hover,
     &:active {
@@ -186,20 +200,44 @@
     animation: timer-tile-soon var(--time-breathe) var(--ease) infinite;
   }
 
-  &_done {
+  // «Финишировал» and «сошёл» are the two tiles that are read hardest and pressed least: this is
+  // where the organiser looks when a split went to the wrong man, on a phone held in daylight, and a
+  // man who retired keeps his place in the grid until the session is deleted (`runner-grid.ts:177`).
+  // They used to be dimmed by an element `opacity` — 0.55 and 0.4 — which took the surname down to
+  // 1.89:1 and 1.50:1 on `--bg-subtle`, the two lowest figures anywhere in the app and less than half
+  // of what a body line needs. The box is therefore no longer faded as a whole; each part is given
+  // its own colour, and every one of them clears 4.5:1 against the tile it is printed on.
+  &_done,
+  &_out {
     background: var(--bg-subtle);
-    color: var(--text-muted);
-    opacity: 0.55;
 
-    &::before {
-      opacity: 0.3;
+    // 7.43:1. One step down from `--text` and still the loudest thing on the tile, because reading
+    // the surname is the entire reason anybody is looking at a tile in this state.
+    .timer-tile__surname {
+      color: var(--text-secondary);
+    }
+
+    // 5.00:1 — the step below the surname. `--text-muted` is the token that means «dimmer», but it
+    // only reaches 3.82:1 on `--bg-subtle`, so the step is mixed instead: the same secondary ink
+    // faded a fifth of the way into the page it lies on.
+    .timer-tile__given,
+    .timer-tile__time {
+      color: color-mix(in srgb, var(--text-secondary) 80%, var(--bg));
     }
   }
 
+  // The ink stripe is the one thing still allowed to fade, because it spells nothing: it is how the
+  // eye picks out a man it has already learnt. Retiring fades it further than finishing does — that,
+  // and the line through the surname, is what now separates the two states, since neither may buy
+  // its quietness out of the text any more.
+  &_done::before {
+    opacity: 0.3;
+  }
+
   &_out {
-    background: var(--bg-subtle);
-    color: var(--text-muted);
-    opacity: 0.4;
+    &::before {
+      opacity: 0.18;
+    }
 
     .timer-tile__surname {
       text-decoration: line-through;
