@@ -41,6 +41,7 @@ describe('TimerPublishService', () => {
   const setPublishedEventDates = vi.fn();
   const applyAutoNotes = vi.fn();
   const buildPublishInputs = vi.fn(() => TIMER_PUBLISH_INPUTS);
+  const storeReset = vi.fn();
   const loadHistory = vi.fn();
   const githubState = signal<PublishStateType>(PublishState.idle);
   const publish = vi.fn(() => Promise.resolve());
@@ -74,7 +75,10 @@ describe('TimerPublishService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: TimerSessionService, useValue: sessions },
-        { provide: ProtocolStateService, useValue: { importSession, setPublishedEventDates, applyAutoNotes, buildPublishInputs } },
+        {
+          provide: ProtocolStateService,
+          useValue: { importSession, setPublishedEventDates, applyAutoNotes, buildPublishInputs, reset: storeReset },
+        },
         { provide: HistoryService, useValue: { loadHistory } },
         { provide: GithubStorageService, useValue: { state: githubState, publish, reset: githubReset } },
         { provide: PendingArchiveService, useValue: pendingArchive },
@@ -98,19 +102,21 @@ describe('TimerPublishService', () => {
     expect(applyAutoNotes).toHaveBeenCalledExactlyOnceWith(IMPORT_HISTORY);
     expect(githubReset, 'a stale success of an earlier batch must not be mistaken for this one').toHaveBeenCalledOnce();
     expect(publish).toHaveBeenCalledExactlyOnceWith(TIMER_PUBLISH_INPUTS);
-    expect(pendingArchive.addUpload).toHaveBeenCalledExactlyOnceWith({
-      slug: TIMER_SESSION_DATE_ISO,
-      number: TIMER_PUBLISH_INPUTS[0].event.number,
-      dateIso: TIMER_SESSION_DATE_ISO,
-      participantCount: 0,
-      atIso: new Date(TIMER_PUBLISH_STARTED_AT_MS).toISOString(),
-    });
+    expect(
+      pendingArchive.addUploads,
+      'the committed batch goes to the archive bookkeeping whole, exactly as /result hands it over',
+    ).toHaveBeenCalledExactlyOnceWith(TIMER_PUBLISH_INPUTS);
     expect(sessions.update.mock.calls[0][0]).toBe(TIMER_SESSION_ID);
     expect(writtenStatus()).toEqual({ state: TimerPublishState.published, error: null, sha: TIMER_PUBLISH_REF });
     expect(service.publishedSlug()).toBe(TIMER_SESSION_DATE_ISO);
     expect(service.step()).toBe(TimerPublishStep.done);
     expect(service.state()).toBe(TimerPublishState.published);
     expect(publishDuration.record).toHaveBeenCalledExactlyOnceWith(0);
+    expect(storeReset, 'a committed race must not stay in the store as a live draft').toHaveBeenCalledOnce();
+    expect(
+      buildPublishInputs.mock.invocationCallOrder[0],
+      'the imported session has to survive until the payload is assembled from it',
+    ).toBeLessThan(storeReset.mock.invocationCallOrder[0]);
   });
 
   it('waits the deploy out, measures it when the banner reports it and reports success when the poll gives up', async () => {
@@ -139,6 +145,7 @@ describe('TimerPublishService', () => {
 
     expect(service.step(), 'a settled flow ignores the banner').toBe(TimerPublishStep.idle);
     expect(githubReset).toHaveBeenCalledTimes(2);
+    expect(storeReset, 'the card reset clears the shared store too, not only its own state').toHaveBeenCalledTimes(2);
 
     await service.publish(TIMER_SESSION_FINISHED);
     freshness.state.set(DbFreshness.Updating);
@@ -168,6 +175,7 @@ describe('TimerPublishService', () => {
     await service.publish(TIMER_SESSION_FINISHED);
 
     expect(loadHistory, 'a failed publication may be retried').toHaveBeenCalledTimes(2);
+    expect(storeReset, 'nothing was committed, so the draft stays available for the retry').not.toHaveBeenCalled();
   });
 
   it('names the reason when the commit is refused, and when there is nothing to commit at all', async () => {
@@ -179,7 +187,8 @@ describe('TimerPublishService', () => {
     await service.publish(TIMER_SESSION_FINISHED);
 
     expect(service.error()).toBe(TIMER_PUBLISH_AUTH_ERROR);
-    expect(pendingArchive.addUpload).not.toHaveBeenCalled();
+    expect(pendingArchive.addUploads).not.toHaveBeenCalled();
+    expect(storeReset, 'a refused commit clears the draft too — «Повторить» imports the session again').toHaveBeenCalledOnce();
 
     publish.mockImplementation(() => {
       githubState.set(PublishState.error);
@@ -195,5 +204,6 @@ describe('TimerPublishService', () => {
 
     expect(service.error()).toBe(TIMER_PUBLISH_EMPTY_ERROR);
     expect(publish, 'an empty batch never reaches GitHub').toHaveBeenCalledTimes(2);
+    expect(storeReset, 'the empty-batch sentence sends the organiser to /preview, so that draft is kept').toHaveBeenCalledTimes(2);
   });
 });

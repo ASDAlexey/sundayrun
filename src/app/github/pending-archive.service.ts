@@ -1,5 +1,6 @@
 import { Service, computed, signal } from '@angular/core';
 
+import { PublishEventInput } from '../core/github/publish-event.interface';
 import {
   EMPTY_PENDING_ARCHIVE_CHANGES,
   PENDING_ARCHIVE_MAX_AGE_MS,
@@ -37,6 +38,26 @@ export class PendingArchiveService {
       uploads: [upload, ...changes.uploads.filter((entry) => entry.slug !== upload.slug && entry.number !== upload.number)],
       deletions: changes.deletions.filter((entry) => entry.slug !== upload.slug),
     });
+  }
+
+  /**
+   * Records a whole batch the way both publish flows produce it. /result and the stopwatch commit
+   * every draft in ONE commit, so the events land together and share the click's timestamp — the
+   * propagation window they wait out is one and the same. The mapping from a publish payload to a
+   * placeholder row lives here so that a change to it cannot land on one flow and miss the other.
+   */
+  addUploads(inputs: readonly PublishEventInput[]): void {
+    const atIso = new Date().toISOString();
+
+    for (const input of inputs) {
+      this.addUpload({
+        slug: input.event.dateIso,
+        number: input.event.number,
+        dateIso: input.event.dateIso,
+        participantCount: input.rows.length,
+        atIso,
+      });
+    }
   }
 
   /** Records a just-deleted event; a re-delete of the same slug refreshes its single entry and drops its placeholder. */

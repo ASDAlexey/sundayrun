@@ -228,21 +228,12 @@ export class ResultPage implements OnDestroy {
 
     if (this.publishState() === PublishState.success) {
       // The archive db rebuild lags the commit, so mark every event pending — /admin shows them as «публикуется…».
-      const atIso = new Date().toISOString();
-
-      for (const input of inputs) {
-        this.#pendingArchive.addUpload({
-          slug: input.event.dateIso,
-          number: input.event.number,
-          dateIso: input.event.dateIso,
-          participantCount: input.rows.length,
-          atIso,
-        });
-      }
-
+      this.#pendingArchive.addUploads(inputs);
       this.#startedAtMs = startedAtMs;
       this.#waitingForDeploy.set(true);
-      this.#tickId = setInterval(() => this.#elapsedMs.set(Date.now() - startedAtMs), PUBLISH_TICK_INTERVAL_MS);
+      // Clamped: the wait bar's percentage and the «прошло m:ss» line both read this, and a system
+      // clock nudged backwards during the deploy would drive them below zero.
+      this.#tickId = setInterval(() => this.#elapsedMs.set(Math.max(0, Date.now() - startedAtMs)), PUBLISH_TICK_INTERVAL_MS);
       void this.#completeIfAlreadyLive();
     }
   }
@@ -318,7 +309,7 @@ export class ResultPage implements OnDestroy {
     this.deployDone.set(true);
 
     if (measured) {
-      const durationMs = Date.now() - this.#startedAtMs;
+      const durationMs = Math.max(0, Date.now() - this.#startedAtMs);
 
       this.#publishedInMs.set(durationMs);
       this.#publishDuration.record(durationMs);

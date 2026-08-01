@@ -4,12 +4,14 @@ import { NEWER_ENTRY, OLDER_ENTRY } from '../core/github/archive-index.mock';
 import { PENDING_ARCHIVE_STORAGE_KEY } from './pending-archive.constant';
 import { PendingArchiveService } from './pending-archive.service';
 import {
+  EXPECTED_BATCH_UPLOADS,
   EXPIRED_DELETION_MOCK,
   EXPIRED_UPLOAD_MOCK,
   MALFORMED_PENDING_JSON,
   NON_OBJECT_PENDING_JSON,
   PENDING_DELETION_MOCK,
   PENDING_NOW_MS,
+  PENDING_UPLOAD_INPUTS,
   PENDING_UPLOAD_MOCK,
 } from './pending-archive.service.mock';
 
@@ -26,6 +28,7 @@ describe('PendingArchiveService', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   it('records an upload and a deletion, persisting and deduping uploads by slug and number', () => {
@@ -62,6 +65,24 @@ describe('PendingArchiveService', () => {
     service.addDeletion(olderDeletion);
 
     expect(service.deletions()).toEqual([olderDeletion, PENDING_DELETION_MOCK]);
+  });
+
+  it('turns a whole publish batch into placeholder rows sharing the click timestamp', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(PENDING_NOW_MS);
+
+    const service = TestBed.inject(PendingArchiveService);
+
+    service.addUploads(PENDING_UPLOAD_INPUTS);
+
+    expect(service.uploads(), 'one commit, one timestamp: the batch waits out a single propagation window').toEqual(EXPECTED_BATCH_UPLOADS);
+    expect(setItem, 'the batch is persisted, so a reload inside the window keeps the corrected view').toHaveBeenCalledTimes(
+      PENDING_UPLOAD_INPUTS.length,
+    );
+
+    service.addUploads([]);
+
+    expect(service.uploads(), 'an empty batch — nothing was committed — leaves the pending rows alone').toEqual(EXPECTED_BATCH_UPLOADS);
   });
 
   it('lets the newest change win: a deletion drops a pending upload of the same slug and vice versa', () => {

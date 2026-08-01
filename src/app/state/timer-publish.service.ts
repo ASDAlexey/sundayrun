@@ -109,6 +109,10 @@ export class TimerPublishService {
     this.#publishedSlug.set(null);
     this.#deploySeen = false;
     this.#github.reset();
+    // The store is shared with the upload wizard, and `importSession` left the timed race sitting in
+    // it as a ready draft. Dropping it here keeps `previewGuard`/`resultGuard` honest: after the
+    // stopwatch is done, /preview must not open on a race that has already been committed.
+    this.#store.reset();
   }
 
   /**
@@ -154,13 +158,23 @@ export class TimerPublishService {
 
     if (publishState !== PublishState.success) {
       this.#fail(session.id, publishState === PublishState.authError ? TIMER_PUBLISH_AUTH_ERROR : TIMER_PUBLISH_COMMIT_ERROR);
+      // «Повторить» replays `publish()` from the top and imports the session again, so the draft has
+      // no reason to outlive the refused commit — and a wizard that opens on it would be lying about
+      // what is still unpublished. The failures raised inside `#buildInputs` deliberately do not do
+      // this: the empty-batch sentence sends the organiser to «Проверить перед публикацией».
+      this.#store.reset();
 
       return;
     }
 
     const ref = await this.#cdnRef.resolve();
 
-    this.#recordUploads(inputs);
+    // The archive db lags the commit, so /admin shows the race as «публикуется…» meanwhile.
+    this.#pendingArchive.addUploads(inputs);
+    // The payload is already built and committed, so the draft has served its purpose; leaving it in
+    // the shared store would keep `canGenerate` true and let /preview reopen a published race as a
+    // live wizard. `inputs` is a plain array and survives the reset.
+    this.#store.reset();
     this.#publishedSlug.set(inputs[0].event.dateIso);
     this.#mark(session.id, TimerPublishState.published, null, ref);
     this.#startedAtMs = startedAtMs;
@@ -171,21 +185,6 @@ export class TimerPublishService {
     // only catches the rare deploy that landed before the wait could start watching for it.
     if (await this.#dbFreshness.pinnedDbAvailable(ref)) {
       this.#finishDeployWait(true);
-    }
-  }
-
-  /** The archive db lags the commit, so /admin shows the race as «публикуется…» meanwhile. */
-  #recordUploads(inputs: PublishEventInput[]): void {
-    const atIso = new Date().toISOString();
-
-    for (const input of inputs) {
-      this.#pendingArchive.addUpload({
-        slug: input.event.dateIso,
-        number: input.event.number,
-        dateIso: input.event.dateIso,
-        participantCount: input.rows.length,
-        atIso,
-      });
     }
   }
 

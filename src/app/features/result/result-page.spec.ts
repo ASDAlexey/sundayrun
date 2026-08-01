@@ -398,7 +398,7 @@ describe('ResultPage', () => {
     expect(publishInput.rows).toBe(PDF_ROWS_MOCK);
     expect(publishInput.sourceXlsxBytes).toBe(SOURCE_FILE_MOCK.bytes);
     expect('pdfBytes' in publishInput, 'the protocol pdf is generated on the fly, never published').toBe(false);
-    expect(pendingArchive.addUpload, 'an unfinished publish is not remembered').not.toHaveBeenCalled();
+    expect(pendingArchive.addUploads, 'an unfinished publish is not remembered').not.toHaveBeenCalled();
 
     // A successful publish is remembered for /admin and locks the button against a re-publish.
     publish.mockImplementation(() => {
@@ -409,13 +409,10 @@ describe('ResultPage', () => {
     element.querySelector('.result__publish-button').click();
     await settle();
 
-    expect(pendingArchive.addUpload).toHaveBeenCalledWith({
-      slug: PDF_EVENT_MOCK.dateIso,
-      number: PDF_EVENT_MOCK.number,
-      dateIso: PDF_EVENT_MOCK.dateIso,
-      participantCount: PDF_ROWS_MOCK.length,
-      atIso: expect.any(String),
-    });
+    expect(
+      pendingArchive.addUploads,
+      'the committed batch goes to the archive bookkeeping whole — the placeholder mapping is its own',
+    ).toHaveBeenCalledExactlyOnceWith(PUBLISH_INPUTS_BATCH_MOCK.slice(0, 1));
 
     fixture.detectChanges();
 
@@ -606,13 +603,8 @@ describe('ResultPage', () => {
 
     expect(publish).toHaveBeenCalledTimes(1);
     expect(publish).toHaveBeenCalledWith(PUBLISH_INPUTS_BATCH_MOCK);
-    expect(pendingArchive.addUpload, 'every event of the batch is marked pending').toHaveBeenCalledTimes(2);
-    expect(pendingArchive.addUpload).toHaveBeenCalledWith({
-      slug: SECOND_EVENT_MOCK.dateIso,
-      number: SECOND_EVENT_MOCK.number,
-      dateIso: SECOND_EVENT_MOCK.dateIso,
-      participantCount: PDF_ROWS_MOCK.length,
-      atIso: expect.any(String),
-    });
+    expect(pendingArchive.addUploads, 'the whole batch is marked pending in one call').toHaveBeenCalledExactlyOnceWith(
+      PUBLISH_INPUTS_BATCH_MOCK,
+    );
   });
 });
