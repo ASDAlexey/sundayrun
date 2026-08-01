@@ -32,6 +32,11 @@
   // With `table-layout: fixed` it is the first row that sets the columns, and the first row is this
   // one — so the widths live here and the name column takes whatever is left. Without them all five
   // columns would come out equal and «Романенко» would be cut to fit next to a three-character pace.
+  //
+  // The three mono columns are sized for the longest reading each of them can hold, hundredths and
+  // all: «19:03,03» measures 72 px in `mono-value` and the pace «3:48,61» 54 px in `mono-meta`, and
+  // a `td` that overflows a fixed column does not clip — it prints straight over its neighbour, so
+  // an undersized column here is two times on top of each other rather than a tighter table.
   &__head th {
     @include t.mono-caption;
 
@@ -41,7 +46,7 @@
     text-align: right;
 
     &:first-child {
-      width: 34px;
+      width: 30px;
     }
 
     &:nth-child(2) {
@@ -50,11 +55,11 @@
 
     &:nth-child(3),
     &:nth-child(4) {
-      width: 58px;
+      width: 82px;
     }
 
     &:last-child {
-      width: 52px;
+      width: 62px;
     }
   }
 
@@ -72,7 +77,7 @@
   &__place {
     @include t.podium-rank;
 
-    width: 34px;
+    width: 30px;
     color: var(--text);
     text-align: right;
   }
@@ -89,7 +94,7 @@
   &__value {
     @include t.mono-value;
 
-    width: 58px;
+    width: 82px;
     color: var(--text);
     font-variant-numeric: tabular-nums;
     text-align: right;
@@ -98,7 +103,7 @@
   &__pace {
     @include t.mono-meta;
 
-    width: 52px;
+    width: 62px;
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
     text-align: right;
@@ -151,6 +156,16 @@
     @include t.mono-caption;
 
     color: var(--text-secondary);
+  }
+
+  // Under 420 px the five columns stop fitting without eating the surnames. The pace is the one
+  // column that is arithmetic rather than a measurement — it can be read off the 5 km time — so it
+  // is the one that goes, and the names keep their width.
+  @media (width < 420px) {
+    &__head th:last-child,
+    &__pace {
+      display: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
