@@ -442,357 +442,357 @@
         <source>Секундомер</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">16,18</context>
+          <context context-type="linenumber">18,20</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.timerHint" datatype="html">
         <source> Отсечки по фамилиям прямо на финише — потом одна кнопка «Сохранить», и забег уедет в архив сам. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">19,22</context>
+          <context context-type="linenumber">21,24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.timerLink" datatype="html">
         <source>Засечь забег</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">22,25</context>
+          <context context-type="linenumber">24,27</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.uploadTitle" datatype="html">
         <source>Загрузить забег</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">26,28</context>
+          <context context-type="linenumber">28,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.uploadHint" datatype="html">
         <source>Протокол нового забега — результаты и рекорды пересчитаются автоматически.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">28,30</context>
+          <context context-type="linenumber">30,32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.nextNumber" datatype="html">
         <source> Следующий номер: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;admin__upload-number&quot;&gt;"/>№ <x id="INTERPOLATION" equiv-text="{{ nextNumber() }}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">34,36</context>
+          <context context-type="linenumber">36,38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.publishDelayMeasured" datatype="html">
         <source> Забег появится на сайте не сразу — обычно публикация занимает ~<x id="INTERPOLATION" equiv-text="{{ average }}"/>. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">40,42</context>
+          <context context-type="linenumber">42,44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.publishDelay" datatype="html">
         <source> Забег появится на сайте не сразу — публикация занимает ~2–3 минуты. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">44,46</context>
+          <context context-type="linenumber">46,48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.metaTitle" datatype="html">
         <source>Объявление на главной</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">50,52</context>
+          <context context-type="linenumber">52,54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.metaHint" datatype="html">
         <source>Показывается всем в блоке «Следующий старт». Публикация занимает ~2–3 минуты.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">52,54</context>
+          <context context-type="linenumber">54,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.startTimeLabel" datatype="html">
         <source>Время старта</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">55,58</context>
+          <context context-type="linenumber">57,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.metaSave" datatype="html">
         <source> Опубликовать объявление </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">74,75</context>
+          <context context-type="linenumber">76,77</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.metaSaving" datatype="html">
         <source>Публикуем объявление…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">83,85</context>
+          <context context-type="linenumber">85,87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.metaSaved" datatype="html">
         <source>Объявление опубликовано — на главной появится через ~2–3 минуты.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">87,89</context>
+          <context context-type="linenumber">89,91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.metaAuthError" datatype="html">
         <source> Токен не подходит: нет доступа к репозиторию sundayrun. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">91,92</context>
+          <context context-type="linenumber">93,94</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.metaError" datatype="html">
         <source>Не удалось опубликовать объявление. Попробуйте ещё раз.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">95,97</context>
+          <context context-type="linenumber">97,99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racesTitle" datatype="html">
         <source>Загруженные забеги</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">104,106</context>
+          <context context-type="linenumber">106,108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racesTotal" datatype="html">
         <source>Всего: <x id="INTERPOLATION" equiv-text="{{ allRaces().length }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">107,108</context>
+          <context context-type="linenumber">109,110</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deleteHint" datatype="html">
         <source> Если забег загружен по ошибке — удалите его: протокол, результаты и рекорды пересчитаются без него. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">112,115</context>
+          <context context-type="linenumber">114,117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deleteModalTitle" datatype="html">
         <source>Вы уверены?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">129,131</context>
+          <context context-type="linenumber">131,133</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deleteModalText" datatype="html">
         <source> Забег № <x id="INTERPOLATION" equiv-text="{{ race.number }}"/> (<x id="INTERPOLATION_1" equiv-text="{{ race.dateLong }}"/>) будет удалён. Протокол, результаты и рекорды пересчитаются без него. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">132,134</context>
+          <context context-type="linenumber">134,136</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.raceCancel" datatype="html">
         <source> Отмена </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">137,138</context>
+          <context context-type="linenumber">139,140</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.raceConfirm" datatype="html">
         <source> Точно удалить </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">141,142</context>
+          <context context-type="linenumber">143,144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racesLoading" datatype="html">
         <source>Загружаем список забегов…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">153,155</context>
+          <context context-type="linenumber">155,157</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racesEmpty" datatype="html">
         <source>Опубликованных забегов пока нет.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">157,159</context>
+          <context context-type="linenumber">159,161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racesError" datatype="html">
         <source>Не удалось загрузить список забегов.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">160,162</context>
+          <context context-type="linenumber">162,164</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.searchLabel" datatype="html">
         <source>Поиск по номеру или дате</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">181,182</context>
+          <context context-type="linenumber">183,184</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.searchPlaceholder" datatype="html">
         <source>Номер или дата…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">186,188</context>
+          <context context-type="linenumber">188,190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.noMatches" datatype="html">
         <source>Ничего не нашлось — измените запрос.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">194,196</context>
+          <context context-type="linenumber">196,198</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.raceParticipants" datatype="html">
         <source>участников: <x id="INTERPOLATION" equiv-text="{{ race.participantCount }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">209,210</context>
+          <context context-type="linenumber">211,212</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racePublishing" datatype="html">
         <source>публикуется…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">216,217</context>
+          <context context-type="linenumber">218,219</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.raceDeletingTimed" datatype="html">
         <source>удаляется… <x id="INTERPOLATION" equiv-text="{{ deleteElapsedText() }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">222,223</context>
+          <context context-type="linenumber">224,225</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.raceDeleting" datatype="html">
         <source>удаляется…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">228,229</context>
+          <context context-type="linenumber">230,231</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.raceProtocol" datatype="html">
         <source>протокол</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">232,234</context>
+          <context context-type="linenumber">234,236</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racesNoteMeasured" datatype="html">
         <source> Удаление в один клик не выполняется — сначала подтверждение. Обычно удаление занимает ~<x id="INTERPOLATION" equiv-text="{{ average }}"/>. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">267,268</context>
+          <context context-type="linenumber">269,270</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.racesNote" datatype="html">
         <source> Удаление в один клик не выполняется — сначала подтверждение. После удаления пересборка сайта займёт ~2–3 минуты. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">271,272</context>
+          <context context-type="linenumber">273,274</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deleteInProgress" datatype="html">
         <source>Удаляем забег…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">283,285</context>
+          <context context-type="linenumber">285,287</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deleteSuccess" datatype="html">
         <source>Забег удалён — сайт пересоберётся через ~2–3 минуты.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">287,289</context>
+          <context context-type="linenumber">289,291</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deletePending" datatype="html">
         <source>Забег удаляется — изменения появятся через пару минут.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">290,292</context>
+          <context context-type="linenumber">292,294</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deleteAuthError" datatype="html">
         <source> Токен не подходит: нет доступа к репозиторию sundayrun. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">294,296</context>
+          <context context-type="linenumber">296,298</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.deleteError" datatype="html">
         <source>Не удалось удалить забег. Попробуйте ещё раз.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">298,301</context>
+          <context context-type="linenumber">300,303</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.title" datatype="html">
         <source>Вход для организатора</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">306,308</context>
+          <context context-type="linenumber">308,310</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.hint" datatype="html">
         <source>Нужен fine-grained GitHub-токен с правом Contents read/write на репозиторий sundayrun.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">308,310</context>
+          <context context-type="linenumber">310,312</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.tokenHelp" datatype="html">
         <source> Как создать токен — пошаговая инструкция </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">311,314</context>
+          <context context-type="linenumber">313,316</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.tokenLabel" datatype="html">
         <source>GitHub-токен</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">315,317</context>
+          <context context-type="linenumber">317,319</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.save" datatype="html">
         <source> Сохранить </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">327,330</context>
+          <context context-type="linenumber">329,332</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.emptyToken" datatype="html">
         <source>Введите токен.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">333,335</context>
+          <context context-type="linenumber">335,337</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.checking" datatype="html">
         <source>Проверяем токен…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">339,341</context>
+          <context context-type="linenumber">341,343</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.unauthorized" datatype="html">
         <source>Токен не подходит: нет доступа к репозиторию sundayrun.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">343,345</context>
+          <context context-type="linenumber">345,347</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.error" datatype="html">
         <source>Не удалось проверить токен. Попробуйте ещё раз.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.html</context>
-          <context context-type="linenumber">346,348</context>
+          <context context-type="linenumber">348,350</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.raceDeleteLabel" datatype="html">
         <source>Удалить забег № <x id="number" equiv-text="entry.number"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/admin-page.ts</context>
-          <context context-type="linenumber">386</context>
+          <context context-type="linenumber">387</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.metaFinishesOne" datatype="html">
@@ -6600,6 +6600,48 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/db-freshness-banner/db-freshness-banner.html</context>
           <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="install.title" datatype="html">
+        <source>Приложение на рабочий стол</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/install-app/install-app.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="install.hint" datatype="html">
+        <source> Панель и секундомер откроются с иконки — как обычное приложение, без вкладок и адресной строки. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/install-app/install-app.html</context>
+          <context context-type="linenumber">8,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="install.action" datatype="html">
+        <source> Установить приложение </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/install-app/install-app.html</context>
+          <context context-type="linenumber">13,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="install.stepIos" datatype="html">
+        <source>iPhone и iPad: «Поделиться» ⬆️ → «На экран „Домой“» → «Добавить».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/install-app/install-app.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="install.stepAndroid" datatype="html">
+        <source>Android: меню браузера ⋮ → «Установить приложение».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/install-app/install-app.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="install.stepDesktop" datatype="html">
+        <source>Компьютер: значок установки в адресной строке или меню браузера.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/install-app/install-app.html</context>
+          <context context-type="linenumber">23,27</context>
         </context-group>
       </trans-unit>
       <trans-unit id="notification.dismiss" datatype="html">
