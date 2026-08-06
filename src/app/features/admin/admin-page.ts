@@ -23,6 +23,7 @@ import { PendingArchiveService } from '../../github/pending-archive.service';
 import { PendingUpload } from '../../github/pending-archive.interface';
 import { PublishDurationService } from '../../github/publish-duration.service';
 import { SiteMetaService } from '../../github/site-meta.service';
+import { InstallApp } from '../../shared/install-app/install-app';
 import { bindSearchQueryParam } from '../../shared/search-query-param/search-query-param';
 import { ProtocolDropzone } from '../upload/protocol-dropzone/protocol-dropzone';
 import {
@@ -46,7 +47,7 @@ import { resolveAdminReturnUrl } from './admin-return';
  */
 @Component({
   selector: 'app-admin-page',
-  imports: [MatProgressSpinnerModule, ProtocolDropzone, RouterLink, ScrollingModule],
+  imports: [InstallApp, MatProgressSpinnerModule, ProtocolDropzone, RouterLink, ScrollingModule],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
 })

@@ -1,0 +1,64 @@
+@use 'styles/buttons' as b;
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+// The host must not take part in the panel's column layout: with nothing to offer the block renders
+// no element at all, and a `display: flex` host would still leave its gap behind.
+:host {
+  display: contents;
+}
+
+.install {
+  @include c.card;
+
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  gap: 12px;
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__hint {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__action {
+    @include b.button-accent;
+
+    flex-shrink: 0;
+  }
+
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+    gap: 4px;
+    list-style: disc;
+  }
+
+  &__step {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+}

@@ -16,6 +16,7 @@ import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { NotifyingErrorHandler } from './core/error/notifying-error-handler';
 import { RouteErrorNotifier } from './core/error/route-error-notifier';
+import { InstallPromptService } from './shared/install-app/install-prompt.service';
 import { CanonicalLinkService } from './shared/seo/canonical-link.service';
 import { PageMetaService } from './shared/seo/page-meta.service';
 import { AppUpdateService } from './state/app-update.service';
@@ -38,6 +39,9 @@ export const appConfig: ApplicationConfig = {
         inject(RouteErrorNotifier);
         // The same goes for the update gate: it holds a new release back until the race is over.
         inject(AppUpdateService);
+        // Chromium fires `beforeinstallprompt` once, seconds after startup — long before the
+        // organiser opens /admin — so the listener has to be here rather than on the panel itself.
+        inject(InstallPromptService);
       }
     }),
     // Public pages are prerendered (see app.routes.server.ts); hydration reuses that HTML.

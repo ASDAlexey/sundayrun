@@ -1,0 +1,27 @@
+@if (offer() !== offers.none) {
+  <div class="install">
+    <div class="install__row">
+      <div class="install__text">
+        <p class="install__title" i18n="@@install.title">Приложение на рабочий стол</p>
+
+        <p class="install__hint" i18n="@@install.hint">
+          Панель и секундомер откроются с иконки — как обычное приложение, без вкладок и адресной строки.
+        </p>
+      </div>
+
+      <button class="install__action" i18n="@@install.action" type="button" [attr.aria-expanded]="ariaExpanded()" (click)="activate()">
+        Установить приложение
+      </button>
+    </div>
+
+    @if (hintOpen()) {
+      <ul class="install__steps">
+        <li class="install__step" i18n="@@install.stepIos">iPhone и iPad: «Поделиться» ⬆️ → «На экран „Домой“» → «Добавить».</li>
+
+        <li class="install__step" i18n="@@install.stepAndroid">Android: меню браузера ⋮ → «Установить приложение».</li>
+
+        <li class="install__step" i18n="@@install.stepDesktop">Компьютер: значок установки в адресной строке или меню браузера.</li>
+      </ul>
+    }
+  </div>
+}
