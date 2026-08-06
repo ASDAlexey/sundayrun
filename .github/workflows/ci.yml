@@ -267,3 +267,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # Pages сам по себе иногда залипает в deployment_in_progress дольше дефолтных
+          # 10 минут: экшен отменяет деплой и красит run, хотя артефакт сборки исправен.
+          # Даём инфраструктуре полчаса, чтобы публикация не требовала ручного перезапуска.
+          timeout: 1800000
