@@ -38,8 +38,10 @@ import {
   GRID_LATE_TAP_MS,
   GRID_LATE_TAP_TIME_TEXT,
   GRID_PLAIN_AFTER_FINISH,
+  GRID_PLAIN_ARRANGED_IDS,
   GRID_PLAIN_AFTER_LAP,
   GRID_PLAIN_INITIALS,
+  GRID_PLAIN_LAP_MS,
   GRID_PLAIN_LAP_SPLIT,
   GRID_PLAIN_RETIRED,
   GRID_PLAIN_RUNNERS,
@@ -48,6 +50,7 @@ import {
   GRID_PLAIN_SESSION,
   GRID_PLAIN_SURNAMES,
   GRID_QUIET_ELAPSED_MS,
+  GRID_RESORTED_SURNAMES,
   GRID_SPELLED_GIVEN,
   GRID_TAP_TIME_TEXT,
   PLAIN_LEADER_ID,
@@ -284,7 +287,7 @@ describe('TimerGrid', () => {
     expect(tiles().some((tile) => tile.getAttribute('aria-label') === CROWD_FINISHER_ID)).toBe(false);
   });
 
-  it('lets the judge arrange the tiles by hand before the start', async () => {
+  it('lets the judge arrange the tiles by hand before the start, and keeps that order with the measurement', async () => {
     sessions.active.set(GRID_PLAIN_SESSION);
     await create();
 
@@ -294,14 +297,42 @@ describe('TimerGrid', () => {
     const item = container.children[GRID_DROP_FROM].injector.get(CdkDrag);
 
     list.dropped.emit(gridDropEvent(list, item, GRID_DROP_FROM, GRID_DROP_TO));
-    await fixture.whenStable();
 
-    expect(textOf('.timer-tile__surname')).toEqual(GRID_DRAGGED_SURNAMES);
+    const arranged: TimerSession = sessions.updateActive.mock.calls[0][0](GRID_PLAIN_SESSION);
 
-    roster.expectedLapMs.set(new Map());
+    expect(arranged.tileOrder, 'the drag is written down, not kept in the screen').toEqual(GRID_PLAIN_ARRANGED_IDS);
+
+    sessions.active.set(arranged);
+    roster.expectedLapMs.set(GRID_PLAIN_LAP_MS);
     await fixture.whenStable();
 
     expect(textOf('.timer-tile__surname'), 'a hand-made order outranks the archive from then on').toEqual(GRID_DRAGGED_SURNAMES);
+  });
+
+  /**
+   * The bug a volunteer reported after the race: the tiles were in other places when she came back to
+   * the app. The «Круг» tab, the runner's card and a backgrounded tab all destroy this component.
+   */
+  it('lays the tiles out where the running measurement says, however often the grid is rebuilt', async () => {
+    const running: TimerSession = { ...GRID_PLAIN_RUNNING, tileOrder: [...GRID_PLAIN_ARRANGED_IDS] };
+
+    sessions.active.set(running);
+    roster.expectedLapMs.set(GRID_PLAIN_LAP_MS);
+    await create();
+
+    expect(textOf('.timer-tile__surname')).toEqual(GRID_DRAGGED_SURNAMES);
+
+    fixture.destroy();
+    await create();
+
+    expect(textOf('.timer-tile__surname'), 'a grid built from scratch mid-race puts nothing anywhere new').toEqual(GRID_DRAGGED_SURNAMES);
+
+    sessions.active.set({ ...running, tileOrder: [] });
+    await fixture.whenStable();
+
+    expect(textOf('.timer-tile__surname'), 'and a race started before the order was written down still sorts itself').toEqual(
+      GRID_RESORTED_SURNAMES,
+    );
   });
 
   it('carries a «×» on every tile before the start and none once the clock runs', async () => {

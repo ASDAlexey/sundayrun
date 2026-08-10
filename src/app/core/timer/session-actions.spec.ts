@@ -1,8 +1,10 @@
 import { Gender } from '../models/gender.enum';
 import {
   addRunner,
+  arrangeTiles,
   assignNextUnnamed,
   createSession,
+  freezeTileOrder,
   reassignSplit,
   recordSplit,
   recordUnnamedSplit,
@@ -20,6 +22,7 @@ import {
   undoLastSplit,
 } from './session-actions';
 import {
+  ARRANGED_SESSION,
   BACKUP_SESSION_INPUT,
   CORRECTED_ATHLETE_KEY,
   CORRECTED_FULL_NAME,
@@ -28,8 +31,11 @@ import {
   EMPTY_ROSTER_SESSION,
   ERROR_ONLY_PUBLISH_STATUS,
   EXPECTED_ADDED_RUNNER,
+  EXPECTED_ARRANGED_IDS,
   EXPECTED_CREATED_SESSION,
   FAILED_PUBLISH_STATUS,
+  FREEZE_EXPECTED_LAP_MS,
+  HAND_ARRANGED_IDS,
   NEW_RUNNER,
   RECORDED_SPLIT_AT_MS,
   RECORDED_SPLIT_ID,
@@ -91,6 +97,18 @@ describe('roster actions', () => {
     expect(withoutTroilin.runners.map((runner) => runner.id)).not.toContain(TROILIN_RUNNER_ID);
     expect(withoutTroilin.splits, 'his times go away with him').toHaveLength(TIMER_SESSION.splits.length - 2);
     expect(removeRunner(TIMER_SESSION, UNKNOWN_RUNNER_ID)).toBe(TIMER_SESSION);
+  });
+});
+
+describe('tile order actions', () => {
+  it('keeps a hand-made arrangement with the measurement and fixes the archive one at the mass start', () => {
+    const arranged = arrangeTiles(TIMER_SESSION_IDLE, HAND_ARRANGED_IDS);
+    const frozen = freezeTileOrder(TIMER_SESSION_IDLE, FREEZE_EXPECTED_LAP_MS);
+
+    expect(arranged.tileOrder, 'a man who left the roster is no longer part of the order').toEqual(EXPECTED_ARRANGED_IDS);
+    expect(frozen.tileOrder[0], 'the fastest expected lap sits under the thumb').toBe(KUZNETSOV_RUNNER_ID);
+    expect(frozen.tileOrder, 'and everybody else keeps the add order behind him').toHaveLength(TIMER_SESSION_IDLE.runners.length);
+    expect(freezeTileOrder(ARRANGED_SESSION, FREEZE_EXPECTED_LAP_MS), 'the organiser outranks the archive').toBe(ARRANGED_SESSION);
   });
 });
 

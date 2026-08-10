@@ -3,7 +3,13 @@ import { Mock, vi } from 'vitest';
 
 import { TimerSession } from '../core/timer/timer-session.interface';
 import { TimerStatus } from '../core/timer/timer-session.enum';
-import { TIMER_SESSION, TIMER_SESSION_IDLE } from '../core/timer/timer-session.mock';
+import {
+  KUZNETSOV_ATHLETE_KEY,
+  KUZNETSOV_RUNNER_ID,
+  TIMER_SESSION,
+  TIMER_SESSION_IDLE,
+  TROILIN_LAP_MS,
+} from '../core/timer/timer-session.mock';
 
 /** The wall clock the mass start is stamped with — frozen, so the assertion can name it. */
 export const RACE_START_EPOCH_MS = 1_785_045_600_000;
@@ -16,6 +22,15 @@ export const RACE_FINISHED_SESSION: TimerSession = { ...TIMER_SESSION, status: T
 
 /** The measurement nobody has been added to yet — «Старт» has nothing to time. */
 export const RACE_EMPTY_SESSION: TimerSession = { ...TIMER_SESSION_IDLE, runners: [], splits: [] };
+
+/** The archive the mass start reads: Кузнецов is the fastest first lap the directory remembers. */
+export const RACE_EXPECTED_LAP_MS: ReadonlyMap<string, number> = new Map([[KUZNETSOV_ATHLETE_KEY, TROILIN_LAP_MS]]);
+
+/** And this is the order it fixes the tiles in — the fast man first, the rest in add order. */
+export const RACE_FROZEN_TILE_ORDER: string[] = [
+  KUZNETSOV_RUNNER_ID,
+  ...TIMER_SESSION_IDLE.runners.flatMap((runner) => (runner.id === KUZNETSOV_RUNNER_ID ? [] : [runner.id])),
+];
 
 /**
  * The very same running race arriving as a fresh object: every tap rebuilds the session, so the store

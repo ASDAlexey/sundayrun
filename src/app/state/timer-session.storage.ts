@@ -1,6 +1,7 @@
 import { TimerPublishStatus, TimerRunner, TimerSession, TimerSplit } from '../core/timer/timer-session.interface';
 import { EMPTY_TIMER_SESSION_STATE, TIMER_SESSION_SCHEMA_VERSION } from './timer-session.constant';
 import { TimerSessionState } from './timer-session.interface';
+import { StoredTimerSession } from './timer-session.type';
 import { isArrayOf, isNonEmptyString, isNullableGender, isNullableNumber, isNullableString, isOneOf, isRecord } from './timer-storage';
 import { TIMER_PUBLISH_STATE_VALUES, TIMER_ROLE_VALUES, TIMER_RUNNER_OUTCOME_VALUES, TIMER_STATUS_VALUES } from './timer-storage.constant';
 
@@ -40,9 +41,14 @@ export function byNewestSession(left: TimerSession, right: TimerSession): number
 
 function toState(sessions: unknown, activeId: unknown): TimerSessionState {
   const stored = Array.isArray(sessions) ? sessions : [];
-  const valid = stored.filter(isTimerSession).sort(byNewestSession);
+  const valid = stored.flatMap((session: unknown) => (isTimerSession(session) ? [withTileOrder(session)] : [])).sort(byNewestSession);
 
   return { sessions: valid, activeId: pickActiveId(valid, activeId) };
+}
+
+/** A race written by a release that laid the tiles out in the screen reopens with an open order. */
+function withTileOrder(session: StoredTimerSession): TimerSession {
+  return { ...session, tileOrder: session.tileOrder ?? [] };
 }
 
 /** A pointer to a session that did not survive the shape check is no pointer at all. */
@@ -54,9 +60,10 @@ function pickActiveId(sessions: readonly TimerSession[], activeId: unknown): str
   return sessions.some((session) => session.id === activeId) ? activeId : null;
 }
 
-function isTimerSession(value: unknown): value is TimerSession {
+function isTimerSession(value: unknown): value is StoredTimerSession {
   return (
     isRecord(value) &&
+    isStoredTileOrder(value['tileOrder']) &&
     isNonEmptyString(value['id']) &&
     typeof value['dateIso'] === 'string' &&
     typeof value['createdAtMs'] === 'number' &&
@@ -68,6 +75,11 @@ function isTimerSession(value: unknown): value is TimerSession {
     isArrayOf(value['splits'], isTimerSplit) &&
     isPublishStatus(value['publish'])
   );
+}
+
+/** Missing is the ordinary case of an older payload; anything else in its place is a broken one. */
+function isStoredTileOrder(value: unknown): value is string[] | undefined {
+  return value === undefined || isArrayOf(value, isNonEmptyString);
 }
 
 function isTimerRunner(value: unknown): value is TimerRunner {

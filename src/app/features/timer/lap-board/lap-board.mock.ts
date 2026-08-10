@@ -58,6 +58,7 @@ export const LAP_BOARD_SESSION: TimerSession = {
   status: TimerStatus.running,
   role: TimerRole.main,
   runners: LAP_RUNNERS,
+  tileOrder: [],
   splits: LAP_SPLITS,
   publish: INITIAL_PUBLISH_STATUS,
 };

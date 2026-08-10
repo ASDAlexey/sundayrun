@@ -1,6 +1,6 @@
 import { Service, computed, effect, inject, signal } from '@angular/core';
 
-import { startSession, stopSession } from '../core/timer/session-actions';
+import { freezeTileOrder, startSession, stopSession } from '../core/timer/session-actions';
 import { isRaceComplete } from '../core/timer/session-splits';
 import { TimerStatus } from '../core/timer/timer-session.enum';
 import { TimerSession } from '../core/timer/timer-session.interface';
@@ -9,6 +9,7 @@ import { HapticsService } from './haptics.service';
 import { TIMER_CLOCK_IDLE_MS } from './timer-clock.constant';
 import { TimerClockService } from './timer-clock.service';
 import { TIMER_EMPTY_ROSTER } from './timer-race.constant';
+import { TimerRosterService } from './timer-roster.service';
 import { TimerSessionService } from './timer-session.service';
 import { WakeLockService } from './wake-lock.service';
 
@@ -21,6 +22,7 @@ import { WakeLockService } from './wake-lock.service';
 export class TimerRaceService {
   readonly #sessions = inject(TimerSessionService);
   readonly #clock = inject(TimerClockService);
+  readonly #roster = inject(TimerRosterService);
   readonly #haptics = inject(HapticsService);
   readonly #wakeLock = inject(WakeLockService);
 
@@ -128,12 +130,16 @@ export class TimerRaceService {
    * the monotonic base the clock service sets up from this same stamp. The stamp is handed to the
    * clock inside a fresh copy rather than read back from the store, so a roster change made just
    * before the tap is not overwritten by a session captured earlier.
+   *
+   * The tile order is written down in the same breath: the grid stops re-sorting itself at the mass
+   * start, and what it must go on showing has to outlive the screen it was computed on.
    */
   #launch(session: TimerSession): void {
     const startedAtEpochMs = Date.now();
+    const expectedLapMs = this.#roster.expectedLapMs();
 
     this.#ticking = true;
-    this.#sessions.updateActive((current) => startSession(current, startedAtEpochMs));
+    this.#sessions.updateActive((current) => startSession(freezeTileOrder(current, expectedLapMs), startedAtEpochMs));
     this.#clock.start({ ...session, startedAtEpochMs });
     this.#wakeLock.request();
     this.woke.set(true);

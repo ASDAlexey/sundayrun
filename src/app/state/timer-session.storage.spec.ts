@@ -5,6 +5,7 @@ import {
   ALL_BROKEN_TIMER_SESSIONS_JSON,
   DANGLING_ACTIVE_ID_JSON,
   FOREIGN_SCHEMA_TIMER_SESSIONS_JSON,
+  LEGACY_TIMER_SESSION_JSON,
   MALFORMED_TIMER_SESSIONS_JSON,
   NON_ARRAY_TIMER_SESSIONS_JSON,
   NON_OBJECT_TIMER_SESSIONS_JSON,
@@ -25,9 +26,13 @@ describe('readTimerSessionState', () => {
     expect(readTimerSessionState(NON_OBJECT_TIMER_SESSIONS_JSON)).toEqual(EMPTY_TIMER_SESSION_STATE);
     expect(readTimerSessionState(FOREIGN_SCHEMA_TIMER_SESSIONS_JSON), 'another release wrote it').toEqual(EMPTY_TIMER_SESSION_STATE);
     expect(readTimerSessionState(NON_ARRAY_TIMER_SESSIONS_JSON)).toEqual(EMPTY_TIMER_SESSION_STATE);
-    expect(readTimerSessionState(ALL_BROKEN_TIMER_SESSIONS_JSON), 'a broken runner, split or publish status').toEqual(
+    expect(readTimerSessionState(ALL_BROKEN_TIMER_SESSIONS_JSON), 'a broken runner, split, publish status or tile order').toEqual(
       EMPTY_TIMER_SESSION_STATE,
     );
+  });
+
+  it('fills the tile order in for a race recorded before the grid wrote one down', () => {
+    expect(readTimerSessionState(LEGACY_TIMER_SESSION_JSON)).toEqual({ sessions: [TIMER_SESSION], activeId: TIMER_SESSION_ID });
   });
 
   it('drops only the measurements that no longer match the model and forgets a pointer to nothing', () => {

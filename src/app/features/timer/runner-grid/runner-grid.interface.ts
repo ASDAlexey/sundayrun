@@ -18,10 +18,9 @@ export interface TimerTileName {
   surname: string;
 }
 
-/** What the tile order is derived from; `frozen` closes it for the rest of the race. */
+/** What an open tile order is derived from; the fixed one comes from the session beside it. */
 export interface TimerTileOrderSource {
   expectedLapMs: ReadonlyMap<string, number>;
-  frozen: boolean;
   runners: readonly TimerRunner[];
 }
 

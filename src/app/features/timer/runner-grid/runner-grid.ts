@@ -1,8 +1,8 @@
 import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 
 import { formatRaceTime } from '../../../core/time/duration';
-import { recordSplit, removeRunner, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
+import { arrangeTiles, recordSplit, removeRunner, removeSplit, setRunnerOutcome } from '../../../core/timer/session-actions';
 import { handOutSoleLapSplit } from '../../../core/timer/session-auto-handout';
 import { hasDuplicateSurnames } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
@@ -27,7 +27,7 @@ import {
   TIMER_TILE_EMPTY_TIME,
 } from './runner-grid.constant';
 import { TimerDensity } from './runner-grid.enum';
-import { TimerLastSplit, TimerLastTap, TimerTileOrderSource, TimerTileView } from './runner-grid.interface';
+import { TimerLastSplit, TimerLastTap, TimerTileView } from './runner-grid.interface';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
@@ -48,22 +48,18 @@ export class TimerGrid {
   readonly #roster = inject(TimerRosterService);
   readonly #haptics = inject(HapticsService);
   readonly #lastTap = signal<TimerLastTap | null>(null);
-  readonly #manualOrder = signal(false);
   readonly #status = computed(() => this.#sessions.active()?.status ?? null);
   readonly #runners = computed(() => this.#sessions.active()?.runners ?? []);
   /**
-   * A linked signal rather than a plain computed on purpose: while the race runs the previous value
-   * is the source of truth and the archive estimate is ignored, so muscle memory survives both a
-   * latecomer joining and a hand-made arrangement.
+   * A plain computed over the measurement, not a state of its own: the order that must not move is
+   * the one written down in the session, so it survives this component being destroyed — by the
+   * «Круг» tab, by the runner's card, by a tab the browser evicted while the pack was out on the
+   * course. It used to live in a `linkedSignal` here, and every one of those rebuilt the grid from
+   * the roster order mid-race.
    */
-  readonly #orderedIds = linkedSignal<TimerTileOrderSource, string[]>({
-    source: () => ({
-      expectedLapMs: this.#roster.expectedLapMs(),
-      frozen: this.#status() !== TimerStatus.idle || this.#manualOrder(),
-      runners: this.#runners(),
-    }),
-    computation: (source, previous) => orderTimerTileIds(source, previous?.value),
-  });
+  readonly #orderedIds = computed(() =>
+    orderTimerTileIds({ expectedLapMs: this.#roster.expectedLapMs(), runners: this.#runners() }, this.#sessions.active()?.tileOrder ?? []),
+  );
 
   /** Namesakes get their first names spelled out whatever the density — «Попов А.» twice is useless. */
   readonly #spellGiven = computed(() => {
@@ -105,6 +101,7 @@ export class TimerGrid {
   /**
    * Reordering by hand and removing a person both belong to the minute before the start: during the
    * race a drag is a misstap, and a «×» under the thumb is a lost split and the man it belonged to.
+   * The whole list is closed with it, not merely every tile in it — a race is no place to be dragging.
    */
   protected readonly draggable = computed(() => this.#status() === TimerStatus.idle);
   protected readonly removable = this.draggable;
@@ -240,7 +237,8 @@ export class TimerGrid {
     const order = [...this.#orderedIds()];
 
     moveItemInArray(order, event.previousIndex, event.currentIndex);
-    this.#orderedIds.set(order);
-    this.#manualOrder.set(true);
+    // Written into the measurement, not kept here: from the first drag on, the arrangement is the
+    // organiser's and outranks the archive — and it has to still be there after the grid is rebuilt.
+    this.#sessions.updateActive((current) => arrangeTiles(current, order));
   }
 }

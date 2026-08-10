@@ -36,6 +36,14 @@ export interface TimerSession {
   status: TimerStatusType;
   role: TimerRoleType;
   runners: TimerRunner[];
+  /**
+   * The order the tiles are drawn in, once it has been fixed — by the mass start or by a drag before
+   * it. Empty while the grid still arranges itself from the archive. It lives in the measurement
+   * rather than in the screen on purpose: the grid is destroyed by every switch to «Круг» and by the
+   * browser evicting a backgrounded tab, and an order rebuilt from scratch mid-race puts the tiles
+   * somewhere else under a finger that already knows where they were (docs/TIMER.md §4).
+   */
+  tileOrder: string[];
   /** Append-only journal of every tap — the single source of truth for times and undo. */
   splits: TimerSplit[];
   publish: TimerPublishStatus;

@@ -95,6 +95,7 @@ const session = (id: string, runners: TimerRunner[]): TimerSession => ({
   status: TimerStatus.idle,
   role: TimerRole.main,
   runners,
+  tileOrder: [],
   splits: [],
   publish: INITIAL_PUBLISH_STATUS,
 });

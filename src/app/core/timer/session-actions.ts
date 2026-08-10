@@ -1,4 +1,5 @@
 import { GenderType } from '../models/gender.enum';
+import { orderRunnersByExpectedLap } from './runner-order';
 import { CreateSessionInput, NewTimerRunner } from './session-actions.interface';
 import { nextSplitForRunner, runnerSplits } from './session-splits';
 import { EMPTY_ROSTER, INITIAL_PUBLISH_STATUS, MAX_SPLITS_PER_RUNNER, WITHOUT_LAST_ENTRY } from './timer-session.constant';
@@ -20,9 +21,36 @@ export function createSession(input: CreateSessionInput): TimerSession {
     status: TimerStatus.idle,
     role: input.role ?? TimerRole.main,
     runners: [],
+    tileOrder: [],
     splits: [],
     publish: { ...INITIAL_PUBLISH_STATUS },
   };
+}
+
+/**
+ * The organiser's own arrangement of the tiles, made in the minute before the start. Kept with the
+ * measurement so it outlives the grid: a hand-made order that a switch to «Круг» and back would undo
+ * is worse than none at all. Unknown ids are dropped rather than trusted — the caller hands over
+ * what a drag left behind, and a roster change may have landed between the two.
+ */
+export function arrangeTiles(session: TimerSession, orderedIds: readonly string[]): TimerSession {
+  const known = new Set(session.runners.map((runner) => runner.id));
+
+  return { ...session, tileOrder: orderedIds.filter((id) => known.has(id)) };
+}
+
+/**
+ * Fixes the order at the mass start, unless the organiser has already fixed it by hand. From here on
+ * nothing re-sorts: the pack arrives roughly top-down and the finger walks the grid instead of
+ * hunting it (docs/TIMER.md §4). The estimate is read once, here — an archive that refreshes itself
+ * mid-race must not move a tile.
+ */
+export function freezeTileOrder(session: TimerSession, expected: ReadonlyMap<string, number>): TimerSession {
+  if (session.tileOrder.length > 0) {
+    return session;
+  }
+
+  return { ...session, tileOrder: orderRunnersByExpectedLap(session.runners, expected).map((runner) => runner.id) };
 }
 
 /** Appends a runner to the roster; a duplicate id is ignored so a double tap cannot clone a tile. */

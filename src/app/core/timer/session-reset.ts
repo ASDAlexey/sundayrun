@@ -13,7 +13,9 @@ export function resetSession(session: TimerSession): TimerSession {
     return session;
   }
 
-  return { ...session, startedAtEpochMs: null, stoppedAtMs: null, status: TimerStatus.idle, splits: [] };
+  // The frozen tile order goes with the times: a session that was reset is one just assembled, so the
+  // grid is free to lay itself out from the archive again.
+  return { ...session, startedAtEpochMs: null, stoppedAtMs: null, status: TimerStatus.idle, tileOrder: [], splits: [] };
 }
 
 /**
@@ -31,5 +33,5 @@ export function clearRoster(session: TimerSession): TimerSession {
     return session;
   }
 
-  return { ...session, runners: [], splits: [] };
+  return { ...session, runners: [], tileOrder: [], splits: [] };
 }

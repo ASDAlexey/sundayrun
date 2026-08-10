@@ -67,5 +67,17 @@ export const BROKEN_SPLIT_SESSION = {
 /** A publish status that lost its state. */
 export const BROKEN_PUBLISH_SESSION = { ...TIMER_SESSION, id: 'session-broken-publish', publish: { error: null, sha: null } };
 
-/** Three unusable measurements and nothing else: the device starts from an empty list. */
-export const ALL_BROKEN_TIMER_SESSIONS_JSON = payload([BROKEN_RUNNER_SESSION, BROKEN_SPLIT_SESSION, BROKEN_PUBLISH_SESSION], null);
+/** A tile order hand-edited into a list of numbers — as broken as any other field. */
+export const BROKEN_TILE_ORDER_SESSION = { ...TIMER_SESSION, id: 'session-broken-order', tileOrder: [1, 2, 3] };
+
+/** Four unusable measurements and nothing else: the device starts from an empty list. */
+export const ALL_BROKEN_TIMER_SESSIONS_JSON = payload(
+  [BROKEN_RUNNER_SESSION, BROKEN_SPLIT_SESSION, BROKEN_PUBLISH_SESSION, BROKEN_TILE_ORDER_SESSION],
+  null,
+);
+
+/**
+ * A race recorded by the release that still laid the tiles out in the screen: it carries no order at
+ * all. Dropping it would cost the times themselves, so it reopens with an order the grid may sort.
+ */
+export const LEGACY_TIMER_SESSION_JSON = payload([{ ...TIMER_SESSION, tileOrder: undefined }], TIMER_SESSION_ID);

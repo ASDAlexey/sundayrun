@@ -104,6 +104,9 @@ export const TIMER_SESSION: TimerSession = {
   status: TimerStatus.running,
   role: TimerRole.main,
   runners: TIMER_SESSION_RUNNERS,
+  // Left open on purpose: the tiles then answer to the archive estimate, which is what almost every
+  // spec below is really about. The frozen order has fixtures of its own in the grid.
+  tileOrder: [],
   splits: TIMER_SESSION_SPLITS,
   publish: INITIAL_PUBLISH_STATUS,
 };

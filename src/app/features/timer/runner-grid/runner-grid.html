@@ -14,6 +14,7 @@ is now sized like a tile, which is not what a list of finishers needs. -->
     class="timer-grid"
     i18n-aria-label="@@timer.gridLabel"
     role="group"
+    [cdkDropListDisabled]="!draggable()"
     [class.timer-grid_farewell]="farewell()"
     [class.timer-grid_scroll]="scrolling()"
     (cdkDropListDropped)="onDropped($event)"

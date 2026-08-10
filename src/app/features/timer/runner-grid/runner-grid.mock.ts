@@ -112,6 +112,7 @@ export const GRID_PLAIN_SESSION: TimerSession = {
   status: TimerStatus.idle,
   role: TimerRole.main,
   runners: GRID_PLAIN_RUNNERS,
+  tileOrder: [],
   splits: [],
   publish: INITIAL_PUBLISH_STATUS,
 };
@@ -122,6 +123,9 @@ export const GRID_PLAIN_RUNNING: TimerSession = {
   startedAtEpochMs: TIMER_SESSION_CREATED_AT_MS,
   status: TimerStatus.running,
 };
+
+/** The race as it stands after a drag: the arrangement travels with the measurement itself. */
+export const GRID_PLAIN_ARRANGED_IDS: readonly string[] = [PLAIN_THIRD_ID, PLAIN_LEADER_ID, PLAIN_SECOND_ID];
 
 /** Лебедев already has his lap, so the next tap on him is a finish. */
 export const GRID_PLAIN_LAP_SPLIT: TimerSplit = { id: 'split-plain-lap', atMs: TROILIN_LAP_MS, runnerId: PLAIN_LEADER_ID };
@@ -215,6 +219,18 @@ export const GRID_DROP_TO = 0;
 
 /** And this is the order that leaves behind. */
 export const GRID_DRAGGED_SURNAMES: readonly string[] = ['Морозов', 'Лебедев', 'Волкова'];
+
+/**
+ * An archive that has since learned both surnames and would put Волкова first. Nothing may act on
+ * it once the order is settled: the tiles have to sit where the thumb last saw them.
+ */
+export const GRID_PLAIN_LAP_MS: ReadonlyMap<string, number> = new Map([
+  ['лебедев сергей', POPOV_ALEKSEY_LAP_MS],
+  ['волкова ольга', TROILIN_LAP_MS],
+]);
+
+/** What that archive would make of the three if the order were still open. */
+export const GRID_RESORTED_SURNAMES: readonly string[] = ['Волкова', 'Лебедев', 'Морозов'];
 
 /** The drop landed right on the container, with no travel worth reporting. */
 const GRID_DROP_ORIGIN = { x: 0, y: 0 };

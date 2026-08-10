@@ -3,7 +3,7 @@ import { CreateSessionInput, NewTimerRunner } from './session-actions.interface'
 import { INITIAL_PUBLISH_STATUS } from './timer-session.constant';
 import { TimerPublishState, TimerRole, TimerRunnerOutcome, TimerStatus } from './timer-session.enum';
 import { TimerPublishStatus, TimerRunner, TimerSession } from './timer-session.interface';
-import { TIMER_SESSION_IDLE } from './timer-session.mock';
+import { KUZNETSOV_ATHLETE_KEY, KUZNETSOV_RUNNER_ID, TIMER_SESSION_IDLE, TROILIN_LAP_MS, TROILIN_RUNNER_ID } from './timer-session.mock';
 
 export const CREATE_SESSION_INPUT: CreateSessionInput = {
   id: 'session-new',
@@ -22,6 +22,7 @@ export const EXPECTED_CREATED_SESSION: TimerSession = {
   status: TimerStatus.idle,
   role: TimerRole.main,
   runners: [],
+  tileOrder: [],
   splits: [],
   publish: INITIAL_PUBLISH_STATUS,
 };
@@ -56,3 +57,13 @@ export const SAME_PUBLISH_STATUS: TimerPublishStatus = { ...INITIAL_PUBLISH_STAT
 
 /** A measurement whose roster was never collected — the mass start has nobody to send off. */
 export const EMPTY_ROSTER_SESSION: TimerSession = { ...TIMER_SESSION_IDLE, runners: [] };
+
+/** A drag that carries one id nobody in the roster owns any more — the arrangement drops it. */
+export const HAND_ARRANGED_IDS: readonly string[] = [KUZNETSOV_RUNNER_ID, 'runner-went-home', TROILIN_RUNNER_ID];
+export const EXPECTED_ARRANGED_IDS: readonly string[] = [KUZNETSOV_RUNNER_ID, TROILIN_RUNNER_ID];
+
+/** The archive as the mass start reads it: Кузнецов is the fastest first lap of this roster. */
+export const FREEZE_EXPECTED_LAP_MS: ReadonlyMap<string, number> = new Map([[KUZNETSOV_ATHLETE_KEY, TROILIN_LAP_MS]]);
+
+/** A measurement the organiser has already arranged by hand — the mass start leaves it alone. */
+export const ARRANGED_SESSION: TimerSession = { ...TIMER_SESSION_IDLE, tileOrder: [...EXPECTED_ARRANGED_IDS] };

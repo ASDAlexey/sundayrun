@@ -4,17 +4,18 @@ import { orderTimerTileIds } from './tile-order';
 
 describe('orderTimerTileIds', () => {
   it('lays the tiles out by expected lap while the order is still open', () => {
-    const order = orderTimerTileIds({ expectedLapMs: GRID_EXPECTED_LAP_MS, frozen: false, runners: TIMER_SESSION_RUNNERS }, undefined);
+    const order = orderTimerTileIds({ expectedLapMs: GRID_EXPECTED_LAP_MS, runners: TIMER_SESSION_RUNNERS }, []);
 
     expect(order).toEqual(GRID_EXPECTED_ORDER);
   });
 
-  it('freezes the order once the clock runs: survivors stay put, latecomers land at the end', () => {
-    const frozen = { expectedLapMs: GRID_EXPECTED_LAP_MS, frozen: true, runners: TIMER_SESSION_RUNNERS };
+  it('keeps the order the measurement carries: survivors stay put, latecomers land at the end', () => {
+    const source = { expectedLapMs: GRID_EXPECTED_LAP_MS, runners: TIMER_SESSION_RUNNERS };
 
-    expect(orderTimerTileIds(frozen, GRID_STALE_ORDER)).toEqual(GRID_FROZEN_ORDER);
-    expect(orderTimerTileIds(frozen, undefined), 'with nothing to keep, the roster order is the order').toEqual(
-      TIMER_SESSION_RUNNERS.map((runner) => runner.id),
-    );
+    expect(orderTimerTileIds(source, GRID_STALE_ORDER)).toEqual(GRID_FROZEN_ORDER);
+    expect(
+      orderTimerTileIds({ ...source, expectedLapMs: new Map() }, GRID_STALE_ORDER),
+      'an archive that refreshed itself mid-race moves nothing',
+    ).toEqual(GRID_FROZEN_ORDER);
   });
 });

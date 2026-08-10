@@ -14,11 +14,15 @@ import { TIMER_CLOCK_IDLE_MS } from './timer-clock.constant';
 import {
   RACE_ELAPSED_MS,
   RACE_EMPTY_SESSION,
+  RACE_EXPECTED_LAP_MS,
+  RACE_FROZEN_TILE_ORDER,
   RACE_FINISHED_SESSION,
   RACE_RUNNING_AGAIN,
   RACE_START_EPOCH_MS,
 } from './timer-race.service.mock';
 import { TimerRaceService } from './timer-race.service';
+import { TimerRosterService } from './timer-roster.service';
+import { TimerRosterServiceMock, timerRosterServiceMock } from './timer-roster.service.mock';
 import { TimerSessionService } from './timer-session.service';
 import { TimerSessionServiceMock, timerSessionServiceMock } from './timer-session.service.mock';
 import { WakeLockService } from './wake-lock.service';
@@ -30,6 +34,7 @@ describe('TimerRaceService', () => {
   let clock: TimerClockServiceMock;
   let haptics: HapticsServiceMock;
   let wakeLock: WakeLockServiceMock;
+  let roster: TimerRosterServiceMock;
 
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });
@@ -38,9 +43,12 @@ describe('TimerRaceService', () => {
     clock = timerClockServiceMock();
     haptics = hapticsServiceMock();
     wakeLock = wakeLockServiceMock();
+    roster = timerRosterServiceMock();
+    roster.expectedLapMs.set(RACE_EXPECTED_LAP_MS);
     TestBed.configureTestingModule({
       providers: [
         { provide: TimerSessionService, useValue: sessions },
+        { provide: TimerRosterService, useValue: roster },
         { provide: TimerClockService, useValue: clock },
         { provide: HapticsService, useValue: haptics },
         { provide: WakeLockService, useValue: wakeLock },
@@ -65,10 +73,11 @@ describe('TimerRaceService', () => {
     service.start(TIMER_SESSION_IDLE);
 
     expect(haptics.play, 'the long «пуск» is felt at the mass start').toHaveBeenCalledExactlyOnceWith(TimerFeedback.start);
-    expect(sessions.updateActive.mock.calls[0][0](TIMER_SESSION_IDLE)).toEqual({
+    expect(sessions.updateActive.mock.calls[0][0](TIMER_SESSION_IDLE), 'the tile order is written down in the same breath').toEqual({
       ...TIMER_SESSION_IDLE,
       status: TimerStatus.running,
       startedAtEpochMs: RACE_START_EPOCH_MS,
+      tileOrder: RACE_FROZEN_TILE_ORDER,
     });
     expect(clock.start).toHaveBeenCalledWith({ ...TIMER_SESSION_IDLE, startedAtEpochMs: RACE_START_EPOCH_MS });
     expect(wakeLock.request, 'the screen is held from the mass start, not from the page opening').toHaveBeenCalledOnce();
