@@ -1,3 +1,5 @@
+import { PrDeltaKind, PrDeltaKindType } from '../../core/history/pr-delta.enum';
+
 /** Route param carrying the normalized athlete key (`/athletes/:key`). */
 export const KEY_ROUTE_PARAM = 'key';
 
@@ -9,6 +11,16 @@ export const NO_PLACE_TEXT = '—';
 
 /** Shown in the «Круг» column for runs whose protocol carries no recorded first-lap split. */
 export const NO_LAP_TEXT = '—';
+
+/** Shown in the «Δ ЛР» column for the debut run — the one race with no record behind it yet. */
+export const NO_PR_DELTA_TEXT = '—';
+
+/** The «Δ ЛР» tint, mirroring the protocol: green took the record, red fell short of it. */
+export const PR_DELTA_CLASSES: Record<PrDeltaKindType, string> = {
+  [PrDeltaKind.faster]: 'athlete__run-delta_faster',
+  [PrDeltaKind.slower]: 'athlete__run-delta_slower',
+  [PrDeltaKind.equal]: '',
+};
 
 /** The athlete's own rung of the «Мем-пороги» ladder — no benchmark shares the key. */
 export const SELF_MEME_KEY = 'self';

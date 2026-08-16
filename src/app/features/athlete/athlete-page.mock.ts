@@ -58,6 +58,10 @@ const FIRST_RUN_BASE: RunViewBase = {
   lapText: '11:50',
   // A stored place with no finisher tally renders bare, and 5th is off the podium.
   placeText: '5',
+  // The debut: no record stood before it, so the column shows the dash and carries no hint.
+  prDeltaText: '—',
+  prDeltaClass: '',
+  prDeltaHint: '',
   isPodium: false,
   isMonthFinal: false,
 };
@@ -69,6 +73,10 @@ const SECOND_RUN_BASE: RunViewBase = {
   timeText: '24:00,00',
   lapText: '11:00',
   placeText: '1/8',
+  // A minute off the 25:00 debut — the record fell, and 2026 has nothing earlier to name.
+  prDeltaText: '−1:00,00',
+  prDeltaClass: 'athlete__run-delta_faster',
+  prDeltaHint: 'ЛР 25:00,00 · 27 дек 2025',
   isPodium: true,
   isMonthFinal: false,
 };
@@ -80,6 +88,10 @@ const THIRD_RUN_BASE: RunViewBase = {
   timeText: '25:00,00',
   lapText: '11:40',
   placeText: '—',
+  // A minute short of the fresh record; that record is the season best too, so the hint names it once.
+  prDeltaText: '+1:00,00',
+  prDeltaClass: 'athlete__run-delta_slower',
+  prDeltaHint: 'ЛР 24:00,00 · 3 янв 2026',
   isPodium: false,
   isMonthFinal: false,
 };
@@ -144,6 +156,9 @@ export const EXPECTED_SHORT_RUNNER_VIEWS: AthleteRunView[] = [
     timeText: '23:20,00',
     lapText: '—',
     placeText: '—',
+    prDeltaText: '—',
+    prDeltaClass: '',
+    prDeltaHint: '',
     isPodium: false,
     isMonthFinal: false,
   },

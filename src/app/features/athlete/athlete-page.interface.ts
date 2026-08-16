@@ -126,6 +126,12 @@ export interface AthleteRunView {
   lapText: string;
   /** «3/22» — the gender place over the event's gender finisher count; a bare place or dash when unknown. */
   placeText: string;
+  /** «+0:31» — how far the run landed from the record standing before it; a dash on the debut. */
+  prDeltaText: string;
+  /** The tint of that figure («athlete__run-delta_faster»); empty for the exact repeat and the debut. */
+  prDeltaClass: string;
+  /** The hint behind it: «ЛР 19:46,00 · 12 янв 2025 · лучшее в 2026 — 20:05,00»; empty on the debut. */
+  prDeltaHint: string;
   /** A podium gender place (≤ 3) — the place cell keeps the accent colour. */
   isPodium: boolean;
   /** True for the month-final («итоговый») event — the row shows the quiet badge, no lane highlight. */

@@ -34,6 +34,9 @@ import { MemeStanding } from '../../core/history/meme-thresholds.interface';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { athletePlacements } from '../../core/history/placements';
 import { AthletePlacements } from '../../core/history/placements.interface';
+import { prDelta, previousBestBySlug, previousYearBestBySlug } from '../../core/history/pr-delta';
+import { prDeltaHint } from '../../core/history/pr-delta-text';
+import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { closeRivals } from '../../core/history/rivals';
 import { CLOSE_FINISH_GAP_MS } from '../../core/history/rivals.constant';
 import { Rival } from '../../core/history/rivals.interface';
@@ -60,7 +63,9 @@ import {
   NO_BEST_TIME_TEXT,
   NO_LAP_TEXT,
   NO_PLACE_TEXT,
+  NO_PR_DELTA_TEXT,
   PODIUM_PLACE,
+  PR_DELTA_CLASSES,
   RUNS_TABLE_ROW_HEIGHT_PX,
   RUNS_TABLE_VISIBLE_ROWS,
   SELF_MEME_KEY,
@@ -186,6 +191,14 @@ export class AthletePage {
   /** Slug → this run's recorded first-lap split, joining the «Круг» column back to the protocol splits. */
   readonly #lapMsBySlug = computed(() => new Map(this.firstLaps().map((lap) => [lap.slug, lap.lapMs])));
 
+  /**
+   * The record each run was chasing, and the season best behind it — both scanned over the whole
+   * career, never over the year filter, so a row keeps the same «Δ ЛР» whatever the table shows.
+   */
+  readonly #previousBests = computed(() => previousBestBySlug(this.#fiveKmRuns()));
+
+  readonly #previousYearBests = computed(() => previousYearBestBySlug(this.#fiveKmRuns()));
+
   readonly status = computed(() => this.#state().status);
   readonly year = signal<string | null>(null);
   readonly rivalsYear = signal<string | null>(null);
@@ -303,9 +316,11 @@ export class AthletePage {
     const lapMsBySlug = this.#lapMsBySlug();
     const monthFinals = this.#monthFinals();
     const gender = this.gender();
+    const previousBests = this.#previousBests();
+    const previousYearBests = this.#previousYearBests();
 
     return sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), RunsSort.byTime).map((run, index) =>
-      toRunView(run, index + 1, runPlaces, runFinisherCounts, lapMsBySlug, monthFinals, gender),
+      toRunView(run, index + 1, runPlaces, runFinisherCounts, lapMsBySlug, monthFinals, gender, previousBests, previousYearBests),
     );
   });
 
@@ -475,9 +490,13 @@ function toRunView(
   lapMsBySlug: ReadonlyMap<string, number>,
   monthFinals: Set<string>,
   gender: GenderType | null,
+  previousBests: ReadonlyMap<string, PreviousBest>,
+  previousYearBests: ReadonlyMap<string, PreviousBest>,
 ): AthleteRunView {
   const place = places[run.slug];
   const lapMs = lapMsBySlug.get(run.slug);
+  const previousBest = previousBests.get(run.slug);
+  const delta = prDelta(run.timeMs, previousBest?.timeMs);
 
   return {
     slug: run.slug,
@@ -487,6 +506,9 @@ function toRunView(
     timeText: formatRaceTime(run.timeMs),
     lapText: lapMs === undefined ? NO_LAP_TEXT : lapTimeTextOf(lapMs),
     placeText: placeText(place, finisherCounts[run.slug], gender),
+    prDeltaText: delta?.text ?? NO_PR_DELTA_TEXT,
+    prDeltaClass: delta === null ? '' : PR_DELTA_CLASSES[delta.kind],
+    prDeltaHint: delta === null ? '' : prDeltaHint(previousBest, previousYearBests.get(run.slug)),
     isPodium: place !== undefined && place <= PODIUM_PLACE,
     isMonthFinal: monthFinals.has(run.slug),
   };

@@ -241,6 +241,14 @@
 
                 <span class="athlete__table-hcell athlete__table-hcell_num" i18n="@@athlete.table.time">Время</span>
 
+                <span
+                  class="athlete__table-hcell athlete__table-hcell_num"
+                  i18n-title="@@athlete.prDeltaTitle"
+                  title="Отставание (опережение) от личного рекорда, каким он был перед этим забегом"
+                >
+                  <span i18n="@@athlete.table.prDelta">Δ ЛР</span>
+                </span>
+
                 <span class="athlete__table-hcell athlete__table-hcell_num" i18n="@@athlete.table.lap">Круг</span>
 
                 <span class="athlete__table-hcell athlete__table-hcell_num" i18n="@@athlete.table.place">Место</span>
@@ -259,6 +267,10 @@
                   </span>
 
                   <span class="athlete__run-time"><app-race-time [value]="run.timeText" /></span>
+
+                  <span class="athlete__run-delta {{ run.prDeltaClass }}" [title]="run.prDeltaHint">
+                    <app-race-time [value]="run.prDeltaText" />
+                  </span>
 
                   <span class="athlete__run-lap"><app-race-time [value]="run.lapText" /></span>
 

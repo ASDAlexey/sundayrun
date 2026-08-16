@@ -4,12 +4,12 @@
 @use 'styles/typography' as t;
 @use 'styles/virtual-table' as vt;
 
-// Rank · date · time · first lap · place — shared by the runs table's header and rows.
-$athlete-runs-columns: 40px minmax(0, 1fr) 68px 68px 76px;
+// Rank · date · time · «Δ ЛР» · first lap · place — shared by the runs table's header and rows.
+$athlete-runs-columns: 40px minmax(0, 1fr) 68px 64px 68px 76px;
 
 // Phones drop the rank column — the row order already says it — and tighten the rest, so the
-// four remaining columns fit a 375px screen instead of pushing the whole page sideways.
-$athlete-runs-columns-mobile: minmax(0, 1fr) 56px 48px 50px;
+// five remaining columns fit a 375px screen instead of pushing the whole page sideways.
+$athlete-runs-columns-mobile: minmax(0, 1fr) 56px 56px 48px 50px;
 
 .athlete {
   @include s.section;
@@ -628,6 +628,7 @@ $athlete-runs-columns-mobile: minmax(0, 1fr) 56px 48px 50px;
   }
 
   &__run-time,
+  &__run-delta,
   &__run-lap,
   &__run-place {
     justify-self: end;
@@ -637,6 +638,22 @@ $athlete-runs-columns-mobile: minmax(0, 1fr) 56px 48px 50px;
 
   &__run-lap {
     color: var(--text-muted);
+  }
+
+  // «Δ ЛР» — the gap to the record standing before that morning. Unmodified it is the debut's dash
+  // or the exact repeat of the record: neither side, so neither colour.
+  &__run-delta {
+    color: var(--text-muted);
+    // Signals the hint spelling the record out.
+    cursor: help;
+
+    &_faster {
+      color: var(--green);
+    }
+
+    &_slower {
+      color: var(--red);
+    }
   }
 
   // A podium gender place keeps the accent; the «итоговый» run stays plain — no lane highlight.
@@ -732,6 +749,7 @@ $athlete-runs-columns-mobile: minmax(0, 1fr) 56px 48px 50px;
     }
 
     &__run-time,
+    &__run-delta,
     &__run-lap,
     &__run-place {
       @include t.mono-meta;

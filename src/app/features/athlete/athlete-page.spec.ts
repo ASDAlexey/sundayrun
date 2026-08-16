@@ -179,8 +179,8 @@ describe('AthletePage', () => {
     expect(element.querySelector('.athlete__title').textContent.trim()).toBe(expectedRecord.displayName);
     expect(
       headerCells.map((header) => header.textContent.trim()),
-      'the pinned header carries the rank, date, time, first-lap and place columns',
-    ).toEqual(['№', 'Дата', 'Время', 'Круг', 'Место']);
+      'the pinned header carries the rank, date, time, record gap, first-lap and place columns',
+    ).toEqual(['№', 'Дата', 'Время', 'Δ ЛР', 'Круг', 'Место']);
     expect(element.querySelector('.athlete__viewport'), 'the runs table scrolls through the virtual viewport').not.toBeNull();
     expect(
       filterChips.map((chip) => chip.textContent.trim()),
