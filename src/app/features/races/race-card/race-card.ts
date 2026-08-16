@@ -5,12 +5,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 
 import { ProtocolPdfService } from '../../../pdf/protocol-pdf.service';
+import { RaceTime } from '../../../shared/race-time/race-time';
 import { RaceListItem } from '../races-page.interface';
 
 /** One published race as a card: number, date, the dynamics-chart hero, the М/Ж times and protocol links. */
 @Component({
   selector: 'app-race-card',
-  imports: [MatCardModule, MatProgressSpinnerModule, MatTooltipModule, RouterLink],
+  imports: [MatCardModule, MatProgressSpinnerModule, MatTooltipModule, RaceTime, RouterLink],
   templateUrl: './race-card.html',
   styleUrl: './race-card.scss',
 })

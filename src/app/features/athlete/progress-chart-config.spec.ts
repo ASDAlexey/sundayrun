@@ -25,6 +25,7 @@ import {
   EXPECTED_PROGRESS_POINTS,
   EXPECTED_TOOLTIP_BEST,
   EXPECTED_TOOLTIP_TIME,
+  EXPECTED_TOOLTIP_TIME_WITHOUT_HUNDREDTHS,
   EXPECTED_TOOLTIP_TITLE,
   EXPECTED_X_TICK_TEXT,
   EXPECTED_Y_TICK_TEXT,
@@ -38,14 +39,14 @@ import {
 
 describe('progress-chart-config', () => {
   function buildConfig(bestMs = PROGRESS_BEST_MS): ChartConfiguration<'line'> | null {
-    return buildProgressChartConfig(PROGRESS_RUNS, bestMs, MOCK_PALETTE, vi.fn());
+    return buildProgressChartConfig(PROGRESS_RUNS, bestMs, MOCK_PALETTE, vi.fn(), true);
   }
 
   it('needs two distinct race dates: same-day duplicates collapse and kill the trend', () => {
     expect(hasProgressTrend(PROGRESS_RUNS)).toBe(true);
     expect(hasProgressTrend(SAME_DAY_ONLY_RUNS)).toBe(false);
     expect(hasProgressTrend([])).toBe(false);
-    expect(buildProgressChartConfig(SAME_DAY_ONLY_RUNS, PROGRESS_BEST_MS, MOCK_PALETTE, vi.fn())).toBeNull();
+    expect(buildProgressChartConfig(SAME_DAY_ONLY_RUNS, PROGRESS_BEST_MS, MOCK_PALETTE, vi.fn(), true)).toBeNull();
   });
 
   it('plots the fastest run per date chronologically and styles personal-best points distinctly', () => {
@@ -66,12 +67,16 @@ describe('progress-chart-config', () => {
   });
 
   it('formats tooltips and axis ticks as russian dates and durations', () => {
-    const callbacks = tooltipCallbacks(EXPECTED_PROGRESS_DAYS, EXPECTED_IS_BEST);
+    const callbacks = tooltipCallbacks(EXPECTED_PROGRESS_DAYS, EXPECTED_IS_BEST, true);
 
     expect(callbacks.title([{ dataIndex: REGULAR_POINT_INDEX }])).toBe(EXPECTED_TOOLTIP_TITLE);
     expect(callbacks.label({ dataIndex: BEST_POINT_INDEX })).toBe(EXPECTED_TOOLTIP_TIME);
     expect(callbacks.afterLabel({ dataIndex: BEST_POINT_INDEX })).toBe(EXPECTED_TOOLTIP_BEST);
     expect(callbacks.afterLabel({ dataIndex: REGULAR_POINT_INDEX })).toBe('');
+    expect(
+      tooltipCallbacks(EXPECTED_PROGRESS_DAYS, EXPECTED_IS_BEST, false).label({ dataIndex: BEST_POINT_INDEX }),
+      'the fraction is cut out of the text: a canvas label is out of reach of the class on <html>',
+    ).toBe(EXPECTED_TOOLTIP_TIME_WITHOUT_HUNDREDTHS);
 
     expect(formatEpochTick(EXPECTED_PROGRESS_POINTS[BEST_POINT_INDEX].x)).toBe(EXPECTED_X_TICK_TEXT);
     expect(formatTimeTick(EXPECTED_PROGRESS_POINTS[BEST_POINT_INDEX].y)).toBe(EXPECTED_Y_TICK_TEXT);

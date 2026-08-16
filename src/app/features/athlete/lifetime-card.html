@@ -45,7 +45,7 @@
             <li class="lifetime__pace">
               <span class="lifetime__pace-year">{{ pace.year }}</span>
 
-              <span class="lifetime__pace-value" i18n="@@athlete.lifetimePaceValue">{{ pace.paceText }} /км</span>
+              <span class="lifetime__pace-value" i18n="@@athlete.lifetimePaceValue"><app-race-time [value]="pace.paceText" /> /км</span>
             </li>
           }
         </ul>

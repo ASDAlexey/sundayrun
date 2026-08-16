@@ -4,7 +4,7 @@ import type {} from 'chartjs-plugin-zoom';
 import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
 
 import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { formatDuration, formatRaceTime } from '../../core/time/duration';
+import { formatDuration, formatRaceTime, withoutHundredths } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import {
   AREA_BOTTOM_ALPHA_HEX,
@@ -56,6 +56,7 @@ export function buildProgressChartConfig(
   bestMs: number,
   palette: ProgressChartPalette,
   onViewportChange: ProgressViewportChange,
+  hundredthsShown: boolean,
 ): ChartConfiguration<'line'> | null {
   const days = bestPerDate(runs);
 
@@ -68,7 +69,7 @@ export function buildProgressChartConfig(
   return {
     type: 'line',
     data: { datasets: [buildDataset(days, isBest, palette)] },
-    options: buildOptions(days, isBest, palette, onViewportChange),
+    options: buildOptions(days, isBest, palette, onViewportChange, hundredthsShown),
   };
 }
 
@@ -93,6 +94,7 @@ function buildOptions(
   isBest: boolean[],
   palette: ProgressChartPalette,
   onViewportChange: ProgressViewportChange,
+  hundredthsShown: boolean,
 ): ChartOptions<'line'> {
   const tickFont = { family: palette.fontMono, size: PROGRESS_TICK_FONT_SIZE };
 
@@ -133,7 +135,7 @@ function buildOptions(
         bodyColor: palette.text,
         titleFont: tickFont,
         bodyFont: tickFont,
-        callbacks: tooltipCallbacks(days, isBest),
+        callbacks: tooltipCallbacks(days, isBest, hundredthsShown),
       },
       zoom: zoomOptions(viewportNotifier(onViewportChange)),
     },
@@ -155,13 +157,23 @@ function bestPerDate(runs: AthleteRun[]): ProgressDay[] {
     .sort((left, right) => left.dateIso.localeCompare(right.dateIso));
 }
 
-/** Full russian date as the title, the run time as the body, a personal-record badge line when it applies. */
-export function tooltipCallbacks(days: ProgressDay[], isBest: boolean[]): ProgressTooltipCallbacks {
+/**
+ * Full russian date as the title, the run time as the body, a personal-record badge line when it
+ * applies. The tooltip is painted on canvas, where the reader's «без сотых» cannot reach it with a
+ * class, so the fraction is cut out of the text itself (see `withoutHundredths`).
+ */
+export function tooltipCallbacks(days: ProgressDay[], isBest: boolean[], hundredthsShown: boolean): ProgressTooltipCallbacks {
   return {
     title: (items) => formatRussianDateLong(days[items[0].dataIndex].dateIso),
-    label: (item) => $localize`:@@athlete.chartTooltipTime:Время: ${formatRaceTime(days[item.dataIndex].timeMs)}:time:`,
+    label: (item) => $localize`:@@athlete.chartTooltipTime:Время: ${timeText(days[item.dataIndex].timeMs, hundredthsShown)}:time:`,
     afterLabel: (item) => (isBest[item.dataIndex] ? $localize`:@@athlete.chartTooltipBest:Личный рекорд` : ''),
   };
+}
+
+function timeText(timeMs: number, hundredthsShown: boolean): string {
+  const text = formatRaceTime(timeMs);
+
+  return hundredthsShown ? text : withoutHundredths(text);
 }
 
 /** Translates the plugin's gesture events into a plain "is the viewport off the full history" flag. */

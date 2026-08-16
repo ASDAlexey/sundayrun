@@ -62,7 +62,8 @@
 
           @if (tip.label; as label) {
             <div class="bump-chart__tooltip-label">
-              {{ label.date }} · <span class="bump-chart__tooltip-place">{{ label.place }}</span> · {{ label.time }}
+              {{ label.date }} · <span class="bump-chart__tooltip-place">{{ label.place }}</span> ·
+              <app-race-time [value]="label.time" />
             </div>
           }
         </div>

@@ -3,6 +3,7 @@ import type { Chart } from 'chart.js';
 
 import { filterRuns } from '../../core/history/athlete-runs';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { HundredthsService } from '../../state/hundredths.service';
 import { buildProgressChartConfig, hasProgressTrend, personalBestMs } from './progress-chart-config';
 import { CANVAS_REF } from './progress-chart.constant';
 import { ProgressChartPalette } from './progress-chart.interface';
@@ -37,6 +38,7 @@ function loadChartClass(): Promise<ChartClass> {
   styleUrl: './progress-chart.scss',
 })
 export class ProgressChart {
+  readonly #hundredths = inject(HundredthsService);
   readonly #visibleRuns = computed(() => filterRuns(this.runs(), this.year(), null));
 
   readonly runs = input.required<AthleteRun[]>();
@@ -52,9 +54,15 @@ export class ProgressChart {
   #renderToken = 0;
 
   constructor() {
-    // The canvas lives under `@if (hasChart())`, so all the signals drive one render effect.
+    // The canvas lives under `@if (hasChart())`, so all the signals drive one render effect — the
+    // hundredths setting among them: a chart already drawn cannot be restyled, only rebuilt.
     effect(() => {
-      void this.#render(this.#visibleRuns(), personalBestMs(this.runs()), this.canvasRef()?.nativeElement ?? null);
+      void this.#render(
+        this.#visibleRuns(),
+        personalBestMs(this.runs()),
+        this.canvasRef()?.nativeElement ?? null,
+        this.#hundredths.shown(),
+      );
     });
     inject(DestroyRef).onDestroy(() => this.#destroyChart());
   }
@@ -69,7 +77,7 @@ export class ProgressChart {
     this.zoomed.set(zoomed);
   };
 
-  async #render(runs: AthleteRun[], bestMs: number, canvas: HTMLCanvasElement | null): Promise<void> {
+  async #render(runs: AthleteRun[], bestMs: number, canvas: HTMLCanvasElement | null, hundredthsShown: boolean): Promise<void> {
     const token = ++this.#renderToken;
 
     this.#destroyChart();
@@ -80,7 +88,7 @@ export class ProgressChart {
     }
 
     // The canvas can outlive the trend for one change-detection turn, so the builder's null gate is the real guard.
-    const config = buildProgressChartConfig(runs, bestMs, readPalette(canvas), this.onViewportChange);
+    const config = buildProgressChartConfig(runs, bestMs, readPalette(canvas), this.onViewportChange, hundredthsShown);
 
     if (config === null) {
       return;

@@ -7,6 +7,7 @@ import { lapTimeTextOf } from '../../../core/protocol/race-time-cells';
 import { formatRaceTime } from '../../../core/time/duration';
 import { formatRussianDateLong } from '../../../core/time/russian-date';
 import { RUSSIAN_MONTHS_SHORT } from '../../../core/time/russian-date.constant';
+import { RaceTime } from '../../../shared/race-time/race-time';
 import {
   BUMP_DOT_HIT_RADIUS,
   BUMP_DOT_RADIUS,
@@ -39,7 +40,7 @@ import { BumpChartView, BumpDotView, BumpLabelView, BumpLineView, BumpRowView, B
  */
 @Component({
   selector: 'app-bump-chart',
-  imports: [RouterLink],
+  imports: [RaceTime, RouterLink],
   templateUrl: './bump-chart.html',
   styleUrl: './bump-chart.scss',
 })

@@ -14,6 +14,7 @@ import {
   TOOLTIP_BELOW_MAX_TOP_PERCENT,
   TOOLTIP_EDGE_PERCENT,
 } from './form-card.constant';
+import { RaceTime } from '../../shared/race-time/race-time';
 import { FormChartDot, FormChartPoint, FormTooltipAlign, FormView } from './form-card.interface';
 
 /**
@@ -23,6 +24,7 @@ import { FormChartDot, FormChartPoint, FormTooltipAlign, FormView } from './form
  */
 @Component({
   selector: 'app-form-card',
+  imports: [RaceTime],
   templateUrl: './form-card.html',
   styleUrl: './form-card.scss',
 })

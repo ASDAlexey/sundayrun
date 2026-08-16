@@ -54,6 +54,9 @@ export const EXPECTED_TOOLTIP_TITLE = '27 декабря 2025 г.';
 
 export const EXPECTED_TOOLTIP_TIME = 'Время: 24:00,00';
 
+/** The same tooltip for a reader who switched the hundredths off: canvas text, so it is cut, not folded. */
+export const EXPECTED_TOOLTIP_TIME_WITHOUT_HUNDREDTHS = 'Время: 24:00';
+
 export const EXPECTED_TOOLTIP_BEST = 'Личный рекорд';
 
 export const EXPECTED_X_TICK_TEXT = '03.01.26';

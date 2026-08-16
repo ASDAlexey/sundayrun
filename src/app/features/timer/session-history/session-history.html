@@ -31,7 +31,7 @@ answers Escape and hands the focus back to the «⋮» item that opened the jour
         <li class="timer-history__row" [class.timer-history__row_edited]="entry.edited" [class.timer-history__row_orphan]="entry.orphan">
           <span class="timer-history__index">{{ entry.index }}</span>
 
-          <span class="timer-history__time"><app-race-time [value]="entry.timeText" /></span>
+          <span class="timer-history__time"><app-race-time pinnedFraction [value]="entry.timeText" /></span>
 
           <button class="timer-history__owner" type="button" [attr.aria-expanded]="expandedId() === entry.id" (click)="onExpand(entry.id)">
             @if (entry.ownerName; as name) {

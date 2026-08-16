@@ -365,7 +365,7 @@
                 }
 
                 @if (meme.gapText !== null) {
-                  <span class="athlete__meme-gap" i18n="@@athlete.memeGap">осталось {{ meme.gapText }}</span>
+                  <span class="athlete__meme-gap" i18n="@@athlete.memeGap">осталось <app-race-time [value]="meme.gapText" /></span>
                 }
               </li>
             }

@@ -85,7 +85,7 @@
           </div>
 
           <div class="participants-table__cell participants-table__cell_mono participants-table__cell_center" role="cell">
-            <app-race-time [value]="row.time23" />
+            <app-race-time pinnedFraction [value]="row.time23" />
           </div>
 
           <div
@@ -93,11 +93,11 @@
             role="cell"
             [class.participants-table__cell_accent]="row.time5 !== ''"
           >
-            <app-race-time [value]="row.time5" />
+            <app-race-time pinnedFraction [value]="row.time5" />
           </div>
 
           <div class="participants-table__cell participants-table__cell_mono participants-table__cell_center" role="cell">
-            <app-race-time [value]="row.paceText" />
+            <app-race-time pinnedFraction [value]="row.paceText" />
           </div>
 
           <div class="participants-table__cell participants-table__cell_center" role="cell">

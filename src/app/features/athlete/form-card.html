@@ -59,7 +59,9 @@
         >
           <span class="form-card__tooltip-title">{{ tip.dateText }}</span>
 
-          <span class="form-card__tooltip-line" i18n="@@athlete.formTooltipMedian">Медиана: {{ tip.medianText }}</span>
+          <span class="form-card__tooltip-line" i18n="@@athlete.formTooltipMedian"
+            >Медиана: <app-race-time [value]="tip.medianText"
+          /></span>
 
           <span class="form-card__tooltip-line" i18n="@@athlete.formTooltipPercent">{{ tip.percent }}% от пика</span>
         </div>

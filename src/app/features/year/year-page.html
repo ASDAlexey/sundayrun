@@ -39,7 +39,8 @@
           <div class="year__stat">
             <dt class="year__stat-label">{{ stat.label }}</dt>
 
-            <dd class="year__stat-value">{{ stat.value }}</dd>
+            <!-- Counts and medians share the grid, and only a median carries a fraction to fold. -->
+            <dd class="year__stat-value"><app-race-time [value]="stat.value" /></dd>
           </div>
         }
       </dl>
@@ -128,7 +129,7 @@
 
               <span class="year__progress-delta"><app-race-time [value]="row.deltaText" /></span>
 
-              <span class="year__progress-medians">{{ row.mediansText }}</span>
+              <span class="year__progress-medians"><app-race-time [value]="row.mediansText" /></span>
             </li>
           }
         </ol>

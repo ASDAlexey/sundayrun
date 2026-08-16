@@ -66,7 +66,7 @@
 
           @if (block.best; as best) {
             <div class="race-card__gender-row">
-              <span class="race-card__gender-value race-card__gender-value_best">{{ best }}</span>
+              <span class="race-card__gender-value race-card__gender-value_best"><app-race-time [value]="best" /></span>
 
               <span class="race-card__gender-label" i18n="@@races.genderBest">лучшее</span>
             </div>
@@ -74,7 +74,7 @@
 
           @if (block.median; as median) {
             <div class="race-card__gender-row">
-              <span class="race-card__gender-value">{{ median }}</span>
+              <span class="race-card__gender-value"><app-race-time [value]="median" /></span>
 
               <span class="race-card__gender-label" i18n="@@races.genderMedian">медиана</span>
             </div>

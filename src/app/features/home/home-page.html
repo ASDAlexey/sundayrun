@@ -158,9 +158,9 @@
 
           <dd class="home__self-value">
             @if (self.bestTimeYearLink; as raceLink) {
-              <a class="home__self-value-link" [routerLink]="raceLink">{{ self.bestTimeYearText }}</a>
+              <a class="home__self-value-link" [routerLink]="raceLink"><app-race-time [value]="self.bestTimeYearText" /></a>
             } @else {
-              {{ self.bestTimeYearText }}
+              <app-race-time [value]="self.bestTimeYearText" />
             }
           </dd>
         </div>

@@ -4,6 +4,7 @@ import { lifetimeAggregates } from '../../core/history/lifetime-aggregates';
 import { LifetimeAggregates } from '../../core/history/lifetime-aggregates.interface';
 import { AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration, formatRaceTime } from '../../core/time/duration';
+import { RaceTime } from '../../shared/race-time/race-time';
 import { LifetimeView } from './lifetime-card.interface';
 
 /**
@@ -13,6 +14,7 @@ import { LifetimeView } from './lifetime-card.interface';
  */
 @Component({
   selector: 'app-lifetime-card',
+  imports: [RaceTime],
   templateUrl: './lifetime-card.html',
   styleUrl: './lifetime-card.scss',
 })

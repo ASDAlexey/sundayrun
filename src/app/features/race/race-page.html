@@ -34,11 +34,11 @@
             <p class="race__summary">{{ view.summaryText }}</p>
 
             @if (view.medianTimeM; as medianTime) {
-              <p class="race__median" i18n="@@race.medianTimeM">Медиана М: {{ medianTime }}</p>
+              <p class="race__median" i18n="@@race.medianTimeM">Медиана М: <app-race-time [value]="medianTime" /></p>
             }
 
             @if (view.medianTimeF; as medianTime) {
-              <p class="race__median" i18n="@@race.medianTimeF">Медиана Ж: {{ medianTime }}</p>
+              <p class="race__median" i18n="@@race.medianTimeF">Медиана Ж: <app-race-time [value]="medianTime" /></p>
             }
           </div>
 
@@ -213,7 +213,7 @@
                   <span class="race__notes">
                     @for (badge of row.noteBadges; track $index) {
                       @if (badge.kind === noteKinds.plain) {
-                        <span class="race__note-text">{{ badge.text }}</span>
+                        <span class="race__note-text"><app-race-time [value]="badge.text" /></span>
                       } @else {
                         <span class="race__note-badge {{ badge.className }}">
                           <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
@@ -243,11 +243,11 @@
 
                           @if (badge.prNote; as pr) {
                             <span
-                              >{{ pr.before }}<a class="race__pr-link" [routerLink]="pr.link">{{ pr.label }}</a
+                              >{{ pr.before }}<a class="race__pr-link" [routerLink]="pr.link"><app-race-time [value]="pr.label" /></a
                               >{{ pr.after }}</span
                             >
                           } @else {
-                            <span>{{ badge.text }}</span>
+                            <span><app-race-time [value]="badge.text" /></span>
                           }
                         </span>
                       }
