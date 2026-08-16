@@ -17,7 +17,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">110,112</context>
+          <context context-type="linenumber">113,115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.version" datatype="html">
@@ -87,70 +87,70 @@
         <source>Протоколы, результаты и история каждого участника.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">112,116</context>
+          <context context-type="linenumber">115,119</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerOrganizerLabel" datatype="html">
         <source>Организатор</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">117,119</context>
+          <context context-type="linenumber">120,122</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerOrganizer" datatype="html">
         <source>КЛБ «Легенда»</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">119,121</context>
+          <context context-type="linenumber">122,124</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerPlace" datatype="html">
         <source>ПКиО им. Горького, г. Таганрог</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">121,123</context>
+          <context context-type="linenumber">124,126</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerVk" datatype="html">
         <source>Сообщество ВКонтакте</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">123,126</context>
+          <context context-type="linenumber">126,129</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerDeveloperLabel" datatype="html">
         <source>Разработал</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">127,129</context>
+          <context context-type="linenumber">130,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerCreator" datatype="html">
         <source>Алексей Попов</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">129,131</context>
+          <context context-type="linenumber">132,134</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerCreatorSite" datatype="html">
         <source>asdalexey.github.io</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">131,135</context>
+          <context context-type="linenumber">134,138</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.footerCopyright" datatype="html">
         <source>© 2019–2026 Воскресный парковый пробег, Таганрог. Все права на сайт принадлежат разработчику — Алексею Попову.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">138,141</context>
+          <context context-type="linenumber">141,144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.forOrganizer" datatype="html">
         <source>для организатора</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">157,159</context>
+          <context context-type="linenumber">160,162</context>
         </context-group>
       </trans-unit>
       <trans-unit id="title.races" datatype="html">
@@ -1244,10 +1244,10 @@
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.memeGap" datatype="html">
-        <source>осталось <x id="INTERPOLATION" equiv-text="{{ meme.gapText }}"/></source>
+        <source>осталось <x id="START_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;meme.gapText&quot; /&gt;"/><x id="CLOSE_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;meme.gapText&quot; /&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/athlete-page.html</context>
-          <context context-type="linenumber">368,369</context>
+          <context context-type="linenumber">368,370</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.noRuns" datatype="html">
@@ -1535,38 +1535,40 @@
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.formTooltipMedian" datatype="html">
-        <source>Медиана: <x id="INTERPOLATION" equiv-text="{{ tip.medianText }}"/></source>
+        <source>Медиана: <x id="START_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;tip.medianText&quot;
+          /&gt;"/><x id="CLOSE_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;tip.medianText&quot;
+          /&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/form-card.html</context>
-          <context context-type="linenumber">62,64</context>
+          <context context-type="linenumber">63,66</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.formTooltipPercent" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ tip.percent }}"/>% от пика</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/form-card.html</context>
-          <context context-type="linenumber">64,65</context>
+          <context context-type="linenumber">66,67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.formLegendPeak" datatype="html">
         <source>● пик</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/form-card.html</context>
-          <context context-type="linenumber">70,73</context>
+          <context context-type="linenumber">72,75</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.formLegendLast" datatype="html">
         <source>● последний финиш</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/form-card.html</context>
-          <context context-type="linenumber">73,75</context>
+          <context context-type="linenumber">75,77</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.formLegendCurrent" datatype="html">
         <source>● сейчас</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/form-card.html</context>
-          <context context-type="linenumber">75,80</context>
+          <context context-type="linenumber">77,82</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.lifetimeTitle" datatype="html">
@@ -1605,10 +1607,10 @@
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.lifetimePaceValue" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ pace.paceText }}"/> /км</source>
+        <source><x id="START_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;pace.paceText&quot; /&gt;"/><x id="CLOSE_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;pace.paceText&quot; /&gt;"/> /км</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/lifetime-card.html</context>
-          <context context-type="linenumber">48,49</context>
+          <context context-type="linenumber">48,50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.pacingProfileNegative" datatype="html">
@@ -1710,17 +1712,17 @@
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.chartTooltipTime" datatype="html">
-        <source>Время: <x id="time" equiv-text="formatRaceTime(days[item.dataIndex].timeMs)"/></source>
+        <source>Время: <x id="time" equiv-text="timeText(days[item.dataIndex].timeMs, hundredthsShown)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/progress-chart-config.ts</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.chartTooltipBest" datatype="html">
         <source>Личный рекорд</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/athlete/progress-chart-config.ts</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">169</context>
         </context-group>
       </trans-unit>
       <trans-unit id="athlete.progressTitle" datatype="html">
@@ -2435,6 +2437,20 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/guide/guide-page.html</context>
           <context context-type="linenumber">270,273</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="guide.hundredthsTitle" datatype="html">
+        <source>⚙ Сотые доли секунды</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/guide/guide-page.html</context>
+          <context context-type="linenumber">274,276</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="guide.hundredthsText" datatype="html">
+        <source> Все результаты меряются и хранятся с точностью до сотых, но в архиве до появления секундомера время записывали целыми секундами — там после запятой всегда нули. Если такой хвост мешает читать колонки, его можно убрать: кнопка с ползунками в шапке сайта, переключатель «Сотые доли секунды». Настройка остаётся на этом устройстве и ни на кого больше не влияет, а места и рекорды считаются по полному времени в любом случае. В секундомере и в предпросмотре организатора сотые остаются всегда — там показывается ровно то, что измерено. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/guide/guide-page.html</context>
+          <context context-type="linenumber">277,281</context>
         </context-group>
       </trans-unit>
       <trans-unit id="course.meeting" datatype="html">
@@ -3169,17 +3185,17 @@
         </context-group>
       </trans-unit>
       <trans-unit id="race.medianTimeM" datatype="html">
-        <source>Медиана М: <x id="INTERPOLATION" equiv-text="{{ medianTime }}"/></source>
+        <source>Медиана М: <x id="START_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;medianTime&quot; /&gt;"/><x id="CLOSE_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;medianTime&quot; /&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">37,38</context>
+          <context context-type="linenumber">37,40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.medianTimeF" datatype="html">
-        <source>Медиана Ж: <x id="INTERPOLATION" equiv-text="{{ medianTime }}"/></source>
+        <source>Медиана Ж: <x id="START_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;medianTime&quot; /&gt;"/><x id="CLOSE_TAG_APP_RACE_TIME" ctype="x-app_race_time" equiv-text="&lt;app-race-time [value]=&quot;medianTime&quot; /&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
-          <context context-type="linenumber">41,42</context>
+          <context context-type="linenumber">41,43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="race.pdfLoading" datatype="html">
@@ -4868,7 +4884,7 @@
         <source>финишировали</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/runner-grid/runner-grid.html</context>
-          <context context-type="linenumber">49,51</context>
+          <context context-type="linenumber">50,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timerPicker.title" datatype="html">
@@ -6424,56 +6440,56 @@
         <source>Лучшие результаты года</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">50,52</context>
+          <context context-type="linenumber">51,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.men" datatype="html">
         <source>Мужчины</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">55,57</context>
+          <context context-type="linenumber">56,58</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.women" datatype="html">
         <source>Женщины</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">75,77</context>
+          <context context-type="linenumber">76,78</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.mostActiveTitle" datatype="html">
         <source>Самые активные</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">98,100</context>
+          <context context-type="linenumber">99,101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.progressTitle" datatype="html">
         <source>Прогресс года</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">116,118</context>
+          <context context-type="linenumber">117,119</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.progressNote" datatype="html">
         <source> Кто сильнее всех улучшил свою медиану сезона на 5 км к прошлому году — минимум три финиша в каждом сезоне. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">119,122</context>
+          <context context-type="linenumber">120,123</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.badgesTitle" datatype="html">
         <source>Бейджи года</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">140,142</context>
+          <context context-type="linenumber">141,143</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.error" datatype="html">
         <source>Не удалось загрузить итоги года.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/year/year-page.html</context>
-          <context context-type="linenumber">163,165</context>
+          <context context-type="linenumber">164,166</context>
         </context-group>
       </trans-unit>
       <trans-unit id="year.metaHeadline" datatype="html">
@@ -6782,6 +6798,56 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/seo/page-meta.constant.ts</context>
           <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.gearLabel" datatype="html">
+        <source>Настройки отображения</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.title" datatype="html">
+        <source>Настройки</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">37,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.subtitle" datatype="html">
+        <source>Как этот сайт показывает время</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">39,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.closeLabel" datatype="html">
+        <source>Закрыть настройки</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">43,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.hundredths" datatype="html">
+        <source>Сотые доли секунды</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">66,68</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">72,74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.note" datatype="html">
+        <source> Только на этом устройстве — у остальных время останется как было. В секундомере и в PDF-протоколах сотые остаются всегда: там показывается ровно то, что измерено. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/settings/settings.html</context>
+          <context context-type="linenumber">83,87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="yearBadge.obsessiveGold" datatype="html">
