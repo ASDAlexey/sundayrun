@@ -289,6 +289,10 @@ $race-columns: p.columns();
     cursor: help;
   }
 
+  &__pr-delta {
+    @include p.pr-delta;
+  }
+
   &__finishes {
     @include p.finishes-badge;
   }

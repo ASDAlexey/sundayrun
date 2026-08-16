@@ -32,6 +32,9 @@ import {
   EXPECTED_PR_NOTE_VIEW,
   EXPECTED_RACE_VIEW,
   EXPECTED_RANK_FINISH_CLUB_CLASSES,
+  EXPECTED_RANK_PR_DELTA_CLASSES,
+  EXPECTED_RANK_PR_DELTA_HINT,
+  EXPECTED_RANK_PR_DELTA_TEXTS,
   EXPECTED_RANK_FINISH_COUNT_TEXTS,
   EXPECTED_RANK_NOTABLE_TEXT,
   EXPECTED_WINDLESS_WEATHER_TEXT,
@@ -153,7 +156,7 @@ describe('RacePage', () => {
       [...element.querySelectorAll('.photo-strip__image')].map((image) => image.getAttribute('src')),
       'the strip renders one thumbnail per stored photo, straight from the VK CDN',
     ).toEqual(RACE_PHOTOS.map((photo) => photo.previewUrl));
-    expect(headers.length, 'the ten PDF columns plus the average pace').toBe(11);
+    expect(headers.length, 'the ten PDF columns plus the average pace and the record gap').toBe(12);
     expect(
       headers.map((header) => header.getAttribute('role')),
       'every header is a column header',
@@ -229,12 +232,21 @@ describe('RacePage', () => {
       page.race()?.rows.map((row) => row.finishClubClass),
       'six finishes cross no milestone — the badges stay neutral',
     ).toEqual(EXPECTED_RANK_FINISH_CLUB_CLASSES);
+    expect(
+      page.race()?.rows.map((row) => row.prDeltaText),
+      'only the 5 km finisher with a record behind her measures against it',
+    ).toEqual(EXPECTED_RANK_PR_DELTA_TEXTS);
+    expect(page.race()?.rows.map((row) => row.prDeltaClass)).toEqual(EXPECTED_RANK_PR_DELTA_CLASSES);
+    expect(page.race()?.rows[0].prDeltaHint, 'the hint names the record and this season’s best').toBe(EXPECTED_RANK_PR_DELTA_HINT);
 
     fixture.detectChanges();
 
     const chips = [...fixture.nativeElement.querySelectorAll('.race__notable')];
+    const deltas = [...fixture.nativeElement.querySelectorAll('.race__pr-delta')];
 
     expect(chips.map((chip: Element) => chip.textContent?.trim())).toEqual([EXPECTED_RANK_NOTABLE_TEXT]);
+    expect(deltas.length, 'the two rows without a record show no cell at all').toBe(1);
+    expect(deltas[0].textContent.trim()).toBe(EXPECTED_RANK_PR_DELTA_TEXTS[0]);
 
     loadParticipantRuns.mockResolvedValueOnce(CLUB_PARTICIPANT_RUNS);
     routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });

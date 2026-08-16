@@ -27,6 +27,12 @@ export interface ParticipantRowView {
   gapFText: string;
   finishCountText: string;
   finishClubClass: string;
+  /** «+0:31» — how far the row landed from the record standing before this race; blank without one. */
+  prDeltaText: string;
+  /** The tint of that figure («preview__pr-delta_faster»); empty for the exact repeat and a blank cell. */
+  prDeltaClass: string;
+  /** The hint behind it: «ЛР 19:46,00 · 12 янв 2025»; empty for a blank cell. */
+  prDeltaHint: string;
   club: string;
   /** The auto-generated note exactly as the protocol will show it, split into badge chips. */
   noteBadges: PreviewNoteBadgeView[];

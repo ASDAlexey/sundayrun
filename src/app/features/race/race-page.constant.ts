@@ -1,3 +1,4 @@
+import { PrDeltaKind, PrDeltaKindType } from '../../core/history/pr-delta.enum';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { NoteBadgeKind, NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
 
@@ -38,6 +39,16 @@ export const NOTE_BADGE_CLASSES: Record<NoteBadgeKindType, string> = {
   [NoteBadgeKind.kids]: 'race__note-badge_kids',
   [NoteBadgeKind.status]: 'race__note-badge_status',
   [NoteBadgeKind.plain]: '',
+};
+
+/**
+ * The «Δ ЛР» tint: green for a result that beat the standing record, red for one that fell short.
+ * The exact repeat stays neutral — it is neither, and the bare '0:00,00' already says so.
+ */
+export const PR_DELTA_CLASSES: Record<PrDeltaKindType, string> = {
+  [PrDeltaKind.faster]: 'race__pr-delta_faster',
+  [PrDeltaKind.slower]: 'race__pr-delta_slower',
+  [PrDeltaKind.equal]: '',
 };
 
 /** The tinted «Пол» chip: cool blue for М, warm pink for Ж — a light wash telling the groups apart. */

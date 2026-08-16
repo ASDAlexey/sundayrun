@@ -8,14 +8,16 @@
 
 // One grid template for both protocols — the published one (/races) and the upload preview
 // (/preview) — so a column added to one cannot silently drift out of line in the other. The
-// eleven tracks are tuned to fit the section's 1032px content box without a horizontal scroll:
+// twelve tracks are tuned to fit the section's 1032px content box without a horizontal scroll:
 // the flexible name/club/note tracks absorb the slack and narrow headers wrap to two lines.
 // The three time tracks carry hundredths, so they are cut for 'mm:ss,cc' rather than 'mm:ss'.
+// «Δ ЛР» is a step narrower than them: it is drawn a size down, and its own sign buys back the
+// width the leading minutes of a finish time need.
 //
 // The «Пол» track is the one parameter: the protocol prints a single chip, the preview holds two
 // editable М/Ж toggles and needs the extra 18px.
 @function columns($gender: 44px) {
-  @return 32px minmax(112px, 1.3fr) 84px 84px 76px $gender 76px 76px 60px minmax(48px, 0.5fr) minmax(150px, 2.4fr);
+  @return 32px minmax(92px, 1.2fr) 84px 84px 64px 68px $gender 76px 76px 60px minmax(44px, 0.45fr) minmax(124px, 2.2fr);
 }
 
 // The pinned header. It pins against the *window* — both tables hand their scrolling to
@@ -138,6 +140,33 @@
 
 @mixin medal-disc {
   fill: var(--medal);
+}
+
+// The «Δ ЛР» figure — how far the run landed from the record standing before the race. A plain
+// button rather than a span: the hint spelling the record out has to be reachable by tap and by
+// keyboard, not only by a hover a phone can never do.
+@mixin pr-delta {
+  @include t.text('label', 'small');
+
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  // The unmodified figure is the exact repeat of the record: neither side, and the unsigned
+  // '0:00,00' already says so on its own.
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  // Signals the hint behind the figure.
+  cursor: help;
+
+  // A result that took the record — the one figure in the column worth celebrating.
+  &_faster {
+    color: var(--green);
+  }
+
+  &_slower {
+    color: var(--red);
+  }
 }
 
 // The Smashrun-style «до следующего места» gap under the gender place.

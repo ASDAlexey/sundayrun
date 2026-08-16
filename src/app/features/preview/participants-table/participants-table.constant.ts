@@ -1,3 +1,4 @@
+import { PrDeltaKind, PrDeltaKindType } from '../../../core/history/pr-delta.enum';
 import { NoteBadgeKind, NoteBadgeKindType } from '../../../core/protocol/note-badge-kind.enum';
 
 /** Absent time, place, count or note cells stay blank, matching the published protocol. */
@@ -14,6 +15,13 @@ export const NOTE_BADGE_CLASSES: Record<NoteBadgeKindType, string> = {
   [NoteBadgeKind.kids]: 'participants-table__note-badge_kids',
   [NoteBadgeKind.status]: 'participants-table__note-badge_status',
   [NoteBadgeKind.plain]: '',
+};
+
+/** The «Δ ЛР» tint, mirroring the published protocol: green took the record, red fell short of it. */
+export const PR_DELTA_CLASSES: Record<PrDeltaKindType, string> = {
+  [PrDeltaKind.faster]: 'participants-table__pr-delta_faster',
+  [PrDeltaKind.slower]: 'participants-table__pr-delta_slower',
+  [PrDeltaKind.equal]: '',
 };
 
 /** Medal palette of the top-3 gender places, reusing the year-badge gold/silver/bronze scale. */

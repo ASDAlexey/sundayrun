@@ -24,6 +24,15 @@
 
         <div
           class="participants-table__header participants-table__header_center participants-table__header_shrink"
+          i18n-title="@@preview.prDeltaTitle"
+          role="columnheader"
+          title="Отставание (опережение) от личного рекорда, каким он был перед этим забегом"
+        >
+          <span i18n="@@preview.table.prDelta">Δ ЛР</span>
+        </div>
+
+        <div
+          class="participants-table__header participants-table__header_center participants-table__header_shrink"
           i18n="@@preview.table.pace"
           role="columnheader"
         >
@@ -94,6 +103,14 @@
             [class.participants-table__cell_accent]="row.time5 !== ''"
           >
             <app-race-time pinnedFraction [value]="row.time5" />
+          </div>
+
+          <div class="participants-table__cell participants-table__cell_mono participants-table__cell_center" role="cell">
+            @if (row.prDeltaText !== '') {
+              <span class="participants-table__pr-delta {{ row.prDeltaClass }}" [title]="row.prDeltaHint">
+                <app-race-time pinnedFraction [value]="row.prDeltaText" />
+              </span>
+            }
           </div>
 
           <div class="participants-table__cell participants-table__cell_mono participants-table__cell_center" role="cell">

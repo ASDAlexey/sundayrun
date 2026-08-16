@@ -3,10 +3,14 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
-import { finishCountsWithDrafts } from '../../../core/history/draft-priors';
+import { FIVE_KM_DISTANCE_KM } from '../../../core/history/distance.constant';
+import { finishCountsWithDrafts, previousBestsWithDrafts } from '../../../core/history/draft-priors';
 import { eventFinishCounts } from '../../../core/history/finish-counts';
 import { splitNote } from '../../../core/history/note-tokens';
 import { placeGapsMs } from '../../../core/history/place-gaps';
+import { prDelta } from '../../../core/history/pr-delta';
+import { prDeltaHint } from '../../../core/history/pr-delta-text';
+import { PreviousBest } from '../../../core/history/previous-bests.interface';
 import { Gender, GenderConfidence } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
 import { ProtocolRow } from '../../../core/models/protocol-row.interface';
@@ -23,6 +27,7 @@ import {
   GAP_TEXT_PREFIX,
   NOTE_BADGE_CLASSES,
   PLACE_MEDAL_CLASSES,
+  PR_DELTA_CLASSES,
 } from './participants-table.constant';
 import { ParticipantRowView, PreviewNoteBadgeView } from './participants-table.interface';
 import { RaceTime } from '../../../shared/race-time/race-time';
@@ -46,6 +51,9 @@ export class ParticipantsTable {
   /** Stored 5 km finish counts strictly before the draft's date; empty until loaded or on a failed read. */
   readonly #priorFinishCounts = signal<Record<string, number>>({});
 
+  /** Stored 5 km records strictly before the draft's date; the «Δ ЛР» baseline, empty until loaded. */
+  readonly #priorPreviousBests = signal<Record<string, PreviousBest>>({});
+
   readonly #dateIso = computed(() => this.#store.event()?.dateIso ?? this.#store.suggestedDateIso());
 
   /**
@@ -65,13 +73,28 @@ export class ParticipantsTable {
     );
   });
 
+  /**
+   * The «Δ ЛР» baseline: the stored records plus the ones set by the batch's earlier drafts, which
+   * had already happened by this draft's race day but are not in the db yet. Blank without a date.
+   */
+  readonly #previousBests = computed(() => {
+    const dateIso = this.#dateIso();
+
+    if (dateIso === null) {
+      return {};
+    }
+
+    return previousBestsWithDrafts(this.#priorPreviousBests(), this.#store.draftRowsBefore(dateIso));
+  });
+
   readonly rows = computed(() => {
     const rows = this.#store.protocolRows();
     const ordered = orderProtocolParticipants(this.#store.participants());
     const gapsMs = placeGapsMs(rows);
     const finishCounts = this.#finishCounts();
+    const previousBests = this.#previousBests();
 
-    return rows.map((row, index) => toRowView(row, ordered[index], gapsMs[index], finishCounts));
+    return rows.map((row, index) => toRowView(row, ordered[index], gapsMs[index], finishCounts, previousBests));
   });
 
   protected readonly noteKinds = NoteBadgeKind;
@@ -81,6 +104,11 @@ export class ParticipantsTable {
     // failed db read clears them instead of failing the page.
     effect(() => {
       void this.#loadPriorFinishCounts(this.#dateIso());
+    });
+
+    // The «Δ ЛР» baseline follows the same date, and a failed read blanks the column the same way.
+    effect(() => {
+      void this.#loadPriorPreviousBests(this.#dateIso());
     });
   }
 
@@ -108,6 +136,20 @@ export class ParticipantsTable {
       this.#priorFinishCounts.set(counts);
     }
   }
+
+  async #loadPriorPreviousBests(dateIso: string | null): Promise<void> {
+    if (dateIso === null) {
+      this.#priorPreviousBests.set({});
+
+      return;
+    }
+
+    const bests = await this.#results.loadPreviousBestsBefore(dateIso).catch(() => ({}));
+
+    if (this.#dateIso() === dateIso) {
+      this.#priorPreviousBests.set(bests);
+    }
+  }
 }
 
 function toRowView(
@@ -115,9 +157,13 @@ function toRowView(
   participant: Participant,
   gapMs: number | null,
   finishCounts: Record<string, number>,
+  previousBests: Record<string, PreviousBest>,
 ): ParticipantRowView {
-  const finishCount = finishCounts[normalizeAthleteKey(row.fullName)];
+  const athleteKey = normalizeAthleteKey(row.fullName);
+  const finishCount = finishCounts[athleteKey];
   const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatRaceTime(gapMs);
+  const previousBest = previousBests[athleteKey];
+  const delta = prDelta(row.distanceKm === FIVE_KM_DISTANCE_KM ? row.totalMs : null, previousBest?.timeMs);
 
   return {
     id: participant.id,
@@ -137,6 +183,11 @@ function toRowView(
     gapFText: row.gender === Gender.female ? gapText : EMPTY_CELL_TEXT,
     finishCountText: finishCount === undefined ? EMPTY_CELL_TEXT : String(finishCount),
     finishClubClass: finishClubClassOf(finishCount),
+    prDeltaText: delta?.text ?? EMPTY_CELL_TEXT,
+    prDeltaClass: delta === null ? EMPTY_CELL_TEXT : PR_DELTA_CLASSES[delta.kind],
+    // The organiser's check screen names the record itself; the season figure the published
+    // protocol adds needs a second read of the archive and is not worth it before publishing.
+    prDeltaHint: delta === null ? EMPTY_CELL_TEXT : prDeltaHint(previousBest, undefined),
     club: row.club,
     noteBadges: toNoteBadges(row.note),
   };

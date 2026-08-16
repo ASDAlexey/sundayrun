@@ -21,6 +21,9 @@ import { NotableKind } from '../../core/history/notables.enum';
 import { Notable } from '../../core/history/notables.interface';
 import { splitNote } from '../../core/history/note-tokens';
 import { isNegativeSplit, lapPlaceDeltas, pacingIndex } from '../../core/history/pacing';
+import { isoYearStart } from '../../core/history/iso-year';
+import { prDelta } from '../../core/history/pr-delta';
+import { prDeltaHint } from '../../core/history/pr-delta-text';
 import { prNoteTimeWithDate, splitPrNote } from '../../core/history/pr-note';
 import { noteBadgeKindOf } from '../../core/protocol/note-badge-kind';
 import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
@@ -59,6 +62,7 @@ import {
   MALE_GENDER_TEXT,
   NOTE_BADGE_CLASSES,
   PLACE_MEDAL_CLASSES,
+  PR_DELTA_CLASSES,
   RACE_PAGE_BASE_LINK,
   RACE_TRANSFER_KEY_PREFIX,
   SLUG_ROUTE_PARAM,
@@ -195,6 +199,7 @@ export class RacePage {
         buildEventNotables(participantRuns, slug, file.event.dateIso),
         finishCountsAt(participantRuns, file.event.dateIso),
         buildPreviousBests(participantRuns, file.event.dateIso),
+        buildPreviousBests(participantRuns, file.event.dateIso, isoYearStart(file.event.dateIso)),
         monthFinalSlugs(eventSlugs, isoToday()).has(slug),
         weather,
         vkPostUrl,
@@ -226,6 +231,7 @@ function toRaceView(
   notables: Record<string, Notable>,
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
+  previousYearBests: Record<string, PreviousBest>,
   isMonthFinal: boolean,
   weather: EventWeather | null,
   vkPostUrl: string | null,
@@ -246,7 +252,7 @@ function toRaceView(
     photos,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
-    rows: toRowViews(file.rows, notables, finishCounts, previousBests),
+    rows: toRowViews(file.rows, notables, finishCounts, previousBests, previousYearBests),
   };
 }
 
@@ -256,11 +262,12 @@ function toRowViews(
   notables: Record<string, Notable>,
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
+  previousYearBests: Record<string, PreviousBest>,
 ): RaceRowView[] {
   const gapsMs = placeGapsMs(rows);
   const lapGains = lapPlaceDeltas(rows);
 
-  return rows.map((row, index) => toRowView(row, notables, finishCounts, previousBests, gapsMs[index], lapGains[index]));
+  return rows.map((row, index) => toRowView(row, notables, finishCounts, previousBests, previousYearBests, gapsMs[index], lapGains[index]));
 }
 
 function toRowView(
@@ -268,12 +275,16 @@ function toRowView(
   notables: Record<string, Notable>,
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
+  previousYearBests: Record<string, PreviousBest>,
   gapMs: number | null,
   lapGain: number | null,
 ): RaceRowView {
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];
   const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatRaceTime(gapMs);
+  const previousBest = previousBests[athleteKey];
+  // One-lap and DNF rows have no 5 km time to measure, so they never carry a record delta.
+  const delta = prDelta(row.distanceKm === FIVE_KM_DISTANCE_KM ? row.totalMs : null, previousBest?.timeMs);
 
   return {
     index: row.index,
@@ -299,7 +310,10 @@ function toRowView(
     // Only a gain gets the hint — the protocol celebrates the strong second lap, never shames a fade.
     lapGainText: lapGain !== null && lapGain > 0 ? LAP_GAIN_PREFIX + lapGain : EMPTY_CELL_TEXT,
     isNegativeSplit: isNegativeSplitRow(row),
-    noteBadges: toNoteBadges(row.note, previousBests[athleteKey]),
+    prDeltaText: delta?.text ?? EMPTY_CELL_TEXT,
+    prDeltaClass: delta === null ? EMPTY_CELL_TEXT : PR_DELTA_CLASSES[delta.kind],
+    prDeltaHint: delta === null ? EMPTY_CELL_TEXT : prDeltaHint(previousBest, previousYearBests[athleteKey]),
+    noteBadges: toNoteBadges(row.note, previousBest),
     notableText: toNotableText(notables[athleteKey]),
   };
 }

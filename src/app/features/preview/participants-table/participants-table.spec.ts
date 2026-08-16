@@ -3,6 +3,7 @@ import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
+import { PreviousBest } from '../../../core/history/previous-bests.interface';
 import { Gender } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
 import { RaceEvent } from '../../../core/models/race-event.interface';
@@ -15,6 +16,9 @@ import {
   EXPECTED_ARIA_PRESSED,
   EXPECTED_LOADED_FINISH_CLASS,
   EXPECTED_LOADED_FINISH_TEXT,
+  EXPECTED_LOADED_PR_DELTA_CLASS,
+  EXPECTED_LOADED_PR_DELTA_HINT,
+  EXPECTED_LOADED_PR_DELTA_TEXT,
   EXPECTED_MEDAL_COUNT,
   EXPECTED_ROW_VIEWS,
   EXPECTED_UNVERIFIED_HINT_COUNT,
@@ -22,7 +26,9 @@ import {
   OTHER_DATE_ISO,
   OWN_FINISH_ONLY_TEXT,
   PRIOR_FINISH_COUNTS,
+  PRIOR_PREVIOUS_BESTS,
   STALE_FINISH_COUNTS,
+  STALE_PREVIOUS_BESTS,
   TABLE_DATE_ISO,
   TABLE_PARTICIPANTS,
 } from './participants-table.mock';
@@ -33,6 +39,7 @@ describe('ParticipantsTable', () => {
   const event = signal<RaceEvent | null>(null);
   const setGender = vi.fn();
   const loadFinishCountsBefore = vi.fn();
+  const loadPreviousBestsBefore = vi.fn();
 
   let fixture: ComponentFixture<ParticipantsTable>;
   let table: ParticipantsTable;
@@ -44,6 +51,7 @@ describe('ParticipantsTable', () => {
     participants.set(TABLE_PARTICIPANTS);
     suggestedDateIso.set(TABLE_DATE_ISO);
     loadFinishCountsBefore.mockResolvedValue(PRIOR_FINISH_COUNTS);
+    loadPreviousBestsBefore.mockResolvedValue(PRIOR_PREVIOUS_BESTS);
     TestBed.configureTestingModule({
       providers: [
         {
@@ -57,7 +65,7 @@ describe('ParticipantsTable', () => {
             setGender,
           },
         },
-        { provide: ResultsService, useValue: { loadFinishCountsBefore } },
+        { provide: ResultsService, useValue: { loadFinishCountsBefore, loadPreviousBestsBefore } },
       ],
     });
     fixture = TestBed.createComponent(ParticipantsTable);
@@ -76,11 +84,16 @@ describe('ParticipantsTable', () => {
 
     expect(table.rows()[0].finishCountText, 'stored counts landed').toBe(EXPECTED_LOADED_FINISH_TEXT);
     expect(table.rows()[0].finishClubClass).toBe(EXPECTED_LOADED_FINISH_CLASS);
+    expect(table.rows()[0].prDeltaText, 'the stored record dates the «Δ ЛР» figure').toBe(EXPECTED_LOADED_PR_DELTA_TEXT);
+    expect(table.rows()[0].prDeltaClass).toBe(EXPECTED_LOADED_PR_DELTA_CLASS);
+    expect(table.rows()[0].prDeltaHint).toBe(EXPECTED_LOADED_PR_DELTA_HINT);
 
-    // A date change re-anchors the counts; an in-flight read for the old date must be dropped.
+    // A date change re-anchors both reads; an in-flight one for the old date must be dropped.
     let resolveStale: (counts: Record<string, number>) => void = vi.fn();
+    let resolveStaleBests: (bests: Record<string, PreviousBest>) => void = vi.fn();
 
     loadFinishCountsBefore.mockImplementationOnce(() => new Promise((resolve) => (resolveStale = resolve)));
+    loadPreviousBestsBefore.mockImplementationOnce(() => new Promise((resolve) => (resolveStaleBests = resolve)));
     suggestedDateIso.set(OTHER_DATE_ISO);
     fixture.detectChanges();
     await flush();
@@ -89,17 +102,21 @@ describe('ParticipantsTable', () => {
     fixture.detectChanges();
     await flush();
     resolveStale(STALE_FINISH_COUNTS);
+    resolveStaleBests(STALE_PREVIOUS_BESTS);
     await flush();
 
     expect(table.rows()[0].finishCountText, 'the stale payload never lands').toBe(EXPECTED_LOADED_FINISH_TEXT);
+    expect(table.rows()[0].prDeltaText, 'nor does the stale record').toBe(EXPECTED_LOADED_PR_DELTA_TEXT);
 
     // A failed archive read leaves only the draft's own finishes — a blank prior beats a wrong one.
     loadFinishCountsBefore.mockRejectedValueOnce(new Error('db down'));
+    loadPreviousBestsBefore.mockRejectedValueOnce(new Error('db down'));
     suggestedDateIso.set(OTHER_DATE_ISO);
     fixture.detectChanges();
     await flush();
 
     expect(table.rows()[0].finishCountText).toBe(OWN_FINISH_ONLY_TEXT);
+    expect(table.rows()[0].prDeltaText, 'no record read — no figure').toBe('');
 
     // Without a date the column goes blank entirely.
     suggestedDateIso.set(null);
@@ -107,6 +124,7 @@ describe('ParticipantsTable', () => {
     await flush();
 
     expect(table.rows()[0].finishCountText).toBe('');
+    expect(table.rows()[0].prDeltaText).toBe('');
   });
 
   it('renders the protocol design and forwards gender edits', async () => {

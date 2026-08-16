@@ -1,4 +1,5 @@
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
+import { PreviousBest } from '../../../core/history/previous-bests.interface';
 import { Gender, GenderConfidence, GenderSource } from '../../../core/models/gender.enum';
 import { Participant } from '../../../core/models/participant.interface';
 import { NoteBadgeKind } from '../../../core/protocol/note-badge-kind.enum';
@@ -78,7 +79,28 @@ export const STALE_FINISH_COUNTS: Record<string, number> = {
   [normalizeAthleteKey(FULL_DISTANCE_PARTICIPANT.fullName)]: 999,
 };
 
-/** The rows before the stored counts load: the draft's own finish is already counted («1»). */
+/** Stored 5 km records strictly before the draft date — the «Δ ЛР» baseline of the column. */
+export const PRIOR_PREVIOUS_BESTS: Record<string, PreviousBest> = {
+  [normalizeAthleteKey(FULL_DISTANCE_PARTICIPANT.fullName)]: { slug: '2026-01-04', dateIso: '2026-01-04', timeMs: 1174028 },
+};
+
+/** The same conflicting read for the records; a draft switch must drop it too. */
+export const STALE_PREVIOUS_BESTS: Record<string, PreviousBest> = {
+  [normalizeAthleteKey(FULL_DISTANCE_PARTICIPANT.fullName)]: { slug: '2026-02-01', dateIso: '2026-02-01', timeMs: 999000 },
+};
+
+/** Троилин's 19:03,03 against that 19:34,03 — half a minute under his record. */
+export const EXPECTED_LOADED_PR_DELTA_TEXT = '−0:31,00';
+
+export const EXPECTED_LOADED_PR_DELTA_CLASS = 'participants-table__pr-delta_faster';
+
+/** The organiser's screen names the record itself; the season figure is the published page's job. */
+export const EXPECTED_LOADED_PR_DELTA_HINT = 'ЛР 19:34,03 · 4 янв 2026';
+
+/**
+ * The rows before the stored archive loads: the draft's own finish is already counted («1»), while
+ * the records the «Δ ЛР» column measures against are still unknown, so every delta cell is blank.
+ */
 export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
   {
     id: FULL_DISTANCE_ID,
@@ -98,6 +120,9 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
     gapFText: '',
     finishCountText: '1',
     finishClubClass: '',
+    prDeltaText: '',
+    prDeltaClass: '',
+    prDeltaHint: '',
     club: '',
     noteBadges: [],
   },
@@ -119,6 +144,9 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
     gapFText: '',
     finishCountText: '1',
     finishClubClass: '',
+    prDeltaText: '',
+    prDeltaClass: '',
+    prDeltaHint: '',
     club: '',
     noteBadges: [],
   },
@@ -140,6 +168,9 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
     gapFText: '',
     finishCountText: '',
     finishClubClass: '',
+    prDeltaText: '',
+    prDeltaClass: '',
+    prDeltaHint: '',
     club: '',
     noteBadges: [{ kind: NoteBadgeKind.plain, className: '', text: SHORT_DISTANCE_PARTICIPANT.note }],
   },
@@ -161,6 +192,9 @@ export const EXPECTED_ROW_VIEWS: ParticipantRowView[] = [
     gapFText: '',
     finishCountText: '',
     finishClubClass: '',
+    prDeltaText: '',
+    prDeltaClass: '',
+    prDeltaHint: '',
     club: '',
     noteBadges: [],
   },

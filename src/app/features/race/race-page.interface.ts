@@ -54,6 +54,12 @@ export interface RaceRowView {
   lapGainText: string;
   /** True for the rare negative split — the second lap ran at a faster pace than the first. */
   isNegativeSplit: boolean;
+  /** «+0:31» — how far the run landed from the record standing before this race; blank without one. */
+  prDeltaText: string;
+  /** The tint of that figure («race__pr-delta_faster»); empty for the exact repeat and for a blank cell. */
+  prDeltaClass: string;
+  /** The hint behind it: «ЛР 19:46,00 · 12 янв 2025 · лучшее в 2026 — 20:05,00»; empty for a blank cell. */
+  prDeltaHint: string;
   /** The stored note split into tokens, each classified into an icon badge or running text. */
   noteBadges: RaceNoteBadgeView[];
   /** Preformatted on-the-fly notable («2-й результат за всё время»); empty when nothing stands out. */

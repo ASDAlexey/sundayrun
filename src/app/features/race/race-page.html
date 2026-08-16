@@ -108,6 +108,15 @@
 
               <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.time5" role="columnheader">Время 5 км</div>
 
+              <div
+                class="race__th race__th_center race__th_shrink"
+                i18n-matTooltip="@@race.prDeltaTitle"
+                matTooltip="Отставание (опережение) от личного рекорда, каким он был перед этим забегом"
+                role="columnheader"
+              >
+                <span i18n="@@race.table.prDelta">Δ ЛР</span>
+              </div>
+
               <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.pace" role="columnheader">Ср. темп</div>
 
               <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.gender" role="columnheader">Пол</div>
@@ -152,6 +161,20 @@
                       matTooltip="Отыграно мест на втором круге: обошёл столько соперников после отсечки 2,3 км"
                       >{{ row.lapGainText }}</span
                     >
+                  }
+                </div>
+
+                <div class="race__td race__td_mono race__td_center" role="cell">
+                  @if (row.prDeltaText !== '') {
+                    <button
+                      #prDeltaTip="matTooltip"
+                      class="race__pr-delta {{ row.prDeltaClass }}"
+                      type="button"
+                      [matTooltip]="row.prDeltaHint"
+                      (click)="prDeltaTip.toggle()"
+                    >
+                      <app-race-time [value]="row.prDeltaText" />
+                    </button>
                   }
                 </div>
 

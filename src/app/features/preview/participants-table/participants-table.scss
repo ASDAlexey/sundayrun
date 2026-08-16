@@ -123,6 +123,10 @@ $columns: p.columns(62px);
     @include p.place-gap;
   }
 
+  &__pr-delta {
+    @include p.pr-delta;
+  }
+
   &__finishes {
     @include p.finishes-badge;
   }

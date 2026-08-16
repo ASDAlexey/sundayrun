@@ -114,6 +114,10 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       club: 'Курск бегущий',
       lapGainText: '',
       isNegativeSplit: false,
+      // No participant runs in the default stub, so no record stands behind the row to measure against.
+      prDeltaText: '',
+      prDeltaClass: '',
+      prDeltaHint: '',
       noteBadges: [],
       notableText: '',
     },
@@ -139,6 +143,9 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       club: '',
       lapGainText: '',
       isNegativeSplit: false,
+      prDeltaText: '',
+      prDeltaClass: '',
+      prDeltaHint: '',
       noteBadges: [],
       notableText: '',
     },
@@ -164,6 +171,9 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       club: '',
       lapGainText: '',
       isNegativeSplit: false,
+      prDeltaText: '',
+      prDeltaClass: '',
+      prDeltaHint: '',
       // An unrecognized organiser note stays running text — no chip, no icon.
       noteBadges: [{ kind: NoteBadgeKind.plain, className: '', text: 'сход', prNote: null }],
       notableText: '',
@@ -250,6 +260,17 @@ export const RANK_PARTICIPANT_RUNS: ParticipantRun[] = [
 ];
 
 export const EXPECTED_RANK_NOTABLE_TEXT = '2-й результат за всё время';
+
+/**
+ * Мария's 25:00 against the 24:00 she ran in August 2025 — a minute short of her record. The other
+ * two rows never ran the 5 km here, so they have nothing to measure.
+ */
+export const EXPECTED_RANK_PR_DELTA_TEXTS: string[] = ['+1:00,00', '', ''];
+
+export const EXPECTED_RANK_PR_DELTA_CLASSES: string[] = ['race__pr-delta_slower', '', ''];
+
+/** The record is from 2025, so the hint names this season's best (the 26:00 of May) beside it. */
+export const EXPECTED_RANK_PR_DELTA_HINT = 'ЛР 24:00,00 · 3 авг 2025 · лучшее в 2026 — 26:00,00';
 
 /** All six of Мария's rank runs sit on or before the event date; the others never ran the 5 km here. */
 export const EXPECTED_RANK_FINISH_COUNT_TEXTS: string[] = ['6', '', ''];
