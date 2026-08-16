@@ -7,12 +7,16 @@ import { PreviousBest } from './previous-bests.interface';
  * note refers to, so the protocol can link the previous record to the race where it was set.
  * A time tie keeps the earlier run, matching the first-setter rule of the course records.
  * Athletes with no earlier 5 km finish are absent.
+ *
+ * `sinceIso` bounds the window on the other side: pass the first day of the race's year and the
+ * same scan answers «лучшее в этом году до забега» instead, which is what the «Δ ЛР» hint compares
+ * the all-time record against. Empty — the default — reaches back over the whole archive.
  */
-export function buildPreviousBests(participantRuns: ParticipantRun[], dateIso: string): Record<string, PreviousBest> {
+export function buildPreviousBests(participantRuns: ParticipantRun[], dateIso: string, sinceIso = ''): Record<string, PreviousBest> {
   const bests: Record<string, PreviousBest> = {};
 
   for (const run of participantRuns) {
-    if (run.distanceKm !== FIVE_KM_DISTANCE_KM || run.dateIso >= dateIso) {
+    if (run.distanceKm !== FIVE_KM_DISTANCE_KM || run.dateIso >= dateIso || run.dateIso < sinceIso) {
       continue;
     }
 

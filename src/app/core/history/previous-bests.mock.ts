@@ -31,3 +31,12 @@ export const EXPECTED_PREVIOUS_BESTS: Record<string, PreviousBest> = {
   'попов алексей': { slug: '2025-01-12', dateIso: '2025-01-12', timeMs: 1252000 },
   'троилин антон': { slug: '2025-02-02', dateIso: '2025-02-02', timeMs: 1133000 },
 };
+
+/** The first day of the event's own year — the «лучшее в этом году» bound of the same scan. */
+export const PREVIOUS_BESTS_YEAR_START = '2025-01-01';
+
+/** The 2024 run below the year bound; without it Попов's season best is his February 21:50. */
+export const PREVIOUS_BESTS_LAST_YEAR_RUNS: ParticipantRun[] = [run('попов алексей', '2024-11-10', 1100000), ...PREVIOUS_BESTS_RUNS];
+
+/** Bounded to 2025, the 2024 record is out of reach and every athlete falls back to the season. */
+export const EXPECTED_YEAR_PREVIOUS_BESTS: Record<string, PreviousBest> = EXPECTED_PREVIOUS_BESTS;
