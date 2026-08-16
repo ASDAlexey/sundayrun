@@ -21,6 +21,7 @@ import { DbFreshnessBanner } from './shared/db-freshness-banner/db-freshness-ban
 import { NavRail } from './shared/directives/nav-rail/nav-rail';
 import { LogoMark } from './shared/logo-mark/logo-mark';
 import { SelfPicker } from './shared/self-picker/self-picker';
+import { Settings } from './shared/settings/settings';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,7 @@ import { SelfPicker } from './shared/self-picker/self-picker';
     LogoMark,
     NavRail,
     SelfPicker,
+    Settings,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,

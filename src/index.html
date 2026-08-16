@@ -222,6 +222,20 @@
         ]
       }
     </script>
+
+    <!-- «Сотые доли секунды» switched off on this device — the key and the class are the pair kept in
+         `hundredths.constant.ts`. It runs here, before the first paint: the prerendered HTML always
+         carries the fraction, so without this every column would flash its ',00' and then drop it. -->
+    <script>
+      (function () {
+        // localStorage may be unavailable (private mode, blocked cookies); the app must still bootstrap.
+        try {
+          if (localStorage.getItem('parkrun.hundredths') === 'off') {
+            document.documentElement.classList.add('hundredths-hidden');
+          }
+        } catch (storageError) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- spa-github-pages: 404.html stores the requested deep link before bouncing to the app root. -->

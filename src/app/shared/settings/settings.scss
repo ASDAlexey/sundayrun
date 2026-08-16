@@ -1,0 +1,182 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+// ===========================================================
+//  «Настройки» — the header gear and the card it raises:
+//  device-local display switches, in a native modal dialog.
+// ===========================================================
+
+:host {
+  display: flex;
+  align-items: center;
+}
+
+.settings {
+  &__gear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--accent-line);
+      color: var(--text);
+    }
+
+    // Lit while the card is up: it floats in the top layer, and this is the only thing on the page
+    // that still says where it came from.
+    &_open {
+      border-color: var(--accent-line);
+      background: var(--accent-glow);
+      color: var(--accent-light);
+    }
+  }
+
+  &__glyph {
+    flex: none;
+  }
+
+  // The card rises in the browser's top layer, so nothing on the page can clip it and the scrim is
+  // the platform's own. Centred rather than pinned to a corner: the reader's attention is on it.
+  &__card {
+    @include c.card;
+
+    width: min(420px, calc(100vw - 32px));
+    max-width: none;
+    max-height: calc(100dvh - 48px);
+    margin: auto;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px color-mix(in srgb, var(--black) 65%, transparent);
+    color: var(--text);
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--black) 62%, transparent);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__subtitle {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
+  &__close {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    gap: 16px;
+  }
+
+  &__item-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  &__item-name {
+    @include t.text('body', 'medium');
+
+    color: var(--text);
+  }
+
+  // The live sample: it loses its fraction the moment the switch does, so the wording never has to
+  // explain what «сотые» are — the example does it in place.
+  &__sample {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+    font-family: var(--mono);
+  }
+
+  // Material's switch, repainted in Litely tokens. Off is a well sunk below the card with a muted
+  // knob; on is the signature orange under the same dark ink the accent chips carry. Sizes are left
+  // at the Material default — the same switch the rest of the toolchain draws.
+  &__switch {
+    --mat-slide-toggle-unselected-track-color: var(--bg-subtle);
+    --mat-slide-toggle-unselected-hover-track-color: var(--bg-subtle);
+    --mat-slide-toggle-unselected-focus-track-color: var(--bg-subtle);
+    --mat-slide-toggle-unselected-pressed-track-color: var(--bg-subtle);
+    --mat-slide-toggle-track-outline-color: var(--border-hover);
+    --mat-slide-toggle-unselected-handle-color: var(--text-muted);
+    --mat-slide-toggle-unselected-hover-handle-color: var(--text-secondary);
+    --mat-slide-toggle-unselected-focus-handle-color: var(--text-secondary);
+    --mat-slide-toggle-unselected-pressed-handle-color: var(--text-secondary);
+    --mat-slide-toggle-selected-track-color: var(--accent);
+    --mat-slide-toggle-selected-hover-track-color: var(--accent);
+    --mat-slide-toggle-selected-focus-track-color: var(--accent);
+    --mat-slide-toggle-selected-pressed-track-color: var(--accent);
+    --mat-slide-toggle-selected-handle-color: var(--accent-contrast);
+    --mat-slide-toggle-selected-hover-handle-color: var(--accent-contrast);
+    --mat-slide-toggle-selected-focus-handle-color: var(--accent-contrast);
+    --mat-slide-toggle-selected-pressed-handle-color: var(--accent-contrast);
+
+    flex: none;
+  }
+
+  &__note {
+    @include t.text('label', 'small');
+
+    padding-top: 16px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--text-muted);
+  }
+}

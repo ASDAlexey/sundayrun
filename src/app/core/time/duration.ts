@@ -3,6 +3,7 @@ import {
   DURATION_SHORT_PATTERN,
   FRACTION_LENGTH,
   FRACTION_SEPARATOR,
+  FRACTION_STRIPPED_REPLACEMENT,
   HUNDREDTHS_IN_SECOND,
   HUNDREDTHS_LENGTH,
   MINUTES_IN_HOUR,
@@ -10,6 +11,7 @@ import {
   MS_IN_SECOND,
   NO_ELAPSED_MS,
   PAD_CHAR,
+  RACE_TIME_FRACTION_PATTERN,
   SECONDS_IN_MINUTE,
   TIME_UNIT_LENGTH,
 } from './duration.constant';
@@ -67,6 +69,16 @@ export function formatRaceTime(ms: number): string {
   const paddedHundredths = String(hundredths).padStart(HUNDREDTHS_LENGTH, PAD_CHAR);
 
   return `${clockText(totalSeconds)}${FRACTION_SEPARATOR}${paddedHundredths}`;
+}
+
+/**
+ * Cuts the hundredths out of already formatted text — «23:04,18» reads «23:04», the words around a
+ * time are left alone. For the surfaces a reader's «без сотых» cannot reach with a class on
+ * `<html>`: labels drawn on canvas. Everything rendered as DOM goes through `app-race-time` instead,
+ * which keeps the fraction in the markup and merely folds it away.
+ */
+export function withoutHundredths(text: string): string {
+  return text.replace(RACE_TIME_FRACTION_PATTERN, FRACTION_STRIPPED_REPLACEMENT);
 }
 
 /** 'm:ss', growing an hours part only once there is one: '1:02:03'. */

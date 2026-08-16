@@ -1,0 +1,86 @@
+<button
+  aria-label="Настройки отображения"
+  class="settings__gear"
+  i18n-aria-label="@@settings.gearLabel"
+  type="button"
+  [class.settings__gear_open]="open()"
+  (click)="openCard(card)"
+>
+  <svg
+    aria-hidden="true"
+    class="settings__glyph"
+    fill="none"
+    height="16"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-width="1.4"
+    viewBox="0 0 16 16"
+    width="16"
+  >
+    <path d="M2 5h5M11 5h3M2 11h3M9 11h5" />
+    <circle cx="9" cy="5" r="1.7" />
+    <circle cx="7" cy="11" r="1.7" />
+  </svg>
+</button>
+
+<!-- Escape reaches the dialog as `cancel`, a click on the scrim as a click on the dialog itself. -->
+<dialog
+  #card
+  aria-label="Настройки"
+  class="settings__card"
+  i18n-aria-label="@@settings.title"
+  (cancel)="closeCard(card)"
+  (click)="onBackdrop($event, card)"
+>
+  <header class="settings__header">
+    <div class="settings__titles">
+      <h2 class="settings__title" i18n="@@settings.title">Настройки</h2>
+
+      <p class="settings__subtitle" i18n="@@settings.subtitle">Как этот сайт показывает время</p>
+    </div>
+
+    <button
+      aria-label="Закрыть настройки"
+      class="settings__close"
+      i18n-aria-label="@@settings.closeLabel"
+      type="button"
+      (click)="closeCard(card)"
+    >
+      <svg
+        aria-hidden="true"
+        fill="none"
+        height="14"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-width="1.5"
+        viewBox="0 0 14 14"
+        width="14"
+      >
+        <path d="M2 2 12 12M12 2 2 12" />
+      </svg>
+    </button>
+  </header>
+
+  <div class="settings__item">
+    <span class="settings__item-text">
+      <span class="settings__item-name" i18n="@@settings.hundredths">Сотые доли секунды</span>
+
+      <span class="settings__sample"><app-race-time [value]="sampleTime" /></span>
+    </span>
+
+    <mat-slide-toggle
+      aria-label="Сотые доли секунды"
+      class="settings__switch"
+      disableRipple
+      hideIcon
+      i18n-aria-label="@@settings.hundredths"
+      [checked]="hundredthsShown()"
+      (change)="toggleHundredths()"
+    />
+  </div>
+
+  <p class="settings__note" i18n="@@settings.note">
+    Только на этом устройстве — у остальных время останется как было. В секундомере и в PDF-протоколах сотые остаются всегда: там
+    показывается ровно то, что измерено.
+  </p>
+</dialog>

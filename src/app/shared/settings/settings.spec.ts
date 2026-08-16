@@ -1,0 +1,79 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { HundredthsService } from '../../state/hundredths.service';
+import { Settings } from './settings';
+import { SETTINGS_SAMPLE_TIME } from './settings.constant';
+import { HundredthsServiceMock, SETTINGS_SWITCH_SELECTOR, hundredthsServiceMock } from './settings.mock';
+
+describe('Settings', () => {
+  let hundredths: HundredthsServiceMock;
+  let fixture: ComponentFixture<Settings>;
+
+  function query(selector: string): HTMLElement | null {
+    return fixture.nativeElement.querySelector(selector);
+  }
+
+  function card(): HTMLDialogElement {
+    return fixture.nativeElement.querySelector('.settings__card');
+  }
+
+  beforeEach(() => {
+    hundredths = hundredthsServiceMock();
+    TestBed.configureTestingModule({ providers: [{ provide: HundredthsService, useValue: hundredths }] });
+    fixture = TestBed.createComponent(Settings);
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+  });
+
+  it('raises the card on the gear, hands every flip to the service and closes on «×»', async () => {
+    fixture.detectChanges();
+
+    expect(card().open, 'the card stays down until asked for').toBe(false);
+
+    query('.settings__gear')?.click();
+    await fixture.whenStable();
+
+    expect(card().open).toBe(true);
+    expect(fixture.componentInstance.open(), 'the gear stays lit while the card is up').toBe(true);
+    expect(query(SETTINGS_SWITCH_SELECTOR)?.getAttribute('aria-checked'), 'the switch reads the state, not the other way round').toBe(
+      'true',
+    );
+    expect(query('.settings__sample')?.textContent, 'the sample is a real time, so the effect is visible here').toBe(SETTINGS_SAMPLE_TIME);
+
+    query(SETTINGS_SWITCH_SELECTOR)?.click();
+
+    expect(hundredths.toggle).toHaveBeenCalledOnce();
+
+    hundredths.shown.set(false);
+    await fixture.whenStable();
+
+    expect(query(SETTINGS_SWITCH_SELECTOR)?.getAttribute('aria-checked')).toBe('false');
+
+    query('.settings__close')?.click();
+
+    expect(card().open).toBe(false);
+    expect(fixture.componentInstance.open()).toBe(false);
+  });
+
+  it('closes on Escape and on the scrim, and stays up when the click lands inside the card', async () => {
+    fixture.detectChanges();
+    query('.settings__gear')?.click();
+    await fixture.whenStable();
+
+    card().dispatchEvent(new Event('cancel'));
+
+    expect(card().open, 'Escape reaches a native dialog as «cancel»').toBe(false);
+
+    query('.settings__gear')?.click();
+    await fixture.whenStable();
+    query('.settings__item')?.click();
+
+    expect(card().open, 'a click on the row inside is not a click on the scrim').toBe(true);
+
+    card().click();
+
+    expect(card().open, 'the platform reports a scrim click as a click on the dialog itself').toBe(false);
+  });
+});

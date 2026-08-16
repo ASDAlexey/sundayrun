@@ -1,3 +1,11 @@
-<span class="race-time"
-  >{{ parts().clock }}<span class="race-time__fraction">{{ parts().fraction }}</span></span
->
+<span class="race-time" [class.race-time_pinned]="pinnedFraction()">
+  @for (part of parts(); track $index) {
+    @if (part.fraction === '') {
+      <span>{{ part.text }}</span>
+    } @else {
+      <span class="race-time__value"
+        >{{ part.text }}<span class="race-time__fraction">{{ part.fraction }}</span></span
+      >
+    }
+  }
+</span>

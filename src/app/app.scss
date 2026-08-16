@@ -157,6 +157,12 @@
     flex: none;
   }
 
+  // Same reasoning as the pick, and the same card underneath: outside the rail, so its panel is
+  // never clipped by a scroll container.
+  &__settings {
+    flex: none;
+  }
+
   // Material anchor buttons — brand paddings, radius and colors
   // override the default M3 pill shape and label color.
   &__nav-link {
@@ -259,6 +265,12 @@
       flex: 0 1 auto;
       order: 1;
       min-width: 0;
+    }
+
+    // The gear is a fixed 36px and never gives way — it rides the brand line beside the chip, and
+    // the chip's ellipsis pays for it. A third row here would undo everything above.
+    &__settings {
+      order: 1;
     }
 
     &__nav {

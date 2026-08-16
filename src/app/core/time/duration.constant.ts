@@ -31,3 +31,15 @@ export const FRACTION_SEPARATOR = ',';
 
 /** The floor every formatter clamps to: a length of time has no negative form. */
 export const NO_ELAPSED_MS = 0;
+
+/**
+ * A finished clock with its hundredths trailing it, wherever it sits in a text: 'm:ss,cc', the tail
+ * of 'h:mm:ss,cc', and the times inside a sentence — «ЛР (было 23:05,00)», '23:05,00 → 22:50,00'.
+ * Capture 1 is the clock that qualifies the match, capture 2 the fraction. Global: one value may
+ * carry several times. Shared by the two ways a reader's «без сотых» is honoured — folding the
+ * fraction away in the DOM (`app-race-time`) and cutting it out of a string (`withoutHundredths`).
+ */
+export const RACE_TIME_FRACTION_PATTERN = /(\d{1,2}:\d{2})(,\d{2})/g;
+
+/** Keeps the clock, drops the fraction that followed it. */
+export const FRACTION_STRIPPED_REPLACEMENT = '$1';

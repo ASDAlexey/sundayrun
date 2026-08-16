@@ -1,2 +1,2 @@
-/** `String.lastIndexOf` when the separator is absent — the text carries no fraction. */
-export const NO_FRACTION_INDEX = -1;
+/** Start of the value — the first run of text always begins there. */
+export const RACE_TIME_START_INDEX = 0;

@@ -7,6 +7,11 @@
 .race-time {
   // Tabular figures, so a column of times keeps one width whatever digits land in it.
   font-variant-numeric: tabular-nums;
+}
+
+// The clock and its hundredths as one piece: a time never breaks between the seconds and the
+// fraction, while the words of a note around it stay free to wrap like any other text.
+.race-time__value {
   white-space: nowrap;
 }
 
@@ -17,4 +22,18 @@
   // to stay the junior of whatever colour it inherits. On the archive rows it is always ',00' and
   // carries nothing at all, so it must never compete with the seconds it trails.
   opacity: 0.62;
+}
+
+// «Сотые доли секунды» switched off in the header (see `HundredthsService`). The fraction is folded
+// away rather than dropped from the markup: the prerendered HTML always carries it, so hydration
+// meets the structure it expects, and the class on `<html>` — set before the first paint by the
+// inline script in `index.html` — turns every column into whole seconds without a reflow.
+:host-context(.hundredths-hidden) .race-time__fraction {
+  display: none;
+}
+
+// …except where the digits are the point: the stopwatch cockpit and the organiser's preview report
+// what was measured, not what this reader likes to look at (see `pinnedFraction`).
+:host-context(.hundredths-hidden) .race-time_pinned .race-time__fraction {
+  display: inline;
 }
