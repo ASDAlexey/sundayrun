@@ -7,7 +7,7 @@ import { Gender } from '../../core/models/gender.enum';
 import { ProtocolRow } from '../../core/models/protocol-row.interface';
 import { EventWeather } from '../../core/weather/event-weather.interface';
 import { SelfAthlete } from '../../state/self-athlete.interface';
-import { RACE_PAGE_BASE_LINK } from './race-page.constant';
+import { NO_DELTA, RACE_PAGE_BASE_LINK } from './race-page.constant';
 import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
 import { RacePrNoteView, RaceView } from './race-page.interface';
 
@@ -114,10 +114,10 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       club: 'Курск бегущий',
       lapGainText: '',
       isNegativeSplit: false,
-      // No participant runs in the default stub, so no record stands behind the row to measure against.
-      prDeltaText: '',
-      prDeltaClass: '',
-      prDeltaHint: '',
+      // No participant runs in the default stub, so nothing stands behind the row to measure against.
+      formDelta: NO_DELTA,
+      yearDelta: NO_DELTA,
+      recordDelta: NO_DELTA,
       noteBadges: [],
       notableText: '',
     },
@@ -143,9 +143,9 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       club: '',
       lapGainText: '',
       isNegativeSplit: false,
-      prDeltaText: '',
-      prDeltaClass: '',
-      prDeltaHint: '',
+      formDelta: NO_DELTA,
+      yearDelta: NO_DELTA,
+      recordDelta: NO_DELTA,
       noteBadges: [],
       notableText: '',
     },
@@ -171,9 +171,9 @@ export const EXPECTED_RACE_VIEW: RaceView = {
       club: '',
       lapGainText: '',
       isNegativeSplit: false,
-      prDeltaText: '',
-      prDeltaClass: '',
-      prDeltaHint: '',
+      formDelta: NO_DELTA,
+      yearDelta: NO_DELTA,
+      recordDelta: NO_DELTA,
       // An unrecognized organiser note stays running text — no chip, no icon.
       noteBadges: [{ kind: NoteBadgeKind.plain, className: '', text: 'сход', prNote: null }],
       notableText: '',
@@ -249,7 +249,13 @@ const mariaRun = (dateIso: string, timeMs: number, slug: string = dateIso): Part
   distanceKm: FIVE_KM_DISTANCE_KM,
 });
 
-/** Five earlier runs with exactly one faster: the fixture 25:00 ranks 2nd of six career runs. */
+/**
+ * Five earlier runs with exactly one faster: the fixture 25:00 ranks 2nd of six career runs.
+ *
+ * Олег's single 5 km last month is the other case the deltas have to survive: he has a form behind
+ * him, but today he ran the short course, so there is no time to place against it and every one of
+ * his three figures stays blank.
+ */
 export const RANK_PARTICIPANT_RUNS: ParticipantRun[] = [
   mariaRun('2025-08-03', 1440000),
   mariaRun('2025-09-07', 1560000),
@@ -257,6 +263,7 @@ export const RANK_PARTICIPANT_RUNS: ParticipantRun[] = [
   mariaRun('2025-11-02', 1560000),
   mariaRun('2026-05-03', 1560000),
   mariaRun(RACE_EVENT.dateIso, 1500000, RACE_PAGE_SLUG),
+  { athleteKey: 'олег петров', dateIso: '2026-05-03', slug: '2026-05-03', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM },
 ];
 
 export const EXPECTED_RANK_NOTABLE_TEXT = '2-й результат за всё время';
@@ -267,13 +274,30 @@ export const EXPECTED_RANK_NOTABLE_TEXT = '2-й результат за всё �
  */
 export const EXPECTED_RANK_PR_DELTA_TEXTS: string[] = ['+1:00,00', '', ''];
 
-export const EXPECTED_RANK_PR_DELTA_CLASSES: string[] = ['race__pr-delta_slower', '', ''];
+export const EXPECTED_RANK_PR_DELTA_CLASSES: string[] = ['race__delta_slower', '', ''];
 
 /** The record is from 2025, so the hint names this season's best (the 26:00 of May) beside it. */
 export const EXPECTED_RANK_PR_DELTA_HINT = 'ЛР 24:00,00 · 3 авг 2025 · лучшее в 2026 — 26:00,00';
 
-/** All six of Мария's rank runs sit on or before the event date; the others never ran the 5 km here. */
-export const EXPECTED_RANK_FINISH_COUNT_TEXTS: string[] = ['6', '', ''];
+/**
+ * The same 25:00 read against her own form instead: four of her five runs before this one were
+ * 26:00, so the median is 26:00 and the race was a clear minute better than her ordinary day —
+ * past the 3% corridor (46,8 s here), and green where the record column called it a shortfall.
+ */
+export const EXPECTED_RANK_FORM_DELTA_TEXTS: string[] = ['−1:00,00', '', ''];
+
+export const EXPECTED_RANK_FORM_DELTA_CLASSES: string[] = ['race__delta_faster', '', ''];
+
+/** The hint names the yardstick and how thin it was: the full window of five. */
+export const EXPECTED_RANK_FORM_DELTA_HINT = 'Обычно 26:00,00 — по 5 последним забегам';
+
+/** Her best of the season so far is that same 26:00 of May, so the season column agrees. */
+export const EXPECTED_RANK_YEAR_DELTA_TEXTS: string[] = ['−1:00,00', '', ''];
+
+export const EXPECTED_RANK_YEAR_DELTA_HINT = 'Лучшее в 2026 — 26:00,00 · 3 май 2026';
+
+/** All six of Мария's rank runs sit on or before the event date; Олег's single May run is his own. */
+export const EXPECTED_RANK_FINISH_COUNT_TEXTS: string[] = ['6', '1', ''];
 
 /** Six career runs cross no milestone, so every badge stays neutral. */
 export const EXPECTED_RANK_FINISH_CLUB_CLASSES: string[] = ['', '', ''];

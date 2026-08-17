@@ -79,8 +79,35 @@
     />
   </div>
 
+  <div class="settings__item settings__item_stacked">
+    <span class="settings__item-text">
+      <span class="settings__item-name" i18n="@@settings.deltaBase">Колонка «Δ» в протоколе</span>
+
+      <span class="settings__item-hint" i18n="@@settings.deltaBaseHint">С чем сравнивать результат забега</span>
+    </span>
+
+    <!-- Native radios: one tab stop for the group, arrow keys between the options, and the state
+         readable to assistive tech without a line of script. The input itself is hidden behind the
+         label it sits in, which is what actually gets drawn. -->
+    <div aria-label="С чем сравнивать" class="settings__choices" i18n-aria-label="@@settings.deltaBaseHint" role="radiogroup">
+      @for (option of deltaBaseOptions; track option.base) {
+        <label class="settings__choice" [class.settings__choice_active]="deltaBase() === option.base">
+          <input
+            class="settings__choice-input"
+            name="settings-delta-base"
+            type="radio"
+            [checked]="deltaBase() === option.base"
+            (change)="selectDeltaBase(option.base)"
+          />
+
+          {{ option.label }}
+        </label>
+      }
+    </div>
+  </div>
+
   <p class="settings__note" i18n="@@settings.note">
-    Только на этом устройстве — у остальных время останется как было. В секундомере и в PDF-протоколах сотые остаются всегда: там
+    Только на этом устройстве — у остальных протоколы останутся как были. В секундомере и в PDF-протоколах сотые остаются всегда: там
     показывается ровно то, что измерено.
   </p>
 </dialog>

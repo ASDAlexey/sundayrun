@@ -1,6 +1,8 @@
+import { FormDeltaKind, FormDeltaKindType } from '../../core/history/form-delta.enum';
 import { PrDeltaKind, PrDeltaKindType } from '../../core/history/pr-delta.enum';
 import { Gender, GenderType } from '../../core/models/gender.enum';
 import { NoteBadgeKind, NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
+import { RaceDeltaView } from './race-page.interface';
 
 /** Route param carrying the event slug (`/races/:slug`). */
 export const SLUG_ROUTE_PARAM = 'slug';
@@ -42,14 +44,29 @@ export const NOTE_BADGE_CLASSES: Record<NoteBadgeKindType, string> = {
 };
 
 /**
- * The «Δ ЛР» tint: green for a result that beat the standing record, red for one that fell short.
- * The exact repeat stays neutral — it is neither, and the bare '0:00,00' already says so.
+ * The tint of a figure measured against a best — the season's or the career's. Green for the run
+ * that beat it; everything else is left to read plainly. Falling short of your own record is the
+ * ordinary case, not a fault, and a column of red would say the opposite forty times a protocol.
  */
 export const PR_DELTA_CLASSES: Record<PrDeltaKindType, string> = {
-  [PrDeltaKind.faster]: 'race__pr-delta_faster',
-  [PrDeltaKind.slower]: 'race__pr-delta_slower',
+  [PrDeltaKind.faster]: 'race__delta_faster',
+  [PrDeltaKind.slower]: 'race__delta_slower',
   [PrDeltaKind.equal]: '',
 };
+
+/**
+ * The same for a figure measured against the runner's own form: the corridor's two sides, the quiet
+ * middle, and the comeback the column declines to measure at all.
+ */
+export const FORM_DELTA_CLASSES: Record<FormDeltaKindType, string> = {
+  [FormDeltaKind.faster]: 'race__delta_faster',
+  [FormDeltaKind.slower]: 'race__delta_slower',
+  [FormDeltaKind.usual]: 'race__delta_usual',
+  [FormDeltaKind.afterBreak]: 'race__delta_break',
+};
+
+/** A cell with nothing to measure: a debut, a one-lap run, a DNF. Drawn as nothing at all. */
+export const NO_DELTA: RaceDeltaView = { text: '', className: '', hint: '' };
 
 /** The tinted «Пол» chip: cool blue for М, warm pink for Ж — a light wash telling the groups apart. */
 export const GENDER_CHIP_CLASSES: Record<GenderType, string> = {

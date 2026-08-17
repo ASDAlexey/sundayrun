@@ -9,6 +9,11 @@
 // /preview (`p.columns`), so a column added here cannot drift out of line there.
 $race-columns: p.columns();
 
+// The same template minus the delta track, for the reader who switched the column off entirely.
+$race-columns-no-delta: p.columns(
+  $delta: null,
+);
+
 .race {
   @include s.section;
 
@@ -289,8 +294,31 @@ $race-columns: p.columns();
     cursor: help;
   }
 
-  &__pr-delta {
-    @include p.pr-delta;
+  // The delta figure. Nothing here is red: the column reports how a run sat against the runner's
+  // own ordinary day, and an ordinary day that ran a minute slow is not an error to flag — it is
+  // most of running. Only the run that broke out of the corridor gets a colour at all.
+  &__delta {
+    @include p.delta-figure;
+
+    &_faster {
+      color: var(--green);
+    }
+
+    &_slower {
+      color: var(--text-secondary);
+    }
+
+    // Inside the corridor, and the comeback that refused to be measured: both are the quietest
+    // thing the cell can be while still being there.
+    &_usual {
+      color: var(--text-muted);
+    }
+
+    &_break {
+      color: var(--text-muted);
+      // Words, not a clock — the mono track is for figures.
+      font-family: inherit;
+    }
   }
 
   &__finishes {
@@ -367,5 +395,52 @@ $race-columns: p.columns();
     &__thead-row {
       top: 0;
     }
+  }
+}
+
+// «С чем сравнивать» — the base picked in «Настройки» (see `DeltaBaseService`). Every base's figure
+// is drawn into each row and CSS shows one, the way the hundredths switch folds fractions away: the
+// prerendered HTML carries all of them, so hydration meets the structure it expects whatever this
+// device picked, and the class on `<html>` — set before the first paint by the inline script in
+// `index.html` — never lets the wrong base flash. The form is the default and needs no class.
+// `revert` rather than a display value of its own: the same pair of classes marks the column's
+// heading (a span, inline) and every figure under it (a button, inline-block), and each should
+// come back as whatever it natively is.
+.race__base_year,
+.race__base_record {
+  display: none;
+}
+
+:host-context(.delta-base-year) {
+  .race__base_form {
+    display: none;
+  }
+
+  .race__base_year {
+    display: revert;
+  }
+}
+
+:host-context(.delta-base-record) {
+  .race__base_form {
+    display: none;
+  }
+
+  .race__base_record {
+    display: revert;
+  }
+}
+
+// Switched off: the whole column goes. A `display: none` grid item leaves the grid, so the track
+// has to go with it — otherwise the eleven cells that remain would land on the first eleven of
+// twelve tracks and every column after the finish time would slide one to the left.
+:host-context(.delta-base-off) {
+  .race__thead-row,
+  .race__row {
+    grid-template-columns: $race-columns-no-delta;
+  }
+
+  .race__delta-cell {
+    display: none;
   }
 }

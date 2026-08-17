@@ -21,6 +21,19 @@ export interface RaceNoteBadgeView {
   prNote: RacePrNoteView | null;
 }
 
+/**
+ * One delta figure prepared for the template. A row carries all three at once and CSS shows the one
+ * this device picked (see `DeltaBaseService`), so the prerendered markup fits every reader.
+ */
+export interface RaceDeltaView {
+  /** «−0:24,20», «≈ +0:07,05», «После перерыва»; empty for a row with nothing to measure. */
+  text: string;
+  /** The tint of that figure («race__delta_faster»); empty for a blank cell. */
+  className: string;
+  /** The hint naming the yardstick: «Обычно 20:41,00 — по 5 последним забегам». */
+  hint: string;
+}
+
 /** One protocol row prepared for the template: preformatted cells and a resolved athlete link. */
 export interface RaceRowView {
   index: number;
@@ -54,12 +67,12 @@ export interface RaceRowView {
   lapGainText: string;
   /** True for the rare negative split — the second lap ran at a faster pace than the first. */
   isNegativeSplit: boolean;
-  /** «+0:31» — how far the run landed from the record standing before this race; blank without one. */
-  prDeltaText: string;
-  /** The tint of that figure («race__pr-delta_faster»); empty for the exact repeat and for a blank cell. */
-  prDeltaClass: string;
-  /** The hint behind it: «ЛР 19:46,00 · 12 янв 2025 · лучшее в 2026 — 20:05,00»; empty for a blank cell. */
-  prDeltaHint: string;
+  /** How the run sat against the runner's own recent median — the column's default reading. */
+  formDelta: RaceDeltaView;
+  /** The same against their best this season so far. */
+  yearDelta: RaceDeltaView;
+  /** And against the all-time record standing before this race. */
+  recordDelta: RaceDeltaView;
   /** The stored note split into tokens, each classified into an icon badge or running text. */
   noteBadges: RaceNoteBadgeView[];
   /** Preformatted on-the-fly notable («2-й результат за всё время»); empty when nothing stands out. */

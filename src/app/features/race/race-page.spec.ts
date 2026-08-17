@@ -32,9 +32,14 @@ import {
   EXPECTED_PR_NOTE_VIEW,
   EXPECTED_RACE_VIEW,
   EXPECTED_RANK_FINISH_CLUB_CLASSES,
+  EXPECTED_RANK_FORM_DELTA_CLASSES,
+  EXPECTED_RANK_FORM_DELTA_HINT,
+  EXPECTED_RANK_FORM_DELTA_TEXTS,
   EXPECTED_RANK_PR_DELTA_CLASSES,
   EXPECTED_RANK_PR_DELTA_HINT,
   EXPECTED_RANK_PR_DELTA_TEXTS,
+  EXPECTED_RANK_YEAR_DELTA_HINT,
+  EXPECTED_RANK_YEAR_DELTA_TEXTS,
   EXPECTED_RANK_FINISH_COUNT_TEXTS,
   EXPECTED_RANK_NOTABLE_TEXT,
   EXPECTED_WINDLESS_WEATHER_TEXT,
@@ -233,20 +238,30 @@ describe('RacePage', () => {
       'six finishes cross no milestone — the badges stay neutral',
     ).toEqual(EXPECTED_RANK_FINISH_CLUB_CLASSES);
     expect(
-      page.race()?.rows.map((row) => row.prDeltaText),
+      page.race()?.rows.map((row) => row.recordDelta.text),
       'only the 5 km finisher with a record behind her measures against it',
     ).toEqual(EXPECTED_RANK_PR_DELTA_TEXTS);
-    expect(page.race()?.rows.map((row) => row.prDeltaClass)).toEqual(EXPECTED_RANK_PR_DELTA_CLASSES);
-    expect(page.race()?.rows[0].prDeltaHint, 'the hint names the record and this season’s best').toBe(EXPECTED_RANK_PR_DELTA_HINT);
+    expect(page.race()?.rows.map((row) => row.recordDelta.className)).toEqual(EXPECTED_RANK_PR_DELTA_CLASSES);
+    expect(page.race()?.rows[0].recordDelta.hint, 'the hint names the record and this season’s best').toBe(EXPECTED_RANK_PR_DELTA_HINT);
+    expect(
+      page.race()?.rows.map((row) => row.formDelta.text),
+      'the same run read against her own median is a minute to the good, not a minute short',
+    ).toEqual(EXPECTED_RANK_FORM_DELTA_TEXTS);
+    expect(page.race()?.rows.map((row) => row.formDelta.className)).toEqual(EXPECTED_RANK_FORM_DELTA_CLASSES);
+    expect(page.race()?.rows[0].formDelta.hint, 'the hint names the median behind the figure').toBe(EXPECTED_RANK_FORM_DELTA_HINT);
+    expect(page.race()?.rows.map((row) => row.yearDelta.text)).toEqual(EXPECTED_RANK_YEAR_DELTA_TEXTS);
+    expect(page.race()?.rows[0].yearDelta.hint, 'the season hint dates this year’s best').toBe(EXPECTED_RANK_YEAR_DELTA_HINT);
 
     fixture.detectChanges();
 
     const chips = [...fixture.nativeElement.querySelectorAll('.race__notable')];
-    const deltas = [...fixture.nativeElement.querySelectorAll('.race__pr-delta')];
+    const deltas = [...fixture.nativeElement.querySelectorAll('.race__delta')];
 
     expect(chips.map((chip: Element) => chip.textContent?.trim())).toEqual([EXPECTED_RANK_NOTABLE_TEXT]);
-    expect(deltas.length, 'the two rows without a record show no cell at all').toBe(1);
-    expect(deltas[0].textContent.trim()).toBe(EXPECTED_RANK_PR_DELTA_TEXTS[0]);
+    expect(deltas.length, 'all three bases are drawn for her row; the other two rows draw none').toBe(3);
+    expect(deltas[0].textContent.trim(), 'the form figure leads — it is what an untouched device shows').toBe(
+      EXPECTED_RANK_FORM_DELTA_TEXTS[0],
+    );
 
     loadParticipantRuns.mockResolvedValueOnce(CLUB_PARTICIPANT_RUNS);
     routeStub.setParams({ [SLUG_ROUTE_PARAM]: RACE_PAGE_SLUG });

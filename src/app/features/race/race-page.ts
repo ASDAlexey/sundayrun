@@ -13,6 +13,9 @@ import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { createTransferLoader } from '../../core/transfer/transfer-load';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { finishCountsAt } from '../../core/history/finish-counts';
+import { buildFormBaselines, formDelta } from '../../core/history/form-delta';
+import { formDeltaHint, formDeltaText } from '../../core/history/form-delta-text';
+import { FormBaseline } from '../../core/history/form-delta.interface';
 import { medianMsOrNull } from '../../core/history/median';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { buildEventNotables } from '../../core/history/notables';
@@ -23,7 +26,7 @@ import { splitNote } from '../../core/history/note-tokens';
 import { isNegativeSplit, lapPlaceDeltas, pacingIndex } from '../../core/history/pacing';
 import { isoYearStart } from '../../core/history/iso-year';
 import { prDelta } from '../../core/history/pr-delta';
-import { prDeltaHint } from '../../core/history/pr-delta-text';
+import { prDeltaHint, yearBestHint } from '../../core/history/pr-delta-text';
 import { prNoteTimeWithDate, splitPrNote } from '../../core/history/pr-note';
 import { noteBadgeKindOf } from '../../core/protocol/note-badge-kind';
 import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
@@ -55,11 +58,13 @@ import {
   EMPTY_CELL_TEXT,
   FEMALE_GENDER_TEXT,
   FINISH_CLUB_TIERS,
+  FORM_DELTA_CLASSES,
   GAP_TEXT_PREFIX,
   GENDER_CHIP_CLASSES,
   HOME_PAGE_LINK,
   LAP_GAIN_PREFIX,
   MALE_GENDER_TEXT,
+  NO_DELTA,
   NOTE_BADGE_CLASSES,
   PLACE_MEDAL_CLASSES,
   PR_DELTA_CLASSES,
@@ -213,6 +218,7 @@ export class RacePage {
         finishCountsAt(participantRuns, file.event.dateIso),
         buildPreviousBests(participantRuns, file.event.dateIso),
         buildPreviousBests(participantRuns, file.event.dateIso, isoYearStart(file.event.dateIso)),
+        buildFormBaselines(participantRuns, file.event.dateIso),
         monthFinalSlugs(eventSlugs, isoToday()).has(slug),
         weather,
         vkPostUrl,
@@ -245,6 +251,7 @@ function toRaceView(
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
   previousYearBests: Record<string, PreviousBest>,
+  formBaselines: Record<string, FormBaseline>,
   isMonthFinal: boolean,
   weather: EventWeather | null,
   vkPostUrl: string | null,
@@ -265,7 +272,7 @@ function toRaceView(
     photos,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
-    rows: toRowViews(file.rows, notables, finishCounts, previousBests, previousYearBests),
+    rows: toRowViews(file.rows, notables, finishCounts, previousBests, previousYearBests, formBaselines, file.event.dateIso),
   };
 }
 
@@ -276,11 +283,15 @@ function toRowViews(
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
   previousYearBests: Record<string, PreviousBest>,
+  formBaselines: Record<string, FormBaseline>,
+  dateIso: string,
 ): RaceRowView[] {
   const gapsMs = placeGapsMs(rows);
   const lapGains = lapPlaceDeltas(rows);
 
-  return rows.map((row, index) => toRowView(row, notables, finishCounts, previousBests, previousYearBests, gapsMs[index], lapGains[index]));
+  return rows.map((row, index) =>
+    toRowView(row, notables, finishCounts, previousBests, previousYearBests, formBaselines, dateIso, gapsMs[index], lapGains[index]),
+  );
 }
 
 function toRowView(
@@ -289,6 +300,8 @@ function toRowView(
   finishCounts: Record<string, number>,
   previousBests: Record<string, PreviousBest>,
   previousYearBests: Record<string, PreviousBest>,
+  formBaselines: Record<string, FormBaseline>,
+  dateIso: string,
   gapMs: number | null,
   lapGain: number | null,
 ): RaceRowView {
@@ -296,8 +309,9 @@ function toRowView(
   const finishCount = finishCounts[athleteKey];
   const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatRaceTime(gapMs);
   const previousBest = previousBests[athleteKey];
-  // One-lap and DNF rows have no 5 km time to measure, so they never carry a record delta.
-  const delta = prDelta(row.distanceKm === FIVE_KM_DISTANCE_KM ? row.totalMs : null, previousBest?.timeMs);
+  const previousYearBest = previousYearBests[athleteKey];
+  // One-lap and DNF rows have no 5 km time to measure, so they never carry a delta of any kind.
+  const timeMs = row.distanceKm === FIVE_KM_DISTANCE_KM ? row.totalMs : null;
 
   return {
     index: row.index,
@@ -323,12 +337,41 @@ function toRowView(
     // Only a gain gets the hint — the protocol celebrates the strong second lap, never shames a fade.
     lapGainText: lapGain !== null && lapGain > 0 ? LAP_GAIN_PREFIX + lapGain : EMPTY_CELL_TEXT,
     isNegativeSplit: isNegativeSplitRow(row),
-    prDeltaText: delta?.text ?? EMPTY_CELL_TEXT,
-    prDeltaClass: delta === null ? EMPTY_CELL_TEXT : PR_DELTA_CLASSES[delta.kind],
-    prDeltaHint: delta === null ? EMPTY_CELL_TEXT : prDeltaHint(previousBest, previousYearBests[athleteKey]),
+    formDelta: toFormDeltaView(timeMs, formBaselines[athleteKey], dateIso),
+    yearDelta: toBestDeltaView(timeMs, previousYearBest, yearBestHint(previousYearBest)),
+    recordDelta: toBestDeltaView(timeMs, previousBest, prDeltaHint(previousBest, previousYearBest)),
     noteBadges: toNoteBadges(row.note, previousBest),
     notableText: toNotableText(notables[athleteKey]),
   };
+}
+
+/**
+ * The «Δ форма» reading: how the run sat against this runner's own ordinary day. A debut has no
+ * ordinary day yet and a row without a 5 km time has nothing to place against one — both blank.
+ */
+function toFormDeltaView(timeMs: number | null, baseline: FormBaseline | undefined, dateIso: string): RaceDeltaView {
+  if (baseline === undefined) {
+    return NO_DELTA;
+  }
+
+  const delta = formDelta(timeMs, baseline, dateIso);
+
+  if (delta === null) {
+    return NO_DELTA;
+  }
+
+  return { text: formDeltaText(delta), className: FORM_DELTA_CLASSES[delta.kind], hint: formDeltaHint(baseline, delta) };
+}
+
+/** The same cell measured against a standing best — this season's or the career's; the hint names which. */
+function toBestDeltaView(timeMs: number | null, best: PreviousBest | undefined, hint: string): RaceDeltaView {
+  const delta = prDelta(timeMs, best?.timeMs);
+
+  if (delta === null) {
+    return NO_DELTA;
+  }
+
+  return { text: delta.text, className: PR_DELTA_CLASSES[delta.kind], hint };
 }
 
 /** The chip only trusts a plausible split — the same noise corridor the lap-gain scan applies. */

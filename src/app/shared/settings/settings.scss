@@ -123,6 +123,18 @@
     justify-content: space-between;
     padding: 18px 0;
     gap: 16px;
+
+    // A hairline between settings, so a card of several never reads as one paragraph of controls.
+    & + & {
+      border-top: 1px solid var(--border-soft);
+    }
+
+    // Four choices do not fit beside their own label at 420px, so they take the line below it.
+    &_stacked {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
   }
 
   &__item-text {
@@ -136,6 +148,65 @@
     @include t.text('body', 'medium');
 
     color: var(--text);
+  }
+
+  &__item-hint {
+    @include t.text('label', 'small');
+
+    color: var(--text-muted);
+  }
+
+  // The segmented picker. A row of pills rather than a `<select>`: all four readings are worth
+  // seeing at once — the choice is between things the reader has to compare, not a list to search.
+  &__choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__choice {
+    @include t.text('label', 'medium');
+
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      color var(--transition-time) var(--ease),
+      border-color var(--transition-time) var(--ease),
+      background var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    &_active {
+      border-color: var(--accent-line);
+      background: var(--accent-glow);
+      color: var(--accent-light);
+    }
+
+    // The keyboard needs to see which pill the arrow keys landed on; the radio inside is invisible.
+    &:has(:focus-visible) {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  // Hidden, not removed: `display: none` would drop it out of the tab order and out of the
+  // accessibility tree, and the label around it has nothing to report on its own.
+  &__choice-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
   }
 
   // The live sample: it loses its fraction the moment the switch does, so the wording never has to

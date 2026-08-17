@@ -27,3 +27,19 @@ export function prDeltaHint(previousBest: PreviousBest | undefined, yearBest: Pr
 
   return recordText + PR_DELTA_HINT_SEPARATOR + yearText;
 }
+
+/**
+ * The hint behind the season figure — «Лучшее в 2026 — 20:05,00 · 12 апр 2026».
+ *
+ * The same two facts as the record hint, one window narrower: a reader who set the column to the
+ * season is asking about this year and gets this year's best dated, not the career's.
+ */
+export function yearBestHint(yearBest: PreviousBest | undefined): string {
+  if (yearBest === undefined) {
+    return '';
+  }
+
+  const bestText = $localize`:@@prDelta.hintYearBest:Лучшее в ${isoYear(yearBest.dateIso)}:year: — ${formatRaceTime(yearBest.timeMs)}:time:`;
+
+  return bestText + PR_DELTA_HINT_SEPARATOR + formatRussianDateCompact(yearBest.dateIso);
+}

@@ -236,6 +236,21 @@
         } catch (storageError) {}
       })();
     </script>
+
+    <!-- «С чем сравнивать» — the base of the protocol's delta column on this device; the key and the
+         classes are the pair kept in `delta-base.constant.ts`. Every base's figure is prerendered
+         into every row, so without this the column would show the form for a moment and then swap. -->
+    <script>
+      (function () {
+        try {
+          var base = localStorage.getItem('parkrun.deltaBase');
+
+          if (base === 'year' || base === 'record' || base === 'off') {
+            document.documentElement.classList.add('delta-base-' + base);
+          }
+        } catch (storageError) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- spa-github-pages: 404.html stores the requested deep link before bouncing to the app root. -->

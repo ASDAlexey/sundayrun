@@ -1,9 +1,8 @@
-import { formatRaceTime } from '../time/duration';
 import { isoYear } from './iso-year';
-import { PR_DELTA_EQUAL_PREFIX, PR_DELTA_FASTER_PREFIX, PR_DELTA_SLOWER_PREFIX } from './pr-delta.constant';
 import { PrDeltaKind } from './pr-delta.enum';
 import { PrDelta } from './pr-delta.interface';
 import { PreviousBest } from './previous-bests.interface';
+import { signedRaceTime } from './signed-delta';
 
 /**
  * How far a result landed from the personal record it was chasing — «20:17 (+0:31)» — the figure
@@ -21,16 +20,17 @@ export function prDelta(timeMs: number | null, previousBestMs: number | undefine
   }
 
   const deltaMs = timeMs - previousBestMs;
+  const text = signedRaceTime(deltaMs);
 
   if (deltaMs < 0) {
-    return { kind: PrDeltaKind.faster, text: PR_DELTA_FASTER_PREFIX + formatRaceTime(-deltaMs) };
+    return { kind: PrDeltaKind.faster, text };
   }
 
   if (deltaMs > 0) {
-    return { kind: PrDeltaKind.slower, text: PR_DELTA_SLOWER_PREFIX + formatRaceTime(deltaMs) };
+    return { kind: PrDeltaKind.slower, text };
   }
 
-  return { kind: PrDeltaKind.equal, text: PR_DELTA_EQUAL_PREFIX + formatRaceTime(deltaMs) };
+  return { kind: PrDeltaKind.equal, text };
 }
 
 /**

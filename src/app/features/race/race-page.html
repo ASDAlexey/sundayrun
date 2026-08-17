@@ -111,13 +111,32 @@
 
               <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.time5" role="columnheader">Время 5 км</div>
 
-              <div
-                class="race__th race__th_center race__th_shrink"
-                i18n-matTooltip="@@race.prDeltaTitle"
-                matTooltip="Отставание (опережение) от личного рекорда, каким он был перед этим забегом"
-                role="columnheader"
-              >
-                <span i18n="@@race.table.prDelta">Δ ЛР</span>
+              <!-- All three headings are in the markup and CSS shows the one this device picked
+                   («Настройки» → «С чем сравнивать», see `DeltaBaseService`). -->
+              <div class="race__th race__th_center race__th_shrink race__delta-cell" role="columnheader">
+                <span
+                  class="race__base_form"
+                  i18n="@@race.table.formDelta"
+                  i18n-matTooltip="@@race.formDeltaTitle"
+                  matTooltip="Насколько забег отличается от обычного для этого атлета — медианы его пяти последних результатов на 5 км перед стартом"
+                  >Δ форма</span
+                >
+
+                <span
+                  class="race__base_year"
+                  i18n="@@race.table.yearDelta"
+                  i18n-matTooltip="@@race.yearDeltaTitle"
+                  matTooltip="Отставание (опережение) от лучшего результата этого атлета в текущем году до этого забега"
+                  >Δ год</span
+                >
+
+                <span
+                  class="race__base_record"
+                  i18n="@@race.table.prDelta"
+                  i18n-matTooltip="@@race.prDeltaTitle"
+                  matTooltip="Отставание (опережение) от личного рекорда, каким он был перед этим забегом"
+                  >Δ ЛР</span
+                >
               </div>
 
               <div class="race__th race__th_center race__th_shrink" i18n="@@race.table.pace" role="columnheader">Ср. темп</div>
@@ -167,16 +186,40 @@
                   }
                 </div>
 
-                <div class="race__td race__td_mono race__td_center" role="cell">
-                  @if (row.prDeltaText !== '') {
+                <div class="race__td race__td_mono race__td_center race__delta-cell" role="cell">
+                  @if (row.formDelta.text !== '') {
+                    <button
+                      #formDeltaTip="matTooltip"
+                      class="race__base_form race__delta {{ row.formDelta.className }}"
+                      type="button"
+                      [matTooltip]="row.formDelta.hint"
+                      (click)="formDeltaTip.toggle()"
+                    >
+                      <app-race-time [value]="row.formDelta.text" />
+                    </button>
+                  }
+
+                  @if (row.yearDelta.text !== '') {
+                    <button
+                      #yearDeltaTip="matTooltip"
+                      class="race__base_year race__delta {{ row.yearDelta.className }}"
+                      type="button"
+                      [matTooltip]="row.yearDelta.hint"
+                      (click)="yearDeltaTip.toggle()"
+                    >
+                      <app-race-time [value]="row.yearDelta.text" />
+                    </button>
+                  }
+
+                  @if (row.recordDelta.text !== '') {
                     <button
                       #prDeltaTip="matTooltip"
-                      class="race__pr-delta {{ row.prDeltaClass }}"
+                      class="race__base_record race__delta {{ row.recordDelta.className }}"
                       type="button"
-                      [matTooltip]="row.prDeltaHint"
+                      [matTooltip]="row.recordDelta.hint"
                       (click)="prDeltaTip.toggle()"
                     >
-                      <app-race-time [value]="row.prDeltaText" />
+                      <app-race-time [value]="row.recordDelta.text" />
                     </button>
                   }
                 </div>

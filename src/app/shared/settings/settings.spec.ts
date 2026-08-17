@@ -1,16 +1,32 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { DeltaBase } from '../../state/delta-base.enum';
+import { DeltaBaseService } from '../../state/delta-base.service';
 import { HundredthsService } from '../../state/hundredths.service';
 import { Settings } from './settings';
 import { SETTINGS_SAMPLE_TIME } from './settings.constant';
-import { HundredthsServiceMock, SETTINGS_SWITCH_SELECTOR, hundredthsServiceMock } from './settings.mock';
+import {
+  DeltaBaseServiceMock,
+  EXPECTED_CHOICE_LABELS,
+  HundredthsServiceMock,
+  SETTINGS_ACTIVE_CHOICE_SELECTOR,
+  SETTINGS_CHOICE_SELECTOR,
+  SETTINGS_SWITCH_SELECTOR,
+  deltaBaseServiceMock,
+  hundredthsServiceMock,
+} from './settings.mock';
 
 describe('Settings', () => {
   let hundredths: HundredthsServiceMock;
+  let deltaBase: DeltaBaseServiceMock;
   let fixture: ComponentFixture<Settings>;
 
   function query(selector: string): HTMLElement | null {
     return fixture.nativeElement.querySelector(selector);
+  }
+
+  function queryAll(selector: string): HTMLElement[] {
+    return [...fixture.nativeElement.querySelectorAll(selector)];
   }
 
   function card(): HTMLDialogElement {
@@ -19,7 +35,13 @@ describe('Settings', () => {
 
   beforeEach(() => {
     hundredths = hundredthsServiceMock();
-    TestBed.configureTestingModule({ providers: [{ provide: HundredthsService, useValue: hundredths }] });
+    deltaBase = deltaBaseServiceMock();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: HundredthsService, useValue: hundredths },
+        { provide: DeltaBaseService, useValue: deltaBase },
+      ],
+    });
     fixture = TestBed.createComponent(Settings);
   });
 
@@ -55,6 +77,26 @@ describe('Settings', () => {
 
     expect(card().open).toBe(false);
     expect(fixture.componentInstance.open()).toBe(false);
+  });
+
+  it('offers the four delta bases, marks the one in force and hands a pick to the service', async () => {
+    fixture.detectChanges();
+
+    const choices = queryAll(SETTINGS_CHOICE_SELECTOR);
+
+    expect(choices.map((choice) => choice.textContent?.trim())).toEqual(EXPECTED_CHOICE_LABELS);
+    expect(query(SETTINGS_ACTIVE_CHOICE_SELECTOR)?.textContent?.trim(), 'the default is lit without anyone picking it').toBe(
+      EXPECTED_CHOICE_LABELS[0],
+    );
+
+    choices[3].click();
+
+    expect(deltaBase.select, 'the card reports the pick; the service owns the state').toHaveBeenCalledWith(DeltaBase.off);
+
+    deltaBase.base.set(DeltaBase.off);
+    await fixture.whenStable();
+
+    expect(query(SETTINGS_ACTIVE_CHOICE_SELECTOR)?.textContent?.trim()).toBe(EXPECTED_CHOICE_LABELS[3]);
   });
 
   it('closes on Escape and on the scrim, and stays up when the click lands inside the card', async () => {
