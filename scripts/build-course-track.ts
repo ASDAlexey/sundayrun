@@ -662,6 +662,20 @@ async function main(): Promise<void> {
   const sideGutter = (frameWidth - (VIEW_PADDING * 2 + spanX * scale)) / 2;
   const toView = ([x, y]: Vec): Vec => [VIEW_PADDING + sideGutter + (x - minX) * scale, VIEW_PADDING + (y - minY) * scale];
 
+  // The same projection, collapsed into the four numbers that reproduce it. Projection and framing
+  // are both affine and both separable, so `toView(project(p))` is nothing more than a scale and a
+  // shift per axis — which means a recording made on another day can be drawn in this frame without
+  // shipping the maths or the recording that set the frame.
+  const degreeMeters = EARTH_RADIUS_M * toRadians(1);
+  const lonScale = degreeMeters * Math.cos(toRadians(lat0)) * scale;
+  const latScale = -degreeMeters * scale;
+  const geoFrame = {
+    lonScale,
+    lonOffset: VIEW_PADDING + sideGutter - minX * scale - lonScale * lon0,
+    latScale,
+    latOffset: VIEW_PADDING - minY * scale - latScale * lat0,
+  };
+
   const view = projected.map(toView);
   const sliceBetween = (fromMeters: number, toMeters: number): Vec[] =>
     view.filter((_, i) => points[i].metersIn >= fromMeters && points[i].metersIn <= toMeters);
@@ -748,6 +762,25 @@ async function main(): Promise<void> {
 
 /** Fits the projected track with room for the marker's radius at the extremes. */
 export const COURSE_VIEW_BOX = '0 0 ${frameWidth.toFixed(1)} ${frameHeight.toFixed(1)}';
+
+/**
+ * How WGS-84 degrees become viewBox units in this frame: \`x = lon × lonScale + lonOffset\`,
+ * \`y = lat × latScale + latOffset\`.
+ *
+ * The frame was fitted to one recording, and without these numbers it is a picture only that
+ * recording can be drawn in. With them, any GPX of the course lands on the same alleys — which is
+ * what lets an athlete's own track from their own watch be drawn over this map.
+ *
+ * Full precision on purpose: the offsets are millions of units and rounding them to a few decimals
+ * would walk the whole map off the park. Nothing personal here — it is the projection of a park,
+ * not of anybody's morning.
+ */
+export const COURSE_GEO_FRAME = {
+  lonScale: ${geoFrame.lonScale},
+  lonOffset: ${geoFrame.lonOffset},
+  latScale: ${geoFrame.latScale},
+  latOffset: ${geoFrame.latOffset},
+};
 
 /** The first big lap, nudged to one side of the alleys it was run on. */
 export const COURSE_LAP_ONE_PATH =

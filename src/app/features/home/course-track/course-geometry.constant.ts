@@ -4,6 +4,25 @@
 /** Fits the projected track with room for the marker's radius at the extremes. */
 export const COURSE_VIEW_BOX = '0 0 1542.0 963.7';
 
+/**
+ * How WGS-84 degrees become viewBox units in this frame: `x = lon × lonScale + lonOffset`,
+ * `y = lat × latScale + latOffset`.
+ *
+ * The frame was fitted to one recording, and without these numbers it is a picture only that
+ * recording can be drawn in. With them, any GPX of the course lands on the same alleys — which is
+ * what lets an athlete's own track from their own watch be drawn over this map.
+ *
+ * Full precision on purpose: the offsets are millions of units and rounding them to a few decimals
+ * would walk the whole map off the park. Nothing personal here — it is the projection of a park,
+ * not of anybody's morning.
+ */
+export const COURSE_GEO_FRAME = {
+  lonScale: 150048.6268698155,
+  lonOffset: -5839928.050323518,
+  latScale: -220924.71578608532,
+  latOffset: 10432559.259288708,
+};
+
 /** The first big lap, nudged to one side of the alleys it was run on. */
 export const COURSE_LAP_ONE_PATH =
   'M311.7 368.2L294.6 406.2L295.8 420.7L303.9 434.7L594.7 703.8L638.6 750.5L692.7 796.5L705.1 798.2L718.7 792.7L777.4 727.4L802.4 709.0L877.9 707.3L971.6 650.7L987.5 646.8L1002.0 653.3L1008.6 668.9L1009.8 703.2L1002.0 764.5L979.0 830.9L938.7 898.3L935.4 925.1L937.3 934.3L941.5 938.2L982.3 933.5L1007.3 921.5L1065.2 872.4L1113.8 842.7L1148.7 813.7L1216.8 779.0L1247.3 750.3L1246.9 729.6L1192.3 623.1L1095.6 392.5L1076.6 369.1L976.7 279.4L969.1 276.6L964.2 278.5L872.9 385.5L850.9 405.3L815.3 429.3L759.4 450.6L744.3 452.3L721.2 439.1L672.8 380.3L661.4 356.6L664.4 340.8L674.4 328.1L750.5 282.4L853.3 229.1L895.7 214.7L913.0 215.5L942.6 230.4L1024.1 310.1L1057.7 333.8L1095.9 345.7L1105.4 343.6L1127.3 325.7L1161.5 273.7L1204.3 238.1L1223.7 202.8L1234.7 138.6L1203.1 79.0L1201.3 39.3L1198.0 30.6L1190.4 24.9L1166.2 22.0L1140.2 26.2L1020.0 75.1L942.0 97.4L768.8 134.8L624.7 175.2L572.6 185.1L392.3 247.1L361.4 269.3L319.6 330.4L309.1 358.8L306.4 358.4';
