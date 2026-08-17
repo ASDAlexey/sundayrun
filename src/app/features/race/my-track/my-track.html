@@ -1,0 +1,148 @@
+@if (view(); as track) {
+  <section class="my-track">
+    <h2 class="my-track__title" i18n="@@myTrack.title">Твой трек</h2>
+
+    <p class="my-track__hint" i18n="@@myTrack.hint">
+      Запись с твоих часов, разложенная по трассе. Она лежит только на этом устройстве — на сайт трек не уходит и никому, кроме тебя, не
+      виден.
+    </p>
+
+    <figure class="my-track__figure">
+      <div class="my-track__frame">
+        <!-- Decorative: everything the drawing says is said again in the facts under it. -->
+        <svg aria-hidden="true" class="my-track__map" [attr.viewBox]="track.viewBox">
+          <image class="my-track__basemap" height="100%" href="course-basemap.svg" width="100%" x="0" y="0" />
+
+          <path class="my-track__alley-casing" [attr.d]="track.alleyPath" />
+
+          <path class="my-track__alleys" [attr.d]="track.alleyPath" />
+
+          <!-- The whole route in one pale casing first, then the coloured stretches on top: without
+          it the bands butt against the alleys underneath and the line loses its edge. -->
+          @for (trace of track.traces; track $index) {
+            <path class="my-track__casing" [attr.d]="trace.d" />
+          }
+
+          @for (trace of track.traces; track $index) {
+            <path [attr.d]="trace.d" [class]="'my-track__trace my-track__trace_' + trace.tone" />
+          }
+
+          <circle
+            class="my-track__pin my-track__pin_start"
+            [attr.cx]="track.startPoint.x"
+            [attr.cy]="track.startPoint.y"
+            [attr.r]="pinRadius"
+          />
+
+          <circle
+            class="my-track__pin my-track__pin_finish"
+            [attr.cx]="track.finishPoint.x"
+            [attr.cy]="track.finishPoint.y"
+            [attr.r]="pinRadius"
+          />
+
+          @if (marker(); as runner) {
+            <circle class="my-track__marker" [attr.cx]="runner.x" [attr.cy]="runner.y" [attr.r]="markerRadius" />
+          }
+        </svg>
+
+        <div class="my-track__hud">
+          <p class="my-track__readout">
+            <!-- The whole distance at rest, counting up while the replay runs. -->
+            <span class="my-track__meters">{{ marker()?.meters ?? track.distanceMeters }}</span>
+
+            <span class="my-track__unit" i18n="@@myTrack.metersUnit">м</span>
+          </p>
+
+          @if (marker(); as runner) {
+            <span class="my-track__pace-now" i18n="@@myTrack.paceNow">{{ runner.paceText }} /км</span>
+          }
+        </div>
+
+        <button class="my-track__play" type="button" (click)="play()">
+          <span aria-hidden="true" class="my-track__play-glyph"></span>
+
+          @if (replayable()) {
+            <span i18n="@@myTrack.playAgain">Ещё раз</span>
+          } @else {
+            <span i18n="@@myTrack.play">Посмотреть свой забег</span>
+          }
+        </button>
+
+        <p class="my-track__credit" i18n="@@myTrack.credit">© OpenStreetMap</p>
+      </div>
+
+      <figcaption class="my-track__legend">
+        <span class="my-track__key my-track__key_fastest" i18n="@@myTrack.legendFast">быстрее своего среднего</span>
+
+        <span class="my-track__key my-track__key_even" i18n="@@myTrack.legendEven">ровно</span>
+
+        <span class="my-track__key my-track__key_slowest" i18n="@@myTrack.legendSlow">медленнее</span>
+      </figcaption>
+    </figure>
+
+    <div class="my-track__chart-block">
+      <h3 class="my-track__chart-title" i18n="@@myTrack.chartTitle">Темп по дистанции</h3>
+
+      <svg
+        aria-label="График темпа по дистанции"
+        class="my-track__chart"
+        i18n-aria-label="@@myTrack.chartLabel"
+        role="img"
+        [attr.viewBox]="chartViewBox"
+      >
+        @for (tick of track.chart.ticks; track tick.label) {
+          <line class="my-track__grid" [attr.x1]="tick.x" [attr.x2]="tick.x" [attr.y1]="chartTop" [attr.y2]="chartBottom" />
+
+          <text class="my-track__tick" [attr.x]="tick.x" [attr.y]="chartBottom">{{ tick.label }}</text>
+        }
+
+        <line
+          class="my-track__average"
+          [attr.x1]="chartLeft"
+          [attr.x2]="chartRight"
+          [attr.y1]="track.chart.averageY"
+          [attr.y2]="track.chart.averageY"
+        />
+
+        <polyline class="my-track__curve" [attr.points]="track.chart.linePoints" />
+      </svg>
+
+      <p class="my-track__scale">
+        <span i18n="@@myTrack.scaleFast">вверху {{ track.chart.fastestPaceText }} /км</span>
+
+        <span i18n="@@myTrack.scaleAverage">средний {{ track.chart.averagePaceText }} /км</span>
+
+        <span i18n="@@myTrack.scaleSlow">внизу {{ track.chart.slowestPaceText }} /км</span>
+      </p>
+    </div>
+
+    <ul class="my-track__facts">
+      <li class="my-track__fact" i18n="@@myTrack.factTotals">
+        По часам — {{ track.distanceText }} км за {{ track.durationText }}, средний темп {{ track.paceText }} /км.
+      </li>
+
+      @if (track.isLonger) {
+        <li class="my-track__fact" i18n="@@myTrack.factExtra">
+          Это на {{ track.extraMeters }} м длиннее пяти километров — примерно {{ track.extraSeconds }} с твоего темпа, потраченных на
+          повороты и на то, что GPS видит трассу по-своему.
+        </li>
+      } @else {
+        <li class="my-track__fact" i18n="@@myTrack.factShort">
+          Часы намерили на {{ track.extraMeters }} м меньше пяти километров — под деревьями приём срезает углы.
+        </li>
+      }
+
+      <li class="my-track__fact" i18n="@@myTrack.factFastestKm">
+        Быстрее всего дался {{ track.fastestKm }}-й километр — {{ track.fastestKmText }}.
+      </li>
+
+      @if (track.officialText; as official) {
+        <li class="my-track__fact" i18n="@@myTrack.factWatchGap">
+          Часы остановились на {{ track.durationText }}, в протоколе — <app-race-time [value]="official" />: разница
+          {{ track.watchGapSeconds }} с. Секундомер на финише и кнопка на запястье — разные приборы.
+        </li>
+      }
+    </ul>
+  </section>
+}

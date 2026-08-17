@@ -124,6 +124,15 @@
   --map-route: #e2661a;
   --map-route-core: #ffd23f;
 
+  // The pace ramp of a personal track, drawn on that same paper: quick is green, laboured is red,
+  // and the middle band is the map's own route colour so an evenly run race looks like the course.
+  // Read against the runner's own average — see `PACE_TONE_BANDS` — never against anybody else's.
+  --map-pace-fastest: #157f3d;
+  --map-pace-fast: #7bb52e;
+  --map-pace-even: #e2a007;
+  --map-pace-slow: #e2661a;
+  --map-pace-slowest: #c62828;
+
   // Start, finish and the gathering point. Red is the convention on course schematics and the
   // club's own drawing uses it; the site's mint green read as a stray interface colour here.
   --map-mark: #cf3a2a;

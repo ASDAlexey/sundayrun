@@ -97,6 +97,9 @@
           }
         </header>
 
+        <!-- Renders nothing unless this device holds a recording of this race — see `MyTrack`. -->
+        <app-my-track [officialMs]="selfTotalMs()" [slug]="slug()" />
+
         <div class="race__table-wrap">
           <div class="race__table">
             <div class="race__thead-row" role="row">

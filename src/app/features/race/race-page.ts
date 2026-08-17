@@ -68,9 +68,10 @@ import {
   SLUG_ROUTE_PARAM,
   SUMMARY_PART_SEPARATOR,
 } from './race-page.constant';
+import { MyTrack } from './my-track/my-track';
 import { PhotoStrip } from './photo-strip/photo-strip';
 import { RaceStatus, RaceStatusType } from './race-page.enum';
-import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
+import { RaceDeltaView, RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
 
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
 @Component({
@@ -80,6 +81,7 @@ import { RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView
     LoadingState,
     MatButtonModule,
     MatTooltipModule,
+    MyTrack,
     OfflineNotice,
     PhotoStrip,
     RaceTime,
@@ -105,11 +107,22 @@ export class RacePage {
   readonly pdfLoading = signal(false);
   readonly pdfFailed = signal(false);
 
+  /** The race being shown; the personal track card reads it to find this device's recording. */
+  readonly slug = signal('');
+
+  /**
+   * The reader's own 5 km time here, in milliseconds — what their watch's account of the race is
+   * held against. Null when nobody is picked, when the pick did not run this one, or on a DNF row.
+   */
+  readonly selfTotalMs = computed(() => {
+    const row = this.race()?.rows.find((candidate) => candidate.athleteKey === this.selfKey());
+
+    return row === undefined ? null : parseDuration(row.time5);
+  });
+
   protected readonly statuses = RaceStatus;
   protected readonly noteKinds = NoteBadgeKind;
   protected readonly homeLink = HOME_PAGE_LINK;
-
-  #slug = '';
 
   constructor() {
     // The loader is captured once here; each navigation runs its own slug-keyed transfer load.
@@ -121,7 +134,7 @@ export class RacePage {
       .subscribe((params) => {
         const slug = params.get(SLUG_ROUTE_PARAM) ?? '';
 
-        this.#slug = slug;
+        this.slug.set(slug);
         this.status.set(RaceStatus.loading);
         this.race.set(null);
         // Prerender bakes this slug's protocol under `race.view.<slug>`; the browser trusts it
@@ -147,7 +160,7 @@ export class RacePage {
     this.pdfFailed.set(false);
 
     try {
-      await this.#protocolPdf.download(this.#slug);
+      await this.#protocolPdf.download(this.slug());
     } catch {
       this.pdfFailed.set(true);
     } finally {
@@ -157,7 +170,7 @@ export class RacePage {
 
   /** A newer navigation may have taken over while the results were loading, so the slug is rechecked. */
   #applyState(slug: string, state: RacePageState): void {
-    if (slug !== this.#slug) {
+    if (slug !== this.slug()) {
       return;
     }
 

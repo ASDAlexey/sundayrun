@@ -1,0 +1,308 @@
+@use 'styles/card' as c;
+@use 'styles/typography' as t;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.my-track {
+  @include c.card;
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 12px;
+
+  &__title {
+    @include t.text('title', 'medium');
+
+    color: var(--text);
+  }
+
+  &__hint {
+    @include t.text('label', 'medium');
+
+    color: var(--text-muted);
+  }
+
+  &__figure {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    gap: 10px;
+  }
+
+  // The ratio matches the viewBox exactly, so the drawing fills the box without letterboxing.
+  &__frame {
+    position: relative;
+    aspect-ratio: 1542 / 964;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--map-paper);
+  }
+
+  &__map {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__alley-casing {
+    fill: none;
+    stroke: var(--map-alley-edge);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 9;
+  }
+
+  &__alleys {
+    fill: none;
+    stroke: var(--map-alley);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 6;
+  }
+
+  // One pale rail under every coloured stretch, so the bands read as one line with a changing
+  // colour rather than as a chain of separate marks laid on the alleys.
+  &__casing {
+    fill: none;
+    stroke: var(--map-route-casing);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 16;
+  }
+
+  &__trace {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 10;
+
+    &_fastest {
+      stroke: var(--map-pace-fastest);
+    }
+
+    &_fast {
+      stroke: var(--map-pace-fast);
+    }
+
+    &_even {
+      stroke: var(--map-pace-even);
+    }
+
+    &_slow {
+      stroke: var(--map-pace-slow);
+    }
+
+    &_slowest {
+      stroke: var(--map-pace-slowest);
+    }
+  }
+
+  &__pin {
+    stroke: var(--map-paper);
+    stroke-width: 3;
+
+    &_start {
+      fill: var(--map-mark);
+    }
+
+    &_finish {
+      fill: var(--map-ink);
+    }
+  }
+
+  // The only thing on the map that moves, so it is the only thing wearing the site's own accent.
+  &__marker {
+    fill: var(--accent);
+    stroke: var(--map-paper);
+    stroke-width: 3;
+  }
+
+  // Dark plates on light paper — the instruments belong to the interface, not to the map.
+  &__hud {
+    display: flex;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    pointer-events: none;
+  }
+
+  &__readout,
+  &__pace-now {
+    padding: 6px 10px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+  }
+
+  &__meters {
+    @include t.text('title', 'large');
+
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__unit {
+    @include t.text('label', 'small');
+
+    margin-left: 4px;
+    color: var(--text-secondary);
+  }
+
+  &__pace-now {
+    @include t.text('label', 'medium');
+
+    color: var(--text);
+  }
+
+  &__play {
+    @include t.text('label', 'medium');
+
+    display: inline-flex;
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    align-items: center;
+    padding: 8px 14px;
+    gap: 8px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color var(--transition-time) var(--ease);
+
+    &:hover {
+      border-color: var(--accent);
+    }
+  }
+
+  &__play-glyph {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--accent);
+  }
+
+  &__credit {
+    @include t.text('label', 'small');
+
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    color: var(--map-ink-soft);
+  }
+
+  &__legend {
+    @include t.text('label', 'small');
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: var(--text-muted);
+  }
+
+  &__key {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    &::before {
+      width: 14px;
+      height: 3px;
+      border-radius: 2px;
+      content: '';
+    }
+
+    &_fastest::before {
+      background: var(--map-pace-fastest);
+    }
+
+    &_even::before {
+      background: var(--map-pace-even);
+    }
+
+    &_slowest::before {
+      background: var(--map-pace-slowest);
+    }
+  }
+
+  &__chart-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__chart-title {
+    @include t.text('label', 'medium');
+
+    color: var(--text-secondary);
+  }
+
+  &__chart {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &__grid {
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+
+  &__tick {
+    @include t.text('label', 'small');
+
+    fill: var(--text-muted);
+    text-anchor: middle;
+  }
+
+  // The average is the reference the colours are measured against, so it is drawn as a rule rather
+  // than as a series: dashed, quiet, and straight through the middle of the box.
+  &__average {
+    stroke: var(--text-muted);
+    stroke-dasharray: 4 5;
+    stroke-width: 1;
+  }
+
+  &__curve {
+    fill: none;
+    stroke: var(--accent);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  &__scale {
+    @include t.text('label', 'small');
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--text-muted);
+  }
+
+  &__facts {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 6px;
+    list-style: none;
+  }
+
+  &__fact {
+    @include t.text('body', 'medium');
+
+    color: var(--text-secondary);
+  }
+}
