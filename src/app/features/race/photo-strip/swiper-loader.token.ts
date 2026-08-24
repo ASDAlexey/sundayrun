@@ -9,5 +9,5 @@ import { loadSwiper } from './swiper-loader';
  */
 export const SWIPER_LOADER = new InjectionToken<() => Promise<void>>('SWIPER_LOADER', {
   providedIn: 'root',
-  factory: () => loadSwiper,
+  factory: (): typeof loadSwiper => loadSwiper,
 });

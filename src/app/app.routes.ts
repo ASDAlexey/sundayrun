@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { type Routes } from '@angular/router';
 
 import { AdminPage } from './features/admin/admin-page';
 import { AthletePage } from './features/athlete/athlete-page';

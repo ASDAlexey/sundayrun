@@ -6,13 +6,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { suggestAthletes } from '../../core/history/athlete-suggest';
-import { AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { type AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { buildHeadToHead } from '../../core/history/head-to-head';
-import { HeadToHead, HeadToHeadMeeting } from '../../core/history/head-to-head.interface';
+import { type HeadToHead, type HeadToHeadMeeting } from '../../core/history/head-to-head.interface';
 import { meetingSplitLeads } from '../../core/history/pacing';
-import { MeetingSplits } from '../../core/history/pacing.interface';
+import { type MeetingSplits } from '../../core/history/pacing.interface';
 import { pluralText } from '../../core/i18n/plural-text';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
 import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
@@ -26,8 +26,8 @@ import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { DRAW_GAP_TEXT, LEFT_ROUTE_PARAM, RIGHT_ROUTE_PARAM, VERSUS_SUGGESTION_LIMIT } from './versus-page.constant';
-import { DuelStatus, DuelStatusType, VersusStatus, VersusStatusType } from './versus-page.enum';
-import { AthleteOptionView, DuelSideView, MeetingView, VersusDuelState } from './versus-page.interface';
+import { DuelStatus, type DuelStatusType, VersusStatus, type VersusStatusType } from './versus-page.enum';
+import { type AthleteOptionView, type DuelSideView, type MeetingView, type VersusDuelState } from './versus-page.interface';
 import { RaceTime } from '../../shared/race-time/race-time';
 
 /**
@@ -56,7 +56,9 @@ export class VersusPage {
   readonly #pickedKeys = computed(() => [this.#left()?.key, this.#right()?.key]);
   readonly #duelMeetings = computed(() => this.#duel()?.meetings ?? []);
   /** Per meeting: both duelists' plausible first-lap splits, or null while either side lacks one. */
-  readonly #splitLeads = computed(() => meetingSplitLeads(this.#duelMeetings(), this.#leftLaps(), this.#rightLaps()));
+  readonly #splitLeads = computed(() =>
+    meetingSplitLeads(this.#duelMeetings(), { leftLaps: this.#leftLaps(), rightLaps: this.#rightLaps() }),
+  );
 
   readonly status = signal<VersusStatusType>(VersusStatus.loading);
   readonly duelStatus = signal<DuelStatusType>(DuelStatus.idle);
@@ -70,7 +72,7 @@ export class VersusPage {
   readonly meetings = computed(() => this.#duelMeetings().map((meeting, index) => toMeetingView(meeting, this.#splitLeads()[index])));
   /** «После первого круга впереди: 2 : 1» — null while no meeting carries both splits. */
   readonly splitLeadText = computed(() => toSplitLeadText(this.#splitLeads()));
-  readonly suggestions = computed(() => suggest(this.#options(), this.query(), this.#pickedKeys()));
+  readonly suggestions = computed(() => suggest(this.#options(), { query: this.query(), pickedKeys: this.#pickedKeys() }));
   /** The search box stays until both slots are filled; a settled duel needs no picking. */
   readonly pickerOpen = computed(() => this.duelStatus() === DuelStatus.idle);
 
@@ -188,7 +190,7 @@ export class VersusPage {
     this.duelStatus.set(next.status);
     // `/vs/:left/:right` is the link people share («наша дуэль»), so its preview names the pair and
     // the score. The side views read the signals just set above, so the sentence is never stale.
-    this.#pageMeta.setDescription(duelDescriptionOf(this.leftSide(), this.rightSide(), this.meetingCount()));
+    this.#pageMeta.setDescription(duelDescriptionOf(this.leftSide(), { right: this.rightSide(), meetingCount: this.meetingCount() }));
   }
 
   async #resolveDuel(leftKey: string, rightKey: string): Promise<VersusDuelState> {
@@ -217,7 +219,10 @@ export class VersusPage {
  * встречи, счёт 1 : 1». A half-filled picker has no duel to describe and returns empty, which
  * restores the site description.
  */
-function duelDescriptionOf(left: DuelSideView | null, right: DuelSideView | null, meetingCount: number): string {
+function duelDescriptionOf(
+  left: DuelSideView | null,
+  { right, meetingCount }: { right: DuelSideView | null; meetingCount: number },
+): string {
   if (left === null || right === null) {
     return '';
   }
@@ -244,8 +249,11 @@ function toSideView(record: AthleteRecord | null, wins: number): DuelSideView | 
 }
 
 /** Name matches for the free slot, already-picked athletes excluded. */
-function suggest(options: AthleteRecord[], query: string, pickedKeys: (string | undefined)[]): AthleteOptionView[] {
-  return suggestAthletes(options, query, pickedKeys, VERSUS_SUGGESTION_LIMIT).map(toOptionView);
+function suggest(
+  options: AthleteRecord[],
+  { query, pickedKeys }: { query: string; pickedKeys: (string | undefined)[] },
+): AthleteOptionView[] {
+  return suggestAthletes(options, { query, excludedKeys: pickedKeys, limit: VERSUS_SUGGESTION_LIMIT }).map(toOptionView);
 }
 
 function toOptionView(record: AthleteRecord): AthleteOptionView {

@@ -1,6 +1,6 @@
-import { ExpectedLapSample } from './runner-order.interface';
+import { type ExpectedLapSample } from './runner-order.interface';
 import { TimerRunnerOutcome } from './timer-session.enum';
-import { TimerRunner } from './timer-session.interface';
+import { type TimerRunner } from './timer-session.interface';
 
 export const FAST_ATHLETE_KEY = 'быстров антон';
 export const STEADY_ATHLETE_KEY = 'средний борис';

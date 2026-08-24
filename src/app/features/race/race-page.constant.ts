@@ -1,8 +1,8 @@
-import { FormDeltaKind, FormDeltaKindType } from '../../core/history/form-delta.enum';
-import { PrDeltaKind, PrDeltaKindType } from '../../core/history/pr-delta.enum';
-import { Gender, GenderType } from '../../core/models/gender.enum';
-import { NoteBadgeKind, NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
-import { RaceDeltaView } from './race-page.interface';
+import { FormDeltaKind, type FormDeltaKindType } from '../../core/history/form-delta.enum';
+import { PrDeltaKind, type PrDeltaKindType } from '../../core/history/pr-delta.enum';
+import { Gender, type GenderType } from '../../core/models/gender.enum';
+import { NoteBadgeKind, type NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
+import { type RaceDeltaView } from './race-page.interface';
 
 /** Route param carrying the event slug (`/races/:slug`). */
 export const SLUG_ROUTE_PARAM = 'slug';

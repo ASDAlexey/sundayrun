@@ -1,19 +1,19 @@
 import { and, count, countDistinct, eq, isNotNull, min, sql } from 'drizzle-orm';
 
 import { yearBadgeRarity } from '../core/history/badge-rarity';
-import { YearBadgeRarity } from '../core/history/badge-rarity.type';
+import { type YearBadgeRarity } from '../core/history/badge-rarity.type';
 import { athleteSignalsOf, badgeSignalsByAthlete } from '../core/history/badge-signals';
 import { currentCourseRecordEntries } from '../core/history/course-records';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { ISO_YEAR_LENGTH } from '../core/history/iso-year.constant';
 import { seasonRankBadgeHolders } from '../core/history/season-ranks';
-import { SeasonBestRow } from '../core/history/season-ranks.interface';
+import { type SeasonBestRow } from '../core/history/season-ranks.interface';
 import { seasonOfIso } from '../core/history/seasons';
 import { YearBadge } from '../core/history/year-badges.enum';
 import { yearRankBadgeHolders } from '../core/history/year-ranks';
-import { YearBestRow } from '../core/history/year-ranks.interface';
+import { type YearBestRow } from '../core/history/year-ranks.interface';
 import { athletes, participations, runs } from '../core/sqlite/protocol-db.schema';
-import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { type ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectCourseRecords, selectFirstEventDateByYear, selectHistoryRunRows } from './protocol-db-queries';
 import { asGender, asNumber, asString } from './protocol-db-row';
 
@@ -146,5 +146,5 @@ export async function selectYearBadgeRarity(db: ProtocolDrizzle): Promise<YearBa
     extraHolders.set(YearBadge.courseKing, new Set(courseKings.map((entry) => entry.key)));
   }
 
-  return yearBadgeRarity(activities, firstEventDateByYear, participantCount, extraHolders);
+  return yearBadgeRarity(activities, { firstEventDateByYear, participantCount, extraHolders });
 }

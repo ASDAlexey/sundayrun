@@ -1,6 +1,6 @@
 import { Gender } from '../models/gender.enum';
-import { AthleteFirstLap, FirstLapRun } from './first-lap.interface';
-import { FirstLapRecords } from './first-lap.type';
+import { type AthleteFirstLap, type FirstLapRun } from './first-lap.interface';
+import { type FirstLapRecords } from './first-lap.type';
 
 /**
  * Splits covering every branch of the record scan: the opening men's record, a slower split that

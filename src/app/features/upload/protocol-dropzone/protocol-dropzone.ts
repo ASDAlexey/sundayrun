@@ -1,9 +1,9 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, type ElementRef, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import { EMPTY_INPUT_VALUE, PREVIEW_ROUTE_COMMANDS, XLSX_EXTENSION, ZONE_ACTIVATION_KEYS } from './protocol-dropzone.constant';
-import { FileDropEvent, PreventableEvent, ZoneKeyEvent } from './protocol-dropzone.interface';
+import { type FileDropEvent, type PreventableEvent, type ZoneKeyEvent } from './protocol-dropzone.interface';
 
 /**
  * The protocol intake zone shared by /upload and /admin: accepts a timer xlsx

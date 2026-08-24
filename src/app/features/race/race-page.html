@@ -80,7 +80,7 @@
           }
 
           @if (view.vkPostUrl) {
-            <a class="race__photos" href="{{ view.vkPostUrl }}" rel="noopener noreferrer" target="_blank">
+            <a class="race__photos" rel="noopener noreferrer" target="_blank" [href]="view.vkPostUrl">
               <svg aria-hidden="true" class="race__photos-icon" viewBox="0 0 16 16">
                 <path
                   d="M2.25 4.25h11.5v8.5H2.25zM2.25 10.5l3-3 2.5 2.5 2.25-2.25 3.75 3.75M10.25 6.25h.5"
@@ -190,8 +190,9 @@
                   @if (row.formDelta.text !== '') {
                     <button
                       #formDeltaTip="matTooltip"
-                      class="race__base_form race__delta {{ row.formDelta.className }}"
+                      class="race__base_form race__delta"
                       type="button"
+                      [class]="row.formDelta.className"
                       [matTooltip]="row.formDelta.hint"
                       (click)="formDeltaTip.toggle()"
                     >
@@ -202,8 +203,9 @@
                   @if (row.yearDelta.text !== '') {
                     <button
                       #yearDeltaTip="matTooltip"
-                      class="race__base_year race__delta {{ row.yearDelta.className }}"
+                      class="race__base_year race__delta"
                       type="button"
+                      [class]="row.yearDelta.className"
                       [matTooltip]="row.yearDelta.hint"
                       (click)="yearDeltaTip.toggle()"
                     >
@@ -214,8 +216,9 @@
                   @if (row.recordDelta.text !== '') {
                     <button
                       #prDeltaTip="matTooltip"
-                      class="race__base_record race__delta {{ row.recordDelta.className }}"
+                      class="race__base_record race__delta"
                       type="button"
+                      [class]="row.recordDelta.className"
                       [matTooltip]="row.recordDelta.hint"
                       (click)="prDeltaTip.toggle()"
                     >
@@ -228,14 +231,14 @@
 
                 <div class="race__td race__td_center" role="cell">
                   @if (row.genderText !== '') {
-                    <span class="race__gender {{ row.genderClass }}">{{ row.genderText }}</span>
+                    <span class="race__gender" [class]="row.genderClass">{{ row.genderText }}</span>
                   }
                 </div>
 
                 <div class="race__td race__td_center" role="cell">
                   <span class="race__place-cell">
                     @if (row.placeMMedalClass !== '') {
-                      <svg aria-hidden="true" class="race__medal {{ row.placeMMedalClass }}" viewBox="0 0 12 12">
+                      <svg aria-hidden="true" class="race__medal" viewBox="0 0 12 12" [class]="row.placeMMedalClass">
                         <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
                         <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
                       </svg>
@@ -254,7 +257,7 @@
                 <div class="race__td race__td_center" role="cell">
                   <span class="race__place-cell">
                     @if (row.placeFMedalClass !== '') {
-                      <svg aria-hidden="true" class="race__medal {{ row.placeFMedalClass }}" viewBox="0 0 12 12">
+                      <svg aria-hidden="true" class="race__medal" viewBox="0 0 12 12" [class]="row.placeFMedalClass">
                         <path class="race__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
                         <circle class="race__medal-disc" cx="6" cy="8" r="3.4" />
                       </svg>
@@ -272,7 +275,7 @@
 
                 <div class="race__td race__td_center" role="cell">
                   @if (row.finishCountText !== '') {
-                    <span class="race__finishes {{ row.finishClubClass }}">{{ row.finishCountText }}</span>
+                    <span class="race__finishes" [class]="row.finishClubClass">{{ row.finishCountText }}</span>
                   }
                 </div>
 
@@ -284,7 +287,7 @@
                       @if (badge.kind === noteKinds.plain) {
                         <span class="race__note-text"><app-race-time [value]="badge.text" /></span>
                       } @else {
-                        <span class="race__note-badge {{ badge.className }}">
+                        <span class="race__note-badge" [class]="badge.className">
                           <svg aria-hidden="true" class="race__note-icon" viewBox="0 0 12 12">
                             @switch (badge.kind) {
                               @case (noteKinds.record) {

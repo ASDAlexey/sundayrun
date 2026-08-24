@@ -1,6 +1,5 @@
 import { IDBFactory } from 'fake-indexeddb';
 
-import { AthleteTrack } from './athlete-track.interface';
 import { clearTracks, readChecks, readTrack, readTracks, saveCheck, saveTrack } from './athlete-track.storage';
 import { SECOND_TRACK_MOCK, TRACK_CHECK_MOCK, TRACK_MOCK, TRACK_SLUG_MOCK } from './athlete-track.mock';
 import { TrackDb, TrackDbFactory, TrackDbOpenRequest, TrackDbTransaction } from './athlete-track-db.type';
@@ -25,13 +24,6 @@ const fakeFactory = (outcome: 'error' | 'success'): TrackDbFactory => ({
   },
 });
 
-/**
- * The stored bytes come back through structured clone, so under jsdom they carry a `Uint8Array`
- * from another realm: identical content, different constructor, which `toEqual` refuses. Comparing
- * the gzip as a plain array keeps the assertion about the data instead of about realms.
- */
-const withPlainGzip = (track: AthleteTrack | null): unknown => (track === null ? null : { ...track, gpxGzip: Array.from(track.gpxGzip) });
-
 describe('athlete track storage', () => {
   beforeEach(() => {
     vi.stubGlobal('indexedDB', new IDBFactory());
@@ -44,8 +36,8 @@ describe('athlete track storage', () => {
   it('keeps a track and reads it back by race slug', async () => {
     await saveTrack(TRACK_MOCK);
 
-    expect(withPlainGzip(await readTrack(TRACK_SLUG_MOCK))).toEqual(withPlainGzip(TRACK_MOCK));
-    expect((await readTracks()).map(withPlainGzip)).toEqual([withPlainGzip(TRACK_MOCK)]);
+    expect(await readTrack(TRACK_SLUG_MOCK)).toEqual(TRACK_MOCK);
+    expect(await readTracks()).toEqual([TRACK_MOCK]);
   });
 
   it('reports an unknown race as no track rather than failing', async () => {
@@ -58,7 +50,7 @@ describe('athlete track storage', () => {
     await saveTrack(TRACK_MOCK);
     await saveTrack(resynced);
 
-    expect((await readTracks()).map(withPlainGzip)).toEqual([withPlainGzip(resynced)]);
+    expect(await readTracks()).toEqual([resynced]);
   });
 
   it('journals the days already asked about', async () => {

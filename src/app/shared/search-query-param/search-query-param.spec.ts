@@ -15,7 +15,10 @@ describe('bindSearchQueryParam with a query in the URL', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: Router, useValue: { navigate } },
-        { provide: ActivatedRoute, useFactory: () => activatedRouteQueryStub({ [SEARCH_QUERY_PARAM]: INITIAL_QUERY }) },
+        {
+          provide: ActivatedRoute,
+          useFactory: (): ReturnType<typeof activatedRouteQueryStub> => activatedRouteQueryStub({ [SEARCH_QUERY_PARAM]: INITIAL_QUERY }),
+        },
       ],
     });
   });
@@ -59,7 +62,7 @@ describe('bindSearchQueryParam without a query in the URL', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: Router, useValue: { navigate } },
-        { provide: ActivatedRoute, useFactory: () => activatedRouteQueryStub({}) },
+        { provide: ActivatedRoute, useFactory: (): ReturnType<typeof activatedRouteQueryStub> => activatedRouteQueryStub({}) },
       ],
     });
   });

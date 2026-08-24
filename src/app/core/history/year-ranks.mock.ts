@@ -1,6 +1,6 @@
 import { Gender } from '../models/gender.enum';
-import { YearBadge, YearBadgeType } from './year-badges.enum';
-import { YearBestRow, YearRankedBadge } from './year-ranks.interface';
+import { YearBadge, type YearBadgeType } from './year-badges.enum';
+import { type YearBestRow, type YearRankedBadge } from './year-ranks.interface';
 
 const MALE_BASE_MS = 1000000;
 const MALE_STEP_MS = 10000;

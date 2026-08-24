@@ -1,6 +1,6 @@
 import { NEWER_ENTRY, OLDER_ENTRY } from '../../core/github/archive-index.mock';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { RaceListItem } from './races-page.interface';
+import { type RaceListItem } from './races-page.interface';
 
 /** The frozen «today» the page specs pin `isoToday` to: July is still open, June is closed. */
 export const RACES_TODAY_ISO = '2026-07-12';

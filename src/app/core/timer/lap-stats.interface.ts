@@ -1,5 +1,5 @@
-import { GenderType } from '../models/gender.enum';
-import { ExpectedLapSample } from './runner-order.interface';
+import { type GenderType } from '../models/gender.enum';
+import { type ExpectedLapSample } from './runner-order.interface';
 
 /**
  * One archived 2.3 km split of one athlete, plus the gender the course record is decided per.

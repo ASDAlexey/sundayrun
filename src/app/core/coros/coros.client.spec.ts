@@ -35,11 +35,20 @@ describe('CorosClient', () => {
       ),
     );
 
-    await expect(client.login(COROS_EMAIL_MOCK, COROS_PASSWORD_MOCK, CorosRegion.Eu)).resolves.toBe(COROS_TOKEN_MOCK);
-    await expect(client.queryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu)).resolves.toEqual([
-      COROS_RACE_ACTIVITY_MOCK,
-    ]);
-    await expect(client.downloadGpx(COROS_TOKEN_MOCK, COROS_LABEL_ID_MOCK, CorosRegion.Eu)).resolves.toBe(COROS_GPX_MOCK);
+    await expect(client.login({ email: COROS_EMAIL_MOCK, password: COROS_PASSWORD_MOCK, region: CorosRegion.Eu })).resolves.toBe(
+      COROS_TOKEN_MOCK,
+    );
+    await expect(
+      client.queryRuns({
+        token: COROS_TOKEN_MOCK,
+        startDateIso: COROS_RACE_DATE_ISO_MOCK,
+        endDateIso: COROS_RACE_DATE_ISO_MOCK,
+        region: CorosRegion.Eu,
+      }),
+    ).resolves.toEqual([COROS_RACE_ACTIVITY_MOCK]);
+    await expect(client.downloadGpx({ token: COROS_TOKEN_MOCK, labelId: COROS_LABEL_ID_MOCK, region: CorosRegion.Eu })).resolves.toBe(
+      COROS_GPX_MOCK,
+    );
 
     vi.unstubAllGlobals();
   });

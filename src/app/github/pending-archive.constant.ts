@@ -1,5 +1,5 @@
-import { PendingArchiveChanges } from './pending-archive.interface';
-import { PendingArchiveStorage } from './pending-archive.type';
+import { type PendingArchiveChanges } from './pending-archive.interface';
+import { type PendingArchiveStorage } from './pending-archive.type';
 
 /** localStorage key of the session changes still ahead of the archive db (uploads awaited, deletions hidden). */
 export const PENDING_ARCHIVE_STORAGE_KEY = 'parkrun.pending-archive';

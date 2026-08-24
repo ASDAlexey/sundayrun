@@ -1,4 +1,4 @@
-import { RaceEvent } from '../../../core/models/race-event.interface';
+import { type RaceEvent } from '../../../core/models/race-event.interface';
 import { RACE_EVENT_DEFAULTS } from '../../../core/protocol/race-event-defaults.constant';
 
 export const SUGGESTED_DATE_ISO = '2026-06-14';

@@ -14,8 +14,8 @@ import { TimerClockService } from '../../../state/timer-clock.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TimerSheet } from '../handout-sheet/handout-sheet';
 import { STAGE_OF_MODE, TIMER_TAPE_LAST_TARGET, TIMER_TAPE_NOBODY_WAITING, TIMER_TAPE_NO_REQUEST } from './tape-controls.constant';
-import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
-import { TimerTapeRunner } from './tape-controls.interface';
+import { TimerTapeMode, type TimerTapeModeType } from './tape-controls.enum';
+import { type TimerTapeRunner } from './tape-controls.interface';
 import { tapeHeadingText, tapeNobodyWaitingText, tapeQueueDoneText, tapeRunnerMetaText } from './tape-controls.text';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
@@ -140,7 +140,7 @@ export class TimerTape {
 
     // With one man still out on the lap the cut has one possible owner, so it goes to him at once —
     // the queue is a safety net for a pack, not a form to fill in for the straggler.
-    this.#sessions.updateActive((session) => handOutSoleLapSplit(recordUnnamedSplit(session, atMs, this.#nextId(atMs))));
+    this.#sessions.updateActive((session) => handOutSoleLapSplit(recordUnnamedSplit(session, { atMs, splitId: this.#nextId(atMs) })));
     this.#haptics.play(TimerFeedback.lap);
   }
 
@@ -209,14 +209,14 @@ export class TimerTape {
     }
 
     return session.runners.reduce<TimerTapeRunner[]>((rows, runner) => {
-      const waiting = runnerStage(session, runner.id) === STAGE_OF_MODE[mode];
+      const waiting = runnerStage(session, { runnerId: runner.id }) === STAGE_OF_MODE[mode];
       const next = waiting ? nextSplitForRunner(session, runner.id) : undefined;
 
       if (next === undefined) {
         return rows;
       }
 
-      const metaText = tapeRunnerMetaText(mode, runnerSplitTimesMs(session, runner.id)[LAP_SPLIT_INDEX]);
+      const metaText = tapeRunnerMetaText(mode, runnerSplitTimesMs(session, { runnerId: runner.id })[LAP_SPLIT_INDEX]);
 
       return [...rows, { fullName: runner.fullName, id: runner.id, metaText, timeText: formatRaceTime(next.atMs) }];
     }, []);

@@ -15,7 +15,7 @@ import { PublishState } from './github-storage.enum';
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
   const fake = await import('../core/sqlite/spec-utils/fake-sqlite3');
 
-  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+  return { default: (): Promise<typeof fake.FAKE_SQLITE3> => Promise.resolve(fake.FAKE_SQLITE3) };
 });
 
 describe('EventDeleteService', () => {

@@ -1,3 +1,4 @@
+import { mockValueProp } from 'vitest-auto-spy/angular';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
@@ -33,8 +34,8 @@ describe('NavRail', () => {
 
     rail = fixture.nativeElement.querySelector('.rail');
     scrollTo = vi.fn();
-    // jsdom leaves `scrollTo` off elements, and its overloaded type refuses a plain spy.
-    Object.defineProperty(rail, 'scrollTo', { configurable: true, value: scrollTo });
+    // The overloaded `scrollTo` type refuses a plain spy, so the stub is defined on the instance.
+    mockValueProp(rail, 'scrollTo', scrollTo);
   });
 
   afterEach(() => {
@@ -46,7 +47,7 @@ describe('NavRail', () => {
     const active: HTMLElement = fixture.nativeElement.querySelector('.last');
 
     active.setAttribute('aria-current', 'page');
-    stubNavRailGeometry(rail, active);
+    stubNavRailGeometry(rail, { active });
 
     router.events.next(new NavigationStart(1, '/timer'));
     await fixture.whenStable();
@@ -60,7 +61,7 @@ describe('NavRail', () => {
   });
 
   it('leaves the rail alone without a current section and on a screen that fits it whole', async () => {
-    stubNavRailGeometry(rail, null);
+    stubNavRailGeometry(rail, { active: null });
 
     router.events.next(new NavigationEnd(1, '/nowhere', '/nowhere'));
     await fixture.whenStable();
@@ -70,7 +71,7 @@ describe('NavRail', () => {
     const active: HTMLElement = fixture.nativeElement.querySelector('.last');
 
     active.setAttribute('aria-current', 'page');
-    stubNavRailGeometry(rail, active, false);
+    stubNavRailGeometry(rail, { active, overflows: false });
 
     router.events.next(new NavigationEnd(2, '/timer', '/timer'));
     await fixture.whenStable();

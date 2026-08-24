@@ -1,4 +1,4 @@
-import { EventPhoto } from '../../../core/models/event-photo.interface';
+import { type EventPhoto } from '../../../core/models/event-photo.interface';
 import { PHOTO_STRIP_VISIBLE_COUNT } from './photo-strip.constant';
 
 /** Eight photographs — five more than the strip shows, so the «+N» counter has something to say. */

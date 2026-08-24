@@ -1,8 +1,8 @@
-import { YearBadgeRarity } from '../../../core/history/badge-rarity.type';
-import { AthleteYearBadges, YearActivity } from '../../../core/history/year-badges';
-import { YearBadge, YearBadgeType } from '../../../core/history/year-badges.enum';
+import { type YearBadgeRarity } from '../../../core/history/badge-rarity.type';
+import { type AthleteYearBadges, type YearActivity } from '../../../core/history/year-badges';
+import { YearBadge, type YearBadgeType } from '../../../core/history/year-badges.enum';
 import { BADGE_CATALOG } from './badge-catalog.constant';
-import { BadgeCatalogRow } from './badge-catalog.interface';
+import { type BadgeCatalogRow } from './badge-catalog.interface';
 
 // `reduce` instead of `find()?.… ?? ''` — no dead never-missing fallback branch in coverage.
 const descriptionOf = (badge: YearBadgeType): string =>

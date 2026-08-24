@@ -50,7 +50,7 @@ const ROUNDTRIP_TIMEOUT_MS = 30000;
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
   const real = await import('./spec-utils/real-sqlite3');
 
-  return { default: () => real.realSqlite3Init() };
+  return { default: (): ReturnType<typeof real.realSqlite3Init> => real.realSqlite3Init() };
 });
 
 describe('protocol-db-write (real-engine roundtrip)', () => {

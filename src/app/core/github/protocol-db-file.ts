@@ -1,9 +1,15 @@
 import { bytesToBase64 } from '../encoding/base64';
-import { CommitFile } from './github-api.interface';
-import { GithubFetchFn } from './github-fetch.type';
-import { ProtocolDbUpdateFn } from './protocol-db-file.type';
+import { type CommitFile } from './github-api.interface';
+import { type GithubAccess } from './github-fetch.type';
+import { type ProtocolDbUpdateFn } from './protocol-db-file.type';
 import { PROTOCOL_DB_PATH } from './protocols-repo.constant';
 import { fetchRepoFileBytes } from './repo-contents';
+
+/** How this attempt rebuilds the db: the converge step, and the commit sha it reads the bytes at. */
+export interface ProtocolDbRebuild {
+  readonly updateDb: ProtocolDbUpdateFn;
+  readonly parentSha: string;
+}
 
 /**
  * Builds the `data/sundayrun.db` entry of a publication commit: downloads the db via the Contents
@@ -16,13 +22,9 @@ import { fetchRepoFileBytes } from './repo-contents';
  * whenever the request happened to be served; read at the sha the commit will declare as its parent,
  * they are exactly the state the new tree claims to descend from.
  */
-export async function buildProtocolDbCommitFile(
-  token: string,
-  updateDb: ProtocolDbUpdateFn,
-  fetchFn: GithubFetchFn,
-  parentSha: string,
-): Promise<CommitFile> {
-  const currentBytes = await fetchRepoFileBytes(token, PROTOCOL_DB_PATH, fetchFn, parentSha);
+export async function buildProtocolDbCommitFile(access: GithubAccess, rebuild: ProtocolDbRebuild): Promise<CommitFile> {
+  const { updateDb, parentSha } = rebuild;
+  const currentBytes = await fetchRepoFileBytes(PROTOCOL_DB_PATH, { ...access, ref: parentSha });
 
   return { path: PROTOCOL_DB_PATH, base64Content: bytesToBase64(await updateDb(currentBytes)) };
 }

@@ -1,5 +1,5 @@
 import { TIMER_PAGE_LINK } from '../../../app.constant';
-import { TimerPublishStep, TimerPublishStepType } from '../../../state/timer-publish.enum';
+import { TimerPublishStep, type TimerPublishStepType } from '../../../state/timer-publish.enum';
 import { ADMIN_RETURN_PARAM } from '../../admin/admin-page.constant';
 
 /** The steps in the order the flow walks them; `buildStepView` compares positions in this list. */

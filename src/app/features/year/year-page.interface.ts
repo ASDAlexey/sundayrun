@@ -1,5 +1,5 @@
-import { YearBadgeType } from '../../core/history/year-badges.enum';
-import { YearStatusType } from './year-page.enum';
+import { type YearBadgeType } from '../../core/history/year-badges.enum';
+import { type YearStatusType } from './year-page.enum';
 
 /** One preformatted counter card of the year («Забегов» — «49»). */
 export interface YearStatView {

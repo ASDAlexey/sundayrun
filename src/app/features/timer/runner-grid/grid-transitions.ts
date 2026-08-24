@@ -1,8 +1,8 @@
 import { removeSplit } from '../../../core/timer/session-actions';
 import { runnerSplitTimesMs, runnerSplits } from '../../../core/timer/session-splits';
 import { LAP_DONE_MIN_SPLITS, LAST_ENTRY_INDEX, MAX_SPLITS_PER_RUNNER } from '../../../core/timer/timer-session.constant';
-import { TimerRunnerOutcome, TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { TimerRunnerOutcome, type TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 
 /**
  * The two gestures of a tile that need the session to answer a question about itself. Both are pure
@@ -15,7 +15,7 @@ import { TimerSession } from '../../../core/timer/timer-session.interface';
  * A runner with nothing recorded keeps the session reference, so no storage write happens.
  */
 export function removeNewestSplit(session: TimerSession, runnerId: string): TimerSession {
-  const newest = runnerSplits(session, runnerId).at(LAST_ENTRY_INDEX);
+  const newest = runnerSplits(session, { runnerId }).at(LAST_ENTRY_INDEX);
 
   return newest === undefined ? session : removeSplit(session, newest.id);
 }
@@ -30,7 +30,7 @@ export function removeNewestSplit(session: TimerSession, runnerId: string): Time
  * «только круг» is the way to say that on purpose.
  */
 export function retireOutcome(session: TimerSession, runnerId: string): TimerRunnerOutcomeType {
-  const recorded = runnerSplitTimesMs(session, runnerId).length;
+  const recorded = runnerSplitTimesMs(session, { runnerId }).length;
 
   if (recorded >= MAX_SPLITS_PER_RUNNER) {
     return TimerRunnerOutcome.active;

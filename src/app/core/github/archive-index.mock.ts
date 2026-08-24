@@ -1,5 +1,5 @@
 import { ARCHIVE_INDEX_SCHEMA_VERSION, FIRST_ARCHIVE_EVENT_NUMBER } from './archive-index.constant';
-import { ArchiveIndexEntry, ArchiveIndexFile } from './archive-index.interface';
+import { type ArchiveIndexEntry, type ArchiveIndexFile } from './archive-index.interface';
 import { EXPECTED_EVENT_PATHS } from './event-paths.mock';
 
 export const EMPTY_INDEX: ArchiveIndexFile = { schemaVersion: ARCHIVE_INDEX_SCHEMA_VERSION, events: [] };

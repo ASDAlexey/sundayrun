@@ -1,17 +1,17 @@
 import type { Database } from '@sqlite.org/sqlite-wasm';
 
 import { ARCHIVE_INDEX_SCHEMA_VERSION } from '../github/archive-index.constant';
-import { ArchiveIndexEntry, ArchiveIndexFile } from '../github/archive-index.interface';
+import { type ArchiveIndexEntry, type ArchiveIndexFile } from '../github/archive-index.interface';
 import { eventFilePaths } from '../github/event-paths';
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { isoYear } from '../history/iso-year';
-import { AthleteRun } from '../models/athlete-history.interface';
-import { AthletesHistory } from '../models/athletes-history.type';
-import { Gender, GenderType } from '../models/gender.enum';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { type AthletesHistory } from '../models/athletes-history.type';
+import { Gender, type GenderType } from '../models/gender.enum';
 import { deserializeDbInto } from './deserialize-db';
 import { narrowValues } from './protocol-db-narrow';
 import { athletes, events, participations, runs } from './protocol-db.schema';
-import { createProtocolDrizzle, ProtocolDrizzle } from './protocol-drizzle';
+import { createProtocolDrizzle, type ProtocolDrizzle } from './protocol-drizzle';
 import { loadSqlite3 } from './sqlite-loader';
 
 /**
@@ -24,7 +24,7 @@ export async function readHistoryFromDb(dbBytes: Uint8Array): Promise<AthletesHi
   const db = new sqlite3.oo1.DB();
 
   try {
-    deserializeDbInto(sqlite3, db, dbBytes);
+    deserializeDbInto(sqlite3, { db, dbBytes });
 
     return await readHistory(oo1Drizzle(db));
   } finally {

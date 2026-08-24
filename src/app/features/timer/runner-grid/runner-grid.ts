@@ -1,4 +1,4 @@
-import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDrag, type CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 
 import { formatRaceTime } from '../../../core/time/duration';
@@ -13,7 +13,7 @@ import { TimerClockService } from '../../../state/timer-clock.service';
 import { TimerRosterService } from '../../../state/timer-roster.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TimerAnnouncementKind } from '../timer-announcement.enum';
-import { TimerAnnouncement } from '../timer-announcement.interface';
+import { type TimerAnnouncement } from '../timer-announcement.interface';
 import { TimerTile } from '../runner-tile/runner-tile';
 import { removeNewestSplit, retireOutcome } from './grid-transitions';
 import { resolveTimerDensity } from './tile-layout';
@@ -27,7 +27,7 @@ import {
   TIMER_TILE_EMPTY_TIME,
 } from './runner-grid.constant';
 import { TimerDensity } from './runner-grid.enum';
-import { TimerLastSplit, TimerLastTap, TimerTileView } from './runner-grid.interface';
+import { type TimerLastSplit, type TimerLastTap, type TimerTileView } from './runner-grid.interface';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
@@ -74,7 +74,7 @@ export class TimerGrid {
     const orderedIds = this.#orderedIds();
     const session = this.#sessions.active();
 
-    return session === null ? [] : buildTimerTileViews(session, orderedIds, this.#spellGiven());
+    return session === null ? [] : buildTimerTileViews(session, { orderedIds, spellGiven: this.#spellGiven() });
   });
 
   /** Nothing moves under a busy finger: the shelf waits for three seconds of silence. */
@@ -154,7 +154,7 @@ export class TimerGrid {
 
     // The tap that gives the second-to-last man his lap leaves exactly one runner out on the course:
     // whatever is queued nameless is then his, and the core hands it over without being asked.
-    this.#sessions.updateActive((current) => handOutSoleLapSplit(recordSplit(current, view.runner.id, atMs, splitId)));
+    this.#sessions.updateActive((current) => handOutSoleLapSplit(recordSplit(current, { runnerId: view.runner.id, atMs, splitId })));
     this.#lastTap.set({ atMs, runnerId: view.runner.id });
     this.#lastSplit = { runnerId: view.runner.id, splitId };
     this.#haptics.play(finishing ? TimerFeedback.finish : TimerFeedback.lap);
@@ -215,7 +215,9 @@ export class TimerGrid {
 
   /** Swipe left: «сошёл». The tile keeps its place, greyed out and struck through. */
   protected onRetire(view: TimerTileView): void {
-    this.#sessions.updateActive((current) => setRunnerOutcome(current, view.runner.id, retireOutcome(current, view.runner.id)));
+    this.#sessions.updateActive((current) =>
+      setRunnerOutcome(current, { runnerId: view.runner.id, outcome: retireOutcome(current, view.runner.id) }),
+    );
   }
 
   protected onDetails(view: TimerTileView): void {

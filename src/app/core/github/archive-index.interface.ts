@@ -1,5 +1,5 @@
-import { EventWeather } from '../weather/event-weather.interface';
-import { EventFilePaths } from './event-paths.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
+import { type EventFilePaths } from './event-paths.interface';
 
 /**
  * One published event inside `index.json`; `slug` doubles as the event directory name.

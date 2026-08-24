@@ -1,6 +1,6 @@
-import { GenderType } from '../core/models/gender.enum';
-import { AthleteRecord } from '../core/models/athlete-history.interface';
-import { LapStats } from '../core/timer/lap-stats.interface';
+import { type GenderType } from '../core/models/gender.enum';
+import { type AthleteRecord } from '../core/models/athlete-history.interface';
+import { type LapStats } from '../core/timer/lap-stats.interface';
 
 /**
  * One directory entry as the offline cache stores it. The full `AthleteRecord` carries every run of

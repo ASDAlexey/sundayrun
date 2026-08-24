@@ -1,4 +1,4 @@
-import { MemeStanding, MemeThreshold } from './meme-thresholds.interface';
+import { type MemeStanding, type MemeThreshold } from './meme-thresholds.interface';
 
 /** A three-step ladder listed out of time order, so no pre-sorted input is assumed. */
 export const MEME_TEST_THRESHOLDS: MemeThreshold[] = [

@@ -1,9 +1,9 @@
-import { Signal, WritableSignal, computed, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type Signal, type WritableSignal, computed, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
-import { TimerSession } from '../core/timer/timer-session.interface';
+import { type TimerSession } from '../core/timer/timer-session.interface';
 import { TIMER_SESSION_DATE_ISO } from '../core/timer/timer-session.mock';
-import { CreateTimerSessionInput } from './timer-session.interface';
+import { type CreateTimerSessionInput } from './timer-session.interface';
 
 /** The shape the `timerSessionServiceMock` factory returns: signals the spec drives, spies it asserts on. */
 export interface TimerSessionServiceMock {

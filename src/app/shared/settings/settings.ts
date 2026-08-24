@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { DeltaBaseService } from '../../state/delta-base.service';
-import { DeltaBaseType } from '../../state/delta-base.enum';
+import { type DeltaBaseType } from '../../state/delta-base.enum';
 import { HundredthsService } from '../../state/hundredths.service';
 import { RaceTime } from '../race-time/race-time';
 import { DELTA_BASE_OPTIONS, SETTINGS_SAMPLE_TIME } from './settings.constant';
@@ -28,7 +28,6 @@ import { DELTA_BASE_OPTIONS, SETTINGS_SAMPLE_TIME } from './settings.constant';
   imports: [MatSlideToggleModule, RaceTime],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Settings {
   readonly #hundredths = inject(HundredthsService);

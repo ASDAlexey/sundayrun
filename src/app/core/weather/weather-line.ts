@@ -1,4 +1,4 @@
-import { EventWeather } from './event-weather.interface';
+import { type EventWeather } from './event-weather.interface';
 import { temperatureText } from './temperature-text';
 import { WET_COURSE_PRECIPITATION_MM } from './weather-api.constant';
 import { WEATHER_PART_SEPARATOR } from './weather-line.constant';

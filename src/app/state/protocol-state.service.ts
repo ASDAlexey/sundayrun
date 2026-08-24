@@ -1,25 +1,25 @@
 import { Service, computed, signal } from '@angular/core';
 
 import { eventNumberForDate } from '../core/github/archive-index';
-import { PublishEventInput } from '../core/github/publish-event.interface';
+import { type PublishEventInput } from '../core/github/publish-event.interface';
 import { historyBeforeDate, applyEventToHistory, removeEventFromHistory } from '../core/history/athletes-rollup';
 import { toAutoNoteInput } from '../core/history/auto-note-input';
-import { DraftRows } from '../core/history/draft-priors.interface';
+import { type DraftRows } from '../core/history/draft-priors.interface';
 import { buildEventAutoNotes } from '../core/history/event-auto-notes';
 import { withResolvedNameOrder } from '../core/history/name-order';
 import { mergeAutoNote } from '../core/history/note-merge';
 import { toEventResults } from '../core/github/results-file';
-import { AthletesHistory } from '../core/models/athletes-history.type';
-import { GenderConfidence, GenderSource, GenderType } from '../core/models/gender.enum';
-import { Participant } from '../core/models/participant.interface';
-import { RaceEvent } from '../core/models/race-event.interface';
+import { type AthletesHistory } from '../core/models/athletes-history.type';
+import { GenderConfidence, GenderSource, type GenderType } from '../core/models/gender.enum';
+import { type Participant } from '../core/models/participant.interface';
+import { type RaceEvent } from '../core/models/race-event.interface';
 import { buildProtocolRows } from '../core/protocol/protocol-builder';
 import { RACE_EVENT_DEFAULTS } from '../core/protocol/race-event-defaults.constant';
 import { parseDateFromFileName } from '../core/time/file-name-date';
 import { isoToday } from '../core/time/iso-today';
 import { importParticipants } from '../core/xlsx/import-participants';
-import { ProtocolDraft } from './protocol-draft.interface';
-import { DatedSourceFile, SourceFile } from './source-file.interface';
+import { type ProtocolDraft } from './protocol-draft.interface';
+import { type DatedSourceFile, type SourceFile } from './source-file.interface';
 
 /**
  * Single source of truth for the imported race protocols. A drop can carry several workbooks at
@@ -55,7 +55,7 @@ export class ProtocolStateService {
   readonly activeNumberingDates = computed<string[] | null>(() => {
     const published = this.#publishedEventDates();
 
-    return published === null ? null : numberingDates(published, this.#drafts(), this.#activeIndex());
+    return published === null ? null : numberingDates(published, { drafts: this.#drafts(), draftIndex: this.#activeIndex() });
   });
 
   readonly protocolRows = computed(() => buildProtocolRows(this.participants()));
@@ -168,16 +168,15 @@ export class ProtocolStateService {
 
     for (const { draft, index, dateIso } of ordered) {
       if (!draft.notesApplied) {
-        notedParticipants.set(index, withAutoNotes(draft.participants, historyBeforeDate(rolling, dateIso), dateIso));
+        notedParticipants.set(index, withAutoNotes(draft.participants, { priorHistory: historyBeforeDate(rolling, dateIso), dateIso }));
       }
 
       const slug = dateIso;
 
-      rolling = applyEventToHistory(
-        removeEventFromHistory(rolling, slug),
-        { slug, dateIso },
-        toEventResults(buildProtocolRows(draft.participants)),
-      );
+      rolling = applyEventToHistory(removeEventFromHistory(rolling, slug), {
+        event: { slug, dateIso },
+        results: toEventResults(buildProtocolRows(draft.participants)),
+      });
     }
 
     if (notedParticipants.size > 0) {
@@ -262,7 +261,7 @@ export class ProtocolStateService {
         }
 
         const dateIso = draft.suggestedDateIso;
-        const number = eventNumberForDate(numberingDates(published, drafts, index), dateIso);
+        const number = eventNumberForDate(numberingDates(published, { drafts, draftIndex: index }), dateIso);
 
         return { ...draft, event: { ...RACE_EVENT_DEFAULTS, number, dateIso, legacyNumber: null } };
       }),
@@ -284,7 +283,7 @@ export class ProtocolStateService {
           return draft;
         }
 
-        const number = eventNumberForDate(numberingDates(published, drafts, index), draft.event.dateIso);
+        const number = eventNumberForDate(numberingDates(published, { drafts, draftIndex: index }), draft.event.dateIso);
 
         return number === draft.event.number ? draft : { ...draft, event: { ...draft.event, number } };
       }),
@@ -328,7 +327,10 @@ function byFileDate(left: DatedSourceFile, right: DatedSourceFile): number {
 }
 
 /** The published dates plus the other drafts' dates, deduplicated — `draftIndex`'s own date stays out. */
-function numberingDates(published: readonly string[], drafts: readonly ProtocolDraft[], draftIndex: number): string[] {
+function numberingDates(
+  published: readonly string[],
+  { drafts, draftIndex }: { drafts: readonly ProtocolDraft[]; draftIndex: number },
+): string[] {
   const dates = new Set(published);
 
   drafts.forEach((draft, index) => {
@@ -343,11 +345,13 @@ function numberingDates(published: readonly string[], drafts: readonly ProtocolD
 }
 
 /** One draft's participants with freshly built auto notes merged in front of the manual text. */
-function withAutoNotes(participants: Participant[], priorHistory: AthletesHistory, dateIso: string): Participant[] {
+function withAutoNotes(
+  participants: Participant[],
+  { priorHistory, dateIso }: { priorHistory: AthletesHistory; dateIso: string },
+): Participant[] {
   const autoNotes = buildEventAutoNotes(
     participants.map((participant) => toAutoNoteInput(participant, dateIso)),
-    priorHistory,
-    dateIso,
+    { history: priorHistory, dateIso },
   );
 
   return participants.map((participant, index) => ({ ...participant, note: mergeAutoNote(autoNotes[index], participant.note) }));

@@ -1,8 +1,8 @@
 import { Gender } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { PROTOCOL_PARTICIPANTS } from '../protocol/protocol-builder.mock';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { AutoNoteInput } from './notes-builder.interface';
+import { type AutoNoteInput } from './notes-builder.interface';
 
 export const NOTE_INPUT_DATE_ISO = '2026-06-14';
 

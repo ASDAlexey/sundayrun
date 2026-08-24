@@ -1,7 +1,7 @@
 import { gzipSync, strToU8, zipSync } from 'fflate';
 
 import { TRACK_EXPORT_MANIFEST_NAME } from '../features/athlete/watch-sync/watch-sync.constant';
-import { AthleteTrack } from './athlete-track.interface';
+import { type AthleteTrack } from './athlete-track.interface';
 import { TrackSource } from './track-source.enum';
 
 export const ARCHIVE_GPX_MOCK = '<?xml version="1.0"?><gpx><trk><trkseg /></trk></gpx>';

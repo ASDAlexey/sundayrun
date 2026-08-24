@@ -1,6 +1,6 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { RunsSort, RunsSortType } from './athlete-runs.enum';
-import { YearBestEntry } from './athlete-runs.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { RunsSort, type RunsSortType } from './athlete-runs.enum';
+import { type YearBestEntry } from './athlete-runs.interface';
 import { isoYear } from './iso-year';
 
 /** Distinct years the athlete ran in, newest first. */
@@ -8,8 +8,16 @@ export function distinctRunYears(runs: AthleteRun[]): string[] {
   return [...new Set(runs.map((run) => isoYear(run.dateIso)))].sort(compareYearsDescending);
 }
 
+/** The two narrowings an athlete's run list offers; null on either means "everything". */
+export interface RunsFilter {
+  readonly year: string | null;
+  readonly distanceKm: number | null;
+}
+
 /** Keeps runs of the selected year and distance; a null filter means "everything". */
-export function filterRuns(runs: AthleteRun[], year: string | null, distanceKm: number | null): AthleteRun[] {
+export function filterRuns(runs: AthleteRun[], filter: RunsFilter): AthleteRun[] {
+  const { year, distanceKm } = filter;
+
   return runs.filter((run) => (year === null || isoYear(run.dateIso) === year) && (distanceKm === null || run.distanceKm === distanceKm));
 }
 

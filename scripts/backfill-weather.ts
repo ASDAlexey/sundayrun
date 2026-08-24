@@ -69,8 +69,7 @@ let wet = 0;
 for (const [year, events] of [...byYear].sort(([left], [right]) => left.localeCompare(right))) {
   const weathers = await fetchEventsWeather(
     events.map(({ dateIso }) => dateIso),
-    today,
-    (url) => fetch(url),
+    { todayIso: today, fetchFn: (url) => fetch(url) },
   );
 
   console.log(`${year}: ${events.length} забег(ов)`);

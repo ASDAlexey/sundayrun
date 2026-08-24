@@ -1,5 +1,5 @@
-import { LapBoardRow } from './session-lap-board.interface';
-import { TimerSession } from './timer-session.interface';
+import { type LapBoardRow } from './session-lap-board.interface';
+import { type TimerSession } from './timer-session.interface';
 import {
   FIRST_UNNAMED_SPLIT_ID,
   IVANOV_LAP_MS,
@@ -32,18 +32,36 @@ const QUEUED_SECOND_LAP_MS = 640_000;
 const QUEUED_FIRST_GAP_MS = QUEUED_FIRST_LAP_MS - TROILIN_LAP_MS;
 const QUEUED_SECOND_GAP_MS = QUEUED_SECOND_LAP_MS - TROILIN_LAP_MS;
 
-function buildLapBoardRow(position: number, runnerId: string, splitId: string, fullName: string, lapMs: number): LapBoardRow {
+function buildLapBoardRow(
+  position: number,
+  { runnerId, splitId, fullName, lapMs }: { runnerId: string; splitId: string; fullName: string; lapMs: number },
+): LapBoardRow {
   return { position, splitId, runnerId, fullName, lapMs, gapMs: lapMs - TROILIN_LAP_MS };
 }
 
 /** Everybody with a timed lap, leader first — the retired ones keep the lap they really ran. */
 export const EXPECTED_LAP_BOARD: LapBoardRow[] = [
-  buildLapBoardRow(1, TROILIN_RUNNER_ID, TROILIN_LAP_SPLIT_ID, 'Троилин Антон', TROILIN_LAP_MS),
-  buildLapBoardRow(2, POPOV_IGOR_RUNNER_ID, POPOV_IGOR_LAP_SPLIT_ID, 'Попов Игорь', POPOV_IGOR_LAP_MS),
-  buildLapBoardRow(3, ROMANENKO_RUNNER_ID, ROMANENKO_LAP_SPLIT_ID, 'Романенко Елена', ROMANENKO_LAP_MS),
-  buildLapBoardRow(4, POPOV_ALEKSEY_RUNNER_ID, POPOV_ALEKSEY_LAP_SPLIT_ID, 'Попов Алексей', POPOV_ALEKSEY_LAP_MS),
-  buildLapBoardRow(5, SOKOLOVA_RUNNER_ID, SOKOLOVA_LAP_SPLIT_ID, 'Соколова Анна', SOKOLOVA_LAP_MS),
-  buildLapBoardRow(6, IVANOV_RUNNER_ID, IVANOV_LAP_SPLIT_ID, 'Иванов Дмитрий', IVANOV_LAP_MS),
+  buildLapBoardRow(1, { runnerId: TROILIN_RUNNER_ID, splitId: TROILIN_LAP_SPLIT_ID, fullName: 'Троилин Антон', lapMs: TROILIN_LAP_MS }),
+  buildLapBoardRow(2, {
+    runnerId: POPOV_IGOR_RUNNER_ID,
+    splitId: POPOV_IGOR_LAP_SPLIT_ID,
+    fullName: 'Попов Игорь',
+    lapMs: POPOV_IGOR_LAP_MS,
+  }),
+  buildLapBoardRow(3, {
+    runnerId: ROMANENKO_RUNNER_ID,
+    splitId: ROMANENKO_LAP_SPLIT_ID,
+    fullName: 'Романенко Елена',
+    lapMs: ROMANENKO_LAP_MS,
+  }),
+  buildLapBoardRow(4, {
+    runnerId: POPOV_ALEKSEY_RUNNER_ID,
+    splitId: POPOV_ALEKSEY_LAP_SPLIT_ID,
+    fullName: 'Попов Алексей',
+    lapMs: POPOV_ALEKSEY_LAP_MS,
+  }),
+  buildLapBoardRow(5, { runnerId: SOKOLOVA_RUNNER_ID, splitId: SOKOLOVA_LAP_SPLIT_ID, fullName: 'Соколова Анна', lapMs: SOKOLOVA_LAP_MS }),
+  buildLapBoardRow(6, { runnerId: IVANOV_RUNNER_ID, splitId: IVANOV_LAP_SPLIT_ID, fullName: 'Иванов Дмитрий', lapMs: IVANOV_LAP_MS }),
 ];
 
 /**
@@ -63,7 +81,7 @@ export const QUEUED_LAP_BOARD_SESSION: TimerSession = {
 
 /** Both queued times stand between the two surnames, so the man named second is fourth. */
 export const EXPECTED_QUEUED_LAP_BOARD: LapBoardRow[] = [
-  buildLapBoardRow(1, TROILIN_RUNNER_ID, TROILIN_LAP_SPLIT_ID, 'Троилин Антон', TROILIN_LAP_MS),
+  buildLapBoardRow(1, { runnerId: TROILIN_RUNNER_ID, splitId: TROILIN_LAP_SPLIT_ID, fullName: 'Троилин Антон', lapMs: TROILIN_LAP_MS }),
   { position: 2, splitId: FIRST_UNNAMED_SPLIT_ID, runnerId: null, fullName: null, lapMs: QUEUED_FIRST_LAP_MS, gapMs: QUEUED_FIRST_GAP_MS },
   {
     position: 3,
@@ -73,7 +91,12 @@ export const EXPECTED_QUEUED_LAP_BOARD: LapBoardRow[] = [
     lapMs: QUEUED_SECOND_LAP_MS,
     gapMs: QUEUED_SECOND_GAP_MS,
   },
-  buildLapBoardRow(4, POPOV_IGOR_RUNNER_ID, POPOV_IGOR_LAP_SPLIT_ID, 'Попов Игорь', POPOV_IGOR_LAP_MS),
+  buildLapBoardRow(4, {
+    runnerId: POPOV_IGOR_RUNNER_ID,
+    splitId: POPOV_IGOR_LAP_SPLIT_ID,
+    fullName: 'Попов Игорь',
+    lapMs: POPOV_IGOR_LAP_MS,
+  }),
 ];
 
 /** The same board plus a lap tapped at the very time somebody else already had. */

@@ -1,4 +1,4 @@
-import { DOCUMENT, OnDestroy, Service, inject, signal } from '@angular/core';
+import { DOCUMENT, type OnDestroy, Service, inject, signal } from '@angular/core';
 
 import { DOCUMENT_VISIBLE, VISIBILITY_CHANGE_EVENT, WAKE_LOCK_SCREEN } from './wake-lock.constant';
 
@@ -48,7 +48,7 @@ export class WakeLockService implements OnDestroy {
     };
 
     this.#document.addEventListener(VISIBILITY_CHANGE_EVENT, onVisibility);
-    this.#detach = () => this.#document.removeEventListener(VISIBILITY_CHANGE_EVENT, onVisibility);
+    this.#detach = (): void => this.#document.removeEventListener(VISIBILITY_CHANGE_EVENT, onVisibility);
     void this.#acquire();
   }
 

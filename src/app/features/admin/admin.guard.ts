@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { type CanActivateFn, Router } from '@angular/router';
 
 import { AdminTokenService } from '../../github/admin-token.service';
 import { HOME_ROUTE_COMMANDS } from './admin.guard.constant';

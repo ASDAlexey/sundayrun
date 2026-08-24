@@ -1,8 +1,8 @@
 import { formatRussianDateLong } from '../../../core/time/russian-date';
 import { unassignedSplits } from '../../../core/timer/session-splits';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { META_SEPARATOR, TIMER_EXPORT_FILE_EXTENSION, TIMER_EXPORT_FILE_PREFIX, TIMER_SESSIONS_NONE } from './session-list.constant';
-import { TimerSessionRow } from './session-list.interface';
+import { type TimerSessionRow } from './session-list.interface';
 import { runnerCountText, splitCountText, unnamedCountText } from './session-list.text';
 
 /** «Мои замеры» as rows, in the order the store keeps them (the newest measurement first). */

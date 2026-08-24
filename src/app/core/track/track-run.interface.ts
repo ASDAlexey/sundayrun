@@ -1,4 +1,4 @@
-import { TrackSample } from './track-point.interface';
+import { type TrackSample } from './track-point.interface';
 
 /** One whole kilometre of the recording. Its duration is its pace — that is what a split is. */
 export interface TrackSplit {

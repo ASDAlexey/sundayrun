@@ -93,8 +93,8 @@ describe('AdminPage', () => {
         { provide: DeleteDurationService, useValue: deleteDuration },
         { provide: DbFreshnessService, useValue: freshness },
         { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
-        { provide: PLATFORM_ID, useFactory: () => platformId },
-        { provide: ActivatedRoute, useFactory: () => activatedRouteQueryStub(route.query) },
+        { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
+        { provide: ActivatedRoute, useFactory: (): ReturnType<typeof activatedRouteQueryStub> => activatedRouteQueryStub(route.query) },
       ],
     });
   });
@@ -285,8 +285,7 @@ describe('AdminPage', () => {
     const close = vi.spyOn(modal, 'close');
 
     expect(pendingArchive.reconcile, 'a reload retires the pending changes the archive now reflects').toHaveBeenCalledWith(
-      [NEWER_ENTRY.slug, OLDER_ENTRY.slug],
-      [NEWER_ENTRY.number, OLDER_ENTRY.number],
+      { slugs: [NEWER_ENTRY.slug, OLDER_ENTRY.slug], numbers: [NEWER_ENTRY.number, OLDER_ENTRY.number] },
       expect.any(Number),
     );
     expect(page.races()).toEqual(EXPECTED_ADMIN_RACES);

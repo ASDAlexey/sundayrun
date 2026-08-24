@@ -1,5 +1,5 @@
-import { GenderType } from '../models/gender.enum';
-import { YearBadgeType } from './year-badges.enum';
+import { type GenderType } from '../models/gender.enum';
+import { type YearBadgeType } from './year-badges.enum';
 
 /** One athlete's best 5 km time of one year, as selected from the db — a lane in the year's ranking. */
 export interface YearBestRow {

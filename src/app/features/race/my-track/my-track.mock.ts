@@ -1,9 +1,9 @@
 import { gzipSync, strToU8 } from 'fflate';
 
-import { TrackSample } from '../../../core/track/track-point.interface';
-import { TrackRun } from '../../../core/track/track-run.interface';
+import { type TrackSample } from '../../../core/track/track-point.interface';
+import { type TrackRun } from '../../../core/track/track-run.interface';
 import { TRACK_POINTS_MOCK } from '../../../core/track/track-run.mock';
-import { AthleteTrack } from '../../../state/athlete-track.interface';
+import { type AthleteTrack } from '../../../state/athlete-track.interface';
 import { TrackSource } from '../../../state/track-source.enum';
 
 export const MY_TRACK_SLUG = '2026-08-16';

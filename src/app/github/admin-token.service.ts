@@ -1,9 +1,9 @@
 import { Service, computed, signal } from '@angular/core';
 
 import { checkGithubToken } from '../core/github/token-check';
-import { TokenCheckType } from '../core/github/token-check.enum';
+import { type TokenCheckType } from '../core/github/token-check.enum';
 import { ADMIN_TOKEN_STORAGE_KEY, SSR_NOOP_STORAGE } from './admin-token.constant';
-import { AdminTokenStorage } from './admin-token.type';
+import { type AdminTokenStorage } from './admin-token.type';
 
 /** Keeps the organiser's GitHub PAT in localStorage; a stored token IS the admin role. */
 @Service()

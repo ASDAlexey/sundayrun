@@ -17,7 +17,7 @@ import {
   TWO_DIGIT_YEAR_LENGTH,
   YEAR_LENGTH,
 } from './file-name-date.constant';
-import { FileNameDateMatch } from './file-name-date.interface';
+import { type FileNameDateMatch } from './file-name-date.interface';
 
 /**
  * Extracts the first date occurrence from a file name as an ISO date 'YYYY-MM-DD'.
@@ -38,7 +38,7 @@ export function parseDateFromFileName(name: string, todayIso: string): string | 
 
   const { day, month, year } = match;
 
-  return year === null ? inferYearlessDate(day, month, todayIso) : toValidIsoDate(day, month, year);
+  return year === null ? inferYearlessDate(day, { month, todayIso }) : toValidIsoDate(day, { month, year });
 }
 
 function matchIsoDate(name: string): FileNameDateMatch | null {
@@ -100,19 +100,19 @@ function resolveMonth(word: string): number | null {
  * A yearless file name refers to a race already run: the current year wins unless it puts the
  * date in the future (a December protocol uploaded in January), then the previous year is used.
  */
-function inferYearlessDate(day: number, month: number, todayIso: string): string | null {
+function inferYearlessDate(day: number, { month, todayIso }: { month: number; todayIso: string }): string | null {
   const currentYear = Number(todayIso.slice(0, YEAR_LENGTH));
-  const candidate = toValidIsoDate(day, month, currentYear);
+  const candidate = toValidIsoDate(day, { month, year: currentYear });
 
   if (candidate !== null && candidate <= todayIso) {
     return candidate;
   }
 
-  return toValidIsoDate(day, month, currentYear - 1);
+  return toValidIsoDate(day, { month, year: currentYear - 1 });
 }
 
-function toValidIsoDate(day: number, month: number, year: number): string | null {
-  if (!isValidCalendarDate(day, month, year)) {
+function toValidIsoDate(day: number, { month, year }: { month: number; year: number }): string | null {
+  if (!isValidCalendarDate(day, { month, year })) {
     return null;
   }
 
@@ -122,7 +122,7 @@ function toValidIsoDate(day: number, month: number, year: number): string | null
   return `${year}-${paddedMonth}-${paddedDay}`;
 }
 
-function isValidCalendarDate(day: number, month: number, year: number): boolean {
+function isValidCalendarDate(day: number, { month, year }: { month: number; year: number }): boolean {
   if (month < FIRST_MONTH || month > MONTH_LENGTHS.length) {
     return false;
   }

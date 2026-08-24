@@ -2,9 +2,9 @@ import { and, asc, eq, isNotNull, like, ne } from 'drizzle-orm';
 
 import { normalizeAthleteKey } from '../core/history/athlete-key';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
-import { SeasonRun } from '../core/history/season-positions.interface';
+import { type SeasonRun } from '../core/history/season-positions.interface';
 import { athletes, results, runs } from '../core/sqlite/protocol-db.schema';
-import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { type ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { parseDuration } from '../core/time/duration';
 import { asGender } from './protocol-db-row';
 

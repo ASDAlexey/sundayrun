@@ -1,11 +1,11 @@
 import { Service, computed, effect, inject, signal } from '@angular/core';
 
-import { PublishEventInput } from '../core/github/publish-event.interface';
+import { type PublishEventInput } from '../core/github/publish-event.interface';
 import { eventDatesFromHistory } from '../core/history/event-dates';
 import { setPublishStatus } from '../core/timer/session-actions';
 import { sessionToParticipants } from '../core/timer/session-to-participants';
-import { TimerPublishState, TimerPublishStateType } from '../core/timer/timer-session.enum';
-import { TimerSession } from '../core/timer/timer-session.interface';
+import { TimerPublishState, type TimerPublishStateType } from '../core/timer/timer-session.enum';
+import { type TimerSession } from '../core/timer/timer-session.interface';
 import { CdnRefService } from '../github/cdn-ref.service';
 import { DbFreshness } from '../github/db-freshness.enum';
 import { DbFreshnessService } from '../github/db-freshness.service';
@@ -22,7 +22,7 @@ import {
   TIMER_PUBLISH_EMPTY_ERROR,
   TIMER_PUBLISH_STATE_BY_STEP,
 } from './timer-publish.constant';
-import { TimerPublishStep, TimerPublishStepType } from './timer-publish.enum';
+import { TimerPublishStep, type TimerPublishStepType } from './timer-publish.enum';
 import { TimerSessionService } from './timer-session.service';
 
 /**
@@ -93,7 +93,7 @@ export class TimerPublishService {
     this.#error.set(null);
     this.#publishedSlug.set(null);
     this.#step.set(TimerPublishStep.notes);
-    this.#mark(session.id, TimerPublishState.pending, null, null);
+    this.#mark(session.id, { state: TimerPublishState.pending, error: null, sha: null });
 
     const inputs = await this.#buildInputs(session);
 
@@ -176,7 +176,7 @@ export class TimerPublishService {
     // live wizard. `inputs` is a plain array and survives the reset.
     this.#store.reset();
     this.#publishedSlug.set(inputs[0].event.dateIso);
-    this.#mark(session.id, TimerPublishState.published, null, ref);
+    this.#mark(session.id, { state: TimerPublishState.published, error: null, sha: ref });
     this.#startedAtMs = startedAtMs;
     this.#deploySeen = false;
     this.#step.set(TimerPublishStep.deploying);
@@ -199,10 +199,10 @@ export class TimerPublishService {
   #fail(sessionId: string, message: string): void {
     this.#error.set(message);
     this.#step.set(TimerPublishStep.failed);
-    this.#mark(sessionId, TimerPublishState.failed, message, null);
+    this.#mark(sessionId, { state: TimerPublishState.failed, error: message, sha: null });
   }
 
-  #mark(sessionId: string, state: TimerPublishStateType, error: string | null, sha: string | null): void {
-    this.#sessions.update(sessionId, (session) => setPublishStatus(session, { state, error, sha }));
+  #mark(sessionId: string, status: { state: TimerPublishStateType; error: string | null; sha: string | null }): void {
+    this.#sessions.update(sessionId, (session) => setPublishStatus(session, status));
   }
 }

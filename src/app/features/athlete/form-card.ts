@@ -2,8 +2,8 @@ import { Component, computed, input, signal } from '@angular/core';
 
 import { athleteForm } from '../../core/history/form';
 import { FORM_WINDOW_SIZE, PEAK_PERCENT } from '../../core/history/form.constant';
-import { AthleteForm, FormPoint } from '../../core/history/form.interface';
-import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { type AthleteForm, type FormPoint } from '../../core/history/form.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateLong, formatRussianMonthPrepositional } from '../../core/time/russian-date';
 import {
@@ -15,7 +15,7 @@ import {
   TOOLTIP_EDGE_PERCENT,
 } from './form-card.constant';
 import { RaceTime } from '../../shared/race-time/race-time';
-import { FormChartDot, FormChartPoint, FormTooltipAlign, FormView } from './form-card.interface';
+import { type FormChartDot, type FormChartPoint, type FormTooltipAlign, type FormView } from './form-card.interface';
 
 /**
  * The «Форма» card: the rolling median of the last five 5 km finishes against the athlete's
@@ -51,7 +51,7 @@ function toFormView(form: AthleteForm | null): FormView | null {
   const peakIndex = form.points.indexOf(form.peak);
   const lastIndex = form.points.length - 1;
   const points: FormChartPoint[] = dots.map((dot, index) =>
-    toChartPoint(dot, form.points[index], index === peakIndex, index === lastIndex),
+    toChartPoint(dot, { point: form.points[index], isPeak: index === peakIndex, isCurrent: index === lastIndex }),
   );
 
   return {
@@ -66,7 +66,10 @@ function toFormView(form: AthleteForm | null): FormView | null {
 }
 
 /** A dot enriched with its styled-tooltip text and the percent position that floats the tooltip. */
-function toChartPoint(dot: FormChartDot, point: FormPoint, isPeak: boolean, isCurrent: boolean): FormChartPoint {
+function toChartPoint(
+  dot: FormChartDot,
+  { point, isPeak, isCurrent }: { point: FormPoint; isPeak: boolean; isCurrent: boolean },
+): FormChartPoint {
   const dateText = formatRussianDateLong(point.dateIso);
   const medianText = formatRaceTime(point.medianMs);
   const leftPercent = roundCoord((dot.x / FORM_CHART_WIDTH) * 100);

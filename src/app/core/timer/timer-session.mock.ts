@@ -1,7 +1,7 @@
-import { Gender, GenderType } from '../models/gender.enum';
+import { Gender, type GenderType } from '../models/gender.enum';
 import { INITIAL_PUBLISH_STATUS } from './timer-session.constant';
-import { TimerRole, TimerRunnerOutcome, TimerRunnerOutcomeType, TimerStatus } from './timer-session.enum';
-import { TimerRunner, TimerSession, TimerSplit } from './timer-session.interface';
+import { TimerRole, TimerRunnerOutcome, type TimerRunnerOutcomeType, TimerStatus } from './timer-session.enum';
+import { type TimerRunner, type TimerSession, type TimerSplit } from './timer-session.interface';
 
 export const TIMER_SESSION_ID = 'session-2026-07-26';
 export const TIMER_SESSION_DATE_ISO = '2026-07-26';
@@ -52,15 +52,17 @@ export const SECOND_UNNAMED_SPLIT_ID = 'split-11';
 
 function buildRunner(
   id: string,
-  fullName: string,
-  athleteKey: string | null,
-  gender: GenderType | null,
-  outcome: TimerRunnerOutcomeType = TimerRunnerOutcome.active,
+  {
+    fullName,
+    athleteKey,
+    gender,
+    outcome = TimerRunnerOutcome.active,
+  }: { fullName: string; athleteKey: string | null; gender: GenderType | null; outcome?: TimerRunnerOutcomeType },
 ): TimerRunner {
   return { id, fullName, athleteKey, gender, outcome };
 }
 
-function buildSplit(id: string, atMs: number, runnerId: string | null): TimerSplit {
+function buildSplit(id: string, { atMs, runnerId }: { atMs: number; runnerId: string | null }): TimerSplit {
   return { id, atMs, runnerId };
 }
 
@@ -70,28 +72,38 @@ function buildSplit(id: string, atMs: number, runnerId: string | null): TimerSpl
  * somebody who has not been tapped at all.
  */
 export const TIMER_SESSION_RUNNERS: TimerRunner[] = [
-  buildRunner(TROILIN_RUNNER_ID, 'Троилин Антон', TROILIN_ATHLETE_KEY, Gender.male),
-  buildRunner(POPOV_ALEKSEY_RUNNER_ID, 'Попов Алексей', POPOV_ALEKSEY_ATHLETE_KEY, Gender.male),
-  buildRunner(POPOV_IGOR_RUNNER_ID, 'Попов Игорь', POPOV_IGOR_ATHLETE_KEY, Gender.male),
-  buildRunner(ROMANENKO_RUNNER_ID, 'Романенко Елена', ROMANENKO_ATHLETE_KEY, Gender.female, TimerRunnerOutcome.lapOnly),
-  buildRunner(SOKOLOVA_RUNNER_ID, 'Соколова Анна', null, null),
-  buildRunner(IVANOV_RUNNER_ID, 'Иванов Дмитрий', IVANOV_ATHLETE_KEY, Gender.male, TimerRunnerOutcome.dnf),
-  buildRunner(KUZNETSOV_RUNNER_ID, 'Кузнецов Пётр', KUZNETSOV_ATHLETE_KEY, Gender.male),
+  buildRunner(TROILIN_RUNNER_ID, { fullName: 'Троилин Антон', athleteKey: TROILIN_ATHLETE_KEY, gender: Gender.male }),
+  buildRunner(POPOV_ALEKSEY_RUNNER_ID, { fullName: 'Попов Алексей', athleteKey: POPOV_ALEKSEY_ATHLETE_KEY, gender: Gender.male }),
+  buildRunner(POPOV_IGOR_RUNNER_ID, { fullName: 'Попов Игорь', athleteKey: POPOV_IGOR_ATHLETE_KEY, gender: Gender.male }),
+  buildRunner(ROMANENKO_RUNNER_ID, {
+    fullName: 'Романенко Елена',
+    athleteKey: ROMANENKO_ATHLETE_KEY,
+    gender: Gender.female,
+    outcome: TimerRunnerOutcome.lapOnly,
+  }),
+  buildRunner(SOKOLOVA_RUNNER_ID, { fullName: 'Соколова Анна', athleteKey: null, gender: null }),
+  buildRunner(IVANOV_RUNNER_ID, {
+    fullName: 'Иванов Дмитрий',
+    athleteKey: IVANOV_ATHLETE_KEY,
+    gender: Gender.male,
+    outcome: TimerRunnerOutcome.dnf,
+  }),
+  buildRunner(KUZNETSOV_RUNNER_ID, { fullName: 'Кузнецов Пётр', athleteKey: KUZNETSOV_ATHLETE_KEY, gender: Gender.male }),
 ];
 
 /** The journal in tap order: the whole lap pack first, then the finishes, then two unnamed times. */
 export const TIMER_SESSION_SPLITS: TimerSplit[] = [
-  buildSplit(TROILIN_LAP_SPLIT_ID, TROILIN_LAP_MS, TROILIN_RUNNER_ID),
-  buildSplit(POPOV_IGOR_LAP_SPLIT_ID, POPOV_IGOR_LAP_MS, POPOV_IGOR_RUNNER_ID),
-  buildSplit(ROMANENKO_LAP_SPLIT_ID, ROMANENKO_LAP_MS, ROMANENKO_RUNNER_ID),
-  buildSplit(POPOV_ALEKSEY_LAP_SPLIT_ID, POPOV_ALEKSEY_LAP_MS, POPOV_ALEKSEY_RUNNER_ID),
-  buildSplit(SOKOLOVA_LAP_SPLIT_ID, SOKOLOVA_LAP_MS, SOKOLOVA_RUNNER_ID),
-  buildSplit(IVANOV_LAP_SPLIT_ID, IVANOV_LAP_MS, IVANOV_RUNNER_ID),
-  buildSplit(TROILIN_FINISH_SPLIT_ID, TROILIN_FINISH_MS, TROILIN_RUNNER_ID),
-  buildSplit(POPOV_ALEKSEY_FINISH_SPLIT_ID, POPOV_ALEKSEY_FINISH_MS, POPOV_ALEKSEY_RUNNER_ID),
-  buildSplit(SOKOLOVA_FINISH_SPLIT_ID, SOKOLOVA_FINISH_MS, SOKOLOVA_RUNNER_ID),
-  buildSplit(FIRST_UNNAMED_SPLIT_ID, FIRST_UNNAMED_SPLIT_MS, null),
-  buildSplit(SECOND_UNNAMED_SPLIT_ID, SECOND_UNNAMED_SPLIT_MS, null),
+  buildSplit(TROILIN_LAP_SPLIT_ID, { atMs: TROILIN_LAP_MS, runnerId: TROILIN_RUNNER_ID }),
+  buildSplit(POPOV_IGOR_LAP_SPLIT_ID, { atMs: POPOV_IGOR_LAP_MS, runnerId: POPOV_IGOR_RUNNER_ID }),
+  buildSplit(ROMANENKO_LAP_SPLIT_ID, { atMs: ROMANENKO_LAP_MS, runnerId: ROMANENKO_RUNNER_ID }),
+  buildSplit(POPOV_ALEKSEY_LAP_SPLIT_ID, { atMs: POPOV_ALEKSEY_LAP_MS, runnerId: POPOV_ALEKSEY_RUNNER_ID }),
+  buildSplit(SOKOLOVA_LAP_SPLIT_ID, { atMs: SOKOLOVA_LAP_MS, runnerId: SOKOLOVA_RUNNER_ID }),
+  buildSplit(IVANOV_LAP_SPLIT_ID, { atMs: IVANOV_LAP_MS, runnerId: IVANOV_RUNNER_ID }),
+  buildSplit(TROILIN_FINISH_SPLIT_ID, { atMs: TROILIN_FINISH_MS, runnerId: TROILIN_RUNNER_ID }),
+  buildSplit(POPOV_ALEKSEY_FINISH_SPLIT_ID, { atMs: POPOV_ALEKSEY_FINISH_MS, runnerId: POPOV_ALEKSEY_RUNNER_ID }),
+  buildSplit(SOKOLOVA_FINISH_SPLIT_ID, { atMs: SOKOLOVA_FINISH_MS, runnerId: SOKOLOVA_RUNNER_ID }),
+  buildSplit(FIRST_UNNAMED_SPLIT_ID, { atMs: FIRST_UNNAMED_SPLIT_MS, runnerId: null }),
+  buildSplit(SECOND_UNNAMED_SPLIT_ID, { atMs: SECOND_UNNAMED_SPLIT_MS, runnerId: null }),
 ];
 
 /** The race in progress: the clock runs, most of the field is timed, two times wait for a name. */
@@ -153,7 +165,7 @@ export const KUZNETSOV_LAP_MS = 780_000;
 /** Everybody is round, so a nameless time can only ever be somebody's finish now. */
 export const TIMER_SESSION_LAP_COMPLETE: TimerSession = {
   ...TIMER_SESSION,
-  splits: [...TIMER_SESSION_SPLITS, buildSplit(KUZNETSOV_LAP_SPLIT_ID, KUZNETSOV_LAP_MS, KUZNETSOV_RUNNER_ID)],
+  splits: [...TIMER_SESSION_SPLITS, buildSplit(KUZNETSOV_LAP_SPLIT_ID, { atMs: KUZNETSOV_LAP_MS, runnerId: KUZNETSOV_RUNNER_ID })],
 };
 
 /** Both nameless times fell before every lap of the race — nobody owed a finish can be given one. */

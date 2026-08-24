@@ -1,5 +1,5 @@
 import { inferGender } from '../gender/gender-inference';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { parseTimerExport } from './timer-export-parser';
 import { readXlsxRows } from './xlsx-reader';
 

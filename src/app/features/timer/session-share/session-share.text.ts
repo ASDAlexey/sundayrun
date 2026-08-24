@@ -1,4 +1,4 @@
-import { SessionShareTextLabels } from '../../../core/timer/session-share-text.interface';
+import { type SessionShareTextLabels } from '../../../core/timer/session-share-text.interface';
 
 /** The headings of the pasted message. Kept out of the core, which has no `$localize` of its own. */
 export function sessionShareLabels(dateText: string): SessionShareTextLabels {

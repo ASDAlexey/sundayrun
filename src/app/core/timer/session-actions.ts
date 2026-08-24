@@ -1,10 +1,10 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 import { orderRunnersByExpectedLap } from './runner-order';
-import { CreateSessionInput, NewTimerRunner } from './session-actions.interface';
+import { type CreateSessionInput, type NewTimerRunner } from './session-actions.interface';
 import { nextSplitForRunner, runnerSplits } from './session-splits';
 import { EMPTY_ROSTER, INITIAL_PUBLISH_STATUS, MAX_SPLITS_PER_RUNNER, WITHOUT_LAST_ENTRY } from './timer-session.constant';
-import { TimerRole, TimerRunnerOutcome, TimerRunnerOutcomeType, TimerStatus } from './timer-session.enum';
-import { TimerPublishStatus, TimerRunner, TimerSession, TimerSplit } from './timer-session.interface';
+import { TimerRole, TimerRunnerOutcome, type TimerRunnerOutcomeType, TimerStatus } from './timer-session.enum';
+import { type TimerPublishStatus, type TimerRunner, type TimerSession, type TimerSplit } from './timer-session.interface';
 
 /**
  * Pure transitions over a timer session. Every function returns a new session, or the very same
@@ -80,19 +80,29 @@ export function removeRunner(session: TimerSession, runnerId: string): TimerSess
 }
 
 /** Renames a runner, e.g. after the roster sheet matched him against the archive. */
-export function renameRunner(session: TimerSession, runnerId: string, fullName: string, athleteKey: string | null): TimerSession {
-  return withRunner(session, runnerId, (runner) =>
-    runner.fullName === fullName && runner.athleteKey === athleteKey ? runner : { ...runner, fullName, athleteKey },
-  );
+export function renameRunner(
+  session: TimerSession,
+  { runnerId, fullName, athleteKey }: { runnerId: string; fullName: string; athleteKey: string | null },
+): TimerSession {
+  return withRunner(session, {
+    runnerId,
+    patch: (runner) => (runner.fullName === fullName && runner.athleteKey === athleteKey ? runner : { ...runner, fullName, athleteKey }),
+  });
 }
 
-export function setRunnerGender(session: TimerSession, runnerId: string, gender: GenderType | null): TimerSession {
-  return withRunner(session, runnerId, (runner) => (runner.gender === gender ? runner : { ...runner, gender }));
+export function setRunnerGender(
+  session: TimerSession,
+  { runnerId, gender }: { runnerId: string; gender: GenderType | null },
+): TimerSession {
+  return withRunner(session, { runnerId, patch: (runner) => (runner.gender === gender ? runner : { ...runner, gender }) });
 }
 
 /** Marks how the race ended for the runner: still running, DNF, or «сошёл после круга». */
-export function setRunnerOutcome(session: TimerSession, runnerId: string, outcome: TimerRunnerOutcomeType): TimerSession {
-  return withRunner(session, runnerId, (runner) => (runner.outcome === outcome ? runner : { ...runner, outcome }));
+export function setRunnerOutcome(
+  session: TimerSession,
+  { runnerId, outcome }: { runnerId: string; outcome: TimerRunnerOutcomeType },
+): TimerSession {
+  return withRunner(session, { runnerId, patch: (runner) => (runner.outcome === outcome ? runner : { ...runner, outcome }) });
 }
 
 /**
@@ -119,7 +129,10 @@ export function stopSession(session: TimerSession, elapsedMs: number): TimerSess
  * Records a tap on a runner's tile: the first one is his 2.3 km lap, the second his 5 km finish.
  * Refused while the clock is not running, for an unknown or retired runner, and once he is done.
  */
-export function recordSplit(session: TimerSession, runnerId: string, atMs: number, splitId: string): TimerSession {
+export function recordSplit(
+  session: TimerSession,
+  { runnerId, atMs, splitId }: { runnerId: string; atMs: number; splitId: string },
+): TimerSession {
   const runner = session.runners.find((candidate) => candidate.id === runnerId);
 
   if (session.status !== TimerStatus.running || runner === undefined) {
@@ -134,7 +147,7 @@ export function recordSplit(session: TimerSession, runnerId: string, atMs: numbe
 }
 
 /** Records a time with no name attached — the pack-of-three safety net (docs/TIMER.md §4). */
-export function recordUnnamedSplit(session: TimerSession, atMs: number, splitId: string): TimerSession {
+export function recordUnnamedSplit(session: TimerSession, { atMs, splitId }: { atMs: number; splitId: string }): TimerSession {
   if (session.status !== TimerStatus.running) {
     return session;
   }
@@ -150,14 +163,14 @@ export function recordUnnamedSplit(session: TimerSession, atMs: number, splitId:
 export function assignNextUnnamed(session: TimerSession, runnerId: string): TimerSession {
   const next = nextSplitForRunner(session, runnerId);
 
-  return next === undefined ? session : withSplitOwner(session, next, runnerId);
+  return next === undefined ? session : withSplitOwner(session, { split: next, runnerId });
 }
 
 /** Moves a time to another runner — «тапнул не того», one time at a time. */
-export function reassignSplit(session: TimerSession, splitId: string, runnerId: string): TimerSession {
+export function reassignSplit(session: TimerSession, { splitId, runnerId }: { splitId: string; runnerId: string }): TimerSession {
   const split = findSplit(session, splitId);
 
-  return split === undefined ? session : withSplitOwner(session, split, runnerId);
+  return split === undefined ? session : withSplitOwner(session, { split, runnerId });
 }
 
 /** Sends a time back to the unnamed queue. */
@@ -168,18 +181,21 @@ export function unassignSplit(session: TimerSession, splitId: string): TimerSess
     return session;
   }
 
-  return split.runnerId === null ? session : replaceSplitOwner(session, split, null);
+  return split.runnerId === null ? session : replaceSplitOwner(session, { split, runnerId: null });
 }
 
 /** «Тапнул не того» wholesale: both runners exchange every time recorded for them. */
-export function swapRunnerSplits(session: TimerSession, leftRunnerId: string, rightRunnerId: string): TimerSession {
+export function swapRunnerSplits(
+  session: TimerSession,
+  { leftRunnerId, rightRunnerId }: { leftRunnerId: string; rightRunnerId: string },
+): TimerSession {
   const touched = session.splits.some((split) => split.runnerId === leftRunnerId || split.runnerId === rightRunnerId);
 
   if (leftRunnerId === rightRunnerId || !hasRunner(session, leftRunnerId) || !hasRunner(session, rightRunnerId) || !touched) {
     return session;
   }
 
-  return { ...session, splits: session.splits.map((split) => swapOwner(split, leftRunnerId, rightRunnerId)) };
+  return { ...session, splits: session.splits.map((split) => swapOwner(split, { leftRunnerId, rightRunnerId })) };
 }
 
 /** Throws a time away completely — for the tap that was pure noise. */
@@ -220,7 +236,10 @@ export function setPublishStatus(session: TimerSession, publish: TimerPublishSta
   return { ...session, publish };
 }
 
-function withRunner(session: TimerSession, runnerId: string, patch: (runner: TimerRunner) => TimerRunner): TimerSession {
+function withRunner(
+  session: TimerSession,
+  { runnerId, patch }: { runnerId: string; patch: (runner: TimerRunner) => TimerRunner },
+): TimerSession {
   const runner = session.runners.find((candidate) => candidate.id === runnerId);
 
   if (runner === undefined) {
@@ -233,19 +252,19 @@ function withRunner(session: TimerSession, runnerId: string, patch: (runner: Tim
 }
 
 /** Hands a time over, unless the target is unknown, already holds it, or is already done. */
-function withSplitOwner(session: TimerSession, split: TimerSplit, runnerId: string): TimerSession {
+function withSplitOwner(session: TimerSession, { split, runnerId }: { split: TimerSplit; runnerId: string }): TimerSession {
   if (!hasRunner(session, runnerId) || split.runnerId === runnerId || isRunnerDone(session, runnerId)) {
     return session;
   }
 
-  return replaceSplitOwner(session, split, runnerId);
+  return replaceSplitOwner(session, { split, runnerId });
 }
 
-function replaceSplitOwner(session: TimerSession, split: TimerSplit, runnerId: string | null): TimerSession {
+function replaceSplitOwner(session: TimerSession, { split, runnerId }: { split: TimerSplit; runnerId: string | null }): TimerSession {
   return { ...session, splits: session.splits.map((item) => (item === split ? { ...item, runnerId } : item)) };
 }
 
-function swapOwner(split: TimerSplit, leftRunnerId: string, rightRunnerId: string): TimerSplit {
+function swapOwner(split: TimerSplit, { leftRunnerId, rightRunnerId }: { leftRunnerId: string; rightRunnerId: string }): TimerSplit {
   if (split.runnerId === leftRunnerId) {
     return { ...split, runnerId: rightRunnerId };
   }
@@ -262,5 +281,5 @@ function hasRunner(session: TimerSession, runnerId: string): boolean {
 }
 
 function isRunnerDone(session: TimerSession, runnerId: string): boolean {
-  return runnerSplits(session, runnerId).length >= MAX_SPLITS_PER_RUNNER;
+  return runnerSplits(session, { runnerId }).length >= MAX_SPLITS_PER_RUNNER;
 }

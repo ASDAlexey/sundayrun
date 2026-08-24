@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { removeSplit } from '../../../core/timer/session-actions';
 import { runnersWithoutGender, unassignedSplits } from '../../../core/timer/session-splits';
 import { TimerPublishState } from '../../../core/timer/timer-session.enum';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { AdminTokenService } from '../../../github/admin-token.service';
 import { TimerPublishStep } from '../../../state/timer-publish.enum';
 import { TimerPublishService } from '../../../state/timer-publish.service';

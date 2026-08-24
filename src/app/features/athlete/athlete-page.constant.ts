@@ -1,4 +1,4 @@
-import { PrDeltaKind, PrDeltaKindType } from '../../core/history/pr-delta.enum';
+import { PrDeltaKind, type PrDeltaKindType } from '../../core/history/pr-delta.enum';
 
 /** Route param carrying the normalized athlete key (`/athletes/:key`). */
 export const KEY_ROUTE_PARAM = 'key';

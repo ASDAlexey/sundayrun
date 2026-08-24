@@ -1,4 +1,4 @@
-import { PreviousBest } from './previous-bests.interface';
+import { type PreviousBest } from './previous-bests.interface';
 
 /** The standing record every `prDelta` case is measured against — 20:00,00 flat. */
 export const PR_DELTA_RECORD_MS = 1200000;

@@ -3,7 +3,7 @@ import { compareExpectedMs, expectedLapMsFor } from './runner-order';
 import { runnerSplitTimesMs, runnerStage } from './session-splits';
 import { LAP_SPLIT_INDEX } from './timer-session.constant';
 import { TimerRunnerStage } from './timer-session.enum';
-import { TimerSession } from './timer-session.interface';
+import { type TimerSession } from './timer-session.interface';
 
 /** Even-pace forecast of the 5 km finish from a recorded 2.3 km split, in whole milliseconds. */
 export function forecastFinishMs(lapMs: number): number {
@@ -21,14 +21,17 @@ export function expectedNextRunnerIds(session: TimerSession, expected: ReadonlyM
   const arrivals: { runnerId: string; estimateMs: number | null }[] = [];
 
   for (const runner of session.runners) {
-    const stage = runnerStage(session, runner.id);
+    const stage = runnerStage(session, { runnerId: runner.id });
 
     if (stage === TimerRunnerStage.waitingLap) {
       arrivals.push({ runnerId: runner.id, estimateMs: expectedLapMsFor(runner, expected) });
     }
 
     if (stage === TimerRunnerStage.waitingFinish) {
-      arrivals.push({ runnerId: runner.id, estimateMs: forecastFinishMs(runnerSplitTimesMs(session, runner.id)[LAP_SPLIT_INDEX]) });
+      arrivals.push({
+        runnerId: runner.id,
+        estimateMs: forecastFinishMs(runnerSplitTimesMs(session, { runnerId: runner.id })[LAP_SPLIT_INDEX]),
+      });
     }
   }
 

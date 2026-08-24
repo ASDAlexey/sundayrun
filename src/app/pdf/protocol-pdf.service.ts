@@ -36,10 +36,10 @@ export class ProtocolPdfService {
       event: file.event,
       rows: file.rows,
       finishCounts: finishCountsAt(participantRuns, file.event.dateIso),
-      previousBests: buildPreviousBests(participantRuns, file.event.dateIso),
+      previousBests: buildPreviousBests(participantRuns, { dateIso: file.event.dateIso }),
       weather,
     });
 
-    triggerBlobDownload(this.#document, blob, this.#pdf.suggestedFileName(file.event));
+    triggerBlobDownload(this.#document, { blob, fileName: this.#pdf.suggestedFileName(file.event) });
   }
 }

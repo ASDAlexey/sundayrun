@@ -3,16 +3,16 @@ import { and, asc, eq } from 'drizzle-orm';
 import { DNF_DISTANCE_KM } from '../github/results-file.constant';
 import { normalizeAthleteKey } from '../history/athlete-key';
 import { applyEventToHistory } from '../history/athletes-rollup';
-import { EventResult } from '../history/athletes-rollup.interface';
+import { type EventResult } from '../history/athletes-rollup.interface';
 import { buildEventAutoNotes } from '../history/event-auto-notes';
 import { mergeAutoNote } from '../history/note-merge';
-import { AutoNoteInput } from '../history/notes-builder.interface';
-import { AthletesHistory } from '../models/athletes-history.type';
-import { GenderType } from '../models/gender.enum';
+import { type AutoNoteInput } from '../history/notes-builder.interface';
+import { type AthletesHistory } from '../models/athletes-history.type';
+import { type GenderType } from '../models/gender.enum';
 import { results } from './protocol-db.schema';
 import { AUTO_NOTES_BASELINE_ISO } from './protocol-db-notes.constant';
 import { asGender } from './protocol-db-read';
-import { ProtocolDrizzle } from './protocol-drizzle';
+import { type ProtocolDrizzle } from './protocol-drizzle';
 
 /** The slice of a stored result row the note recompute needs. */
 interface StoredResult {
@@ -39,11 +39,11 @@ export async function recomputeStoredNotes(db: ProtocolDrizzle): Promise<void> {
 
   for (const [slug, rows] of eventsRows) {
     if (slug >= AUTO_NOTES_BASELINE_ISO) {
-      await updateEventNotes(db, slug, rows, history);
+      await updateEventNotes(db, { slug, rows, history });
     }
 
     // Published slugs are the events' ISO dates, so the slug doubles as the event date.
-    history = applyEventToHistory(history, { slug, dateIso: slug }, rows.map(toEventResult));
+    history = applyEventToHistory(history, { event: { slug, dateIso: slug }, results: rows.map(toEventResult) });
   }
 }
 
@@ -90,8 +90,11 @@ function groupBySlug(rows: StoredResult[]): Map<string, StoredResult[]> {
 }
 
 /** Merges the recomputed auto notes into one event's rows and writes back only the rows that changed. */
-async function updateEventNotes(db: ProtocolDrizzle, slug: string, rows: StoredResult[], history: AthletesHistory): Promise<void> {
-  const autoNotes = buildEventAutoNotes(rows.map(toAutoNoteInput), history, slug);
+async function updateEventNotes(
+  db: ProtocolDrizzle,
+  { slug, rows, history }: { slug: string; rows: StoredResult[]; history: AthletesHistory },
+): Promise<void> {
+  const autoNotes = buildEventAutoNotes(rows.map(toAutoNoteInput), { history, dateIso: slug });
 
   for (const [index, row] of rows.entries()) {
     const note = mergeAutoNote(autoNotes[index], row.note);

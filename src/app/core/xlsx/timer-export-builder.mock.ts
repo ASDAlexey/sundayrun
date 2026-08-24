@@ -1,5 +1,5 @@
 import { GenderConfidence, GenderSource } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { TIMER_EXPORT_HEADER_ROW } from './timer-export-builder.constant';
 
 /** Fields the parser always fills in itself — they never survive a round trip through the file. */

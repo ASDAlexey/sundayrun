@@ -39,14 +39,21 @@ import {
 
 describe('progress-chart-config', () => {
   function buildConfig(bestMs = PROGRESS_BEST_MS): ChartConfiguration<'line'> | null {
-    return buildProgressChartConfig(PROGRESS_RUNS, bestMs, MOCK_PALETTE, vi.fn(), true);
+    return buildProgressChartConfig(PROGRESS_RUNS, { bestMs, palette: MOCK_PALETTE, onViewportChange: vi.fn(), hundredthsShown: true });
   }
 
   it('needs two distinct race dates: same-day duplicates collapse and kill the trend', () => {
     expect(hasProgressTrend(PROGRESS_RUNS)).toBe(true);
     expect(hasProgressTrend(SAME_DAY_ONLY_RUNS)).toBe(false);
     expect(hasProgressTrend([])).toBe(false);
-    expect(buildProgressChartConfig(SAME_DAY_ONLY_RUNS, PROGRESS_BEST_MS, MOCK_PALETTE, vi.fn(), true)).toBeNull();
+    expect(
+      buildProgressChartConfig(SAME_DAY_ONLY_RUNS, {
+        bestMs: PROGRESS_BEST_MS,
+        palette: MOCK_PALETTE,
+        onViewportChange: vi.fn(),
+        hundredthsShown: true,
+      }),
+    ).toBeNull();
   });
 
   it('plots the fastest run per date chronologically and styles personal-best points distinctly', () => {
@@ -67,14 +74,14 @@ describe('progress-chart-config', () => {
   });
 
   it('formats tooltips and axis ticks as russian dates and durations', () => {
-    const callbacks = tooltipCallbacks(EXPECTED_PROGRESS_DAYS, EXPECTED_IS_BEST, true);
+    const callbacks = tooltipCallbacks(EXPECTED_PROGRESS_DAYS, { isBest: EXPECTED_IS_BEST, hundredthsShown: true });
 
     expect(callbacks.title([{ dataIndex: REGULAR_POINT_INDEX }])).toBe(EXPECTED_TOOLTIP_TITLE);
     expect(callbacks.label({ dataIndex: BEST_POINT_INDEX })).toBe(EXPECTED_TOOLTIP_TIME);
     expect(callbacks.afterLabel({ dataIndex: BEST_POINT_INDEX })).toBe(EXPECTED_TOOLTIP_BEST);
     expect(callbacks.afterLabel({ dataIndex: REGULAR_POINT_INDEX })).toBe('');
     expect(
-      tooltipCallbacks(EXPECTED_PROGRESS_DAYS, EXPECTED_IS_BEST, false).label({ dataIndex: BEST_POINT_INDEX }),
+      tooltipCallbacks(EXPECTED_PROGRESS_DAYS, { isBest: EXPECTED_IS_BEST, hundredthsShown: false }).label({ dataIndex: BEST_POINT_INDEX }),
       'the fraction is cut out of the text: a canvas label is out of reach of the class on <html>',
     ).toBe(EXPECTED_TOOLTIP_TIME_WITHOUT_HUNDREDTHS);
 
@@ -109,7 +116,7 @@ describe('progress-chart-config', () => {
 
   it('fades the accent area gradient once the chart area exists, falling back to transparent before layout', () => {
     const gradientStops: [number, string][] = [];
-    const gradient = { addColorStop: (offset: number, color: string) => gradientStops.push([offset, color]) };
+    const gradient = { addColorStop: (offset: number, color: string): number => gradientStops.push([offset, color]) };
     const createLinearGradient = (): CanvasGradient => gradient;
     const backgroundColor = areaGradient(MOCK_PALETTE);
 

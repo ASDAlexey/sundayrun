@@ -1,4 +1,4 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 
 /** One event's fastest 5 km time per gender — the score denominators; null when nobody of the gender finished. */
 export interface EventWinnerTimes {

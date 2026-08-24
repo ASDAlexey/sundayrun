@@ -2,10 +2,10 @@ import { strToU8, zipSync } from 'fflate';
 
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { EMPTY_NOTE } from '../core/history/notes-builder.constant';
-import { AthletesHistory } from '../core/models/athletes-history.type';
+import { type AthletesHistory } from '../core/models/athletes-history.type';
 import { Gender, GenderConfidence, GenderSource } from '../core/models/gender.enum';
-import { Participant } from '../core/models/participant.interface';
-import { RaceEvent } from '../core/models/race-event.interface';
+import { type Participant } from '../core/models/participant.interface';
+import { type RaceEvent } from '../core/models/race-event.interface';
 import { RACE_EVENT_DEFAULTS } from '../core/protocol/race-event-defaults.constant';
 import { WORKBOOK_PATH, WORKBOOK_RELS_PATH, XL_ROOT } from '../core/xlsx/xlsx-reader.constant';
 

@@ -24,7 +24,7 @@ describe('triggerBlobDownload', () => {
   });
 
   it('clicks a transient anchor for the blob and revokes the url only after the delay', () => {
-    triggerBlobDownload(doc, DOWNLOAD_BLOB_MOCK, DOWNLOAD_FILE_NAME);
+    triggerBlobDownload(doc, { blob: DOWNLOAD_BLOB_MOCK, fileName: DOWNLOAD_FILE_NAME });
 
     expect(URL.createObjectURL).toHaveBeenCalledExactlyOnceWith(DOWNLOAD_BLOB_MOCK);
     expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledOnce();

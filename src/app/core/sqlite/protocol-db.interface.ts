@@ -1,4 +1,4 @@
-import { ProtocolDbValue } from './protocol-db-value.type';
+import { type ProtocolDbValue } from './protocol-db-value.type';
 
 /** Positional executor drizzle-proxy drives: params are `?`-positional, rows come back as value arrays. */
 export interface ProtocolDb {

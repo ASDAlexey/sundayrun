@@ -9,6 +9,7 @@ import {
   VK_SHARE_URL_BASE,
   WHATSAPP_SHARE_URL_BASE,
 } from './share-urls.constant';
+import { type ShareCaption } from './share-caption.interface';
 
 /** Thin wrapper over the Web Share / Clipboard APIs and the social share URL templates. */
 @Service()
@@ -22,12 +23,14 @@ export class ShareService {
   }
 
   /** False when the API is unavailable or the user dismissed the share sheet. */
-  async shareFile(file: File, title: string, text: string): Promise<boolean> {
-    return this.shareFiles([file], title, text);
+  async shareFile(file: File, caption: ShareCaption): Promise<boolean> {
+    return this.shareFiles([file], caption);
   }
 
   /** Shares several files at once (e.g. the protocol image plus a run photo) through one sheet. */
-  async shareFiles(files: File[], title: string, text: string): Promise<boolean> {
+  async shareFiles(files: File[], caption: ShareCaption): Promise<boolean> {
+    const { title, text } = caption;
+
     try {
       await this.#nav.share({ files, title, text });
 

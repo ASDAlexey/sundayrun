@@ -1,9 +1,12 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { AthleteWeatherBests, EventWeatherRow, WeatherExtremes } from './weather-records.interface';
+import { type AthleteWeatherBests, type EventWeatherRow, type WeatherExtremes } from './weather-records.interface';
 
-const row = (slug: string, temperatureC: number | null, windKmh: number | null, weatherCode: number | null): EventWeatherRow => ({
+const row = (
+  slug: string,
+  { temperatureC, windKmh, weatherCode }: { temperatureC: number | null; windKmh: number | null; weatherCode: number | null },
+): EventWeatherRow => ({
   slug,
   temperatureC,
   apparentC: temperatureC,
@@ -19,12 +22,12 @@ const row = (slug: string, temperatureC: number | null, windKmh: number | null, 
  * row never competes, a wind-less row still competes on temperature.
  */
 export const WEATHER_ROWS_MOCK: EventWeatherRow[] = [
-  row('2025-07-13', 30.6, 2.4, 0),
-  row('2024-02-11', -14, 11.3, 71),
-  row('2024-03-03', -14, 8, 3),
-  row('2024-06-02', 26.5, 40.2, 61),
-  row('2024-08-04', null, 50, 0),
-  row('2025-01-05', -3.4, null, 3),
+  row('2025-07-13', { temperatureC: 30.6, windKmh: 2.4, weatherCode: 0 }),
+  row('2024-02-11', { temperatureC: -14, windKmh: 11.3, weatherCode: 71 }),
+  row('2024-03-03', { temperatureC: -14, windKmh: 8, weatherCode: 3 }),
+  row('2024-06-02', { temperatureC: 26.5, windKmh: 40.2, weatherCode: 61 }),
+  row('2024-08-04', { temperatureC: null, windKmh: 50, weatherCode: 0 }),
+  row('2025-01-05', { temperatureC: -3.4, windKmh: null, weatherCode: 3 }),
 ];
 
 export const EXPECTED_ALL_TIME_EXTREMES: WeatherExtremes = {
@@ -40,7 +43,7 @@ export const EXPECTED_2025_EXTREMES: WeatherExtremes = {
   windiest: { slug: '2025-07-13', temperatureC: 30.6, windKmh: 2.4, weatherCode: 0 },
 };
 
-const run = (dateIso: string, timeMs: number, distanceKm = FIVE_KM_DISTANCE_KM): AthleteRun => ({
+const run = (dateIso: string, { timeMs, distanceKm = FIVE_KM_DISTANCE_KM }: { timeMs: number; distanceKm?: number }): AthleteRun => ({
   dateIso,
   slug: dateIso,
   timeMs,
@@ -56,11 +59,11 @@ export const WEATHER_BY_SLUG_MOCK: ReadonlyMap<string, EventWeather> = new Map(W
  * stored weather never qualify.
  */
 export const WEATHER_RUNS_MOCK: AthleteRun[] = [
-  run('2024-02-11', 1500000),
-  run('2024-06-02', 1450000),
-  run('2025-07-13', 1450000),
-  run('2019-09-01', 1200000, TWO_THREE_KM_DISTANCE_KM),
-  run('2023-05-14', 1300000),
+  run('2024-02-11', { timeMs: 1500000 }),
+  run('2024-06-02', { timeMs: 1450000 }),
+  run('2025-07-13', { timeMs: 1450000 }),
+  run('2019-09-01', { timeMs: 1200000, distanceKm: TWO_THREE_KM_DISTANCE_KM }),
+  run('2023-05-14', { timeMs: 1300000 }),
 ];
 
 export const EXPECTED_ALL_TIME_BESTS: AthleteWeatherBests = {

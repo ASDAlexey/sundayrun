@@ -2,10 +2,10 @@ import { and, eq, ne } from 'drizzle-orm';
 
 import { normalizeAthleteKey } from '../core/history/athlete-key';
 import { bestFirstLap } from '../core/history/first-lap';
-import { AthleteFirstLap } from '../core/history/first-lap.interface';
+import { type AthleteFirstLap } from '../core/history/first-lap.interface';
 import { parseDuration } from '../core/time/duration';
 import { results, runs } from '../core/sqlite/protocol-db.schema';
-import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { type ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 
 /**
  * The athlete's first-lap reads, apart from `protocol-db-queries` only to keep that file inside

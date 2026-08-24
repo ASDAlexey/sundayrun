@@ -1,26 +1,26 @@
-import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
+import { type ArchiveIndexEntry } from '../core/github/archive-index.interface';
 import { EXISTING_INDEX, NEWER_ENTRY, OLDER_ENTRY } from '../core/github/archive-index.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
-import { CourseRecordHistory } from '../core/history/course-records.type';
-import { AthleteFirstLap } from '../core/history/first-lap.interface';
-import { FirstLapRecords } from '../core/history/first-lap.type';
-import { EventGenderFinishers } from '../core/history/gender-finishers.interface';
+import { type CourseRecordHistory } from '../core/history/course-records.type';
+import { type AthleteFirstLap } from '../core/history/first-lap.interface';
+import { type FirstLapRecords } from '../core/history/first-lap.type';
+import { type EventGenderFinishers } from '../core/history/gender-finishers.interface';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
-import { LegendFinish } from '../core/history/legend.interface';
-import { ParticipantRun } from '../core/history/notables.interface';
-import { PreviousBest } from '../core/history/previous-bests.interface';
-import { OverallStats } from '../core/history/overall-stats.interface';
-import { PacingRow } from '../core/history/pacing.interface';
-import { SeasonRun } from '../core/history/season-positions.interface';
-import { RivalRun } from '../core/history/rivals.interface';
-import { EventWinnerTimes } from '../core/history/runner-scores.interface';
-import { EventWeatherRow } from '../core/history/weather-records.interface';
+import { type LegendFinish } from '../core/history/legend.interface';
+import { type ParticipantRun } from '../core/history/notables.interface';
+import { type PreviousBest } from '../core/history/previous-bests.interface';
+import { type OverallStats } from '../core/history/overall-stats.interface';
+import { type PacingRow } from '../core/history/pacing.interface';
+import { type SeasonRun } from '../core/history/season-positions.interface';
+import { type RivalRun } from '../core/history/rivals.interface';
+import { type EventWinnerTimes } from '../core/history/runner-scores.interface';
+import { type EventWeatherRow } from '../core/history/weather-records.interface';
 import { YearBadge } from '../core/history/year-badges.enum';
-import { YearReview } from '../core/history/year-review.interface';
-import { AthleteRecord } from '../core/models/athlete-history.interface';
-import { EventPhoto } from '../core/models/event-photo.interface';
+import { type YearReview } from '../core/history/year-review.interface';
+import { type AthleteRecord } from '../core/models/athlete-history.interface';
+import { type EventPhoto } from '../core/models/event-photo.interface';
 import { Gender } from '../core/models/gender.enum';
-import { ProtocolRow } from '../core/models/protocol-row.interface';
+import { type ProtocolRow } from '../core/models/protocol-row.interface';
 
 /**
  * The seed SQL and expected fixtures for the drizzle-backed `protocol-db-queries` tests. A real
@@ -29,11 +29,11 @@ import { ProtocolRow } from '../core/models/protocol-row.interface';
  * archive limit, unknown keys/slugs — is exercised against the true engine, not a fake.
  */
 
-const q = (value: string): string => `'${value}'`;
+const query = (value: string): string => `'${value}'`;
 
 const num = (value: number | null): string => (value === null ? 'NULL' : String(value));
 
-const legacy = (value: string | null): string => (value === null ? 'NULL' : q(value));
+const legacy = (value: string | null): string => (value === null ? 'NULL' : query(value));
 
 export const ATHLETE_KEY = 'иванов иван';
 
@@ -49,9 +49,9 @@ export const LATEST_EVENTS_LIMIT = 1;
 
 /** Athletes: a ranked man with season bests, a ranked woman without runs, a ranked genderless athlete. */
 export const SEED_ATHLETES: readonly string[] = [
-  `INSERT INTO athletes VALUES (${q(ATHLETE_KEY)}, ${q('Иванов Иван')}, ${q(Gender.male)}, 1500000)`,
-  `INSERT INTO athletes VALUES (${q(RUNLESS_ATHLETE_KEY)}, ${q('Новикова Нина')}, ${q(Gender.female)}, 1700000)`,
-  `INSERT INTO athletes VALUES (${q(GENDERLESS_ATHLETE_KEY)}, ${q('Соколов Саша')}, NULL, 1800000)`,
+  `INSERT INTO athletes VALUES (${query(ATHLETE_KEY)}, ${query('Иванов Иван')}, ${query(Gender.male)}, 1500000)`,
+  `INSERT INTO athletes VALUES (${query(RUNLESS_ATHLETE_KEY)}, ${query('Новикова Нина')}, ${query(Gender.female)}, 1700000)`,
+  `INSERT INTO athletes VALUES (${query(GENDERLESS_ATHLETE_KEY)}, ${query('Соколов Саша')}, NULL, 1800000)`,
 ];
 
 /**
@@ -59,43 +59,46 @@ export const SEED_ATHLETES: readonly string[] = [
  * run, and a 2.3 km run never counts. Plus one run for the median (a woman's, seeded via athletes).
  */
 export const SEED_RUNS: readonly string[] = [
-  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2024-05-05')}, ${q('2024-05-05')}, 1600000, ${FIVE_KM_DISTANCE_KM})`,
-  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2024-06-06')}, ${q('2024-06-06')}, 1500000, ${FIVE_KM_DISTANCE_KM})`,
-  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2025-03-03')}, ${q('2025-03-03')}, 1560000, ${FIVE_KM_DISTANCE_KM})`,
-  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2025-04-04')}, ${q('2025-04-04')}, 999000, 2.3)`,
-  `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q('2025-05-05')}, ${q('2025-05-05')}, 1600000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${query(ATHLETE_KEY)}, ${query('2024-05-05')}, ${query('2024-05-05')}, 1600000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${query(ATHLETE_KEY)}, ${query('2024-06-06')}, ${query('2024-06-06')}, 1500000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${query(ATHLETE_KEY)}, ${query('2025-03-03')}, ${query('2025-03-03')}, 1560000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${query(ATHLETE_KEY)}, ${query('2025-04-04')}, ${query('2025-04-04')}, 999000, 2.3)`,
+  `INSERT INTO runs VALUES (${query(ATHLETE_KEY)}, ${query('2025-05-05')}, ${query('2025-05-05')}, 1600000, ${FIVE_KM_DISTANCE_KM})`,
 ];
 
 /** Participations of `ATHLETE_KEY`, one per run slug (including the 2.3 km event). */
 export const SEED_PARTICIPATIONS: readonly string[] = ['2024-05-05', '2024-06-06', '2025-03-03', '2025-04-04', '2025-05-05'].map(
-  (slug) => `INSERT INTO participations VALUES (${q(ATHLETE_KEY)}, ${q(slug)})`,
+  (slug) => `INSERT INTO participations VALUES (${query(ATHLETE_KEY)}, ${query(slug)})`,
 );
 
 /** Нина's participation behind her single run, so the rarity denominator counts both starters. */
 export const SEED_WOMAN_PARTICIPATION: readonly string[] = [
-  `INSERT INTO participations VALUES (${q(RUNLESS_ATHLETE_KEY)}, ${q('2025-02-02')})`,
+  `INSERT INTO participations VALUES (${query(RUNLESS_ATHLETE_KEY)}, ${query('2025-02-02')})`,
 ];
 
-const eventInsert = (entry: ArchiveIndexEntry, clubName: string, chairman: string): string =>
-  `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${legacy(entry.legacyNumber)}, ${q(entry.city)}, ${q(entry.park)}, ` +
-  `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
+const eventInsert = (entry: ArchiveIndexEntry, { clubName, chairman }: { clubName: string; chairman: string }): string =>
+  `INSERT INTO events VALUES (${query(entry.slug)}, ${query(entry.dateIso)}, ${entry.number}, ${legacy(entry.legacyNumber)}, ${query(entry.city)}, ${query(entry.park)}, ` +
+  `${query(clubName)}, ${query(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
   `${num(entry.medianMaleMs)}, ${num(entry.medianFemaleMs)}, ` +
   `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)}, ${num(entry.newcomerCount)}, ${num(entry.personalRecordCount)})`;
 
 /** The two archive events (`EXISTING_INDEX`), each with its club metadata for the event read. */
-export const SEED_EVENTS: readonly string[] = [eventInsert(NEWER_ENTRY, 'Курск бегущий', 'Иванов Иван'), eventInsert(OLDER_ENTRY, '', '')];
+export const SEED_EVENTS: readonly string[] = [
+  eventInsert(NEWER_ENTRY, { clubName: 'Курск бегущий', chairman: 'Иванов Иван' }),
+  eventInsert(OLDER_ENTRY, { clubName: '', chairman: '' }),
+];
 
 /** The genderless DNF result plus a female 5 km finisher on the newer event — covers `asGender`. */
 export const SEED_RESULTS: readonly string[] = [
-  `INSERT INTO results VALUES (${q(NEWER_ENTRY.slug)}, 1, ${q('Мария Иванова')}, ${q('11:30')}, ${q('25:00')}, 1500000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.female)}, NULL, 1, ${q('Курск бегущий')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q(NEWER_ENTRY.slug)}, 2, ${q('Пётр Сидоров')}, ${q('')}, ${q('')}, NULL, NULL, NULL, ` +
-    `NULL, NULL, ${q('')}, ${q('сход')})`,
+  `INSERT INTO results VALUES (${query(NEWER_ENTRY.slug)}, 1, ${query('Мария Иванова')}, ${query('11:30')}, ${query('25:00')}, 1500000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.female)}, NULL, 1, ${query('Курск бегущий')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query(NEWER_ENTRY.slug)}, 2, ${query('Пётр Сидоров')}, ${query('')}, ${query('')}, NULL, NULL, NULL, ` +
+    `NULL, NULL, ${query('')}, ${query('сход')})`,
 ];
 
 /** A woman with a single 5 km run, so the women's median is an odd (single-value) sample. */
 export const SEED_WOMAN_RUN: readonly string[] = [
-  `INSERT INTO runs VALUES (${q(RUNLESS_ATHLETE_KEY)}, ${q('2025-02-02')}, ${q('2025-02-02')}, 1700000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO runs VALUES (${query(RUNLESS_ATHLETE_KEY)}, ${query('2025-02-02')}, ${query('2025-02-02')}, 1700000, ${FIVE_KM_DISTANCE_KM})`,
 ];
 
 /**
@@ -105,16 +108,16 @@ export const SEED_WOMAN_RUN: readonly string[] = [
  * place — the `placeF` side of the coalesce.
  */
 export const SEED_RUN_RESULTS: readonly string[] = [
-  `INSERT INTO results VALUES (${q('2024-05-05')}, 1, ${q('Иванов Иван')}, ${q('12:00')}, ${q('26:40')}, 1600000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 3, NULL, ${q('')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q('2024-06-06')}, 1, ${q('ИВАНОВ ИВАН')}, ${q('11:15')}, ${q('25:00')}, 1500000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 1, NULL, ${q('')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q('2024-06-06')}, 2, ${q('Мария Иванова')}, ${q('11:30')}, ${q('25:30')}, 1530000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.female)}, NULL, 1, ${q('')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q('2025-04-04')}, 1, ${q('Иванов Иван')}, ${q('16:39')}, ${q('')}, 999000, 2.3, ` +
-    `${q(Gender.male)}, NULL, NULL, ${q('')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q('2025-02-02')}, 1, ${q('Новикова Нина')}, ${q('13:00')}, ${q('28:20')}, 1700000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.female)}, NULL, 1, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${query('2024-05-05')}, 1, ${query('Иванов Иван')}, ${query('12:00')}, ${query('26:40')}, 1600000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.male)}, 3, NULL, ${query('')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query('2024-06-06')}, 1, ${query('ИВАНОВ ИВАН')}, ${query('11:15')}, ${query('25:00')}, 1500000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.male)}, 1, NULL, ${query('')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query('2024-06-06')}, 2, ${query('Мария Иванова')}, ${query('11:30')}, ${query('25:30')}, 1530000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.female)}, NULL, 1, ${query('')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query('2025-04-04')}, 1, ${query('Иванов Иван')}, ${query('16:39')}, ${query('')}, 999000, 2.3, ` +
+    `${query(Gender.male)}, NULL, NULL, ${query('')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query('2025-02-02')}, 1, ${query('Новикова Нина')}, ${query('13:00')}, ${query('28:20')}, 1700000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.female)}, NULL, 1, ${query('')}, ${query('')})`,
 ];
 
 /** Places of `ATHLETE_KEY`'s runs: both spellings resolve; the rival row and the place-less 2.3 km row do not. */
@@ -174,10 +177,10 @@ export const EXPECTED_WOMAN_RUN_PLACES: Record<string, number> = { '2025-02-02':
  * total — the pacing read drops both in code, after the SQL cut.
  */
 export const SEED_PACING_EDGE_RESULTS: readonly string[] = [
-  `INSERT INTO results VALUES (${q('2025-06-06')}, 1, ${q('Иванов Иван')}, ${q('сбой')}, ${q('25:00')}, 1500000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 1, NULL, ${q('')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q('2025-06-06')}, 2, ${q('Иванов Иван')}, ${q('12:00')}, ${q('DNF')}, NULL, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, NULL, NULL, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${query('2025-06-06')}, 1, ${query('Иванов Иван')}, ${query('сбой')}, ${query('25:00')}, 1500000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.male)}, 1, NULL, ${query('')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query('2025-06-06')}, 2, ${query('Иванов Иван')}, ${query('12:00')}, ${query('DNF')}, NULL, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.male)}, NULL, NULL, ${query('')}, ${query('')})`,
 ];
 
 /**
@@ -199,9 +202,9 @@ export const EXPECTED_DB_PACING_ROWS: PacingRow[] = [
  * older archive event, left unseeded, exercises the null branch.
  */
 export const SEED_WEATHER: readonly string[] = [
-  `INSERT INTO event_weather VALUES (${q('2024-05-05')}, -2.5, -6, 0, 14.3, 3, 1.8)`,
-  `INSERT INTO event_weather VALUES (${q('2024-06-06')}, 21.4, NULL, NULL, NULL, NULL, NULL)`,
-  `INSERT INTO event_weather VALUES (${q(NEWER_ENTRY.slug)}, 24.6, 25.1, 0, 9.4, 1, 0)`,
+  `INSERT INTO event_weather VALUES (${query('2024-05-05')}, -2.5, -6, 0, 14.3, 3, 1.8)`,
+  `INSERT INTO event_weather VALUES (${query('2024-06-06')}, 21.4, NULL, NULL, NULL, NULL, NULL)`,
+  `INSERT INTO event_weather VALUES (${query(NEWER_ENTRY.slug)}, 24.6, 25.1, 0, 9.4, 1, 0)`,
 ];
 
 export const EXPECTED_DB_WEATHER_ROWS: EventWeatherRow[] = [
@@ -358,7 +361,9 @@ export const STORED_STATS: OverallStats = {
   medianTimeWomenMs: 1600000,
 };
 
-export const SEED_STORED_STATS: readonly string[] = [`INSERT INTO meta VALUES (${q('overallStats')}, ${q(JSON.stringify(STORED_STATS))})`];
+export const SEED_STORED_STATS: readonly string[] = [
+  `INSERT INTO meta VALUES (${query('overallStats')}, ${query(JSON.stringify(STORED_STATS))})`,
+];
 
 export const EXPECTED_EMPTY_SQL_STATS: OverallStats = {
   eventsCount: 0,
@@ -386,14 +391,14 @@ export const EXPECTED_FIRST_EVENT_DATE_BY_YEAR: Record<string, string> = { '2026
 
 /** The `RACE_EVENT` (slug = its dateIso) with its club metadata, for the results-service read. */
 export const SEED_RACE_EVENT: readonly string[] = [
-  `INSERT INTO events VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_EVENT.dateIso)}, ${RACE_EVENT.number}, ${legacy(RACE_EVENT.legacyNumber)}, ${q(RACE_EVENT.city)}, ` +
-    `${q(RACE_EVENT.park)}, ${q(RACE_EVENT.clubName)}, ${q(RACE_EVENT.chairman)}, ${PROTOCOL_ROWS.length}, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
+  `INSERT INTO events VALUES (${query(RACE_EVENT.dateIso)}, ${query(RACE_EVENT.dateIso)}, ${RACE_EVENT.number}, ${legacy(RACE_EVENT.legacyNumber)}, ${query(RACE_EVENT.city)}, ` +
+    `${query(RACE_EVENT.park)}, ${query(RACE_EVENT.clubName)}, ${query(RACE_EVENT.chairman)}, ${PROTOCOL_ROWS.length}, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
 ];
 
 const resultInsert = (row: ProtocolRow): string =>
-  `INSERT INTO results VALUES (${q(RACE_EVENT.dateIso)}, ${row.index}, ${q(row.fullName)}, ${q(row.time23)}, ${q(row.time5)}, ` +
-  `${num(row.totalMs)}, ${num(row.distanceKm)}, ${row.gender === null ? 'NULL' : q(row.gender)}, ${num(row.placeM)}, ` +
-  `${num(row.placeF)}, ${q(row.club)}, ${q(row.note)})`;
+  `INSERT INTO results VALUES (${query(RACE_EVENT.dateIso)}, ${row.index}, ${query(row.fullName)}, ${query(row.time23)}, ${query(row.time5)}, ` +
+  `${num(row.totalMs)}, ${num(row.distanceKm)}, ${row.gender === null ? 'NULL' : query(row.gender)}, ${num(row.placeM)}, ` +
+  `${num(row.placeF)}, ${query(row.club)}, ${query(row.note)})`;
 
 /** Every `PROTOCOL_ROWS` row of the `RACE_EVENT`, so `selectEventResults` rebuilds the same file. */
 export const SEED_RACE_RESULTS: readonly string[] = PROTOCOL_ROWS.map(resultInsert);
@@ -417,12 +422,12 @@ export const EXPECTED_RACE_PHOTOS: EventPhoto[] = [
 
 /** The post and its photographs, the latter inserted back to front so the `idx` sort has work to do. */
 export const SEED_RACE_VK_POST: readonly string[] = [
-  `INSERT INTO event_vk_post VALUES (${q(RACE_EVENT.dateIso)}, ${q(RACE_VK_POST_URL)})`,
+  `INSERT INTO event_vk_post VALUES (${query(RACE_EVENT.dateIso)}, ${query(RACE_VK_POST_URL)})`,
   ...[...EXPECTED_RACE_PHOTOS.entries()]
     .reverse()
     .map(
       ([idx, photo]) =>
-        `INSERT INTO event_photo VALUES (${q(RACE_EVENT.dateIso)}, ${idx}, ${q(photo.previewUrl)}, ${q(photo.largeUrl)}, ${q(photo.photoUrl)})`,
+        `INSERT INTO event_photo VALUES (${query(RACE_EVENT.dateIso)}, ${idx}, ${query(photo.previewUrl)}, ${query(photo.largeUrl)}, ${query(photo.photoUrl)})`,
     ),
 ];
 
@@ -467,12 +472,12 @@ export const EXPECTED_SEASON_RUNS: SeasonRun[] = [
  * standings; the stranger outside the athletes table keeps the protocol spelling of his name.
  */
 export const SEED_SEASON_LAP_EDGE_RESULTS: readonly string[] = [
-  `INSERT INTO results VALUES (${q('2025-03-03')}, 9, ${q('Кривой Пол')}, ${q('10:00')}, ${q('22:00')}, 1320000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q('x')}, NULL, NULL, ${q('')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q('2025-03-03')}, 10, ${q('Битый Сплит')}, ${q('junk')}, ${q('23:00')}, 1380000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 2, NULL, ${q('')}, ${q('')})`,
-  `INSERT INTO results VALUES (${q('2025-03-03')}, 11, ${q('Незнакомец Ник')}, ${q('11:00')}, ${q('24:00')}, 1440000, ` +
-    `${FIVE_KM_DISTANCE_KM}, ${q(Gender.male)}, 3, NULL, ${q('')}, ${q('')})`,
+  `INSERT INTO results VALUES (${query('2025-03-03')}, 9, ${query('Кривой Пол')}, ${query('10:00')}, ${query('22:00')}, 1320000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query('x')}, NULL, NULL, ${query('')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query('2025-03-03')}, 10, ${query('Битый Сплит')}, ${query('junk')}, ${query('23:00')}, 1380000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.male)}, 2, NULL, ${query('')}, ${query('')})`,
+  `INSERT INTO results VALUES (${query('2025-03-03')}, 11, ${query('Незнакомец Ник')}, ${query('11:00')}, ${query('24:00')}, 1440000, ` +
+    `${FIVE_KM_DISTANCE_KM}, ${query(Gender.male)}, 3, NULL, ${query('')}, ${query('')})`,
 ];
 
 /**
@@ -513,18 +518,18 @@ export const EXPECTED_REVIEW_YEARS: string[] = ['2026', REVIEW_YEAR];
 
 /** The 2024 events behind the year-review read; the first carries the organisers' legacy number. */
 export const SEED_YEAR_EVENTS: readonly string[] = [
-  `INSERT INTO events VALUES (${q('2024-05-05')}, ${q('2024-05-05')}, 1, ${legacy('3')}, ${q('Курск')}, ${q('Боева дача')}, ` +
-    `${q('')}, ${q('')}, 1, 1, 1600000, NULL, NULL, 1600000, NULL, NULL, NULL)`,
-  `INSERT INTO events VALUES (${q('2024-06-06')}, ${q('2024-06-06')}, 2, ${legacy(null)}, ${q('Курск')}, ${q('Боева дача')}, ` +
-    `${q('')}, ${q('')}, 2, 2, 1560000, NULL, NULL, 1500000, NULL, NULL, NULL)`,
+  `INSERT INTO events VALUES (${query('2024-05-05')}, ${query('2024-05-05')}, 1, ${legacy('3')}, ${query('Курск')}, ${query('Боева дача')}, ` +
+    `${query('')}, ${query('')}, 1, 1, 1600000, NULL, NULL, 1600000, NULL, NULL, NULL)`,
+  `INSERT INTO events VALUES (${query('2024-06-06')}, ${query('2024-06-06')}, 2, ${legacy(null)}, ${query('Курск')}, ${query('Боева дача')}, ` +
+    `${query('')}, ${query('')}, 2, 2, 1560000, NULL, NULL, 1500000, NULL, NULL, NULL)`,
 ];
 
 /** A corrupt gender code the typed write can never produce; every read must coerce it to genderless. */
 export const CORRUPT_GENDER_ATHLETE_KEY = 'хитров ян';
 
 export const SEED_CORRUPT_GENDER: readonly string[] = [
-  `INSERT INTO athletes VALUES (${q(CORRUPT_GENDER_ATHLETE_KEY)}, ${q('Хитров Ян')}, ${q('X')}, 1620000)`,
-  `INSERT INTO runs VALUES (${q(CORRUPT_GENDER_ATHLETE_KEY)}, ${q('2024-06-06')}, ${q('2024-06-06')}, 1620000, ${FIVE_KM_DISTANCE_KM})`,
+  `INSERT INTO athletes VALUES (${query(CORRUPT_GENDER_ATHLETE_KEY)}, ${query('Хитров Ян')}, ${query('X')}, 1620000)`,
+  `INSERT INTO runs VALUES (${query(CORRUPT_GENDER_ATHLETE_KEY)}, ${query('2024-06-06')}, ${query('2024-06-06')}, 1620000, ${FIVE_KM_DISTANCE_KM})`,
 ];
 
 /** `POPULATED_SEED` plus the 2024 events and the corrupt-gender athlete — the year-review db. */

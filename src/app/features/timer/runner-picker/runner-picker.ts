@@ -4,14 +4,14 @@ import { inferGender } from '../../../core/gender/gender-inference';
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
 import { suggestAthletes } from '../../../core/history/athlete-suggest';
 import { pluralText } from '../../../core/i18n/plural-text';
-import { AthleteRecord } from '../../../core/models/athlete-history.interface';
-import { Gender, GenderType } from '../../../core/models/gender.enum';
+import { type AthleteRecord } from '../../../core/models/athlete-history.interface';
+import { Gender, type GenderType } from '../../../core/models/gender.enum';
 import { addRunner, removeRunner, setRunnerGender } from '../../../core/timer/session-actions';
 import { hasDuplicateSurnames, runnersWithoutGender } from '../../../core/timer/session-splits';
 import { createTimerId } from '../../../core/timer/timer-id';
 import { NAME_PART_SEPARATOR, SURNAME_INDEX } from '../../../core/timer/timer-session.constant';
 import { TimerRunnerOutcome } from '../../../core/timer/timer-session.enum';
-import { TimerRunner } from '../../../core/timer/timer-session.interface';
+import { type TimerRunner } from '../../../core/timer/timer-session.interface';
 import { normalizeFullNameCase } from '../../../core/xlsx/full-name-case';
 import { TimerRosterStatus } from '../../../state/timer-roster.enum';
 import { TimerRosterService } from '../../../state/timer-roster.service';
@@ -32,7 +32,7 @@ import {
   TIMER_PICKER_SUGGESTION_LIMIT,
   TIMER_PICKER_TITLE_ID,
 } from './runner-picker.constant';
-import { TimerGenderOption, TimerPickerCandidate, TimerPickerOption } from './runner-picker.interface';
+import { type TimerGenderOption, type TimerPickerCandidate, type TimerPickerOption } from './runner-picker.interface';
 
 /**
  * The «Атлеты» sheet — the whole roster job in one self-contained panel (docs/TIMER.md §5):
@@ -132,7 +132,13 @@ export class TimerPicker {
 
   readonly warningSurname = this.#duplicateSurname.asReadonly();
   readonly suggestions = computed(() =>
-    this.#toOptions(suggestAthletes(this.#roster.records(), this.query(), this.#pickedKeys(), TIMER_PICKER_SUGGESTION_LIMIT)),
+    this.#toOptions(
+      suggestAthletes(this.#roster.records(), {
+        query: this.query(),
+        excludedKeys: this.#pickedKeys(),
+        limit: TIMER_PICKER_SUGGESTION_LIMIT,
+      }),
+    ),
   );
 
   readonly regulars = computed(() => this.#toOptions(this.#regularRecords()));
@@ -264,7 +270,7 @@ export class TimerPicker {
   }
 
   setGender(runner: TimerRunner, gender: GenderType): void {
-    this.#sessions.updateActive((session) => setRunnerGender(session, runner.id, gender));
+    this.#sessions.updateActive((session) => setRunnerGender(session, { runnerId: runner.id, gender }));
   }
 
   /** Added by mistake: the tile goes, and with it every time recorded against it. */

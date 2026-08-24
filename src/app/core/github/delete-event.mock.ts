@@ -1,11 +1,11 @@
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
 import { EXPECTED_EVENT_PATHS } from './event-paths.mock';
 import { CONTENTS_REF_QUERY, GIT_TREE_BLOB_TYPE, GIT_TREE_FILE_MODE, HEAD_METHOD, REPO_CONTENTS_URL } from './github-api.constant';
-import { GitTreeEntry } from './github-api.interface';
+import { type GitTreeEntry } from './github-api.interface';
 import { PROTOCOL_DB_PATH } from './protocols-repo.constant';
-import { GitDataShas } from './spec-utils/git-data-routes';
+import { type GitDataShas } from './spec-utils/git-data-routes';
 
 export const DELETE_TOKEN = 'delete-token';
 

@@ -5,7 +5,7 @@ import { TimerRosterService } from '../../../state/timer-roster.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TIMER_LAP_NOBODY_PENDING } from './lap-board.constant';
 import { TimerLapMark } from './lap-board.enum';
-import { TimerLapRow } from './lap-board.interface';
+import { type TimerLapRow } from './lap-board.interface';
 import { pendingLapText } from './lap-board.text';
 import { buildLapRows } from './lap-rows';
 import { RaceTime } from '../../../shared/race-time/race-time';

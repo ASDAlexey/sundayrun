@@ -1,4 +1,4 @@
-import { TimerSession } from '../core/timer/timer-session.interface';
+import { type TimerSession } from '../core/timer/timer-session.interface';
 
 /** Everything a new measurement needs from the caller; the id and the clock come from the service. */
 export interface CreateTimerSessionInput {

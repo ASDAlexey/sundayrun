@@ -2,16 +2,16 @@ import type { Column, Content, ContentColumns, ContentTable, ContentText, TableC
 import { formatRaceNumber } from '../github/race-number';
 import { normalizeAthleteKey } from '../history/athlete-key';
 import { prNoteWithDate } from '../history/pr-note';
-import { PreviousBest } from '../history/previous-bests.interface';
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
+import { type PreviousBest } from '../history/previous-bests.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
 import { EMPTY_TIME } from '../protocol/protocol-builder.constant';
 import { formatRussianDateLong, formatRussianDateShort } from '../time/russian-date';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 import { temperatureText } from '../weather/temperature-text';
 import { isWetCourse } from '../weather/weather-line';
 import { WEATHER_PART_SEPARATOR } from '../weather/weather-line.constant';
-import { ProtocolDocInput } from './protocol-doc-definition.interface';
+import { type ProtocolDocInput } from './protocol-doc-definition.interface';
 import {
   ABBREVIATION_DNF,
   ABBREVIATION_DSQ,
@@ -92,7 +92,7 @@ export function buildProtocolDocDefinition({ event, rows, finishCounts, previous
       buildTitle(),
       buildIntro(event),
       buildParticipantsTitle(),
-      buildParticipantsTable(rows, finishCounts, previousBests),
+      buildParticipantsTable(rows, { finishCounts, previousBests }),
       buildAbbreviationsWithQr(event),
     ],
     footer: (currentPage: number, pageCount: number): Content => (currentPage === pageCount ? buildSignature(event) : EMPTY_FOOTER),
@@ -171,14 +171,13 @@ function buildParticipantsTitle(): ContentText {
 
 function buildParticipantsTable(
   rows: ProtocolRow[],
-  finishCounts: Record<string, number>,
-  previousBests: Record<string, PreviousBest>,
+  { finishCounts, previousBests }: { finishCounts: Record<string, number>; previousBests: Record<string, PreviousBest> },
 ): ContentTable {
   return {
     table: {
       headerRows: TABLE_HEADER_ROWS,
       widths: [...TABLE_WIDTHS],
-      body: [...buildTableHeaderRows(), ...rows.map((row) => buildTableBodyRow(row, finishCounts, previousBests))],
+      body: [...buildTableHeaderRows(), ...rows.map((row) => buildTableBodyRow(row, { finishCounts, previousBests }))],
     },
   };
 }
@@ -209,8 +208,7 @@ function headerCell(text: string, spans: { rowSpan?: number; colSpan?: number } 
 /** Name, club and note are left-aligned; every numeric cell is centered. */
 function buildTableBodyRow(
   row: ProtocolRow,
-  finishCounts: Record<string, number>,
-  previousBests: Record<string, PreviousBest>,
+  { finishCounts, previousBests }: { finishCounts: Record<string, number>; previousBests: Record<string, PreviousBest> },
 ): TableCell[] {
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];

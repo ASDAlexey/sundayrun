@@ -18,7 +18,7 @@ describe('PhotoStrip', () => {
   beforeEach(() => {
     // Swiper defines global custom elements and needs a real layout engine; the viewer only cares
     // that the chunk resolved, so the loader is stubbed and `swiper-container` stays inert.
-    TestBed.configureTestingModule({ providers: [{ provide: SWIPER_LOADER, useValue: () => Promise.resolve() }] });
+    TestBed.configureTestingModule({ providers: [{ provide: SWIPER_LOADER, useValue: (): Promise<void> => Promise.resolve() }] });
   });
 
   afterEach(() => {

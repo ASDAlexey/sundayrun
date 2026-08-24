@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { pluralText } from '../../core/i18n/plural-text';
 import { createTransferLoader } from '../../core/transfer/transfer-load';
-import { YearBestResult, YearReview } from '../../core/history/year-review.interface';
+import { type YearBestResult, type YearReview } from '../../core/history/year-review.interface';
 import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { YearReviewService } from '../../github/year-review.service';
@@ -17,16 +17,16 @@ import { YearBadgeChip } from '../../shared/year-badge/year-badge';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { YEAR_LATEST_KEY, YEAR_PAGE_BASE_LINK, YEAR_PODIUM_SIZE, YEAR_ROUTE_PARAM, YEAR_TRANSFER_KEY_PREFIX } from './year-page.constant';
-import { YearStatus, YearStatusType } from './year-page.enum';
+import { YearStatus, type YearStatusType } from './year-page.enum';
 import { RaceTime } from '../../shared/race-time/race-time';
 import {
-  YearActiveView,
-  YearBadgeGroupView,
-  YearBestRowView,
-  YearPageState,
-  YearProgressRowView,
-  YearReviewView,
-  YearStatView,
+  type YearActiveView,
+  type YearBadgeGroupView,
+  type YearBestRowView,
+  type YearPageState,
+  type YearProgressRowView,
+  type YearReviewView,
+  type YearStatView,
 } from './year-page.interface';
 
 /** «Итоги года»: the year's totals, best results, most active finishers and badge holders. */

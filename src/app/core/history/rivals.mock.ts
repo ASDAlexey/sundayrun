@@ -1,4 +1,4 @@
-import { Rival, RivalRun } from './rivals.interface';
+import { type Rival, type RivalRun } from './rivals.interface';
 
 /**
  * Three events of «Герой Геннадий», every own time 25:00, plus seven neighbours covering every
@@ -12,7 +12,7 @@ export const RIVAL_SCAN_YEAR = '2025';
 
 const OWN_MS = 1_500_000;
 
-const run = (key: string, displayName: string, dateIso: string, timeMs: number): RivalRun => ({
+const run = (key: string, { displayName, dateIso, timeMs }: { displayName: string; dateIso: string; timeMs: number }): RivalRun => ({
   key,
   displayName,
   dateIso,
@@ -20,36 +20,36 @@ const run = (key: string, displayName: string, dateIso: string, timeMs: number):
   timeMs,
 });
 
-const hero = (dateIso: string): RivalRun => run(RIVAL_ATHLETE_KEY, 'Герой Геннадий', dateIso, OWN_MS);
+const hero = (dateIso: string): RivalRun => run(RIVAL_ATHLETE_KEY, { displayName: 'Герой Геннадий', dateIso, timeMs: OWN_MS });
 
 export const RIVAL_ROWS: RivalRun[] = [
   hero('2025-01-01'),
   hero('2025-02-02'),
   hero('2026-03-03'),
   // Тень: three close finishes — two ahead of the hero and one dead heat.
-  run('тень тимур', 'Тень Тимур', '2025-01-01', OWN_MS - 3000),
-  run('тень тимур', 'Тень Тимур', '2025-02-02', OWN_MS),
-  run('тень тимур', 'Тень Тимур', '2026-03-03', OWN_MS - 9000),
+  run('тень тимур', { displayName: 'Тень Тимур', dateIso: '2025-01-01', timeMs: OWN_MS - 3000 }),
+  run('тень тимур', { displayName: 'Тень Тимур', dateIso: '2025-02-02', timeMs: OWN_MS }),
+  run('тень тимур', { displayName: 'Тень Тимур', dateIso: '2026-03-03', timeMs: OWN_MS - 9000 }),
   // Ровнов: two close finishes, one win each — the tightest of the two-time rivals (10 s total).
-  run('ровнов роман', 'Ровнов Роман', '2025-01-01', OWN_MS + 5000),
-  run('ровнов роман', 'Ровнов Роман', '2025-02-02', OWN_MS - 5000),
+  run('ровнов роман', { displayName: 'Ровнов Роман', dateIso: '2025-01-01', timeMs: OWN_MS + 5000 }),
+  run('ровнов роман', { displayName: 'Ровнов Роман', dateIso: '2025-02-02', timeMs: OWN_MS - 5000 }),
   // Плотный: two close finishes, 15 s total.
-  run('плотный павел', 'Плотный Павел', '2025-01-01', OWN_MS + 6000),
-  run('плотный павел', 'Плотный Павел', '2026-03-03', OWN_MS + 9000),
+  run('плотный павел', { displayName: 'Плотный Павел', dateIso: '2025-01-01', timeMs: OWN_MS + 6000 }),
+  run('плотный павел', { displayName: 'Плотный Павел', dateIso: '2026-03-03', timeMs: OWN_MS + 9000 }),
   // Граничный: a gap of exactly ten seconds still counts as close; 15 s total ties Плотный,
   // so the pair falls through to the name tie-break.
-  run('граничный глеб', 'Граничный Глеб', '2025-02-02', OWN_MS + 10_000),
-  run('граничный глеб', 'Граничный Глеб', '2026-03-03', OWN_MS - 5000),
+  run('граничный глеб', { displayName: 'Граничный Глеб', dateIso: '2025-02-02', timeMs: OWN_MS + 10_000 }),
+  run('граничный глеб', { displayName: 'Граничный Глеб', dateIso: '2026-03-03', timeMs: OWN_MS - 5000 }),
   // Предельный: qualifies with 20 s total but is the fifth rival — the limit drops him.
-  run('предельный пётр', 'Предельный Пётр', '2025-01-01', OWN_MS + 10_000),
-  run('предельный пётр', 'Предельный Пётр', '2025-02-02', OWN_MS + 10_000),
+  run('предельный пётр', { displayName: 'Предельный Пётр', dateIso: '2025-01-01', timeMs: OWN_MS + 10_000 }),
+  run('предельный пётр', { displayName: 'Предельный Пётр', dateIso: '2025-02-02', timeMs: OWN_MS + 10_000 }),
   // Разовый: a single close finish is a coincidence, not a rivalry.
-  run('разовый родион', 'Разовый Родион', '2025-01-01', OWN_MS + 1000),
+  run('разовый родион', { displayName: 'Разовый Родион', dateIso: '2025-01-01', timeMs: OWN_MS + 1000 }),
   // Разовый at an event the hero missed — the row must be ignored, not counted.
-  run('разовый родион', 'Разовый Родион', '2025-04-04', OWN_MS),
+  run('разовый родион', { displayName: 'Разовый Родион', dateIso: '2025-04-04', timeMs: OWN_MS }),
   // Далёкий: always twenty seconds behind — never close.
-  run('далёкий демид', 'Далёкий Демид', '2025-01-01', OWN_MS + 20_000),
-  run('далёкий демид', 'Далёкий Демид', '2025-02-02', OWN_MS + 20_000),
+  run('далёкий демид', { displayName: 'Далёкий Демид', dateIso: '2025-01-01', timeMs: OWN_MS + 20_000 }),
+  run('далёкий демид', { displayName: 'Далёкий Демид', dateIso: '2025-02-02', timeMs: OWN_MS + 20_000 }),
 ];
 
 /** All-time top: Тень leads on the count, the two-time rivals rank by gap totals, a tied total by name. */

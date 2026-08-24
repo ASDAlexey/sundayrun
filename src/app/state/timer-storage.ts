@@ -1,4 +1,4 @@
-import { GenderType } from '../core/models/gender.enum';
+import { type GenderType } from '../core/models/gender.enum';
 import { GENDER_VALUES } from './timer-storage.constant';
 
 /**

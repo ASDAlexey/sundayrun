@@ -1,7 +1,7 @@
 import { Service } from '@angular/core';
 
 import { loadPtSerifVfs } from './pdf-fonts';
-import { PtSerifFonts } from './pdf-fonts.interface';
+import { type PtSerifFonts } from './pdf-fonts.interface';
 
 /** DI seam around the pure font loader: the ttf files are fetched once and cached for the session. */
 @Service()

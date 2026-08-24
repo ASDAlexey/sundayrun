@@ -42,7 +42,7 @@ describe('githubJson', () => {
   it('sends the merged init with GitHub headers and returns the parsed body', async () => {
     const fetchFn = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(jsonResponse(OK_JSON_BODY)));
 
-    const result = await githubJson(fetchFn, TEST_TOKEN, TEST_URL, { method: POST_METHOD, body: REQUEST_BODY });
+    const result = await githubJson(TEST_URL, { fetchFn, token: TEST_TOKEN, init: { method: POST_METHOD, body: REQUEST_BODY } });
 
     expect(result).toEqual(OK_JSON_BODY);
     expect(fetchFn).toHaveBeenCalledWith(TEST_URL, EXPECTED_JSON_INIT);
@@ -51,6 +51,6 @@ describe('githubJson', () => {
   it('rejects with GithubAuthError on an unauthorized response', async () => {
     const fetchFn = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED)));
 
-    await expect(githubJson(fetchFn, TEST_TOKEN, TEST_URL)).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(githubJson(TEST_URL, { fetchFn, token: TEST_TOKEN })).rejects.toBeInstanceOf(GithubAuthError);
   });
 });

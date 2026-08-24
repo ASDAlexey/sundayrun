@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { NotificationService } from '../../shared/notification/notification.service';
 import { notificationMock } from '../../shared/notification/notification.service.mock';
 import { STALE_CHUNK_ERROR, UNRELATED_ERROR } from './lazy-chunk-reload.mock';
-import { RouteErrorNotifier } from './route-error-notifier';
+import { RouteErrorNotifier } from './route-error-notifier.service';
 import { NAVIGATION_ERROR_MESSAGE, STALE_CHUNK_RELOAD_FAILED_MESSAGE } from './route-error-notifier.constant';
 
 describe('RouteErrorNotifier', () => {

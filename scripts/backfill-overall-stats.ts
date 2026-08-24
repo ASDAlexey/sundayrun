@@ -26,7 +26,7 @@ const sqlite3 = await loadSqlite3Node();
 const db = new sqlite3.oo1.DB();
 
 try {
-  deserializeDbInto(sqlite3, db, new Uint8Array(await readFile(dbPath)));
+  deserializeDbInto(sqlite3, { db, dbBytes: new Uint8Array(await readFile(dbPath)) });
 
   const ddb = createProtocolDrizzle({
     queryValues: (sql, params) =>

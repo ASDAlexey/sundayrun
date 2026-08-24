@@ -1,4 +1,4 @@
-import { GithubFetchFn } from '../github-fetch.type';
+import { type GithubFetchFn } from '../github-fetch.type';
 
 const GET_METHOD = 'GET';
 
@@ -30,11 +30,11 @@ export function parseJsonBody<T = unknown>(init?: RequestInit): T {
 }
 
 /** Parsed JSON bodies of the `<method> <url>` requests among `calls`, in call order. */
-export function requestBodiesOf<T = unknown>(calls: (readonly [string, RequestInit?])[], method: string, url: string): T[] {
+export function requestBodiesOf<T = unknown>(calls: (readonly [string, RequestInit?])[], request: { method: string; url: string }): T[] {
   const bodies: T[] = [];
 
   for (const [callUrl, init] of calls) {
-    if (callUrl === url && init?.method === method) {
+    if (callUrl === request.url && init?.method === request.method) {
       bodies.push(parseJsonBody(init));
     }
   }

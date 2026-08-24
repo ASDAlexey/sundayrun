@@ -1,8 +1,8 @@
 import { DOCUMENT, Service, inject, signal } from '@angular/core';
 
 import { DELTA_BASE_CLASSES, DELTA_BASE_DEFAULT, DELTA_BASE_SSR_NOOP_STORAGE, DELTA_BASE_STORAGE_KEY } from './delta-base.constant';
-import { DeltaBase, DeltaBaseType } from './delta-base.enum';
-import { DeltaBaseStorage } from './delta-base.type';
+import { DeltaBase, type DeltaBaseType } from './delta-base.enum';
+import { type DeltaBaseStorage } from './delta-base.type';
 
 /**
  * Remembers what the protocol's delta column measures against on this device («Настройки» in the

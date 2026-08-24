@@ -1,7 +1,7 @@
 import { normalizeAthleteKey } from './athlete-key';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { DraftRows } from './draft-priors.interface';
-import { PreviousBest } from './previous-bests.interface';
+import { type DraftRows } from './draft-priors.interface';
+import { type PreviousBest } from './previous-bests.interface';
 
 /**
  * The stored prior finish counts supplemented with the earlier drafts of the same upload batch:

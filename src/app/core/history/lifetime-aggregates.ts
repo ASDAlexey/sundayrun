@@ -1,9 +1,9 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { MS_IN_SECOND, SECONDS_IN_MINUTE } from '../time/duration.constant';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { isoYear } from './iso-year';
 import { KM_TENTHS_BASE } from './lifetime-aggregates.constant';
-import { LifetimeAggregates, MinuteBucket, YearPace } from './lifetime-aggregates.interface';
+import { type LifetimeAggregates, type MinuteBucket, type YearPace } from './lifetime-aggregates.interface';
 
 /**
  * «Цифры за всё время»: the lifetime totals over every finish (the short course included) plus

@@ -8,7 +8,7 @@ import { pinnedProtocolDbPath } from '../core/github/protocol-db-path';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { DbSource } from '../core/sqlite/db-source.enum';
 import { deserializeDbInto } from '../core/sqlite/deserialize-db';
-import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
+import { type ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 import { loadSqlite3 } from '../core/sqlite/sqlite-loader';
 import { CdnRefService } from './cdn-ref.service';
 import { DbFreshnessService } from './db-freshness.service';
@@ -60,7 +60,7 @@ export class ProtocolDbService {
       throw new Error(PROTOCOL_DB_BROWSER_ONLY_ERROR);
     }
 
-    return this.#queryWithRetry(sql, params, PROTOCOL_DB_QUERY_ATTEMPTS);
+    return this.#queryWithRetry({ sql, params }, PROTOCOL_DB_QUERY_ATTEMPTS);
   }
 
   /**
@@ -68,17 +68,17 @@ export class ProtocolDbService {
    * and deserializes from scratch — enough to ride out one transient network failure now that no
    * JSON fallback follows.
    */
-  async #queryWithRetry(sql: string, params: readonly ProtocolDbValue[], attemptsLeft: number): Promise<ProtocolDbValue[][]> {
+  async #queryWithRetry(query: { sql: string; params: readonly ProtocolDbValue[] }, attemptsLeft: number): Promise<ProtocolDbValue[][]> {
     try {
       const db = await this.#connectionFor(await this.#resolveRef());
 
-      return db.exec(sql, { bind: [...params], rowMode: 'array', returnValue: 'resultRows' }).map(narrowValues);
+      return db.exec(query.sql, { bind: [...query.params], rowMode: 'array', returnValue: 'resultRows' }).map(narrowValues);
     } catch (error) {
       if (attemptsLeft <= 1) {
         throw error;
       }
 
-      return this.#queryWithRetry(sql, params, attemptsLeft - 1);
+      return this.#queryWithRetry(query, attemptsLeft - 1);
     }
   }
 
@@ -134,7 +134,7 @@ export class ProtocolDbService {
     const db = new sqlite3.oo1.DB();
 
     try {
-      deserializeDbInto(sqlite3, db, dbBytes);
+      deserializeDbInto(sqlite3, { db, dbBytes });
     } catch (error) {
       db.close();
       throw error;

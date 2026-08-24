@@ -1,6 +1,6 @@
-import { AthleteRecord } from '../models/athlete-history.interface';
+import { type AthleteRecord } from '../models/athlete-history.interface';
 import { Gender } from '../models/gender.enum';
-import { BestResult } from './best-results.interface';
+import { type BestResult } from './best-results.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 
 /** The season the year-filtered leaderboard expectations are built for. */

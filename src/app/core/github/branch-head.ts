@@ -1,7 +1,7 @@
 import { GIT_REF_URL, GITHUB_JSON_ACCEPT } from './github-api.constant';
-import { GitRefResponse } from './github-api.interface';
+import { type GitRefResponse } from './github-api.interface';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubFetchFn } from './github-fetch.type';
 import { assertOk } from './github-request';
 
 /**

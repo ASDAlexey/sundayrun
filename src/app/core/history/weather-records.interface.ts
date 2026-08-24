@@ -1,4 +1,4 @@
-import { EventWeather } from '../weather/event-weather.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 
 /** One event's stored weather keyed by its slug — the whole `event_weather` table read at once. */
 export interface EventWeatherRow extends EventWeather {

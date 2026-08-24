@@ -1,20 +1,20 @@
 import { FIRST_ARCHIVE_EVENT_NUMBER } from '../github/archive-index.constant';
 import { EXPECTED_NEW_ENTRY, EXPECTED_RENUMBERED_STALE_EVENTS, STALE_INDEX } from '../github/archive-index.mock';
-import { ArchiveIndexEntry } from '../github/archive-index.interface';
+import { type ArchiveIndexEntry } from '../github/archive-index.interface';
 import { eventFilePaths } from '../github/event-paths';
 import { EXISTING_HISTORY, EXPECTED_FIRST_PUBLISH_HISTORY } from '../github/publish-event.mock';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../github/spec-utils/race-fixtures';
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { FIRST_PARTICIPATION_NOTE, PERSONAL_RECORD_NOTE_PREFIX } from '../history/notes-builder.constant';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
 import { PROTOCOL_DB_META_SCHEMA_VERSION_KEY, PROTOCOL_DB_SCHEMA_VERSION } from './protocol-db-schema.constant';
-import { TimerRosterSummary } from './protocol-db-summary';
-import { ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
+import { type TimerRosterSummary } from './protocol-db-summary';
+import { type ProtocolDbEventRemoval, type ProtocolDbEventUpdate } from './protocol-db-write.interface';
 
 /** Publishes `RACE_EVENT` (slug 2026-06-28) with its publish-time weather; the write reads the previous state back out of the db. */
 export const DB_UPDATE_MOCK: ProtocolDbEventUpdate = { event: RACE_EVENT, rows: PROTOCOL_ROWS, weather: WEATHER_MOCK };
@@ -47,19 +47,19 @@ export const PRESERVED_CLUB_NAME = 'Старый клуб';
 
 export const PRESERVED_CHAIRMAN = 'Старый председатель';
 
-const q = (value: string): string => `'${value.replace(/'/g, "''")}'`;
+const query = (value: string): string => `'${value.replace(/'/g, "''")}'`;
 
 const num = (value: number | null): string => (value === null ? 'NULL' : String(value));
 
-const gender = (value: string | null): string => (value === null ? 'NULL' : q(value));
+const gender = (value: string | null): string => (value === null ? 'NULL' : query(value));
 
-const legacy = (value: string | null): string => (value === null ? 'NULL' : q(value));
+const legacy = (value: string | null): string => (value === null ? 'NULL' : query(value));
 
 /** An `events` row carrying the preserved club meta, so `readEventMeta` keeps it across the rewrite. */
-function eventInsert(entry: ArchiveIndexEntry, clubName: string, chairman: string): string {
+function eventInsert(entry: ArchiveIndexEntry, { clubName, chairman }: { clubName: string; chairman: string }): string {
   return (
-    `INSERT INTO events VALUES (${q(entry.slug)}, ${q(entry.dateIso)}, ${entry.number}, ${legacy(entry.legacyNumber)}, ${q(entry.city)}, ${q(entry.park)}, ` +
-    `${q(clubName)}, ${q(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
+    `INSERT INTO events VALUES (${query(entry.slug)}, ${query(entry.dateIso)}, ${entry.number}, ${legacy(entry.legacyNumber)}, ${query(entry.city)}, ${query(entry.park)}, ` +
+    `${query(clubName)}, ${query(chairman)}, ${entry.participantCount}, ${num(entry.finisherCount)}, ${num(entry.medianTimeMs)}, ` +
     `${num(entry.medianMaleMs)}, ${num(entry.medianFemaleMs)}, ` +
     `${num(entry.bestMaleMs)}, ${num(entry.bestFemaleMs)}, ${num(entry.newcomerCount)}, ${num(entry.personalRecordCount)})`
   );
@@ -70,15 +70,17 @@ function athleteInserts(history: AthletesHistory): string[] {
 
   for (const athlete of Object.values(history)) {
     rows.push(
-      `INSERT INTO athletes VALUES (${q(athlete.key)}, ${q(athlete.displayName)}, ${gender(athlete.gender)}, ${num(athlete.bestMs)})`,
+      `INSERT INTO athletes VALUES (${query(athlete.key)}, ${query(athlete.displayName)}, ${gender(athlete.gender)}, ${num(athlete.bestMs)})`,
     );
 
     for (const run of athlete.runs) {
-      rows.push(`INSERT INTO runs VALUES (${q(athlete.key)}, ${q(run.dateIso)}, ${q(run.slug)}, ${run.timeMs}, ${run.distanceKm})`);
+      rows.push(
+        `INSERT INTO runs VALUES (${query(athlete.key)}, ${query(run.dateIso)}, ${query(run.slug)}, ${run.timeMs}, ${run.distanceKm})`,
+      );
     }
 
     for (const slug of athlete.participationSlugs) {
-      rows.push(`INSERT INTO participations VALUES (${q(athlete.key)}, ${q(slug)})`);
+      rows.push(`INSERT INTO participations VALUES (${query(athlete.key)}, ${query(slug)})`);
     }
   }
 
@@ -89,7 +91,7 @@ function athleteInserts(history: AthletesHistory): string[] {
 const META_SEED = `INSERT INTO meta VALUES ('${PROTOCOL_DB_META_SCHEMA_VERSION_KEY}', '${PROTOCOL_DB_SCHEMA_VERSION}')`;
 
 const weatherInsert = (slug: string, weather: EventWeather): string =>
-  `INSERT INTO event_weather VALUES (${q(slug)}, ${num(weather.temperatureC)}, ${num(weather.apparentC)}, ` +
+  `INSERT INTO event_weather VALUES (${query(slug)}, ${num(weather.temperatureC)}, ${num(weather.apparentC)}, ` +
   `${num(weather.precipitationMm)}, ${num(weather.windKmh)}, ${num(weather.weatherCode)}, ${num(weather.recentPrecipitationMm)})`;
 
 /** A stale weather row for the re-published slug, so the publication exercises the upsert's UPDATE path. */
@@ -114,7 +116,7 @@ export const PRESERVED_WEATHER: EventWeather = {
   recentPrecipitationMm: 2.6,
 };
 
-const vkPostInsert = (slug: string, postUrl: string): string => `INSERT INTO event_vk_post VALUES (${q(slug)}, ${q(postUrl)})`;
+const vkPostInsert = (slug: string, postUrl: string): string => `INSERT INTO event_vk_post VALUES (${query(slug)}, ${query(postUrl)})`;
 
 /** The photo link of the re-published event: a publication knows nothing of VK, so it must survive one. */
 export const PRESERVED_VK_POST_URL = 'https://vk.com/wall-141369129_1109';
@@ -125,7 +127,7 @@ export const PRESERVED_VK_POST_URL = 'https://vk.com/wall-141369129_1109';
  * its previous state back out of.
  */
 export const EXISTING_DB_SEED: readonly string[] = [
-  ...STALE_INDEX.events.map((entry) => eventInsert(entry, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN)),
+  ...STALE_INDEX.events.map((entry) => eventInsert(entry, { clubName: PRESERVED_CLUB_NAME, chairman: PRESERVED_CHAIRMAN })),
   ...athleteInserts(EXISTING_HISTORY),
   weatherInsert(RACE_EVENT.dateIso, STALE_WEATHER),
   weatherInsert(PRESERVED_WEATHER_SLUG, PRESERVED_WEATHER),
@@ -145,7 +147,7 @@ CREATE TABLE event_weather (
 )`;
 
 const preV6WeatherInsert = (slug: string, weather: EventWeather): string =>
-  `INSERT INTO event_weather VALUES (${q(slug)}, ${num(weather.temperatureC)}, ${num(weather.apparentC)}, ` +
+  `INSERT INTO event_weather VALUES (${query(slug)}, ${num(weather.temperatureC)}, ${num(weather.apparentC)}, ` +
   `${num(weather.precipitationMm)}, ${num(weather.windKmh)}, ${num(weather.weatherCode)})`;
 
 /**
@@ -154,7 +156,7 @@ const preV6WeatherInsert = (slug: string, weather: EventWeather): string =>
  * bytes has to migrate them before anything reads.
  */
 export const PRE_V6_DB_SEED: readonly string[] = [
-  ...STALE_INDEX.events.map((entry) => eventInsert(entry, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN)),
+  ...STALE_INDEX.events.map((entry) => eventInsert(entry, { clubName: PRESERVED_CLUB_NAME, chairman: PRESERVED_CHAIRMAN })),
   ...athleteInserts(EXISTING_HISTORY),
   'DROP TABLE event_weather',
   'DROP TABLE event_vk_post',
@@ -207,7 +209,7 @@ const SOLE_HISTORY: AthletesHistory = {
 
 /** A db holding only the event to be removed; removing it drives every empty-rewrite guard. */
 export const SOLE_EVENT_DB_SEED: readonly string[] = [
-  eventInsert(SOLE_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
+  eventInsert(SOLE_ENTRY, { clubName: PRESERVED_CLUB_NAME, chairman: PRESERVED_CHAIRMAN }),
   ...athleteInserts(SOLE_HISTORY),
   weatherInsert(REMOVED_SLUG, PRESERVED_WEATHER),
   vkPostInsert(REMOVED_SLUG, PRESERVED_VK_POST_URL),
@@ -219,9 +221,9 @@ export const SOLE_REMOVAL_MOCK: ProtocolDbEventRemoval = { slug: REMOVED_SLUG };
 
 /** A stored `results` row as raw SQL, so a seed can carry notes written before the auto-note baseline. */
 const resultInsert = (slug: string, row: ProtocolRow): string =>
-  `INSERT INTO results VALUES (${q(slug)}, ${row.index}, ${q(row.fullName)}, ${q(row.time23)}, ${q(row.time5)}, ` +
+  `INSERT INTO results VALUES (${query(slug)}, ${row.index}, ${query(row.fullName)}, ${query(row.time23)}, ${query(row.time5)}, ` +
   `${num(row.totalMs)}, ${num(row.distanceKm)}, ${gender(row.gender)}, ${num(row.placeM)}, ${num(row.placeF)}, ` +
-  `${q(row.club)}, ${q(row.note)})`;
+  `${query(row.club)}, ${query(row.note)})`;
 
 /** An event published before `AUTO_NOTES_BASELINE_ISO`, so the recompute must never rewrite its notes. */
 export const PRE_BASELINE_SLUG = '2023-06-04';
@@ -280,7 +282,7 @@ const PRE_BASELINE_HISTORY: AthletesHistory = {
 
 /** A db holding one pre-baseline event WITH stored results, so the note recompute meets an older slug. */
 export const PRE_BASELINE_DB_SEED: readonly string[] = [
-  eventInsert(PRE_BASELINE_ENTRY, PRESERVED_CLUB_NAME, PRESERVED_CHAIRMAN),
+  eventInsert(PRE_BASELINE_ENTRY, { clubName: PRESERVED_CLUB_NAME, chairman: PRESERVED_CHAIRMAN }),
   resultInsert(PRE_BASELINE_SLUG, PRE_BASELINE_ROW),
   ...athleteInserts(PRE_BASELINE_HISTORY),
   META_SEED,

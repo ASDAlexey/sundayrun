@@ -1,5 +1,5 @@
 import { VERSION_COMMIT_MESSAGE_PREFIX } from './version-pointer.constant';
-import { GitDataShas } from './spec-utils/git-data-routes';
+import { type GitDataShas } from './spec-utils/git-data-routes';
 
 export const VERSION_POINTER_TOKEN = 'version-pointer-token';
 

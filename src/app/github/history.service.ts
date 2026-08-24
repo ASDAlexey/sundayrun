@@ -4,7 +4,7 @@ import { GithubAuthError } from '../core/github/github-errors';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { fetchRepoFileBytes } from '../core/github/repo-contents';
 import { readHistoryFromDb } from '../core/sqlite/protocol-db-read';
-import { AthletesHistory } from '../core/models/athletes-history.type';
+import { type AthletesHistory } from '../core/models/athletes-history.type';
 import { AdminTokenService } from './admin-token.service';
 import { HISTORY_MISSING_TOKEN_MESSAGE } from './history.service.constant';
 
@@ -26,7 +26,7 @@ export class HistoryService {
       throw new GithubAuthError(HISTORY_MISSING_TOKEN_MESSAGE);
     }
 
-    const dbBytes = await fetchRepoFileBytes(token, PROTOCOL_DB_PATH);
+    const dbBytes = await fetchRepoFileBytes(PROTOCOL_DB_PATH, { token });
 
     return dbBytes === null ? {} : readHistoryFromDb(dbBytes);
   }

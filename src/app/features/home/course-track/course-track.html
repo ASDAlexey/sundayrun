@@ -124,11 +124,7 @@ same span but sit in different branches, and a custom property only travels down
 
         <!-- Which way round. A route drawing cannot answer that on its own. -->
         @for (arrow of arrows; track arrow.x) {
-          <path
-            class="course-track__arrow"
-            d="M-13 -11 13 0 -13 11 -6.5 0Z"
-            [attr.transform]="'translate(' + arrow.x + ' ' + arrow.y + ') rotate(' + arrow.angle + ')'"
-          />
+          <path class="course-track__arrow" d="M-13 -11 13 0 -13 11 -6.5 0Z" [attr.transform]="arrow.transform" />
         }
 
         <!-- The marker owns the end of the run, so it is the one element that reports the

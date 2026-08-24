@@ -6,11 +6,11 @@ import { jsDelivrFileUrl } from '../core/github/jsdelivr';
 import { SITE_META_JSON_PATH } from '../core/github/protocols-repo.constant';
 import { publishSiteMeta } from '../core/github/publish-site-meta';
 import { parseSiteMeta } from '../core/github/site-meta';
-import { SiteMetaFile } from '../core/github/site-meta.interface';
+import { type SiteMetaFile } from '../core/github/site-meta.interface';
 import { AdminTokenService } from './admin-token.service';
 import { cdnFetchOptions } from './cdn-fetch';
 import { CdnRefService } from './cdn-ref.service';
-import { PublishState, PublishStateType } from './github-storage.enum';
+import { PublishState, type PublishStateType } from './github-storage.enum';
 import { SITE_META_LOAD_ERROR_PREFIX } from './site-meta.service.constant';
 
 /**
@@ -57,7 +57,7 @@ export class SiteMetaService {
     this.#state.set(PublishState.publishing);
 
     try {
-      this.#cdnRef.pin(await publishSiteMeta(token, meta));
+      this.#cdnRef.pin(await publishSiteMeta({ token, meta }));
       this.#state.set(PublishState.success);
     } catch (error) {
       this.#state.set(error instanceof GithubAuthError ? PublishState.authError : PublishState.error);

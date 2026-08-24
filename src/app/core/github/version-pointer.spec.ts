@@ -37,11 +37,11 @@ describe('publishVersionPointer', () => {
       }),
     );
 
-    await publishVersionPointer(VERSION_POINTER_TOKEN, VERSION_POINTER_SLUG, DATA_COMMIT_SHA_MOCK, fetchFn);
+    await publishVersionPointer({ token: VERSION_POINTER_TOKEN, slug: VERSION_POINTER_SLUG, dataCommitSha: DATA_COMMIT_SHA_MOCK, fetchFn });
 
-    const blobBodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, POST_METHOD, GIT_BLOBS_URL);
-    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
-    const commitBodies = requestBodiesOf(fetchFn.mock.calls, POST_METHOD, GIT_COMMITS_URL);
+    const blobBodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_BLOBS_URL });
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
+    const commitBodies = requestBodiesOf(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_COMMITS_URL });
     const calledUrls = fetchFn.mock.calls.map(([url]) => url);
 
     expect(decodeBase64Json(blobBodies[0].content)).toEqual({ schemaVersion: VERSION_FILE_SCHEMA_VERSION, sha: DATA_COMMIT_SHA_MOCK });
@@ -63,7 +63,13 @@ describe('publishVersionPointer', () => {
     );
     const sleep = vi.fn(() => Promise.resolve());
 
-    await publishVersionPointer(VERSION_POINTER_TOKEN, VERSION_POINTER_SLUG, DATA_COMMIT_SHA_MOCK, fetchFn, sleep);
+    await publishVersionPointer({
+      token: VERSION_POINTER_TOKEN,
+      slug: VERSION_POINTER_SLUG,
+      dataCommitSha: DATA_COMMIT_SHA_MOCK,
+      fetchFn,
+      sleep,
+    });
 
     expect(sleep, 'one backoff before the second, successful attempt').toHaveBeenCalledTimes(1);
   });
@@ -82,7 +88,12 @@ describe('publishVersionPointer', () => {
     );
 
     // No injected sleep — the default timer runs the backoff; fake timers keep it instant.
-    const pending = publishVersionPointer(VERSION_POINTER_TOKEN, VERSION_POINTER_SLUG, DATA_COMMIT_SHA_MOCK, fetchFn);
+    const pending = publishVersionPointer({
+      token: VERSION_POINTER_TOKEN,
+      slug: VERSION_POINTER_SLUG,
+      dataCommitSha: DATA_COMMIT_SHA_MOCK,
+      fetchFn,
+    });
 
     await vi.runAllTimersAsync();
     await expect(pending).resolves.toBeUndefined();
@@ -100,7 +111,13 @@ describe('publishVersionPointer', () => {
     const sleep = vi.fn(() => Promise.resolve());
 
     await expect(
-      publishVersionPointer(VERSION_POINTER_TOKEN, VERSION_POINTER_SLUG, DATA_COMMIT_SHA_MOCK, fetchFn, sleep),
+      publishVersionPointer({
+        token: VERSION_POINTER_TOKEN,
+        slug: VERSION_POINTER_SLUG,
+        dataCommitSha: DATA_COMMIT_SHA_MOCK,
+        fetchFn,
+        sleep,
+      }),
     ).rejects.toBeInstanceOf(GithubRequestError);
 
     expect(sleep, 'backs off between attempts, never after the last').toHaveBeenCalledTimes(VERSION_POINTER_MAX_ATTEMPTS - 1);
@@ -112,8 +129,8 @@ describe('publishVersionPointer', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED))),
     );
 
-    await expect(publishVersionPointer(VERSION_POINTER_TOKEN, VERSION_POINTER_SLUG, DATA_COMMIT_SHA_MOCK)).rejects.toBeInstanceOf(
-      GithubAuthError,
-    );
+    await expect(
+      publishVersionPointer({ token: VERSION_POINTER_TOKEN, slug: VERSION_POINTER_SLUG, dataCommitSha: DATA_COMMIT_SHA_MOCK }),
+    ).rejects.toBeInstanceOf(GithubAuthError);
   });
 });

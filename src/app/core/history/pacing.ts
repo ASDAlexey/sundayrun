@@ -1,8 +1,8 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { Gender, GenderType } from '../models/gender.enum';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
 import { parseDuration } from '../time/duration';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { AthleteFirstLap } from './first-lap.interface';
+import { type AthleteFirstLap } from './first-lap.interface';
 import { isoYear } from './iso-year';
 import { medianRatio } from './median';
 import {
@@ -13,19 +13,19 @@ import {
   PACING_MIN_RUNS,
   SECOND_LAP_DISTANCE_KM,
 } from './pacing.constant';
-import { PacingProfile, PacingProfileType } from './pacing.enum';
+import { PacingProfile, type PacingProfileType } from './pacing.enum';
 import {
-  AthletePacing,
-  BestSplitRun,
-  EvenestRunner,
-  EvenestTally,
-  LapDeltaRow,
-  MeetingSplits,
-  PacingBoards,
-  PacingRow,
-  SecondHalfFinisher,
-  SecondHalfTally,
-  SplitLeadMeeting,
+  type AthletePacing,
+  type BestSplitRun,
+  type EvenestRunner,
+  type EvenestTally,
+  type LapDeltaRow,
+  type MeetingSplits,
+  type PacingBoards,
+  type PacingRow,
+  type SecondHalfFinisher,
+  type SecondHalfTally,
+  type SplitLeadMeeting,
 } from './pacing.interface';
 
 /**
@@ -127,8 +127,7 @@ export function pacingBoards(rows: PacingRow[], year: string | null): PacingBoar
  */
 export function meetingSplitLeads(
   meetings: readonly SplitLeadMeeting[],
-  leftLaps: AthleteFirstLap[],
-  rightLaps: AthleteFirstLap[],
+  { leftLaps, rightLaps }: { leftLaps: AthleteFirstLap[]; rightLaps: AthleteFirstLap[] },
 ): (MeetingSplits | null)[] {
   const leftBySlug = new Map(leftLaps.map((lap) => [lap.slug, lap.lapMs]));
   const rightBySlug = new Map(rightLaps.map((lap) => [lap.slug, lap.lapMs]));

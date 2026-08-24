@@ -1,6 +1,6 @@
 import { safeJsonParse } from './safe-json-parse';
 import { EMPTY_SITE_META, SITE_META_SCHEMA_VERSION } from './site-meta.constant';
-import { SiteMetaFile } from './site-meta.interface';
+import { type SiteMetaFile } from './site-meta.interface';
 
 /** Parses `site-meta.json`; null, malformed JSON or an unexpected shape yields the empty meta. */
 export function parseSiteMeta(text: string | null): SiteMetaFile {

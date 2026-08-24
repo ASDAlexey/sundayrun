@@ -1,6 +1,6 @@
 import { MS_IN_SECOND } from '../time/duration.constant';
 import { GPX_POINT_PATTERN, GPX_TIME_PATTERN } from './parse-gpx.constant';
-import { TrackPoint } from './track-point.interface';
+import { type TrackPoint } from './track-point.interface';
 
 /**
  * Reads a GPX recording into the three numbers the site has any use for: where the watch was and

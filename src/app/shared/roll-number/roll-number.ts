@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, linkedSignal } from '@angular/core';
+import { Component, input, linkedSignal } from '@angular/core';
 
-import { RollFrame, RollSlot } from './roll-number.interface';
+import { type RollFrame, type RollSlot } from './roll-number.interface';
 
 /**
  * A number whose digits flip instead of being rewritten: the old character rides up and
@@ -17,7 +17,6 @@ import { RollFrame, RollSlot } from './roll-number.interface';
   selector: 'app-roll-number',
   templateUrl: './roll-number.html',
   styleUrl: './roll-number.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RollNumber {
   /** The number as text — already padded and formatted by the caller. */
@@ -31,10 +30,10 @@ export class RollNumber {
   #seq = 0;
 
   #roll(value: string, previous: RollSlot[]): RollSlot[] {
-    return [...value].map((char, index) => this.#slot(previous[index], index, char));
+    return [...value].map((char, index) => this.#slot(previous[index], { index, char }));
   }
 
-  #slot(previous: RollSlot | undefined, index: number, char: string): RollSlot {
+  #slot(previous: RollSlot | undefined, { index, char }: { index: number; char: string }): RollSlot {
     // A slot that was not on screen a moment ago — the number just grew a digit, or this
     // is the first render — has nothing to roll away from, so it simply appears.
     if (previous === undefined) {

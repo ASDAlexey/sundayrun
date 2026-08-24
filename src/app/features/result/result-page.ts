@@ -1,4 +1,4 @@
-import { Component, DOCUMENT, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { Component, DOCUMENT, type OnDestroy, computed, effect, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,7 +8,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { finishCountsWithDrafts, previousBestsWithDrafts } from '../../core/history/draft-priors';
 import { eventFinishCounts } from '../../core/history/finish-counts';
-import { PreviousBest } from '../../core/history/previous-bests.interface';
+import { type PreviousBest } from '../../core/history/previous-bests.interface';
 import { composeRaceAnnouncement } from '../../core/share/race-announcement';
 import { LINE_SEPARATOR } from '../../core/share/race-announcement.constant';
 import { formatDuration } from '../../core/time/duration';
@@ -42,8 +42,8 @@ import {
   PUBLISH_TICK_INTERVAL_MS,
   SUMMARY_SEPARATOR,
 } from './result-page.constant';
-import { ResultStatus, ResultStatusType } from './result-page.enum';
-import { GeneratedProtocol } from './result-page.interface';
+import { ResultStatus, type ResultStatusType } from './result-page.enum';
+import { type GeneratedProtocol } from './result-page.interface';
 import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';
 
 /**
@@ -206,7 +206,7 @@ export class ResultPage implements OnDestroy {
     const file = this.pdfFile();
 
     if (file !== null) {
-      await this.#share.shareFile(file, this.#titleLine(), this.description());
+      await this.#share.shareFile(file, { title: this.#titleLine(), text: this.description() });
     }
   }
 
@@ -261,12 +261,12 @@ export class ResultPage implements OnDestroy {
     const files = runPhoto === null ? [image] : [image, runPhoto];
 
     if (this.#share.canShareFiles(files)) {
-      await this.#share.shareFiles(files, this.#titleLine(), this.description());
+      await this.#share.shareFiles(files, { title: this.#titleLine(), text: this.description() });
 
       return;
     }
 
-    triggerBlobDownload(this.#document, image, image.name);
+    triggerBlobDownload(this.#document, { blob: image, fileName: image.name });
     this.#share.openWindow(this.#share.buildVkShareUrl(location.origin, this.#titleLine()));
   }
 
@@ -397,7 +397,7 @@ export class ResultPage implements OnDestroy {
         // The event is not published yet, so its weather is not in the db either: this preview — the
         // very file the organiser downloads and reposts — reads it straight off Open-Meteo, the same
         // source the publish will store. A failed fetch resolves to null and drops the header line.
-        weather: await fetchEventWeather(event.dateIso, isoToday()),
+        weather: await fetchEventWeather(event.dateIso, { todayIso: isoToday() }),
       });
 
       return { blob, url: URL.createObjectURL(blob), description: composeRaceAnnouncement(event, rows), imageBlob: null };

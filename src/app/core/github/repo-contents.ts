@@ -7,21 +7,28 @@ import {
   REPO_CONTENTS_URL,
 } from './github-api.constant';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubFetchFn } from './github-fetch.type';
 import { assertOk, githubHeaders } from './github-request';
 import { PROTOCOLS_REPO_BRANCH } from './protocols-repo.constant';
+
+/** Everything a Contents API read needs besides the path itself: auth and the transport to use. */
+export interface RepoFileRequest {
+  readonly token: string;
+  readonly fetchFn?: GithubFetchFn;
+}
+
+/** A read that may be pinned to one commit instead of the published branch. */
+export interface PinnedRepoFileRequest extends RepoFileRequest {
+  readonly ref?: string;
+}
 
 /**
  * Reads one repository file as raw text via the Contents API (pinned to the published branch).
  * 404 → null (the file does not exist yet), 401/403 → `GithubAuthError`, other non-OK →
  * `GithubRequestError`.
  */
-export async function fetchRepoFileText(
-  token: string,
-  path: string,
-  fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
-): Promise<string | null> {
-  const response = await fetchRepoFile(token, path, fetchFn);
+export async function fetchRepoFileText(path: string, request: RepoFileRequest): Promise<string | null> {
+  const response = await fetchRepoFile(path, request);
 
   return response === null ? null : response.text();
 }
@@ -32,13 +39,8 @@ export async function fetchRepoFileText(
  * `ref` pins the read to one commit. A publication passes the sha its own commit will hang off, so
  * the bytes it rebuilds cannot be a snapshot of some other state than the parent it declares.
  */
-export async function fetchRepoFileBytes(
-  token: string,
-  path: string,
-  fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
-  ref: string = PROTOCOLS_REPO_BRANCH,
-): Promise<Uint8Array | null> {
-  const response = await fetchRepoFile(token, path, fetchFn, ref);
+export async function fetchRepoFileBytes(path: string, request: PinnedRepoFileRequest): Promise<Uint8Array | null> {
+  const response = await fetchRepoFile(path, request);
 
   return response === null ? null : new Uint8Array(await response.arrayBuffer());
 }
@@ -49,7 +51,8 @@ export async function fetchRepoFileBytes(
  * `GithubRequestError`. Deleting a path through the Git Data API fails when it is not there, so a
  * deletion asks this first.
  */
-export async function repoFileExists(token: string, path: string, fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH): Promise<boolean> {
+export async function repoFileExists(path: string, request: RepoFileRequest): Promise<boolean> {
+  const { token, fetchFn = DEFAULT_GITHUB_FETCH } = request;
   const url = repoContentsUrl(path);
   const response = await fetchFn(url, { method: HEAD_METHOD, headers: githubHeaders(token, GITHUB_JSON_ACCEPT) });
 
@@ -62,12 +65,8 @@ export async function repoFileExists(token: string, path: string, fetchFn: Githu
   return true;
 }
 
-async function fetchRepoFile(
-  token: string,
-  path: string,
-  fetchFn: GithubFetchFn,
-  ref: string = PROTOCOLS_REPO_BRANCH,
-): Promise<Response | null> {
+async function fetchRepoFile(path: string, request: PinnedRepoFileRequest): Promise<Response | null> {
+  const { token, fetchFn = DEFAULT_GITHUB_FETCH, ref = PROTOCOLS_REPO_BRANCH } = request;
   const url = repoContentsUrl(path, ref);
   const response = await fetchFn(url, { headers: githubHeaders(token, GITHUB_RAW_ACCEPT) });
 

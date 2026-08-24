@@ -10,10 +10,10 @@ import {
   TIMER_SESSION_STORAGE_ERROR_MESSAGE,
   TIMER_SESSION_STORAGE_KEY,
 } from './timer-session.constant';
-import { CreateTimerSessionInput, TimerSessionState } from './timer-session.interface';
+import { type CreateTimerSessionInput, type TimerSessionState } from './timer-session.interface';
 import { readTimerSessionState, serializeTimerSessionState } from './timer-session.storage';
-import { TimerSessionChange } from './timer-session.type';
-import { TimerStorage } from './timer-storage.type';
+import { type TimerSessionChange } from './timer-session.type';
+import { type TimerStorage } from './timer-storage.type';
 
 /**
  * Owns every measurement of this device and the pointer to the one currently open («Мои замеры»,

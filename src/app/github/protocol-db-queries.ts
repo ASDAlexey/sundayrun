@@ -1,37 +1,37 @@
 import { and, asc, avg, count, countDistinct, desc, eq, inArray, isNotNull, like, lt, min, ne, sql } from 'drizzle-orm';
 
-import { ArchiveIndexEntry } from '../core/github/archive-index.interface';
+import { type ArchiveIndexEntry } from '../core/github/archive-index.interface';
 import { eventFilePaths } from '../core/github/event-paths';
 import { buildEventResultsFile } from '../core/github/results-file';
-import { EventResultsFile } from '../core/github/results-file.interface';
+import { type EventResultsFile } from '../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../core/history/athlete-key';
-import { HistoryRunRow } from '../core/history/badge-signals.interface';
+import { type HistoryRunRow } from '../core/history/badge-signals.interface';
 import { courseRecordHistory } from '../core/history/course-records';
-import { CourseRecordHistory } from '../core/history/course-records.type';
+import { type CourseRecordHistory } from '../core/history/course-records.type';
 import { firstLapRecords } from '../core/history/first-lap';
-import { FirstLapRecords } from '../core/history/first-lap.type';
-import { EventGenderFinishers } from '../core/history/gender-finishers.interface';
+import { type FirstLapRecords } from '../core/history/first-lap.type';
+import { type EventGenderFinishers } from '../core/history/gender-finishers.interface';
 import { FIVE_KM_DISTANCE_KM } from '../core/history/distance.constant';
 import { isoYear } from '../core/history/iso-year';
-import { LegendFinish } from '../core/history/legend.interface';
-import { ParticipantRun } from '../core/history/notables.interface';
+import { type LegendFinish } from '../core/history/legend.interface';
+import { type ParticipantRun } from '../core/history/notables.interface';
 import { buildPreviousBests } from '../core/history/previous-bests';
-import { PreviousBest } from '../core/history/previous-bests.interface';
-import { RivalRun } from '../core/history/rivals.interface';
-import { EventWinnerTimes } from '../core/history/runner-scores.interface';
+import { type PreviousBest } from '../core/history/previous-bests.interface';
+import { type RivalRun } from '../core/history/rivals.interface';
+import { type EventWinnerTimes } from '../core/history/runner-scores.interface';
 import { PERSONAL_RECORD_NOTE_PREFIX } from '../core/history/notes-builder.constant';
-import { OverallStats } from '../core/history/overall-stats.interface';
+import { type OverallStats } from '../core/history/overall-stats.interface';
 import { buildYearReview } from '../core/history/year-review';
-import { YearReview } from '../core/history/year-review.interface';
-import { AthleteRecord, AthleteRun } from '../core/models/athlete-history.interface';
+import { type YearReview } from '../core/history/year-review.interface';
+import { type AthleteRecord, type AthleteRun } from '../core/models/athlete-history.interface';
 import { parseDuration } from '../core/time/duration';
-import { Gender, GenderType } from '../core/models/gender.enum';
-import { ProtocolRow } from '../core/models/protocol-row.interface';
+import { Gender, type GenderType } from '../core/models/gender.enum';
+import { type ProtocolRow } from '../core/models/protocol-row.interface';
 import { withRaceTimeCells } from '../core/protocol/race-time-cells';
 import { athletes, eventWeather, events, meta, participations, results, runs } from '../core/sqlite/protocol-db.schema';
 import { PROTOCOL_DB_META_OVERALL_STATS_KEY } from '../core/sqlite/protocol-db-schema.constant';
-import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { ArchiveEntryRow } from './archive-entry-row.type';
+import { type ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { type ArchiveEntryRow } from './archive-entry-row.type';
 import { asGender, asNumber, asString } from './protocol-db-row';
 
 /**
@@ -518,7 +518,7 @@ export async function selectPreviousBestsBefore(db: ProtocolDrizzle, dateIso: st
 
   return buildPreviousBests(
     rows.map((row) => ({ ...row, distanceKm: FIVE_KM_DISTANCE_KM })),
-    dateIso,
+    { dateIso },
   );
 }
 

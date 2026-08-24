@@ -1,5 +1,5 @@
-import { TimerPublishStateType } from '../../../core/timer/timer-session.enum';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerPublishStateType } from '../../../core/timer/timer-session.enum';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 
 /**
  * One line of «Мои замеры». The measurement itself rides along, so every action of the row menu

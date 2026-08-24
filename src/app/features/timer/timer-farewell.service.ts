@@ -1,10 +1,10 @@
-import { DOCUMENT, OnDestroy, Service, computed, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, type OnDestroy, Service, computed, effect, inject, signal } from '@angular/core';
 
 import { isRaceComplete } from '../../core/timer/session-splits';
 import { TimerSessionService } from '../../state/timer-session.service';
 import { REDUCED_MOTION_QUERY } from './session-clock/session-clock.constant';
 import { TIMER_FAREWELL_WAVE_MS } from './timer-farewell.constant';
-import { TimerFarewellPhase, TimerFarewellPhaseType } from './timer-farewell.enum';
+import { TimerFarewellPhase, type TimerFarewellPhaseType } from './timer-farewell.enum';
 
 /**
  * «Последний финишировавший» — the single orchestrated animation of a race (docs/TIMER.md §10). The
@@ -68,7 +68,7 @@ export class TimerFarewellService implements OnDestroy {
 
     const waveId = view.setTimeout(() => this.#phase.set(TimerFarewellPhase.settled), TIMER_FAREWELL_WAVE_MS);
 
-    this.#stop = () => view.clearTimeout(waveId);
+    this.#stop = (): void => view.clearTimeout(waveId);
   }
 
   #reset(): void {

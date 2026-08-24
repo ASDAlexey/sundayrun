@@ -1,4 +1,4 @@
-import { Season, SeasonType } from './seasons.enum';
+import { Season, type SeasonType } from './seasons.enum';
 
 /** 'MM' of an ISO date → its calendar-year season. */
 export const MONTH_SEASONS: Record<string, SeasonType> = {

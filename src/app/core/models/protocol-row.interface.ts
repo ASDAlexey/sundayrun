@@ -1,4 +1,4 @@
-import { GenderType } from './gender.enum';
+import { type GenderType } from './gender.enum';
 
 /**
  * A formatted protocol row: display strings, empty string when absent.

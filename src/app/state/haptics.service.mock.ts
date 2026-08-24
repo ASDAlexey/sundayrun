@@ -1,5 +1,5 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
 /** The stand-in every timer component gets: one flag the spec drives, two spies it asserts on. */
 export interface HapticsServiceMock {

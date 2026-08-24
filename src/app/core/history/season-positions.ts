@@ -1,6 +1,6 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 import { NAME_COLLATION_LOCALE } from './athletes-list.constant';
-import { SeasonPositionLine, SeasonPositionPoint, SeasonPositions, SeasonRun } from './season-positions.interface';
+import { type SeasonPositionLine, type SeasonPositionPoint, type SeasonPositions, type SeasonRun } from './season-positions.interface';
 
 /**
  * The season standings race for one gender, ready for the bump chart: after every event the

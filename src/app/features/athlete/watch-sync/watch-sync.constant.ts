@@ -1,11 +1,11 @@
 import { CorosRegion } from '../../../core/coros/coros-region.enum';
-import { WatchRegionOption } from './watch-sync.interface';
+import { type WatchRegionOption } from './watch-sync.interface';
 
 /** Which Coros silo the account lives in — the login host has to match, and only the owner knows. */
 export const WATCH_REGION_OPTIONS: WatchRegionOption[] = [
-  { value: CorosRegion.Eu, label: 'Европа (trainingeu.coros.com)' },
-  { value: CorosRegion.Global, label: 'Глобальный (training.coros.com)' },
-  { value: CorosRegion.Cn, label: 'Китай (trainingcn.coros.com)' },
+  { value: CorosRegion.Eu, label: $localize`:@@watchSync.regionEu:Европа (trainingeu.coros.com)` },
+  { value: CorosRegion.Global, label: $localize`:@@watchSync.regionGlobal:Глобальный (training.coros.com)` },
+  { value: CorosRegion.Cn, label: $localize`:@@watchSync.regionCn:Китай (trainingcn.coros.com)` },
 ];
 
 /** Name of the archive «Выгрузить всё» produces. */

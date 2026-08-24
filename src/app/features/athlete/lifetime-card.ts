@@ -1,11 +1,11 @@
 import { Component, computed, input } from '@angular/core';
 
 import { lifetimeAggregates } from '../../core/history/lifetime-aggregates';
-import { LifetimeAggregates } from '../../core/history/lifetime-aggregates.interface';
-import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { type LifetimeAggregates } from '../../core/history/lifetime-aggregates.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration, formatRaceTime } from '../../core/time/duration';
 import { RaceTime } from '../../shared/race-time/race-time';
-import { LifetimeView } from './lifetime-card.interface';
+import { type LifetimeView } from './lifetime-card.interface';
 
 /**
  * The «Цифры за всё время» card: the lifetime time on the course and the kilometres over every

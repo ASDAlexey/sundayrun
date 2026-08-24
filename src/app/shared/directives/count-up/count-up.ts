@@ -1,7 +1,7 @@
 import { DestroyRef, Directive, ElementRef, afterNextRender, inject, input } from '@angular/core';
 
 import { COUNT_UP_DURATION_MS, COUNT_UP_OBSERVER_OPTIONS, REDUCED_MOTION_QUERY } from './count-up.constant';
-import { CountUpFormat } from './count-up.type';
+import { type CountUpFormat } from './count-up.type';
 
 /**
  * Runs a number up from zero the first time it scrolls into view, then hands the element
@@ -86,7 +86,7 @@ export class CountUp {
   }
 }
 
-/** Guarded because `matchMedia` is missing in jsdom and in any non-browser DOM shim. */
+/** Guarded because `matchMedia` is missing in the prerender worker and in any non-browser runtime. */
 function prefersReducedMotion(): boolean {
   return typeof matchMedia === 'function' && matchMedia(REDUCED_MOTION_QUERY).matches;
 }

@@ -1,8 +1,8 @@
 import { formatDuration } from '../../../core/time/duration';
 import { METERS_IN_KM } from '../../../core/track/track-distance.constant';
-import { TrackRun } from '../../../core/track/track-run.interface';
+import { type TrackRun } from '../../../core/track/track-run.interface';
 import { CHART_HEIGHT, CHART_PACE_SPREAD, CHART_PAD, CHART_WIDTH, COORD_TENTHS_BASE } from './my-track.constant';
-import { PaceChartView, TrackFrame } from './my-track.interface';
+import { type PaceChartView, type TrackFrame } from './my-track.interface';
 
 /**
  * The run read along its distance: pace on the vertical, kilometres on the horizontal, the average

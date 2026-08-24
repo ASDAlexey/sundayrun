@@ -2,12 +2,12 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { suggestAthletes } from '../../core/history/athlete-suggest';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
 import { AthletesService } from '../../github/athletes.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { ATHLETES_PAGE_LINK, TIMER_PAGE_LINK } from '../../app.constant';
 import { SELF_SUGGESTION_LIMIT } from './self-picker.constant';
-import { SelfPickerStatus, SelfPickerStatusType } from './self-picker.enum';
+import { SelfPickerStatus, type SelfPickerStatusType } from './self-picker.enum';
 
 /**
  * The header «Выбери себя» control. Without a pick it is a button opening a name-search
@@ -35,7 +35,9 @@ export class SelfPicker {
     return self === null ? null : [ATHLETES_PAGE_LINK, self.key];
   });
 
-  readonly suggestions = computed(() => suggestAthletes(this.#options(), this.query(), [], SELF_SUGGESTION_LIMIT));
+  readonly suggestions = computed(() =>
+    suggestAthletes(this.#options(), { query: this.query(), excludedKeys: [], limit: SELF_SUGGESTION_LIMIT }),
+  );
 
   protected readonly statuses = SelfPickerStatus;
 

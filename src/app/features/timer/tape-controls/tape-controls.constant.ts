@@ -1,5 +1,5 @@
-import { TimerRunnerStage, TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
-import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
+import { TimerRunnerStage, type TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
+import { TimerTapeMode, type TimerTapeModeType } from './tape-controls.enum';
 
 /** Nobody has asked for the handout sheet yet — the resting value of `openRequest`. */
 export const TIMER_TAPE_NO_REQUEST = 0;

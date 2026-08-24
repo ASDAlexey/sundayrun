@@ -2,7 +2,7 @@ import { Component, DOCUMENT, DestroyRef, computed, inject, signal } from '@angu
 import { SwUpdate } from '@angular/service-worker';
 
 import { TimerRosterService } from '../../../state/timer-roster.service';
-import { TimerStorage } from '../../../state/timer-storage.type';
+import { type TimerStorage } from '../../../state/timer-storage.type';
 import {
   TIMER_INSTALL_PROMPT_EVENT,
   TIMER_INSTALL_SETTLE_MS,
@@ -10,7 +10,7 @@ import {
   TIMER_INSTALL_STORAGE_KEY,
   TIMER_STANDALONE_MEDIA,
 } from './install-prompt.constant';
-import { TimerInstallPromptEvent } from './install-prompt.interface';
+import { type TimerInstallPromptEvent } from './install-prompt.interface';
 import { formatRosterDate, isInstallPromptEvent } from './install-prompt.view';
 
 /**

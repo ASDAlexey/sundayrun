@@ -1,7 +1,7 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
-import { TimerSession } from '../core/timer/timer-session.interface';
+import { type TimerSession } from '../core/timer/timer-session.interface';
 import { TimerStatus } from '../core/timer/timer-session.enum';
 import {
   KUZNETSOV_ATHLETE_KEY,

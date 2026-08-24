@@ -1,6 +1,6 @@
 import { deserializeDbInto } from '../deserialize-db';
 import { narrowValues } from '../protocol-db-narrow';
-import { ProtocolDb } from '../protocol-db.interface';
+import { type ProtocolDb } from '../protocol-db.interface';
 import { PROTOCOL_DB_SCHEMA_STATEMENTS } from '../protocol-db-schema.constant';
 import { loadSqlite3Node } from '../sqlite-loader-node';
 import { PROTOCOL_DB_PAGE_SIZE_PRAGMA } from '../protocol-db-write.constant';
@@ -60,7 +60,7 @@ export async function openMemoryProtocolDbFromBytes(dbBytes: Uint8Array): Promis
   const sqlite3 = await loadSqlite3Node();
   const conn = new sqlite3.oo1.DB();
 
-  deserializeDbInto(sqlite3, conn, dbBytes);
+  deserializeDbInto(sqlite3, { db: conn, dbBytes });
 
   return {
     db: {

@@ -1,4 +1,4 @@
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { TIMER_SESSION_IDLE } from '../../../core/timer/timer-session.mock';
 
 /**

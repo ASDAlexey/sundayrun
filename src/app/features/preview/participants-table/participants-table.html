@@ -107,7 +107,7 @@
 
           <div class="participants-table__cell participants-table__cell_mono participants-table__cell_center" role="cell">
             @if (row.prDeltaText !== '') {
-              <span class="participants-table__pr-delta {{ row.prDeltaClass }}" [title]="row.prDeltaHint">
+              <span class="participants-table__pr-delta" [class]="row.prDeltaClass" [title]="row.prDeltaHint">
                 <app-race-time pinnedFraction [value]="row.prDeltaText" />
               </span>
             }
@@ -150,7 +150,7 @@
           <div class="participants-table__cell participants-table__cell_center" role="cell">
             <span class="participants-table__place-cell">
               @if (row.placeMMedalClass !== '') {
-                <svg aria-hidden="true" class="participants-table__medal {{ row.placeMMedalClass }}" viewBox="0 0 12 12">
+                <svg aria-hidden="true" class="participants-table__medal" viewBox="0 0 12 12" [class]="row.placeMMedalClass">
                   <path class="participants-table__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
                   <circle class="participants-table__medal-disc" cx="6" cy="8" r="3.4" />
                 </svg>
@@ -169,7 +169,7 @@
           <div class="participants-table__cell participants-table__cell_center" role="cell">
             <span class="participants-table__place-cell">
               @if (row.placeFMedalClass !== '') {
-                <svg aria-hidden="true" class="participants-table__medal {{ row.placeFMedalClass }}" viewBox="0 0 12 12">
+                <svg aria-hidden="true" class="participants-table__medal" viewBox="0 0 12 12" [class]="row.placeFMedalClass">
                   <path class="participants-table__medal-ribbon" d="M3.2 0.6 L6 5 L8.8 0.6" />
                   <circle class="participants-table__medal-disc" cx="6" cy="8" r="3.4" />
                 </svg>
@@ -187,7 +187,7 @@
 
           <div class="participants-table__cell participants-table__cell_center" role="cell">
             @if (row.finishCountText !== '') {
-              <span class="participants-table__finishes {{ row.finishClubClass }}">{{ row.finishCountText }}</span>
+              <span class="participants-table__finishes" [class]="row.finishClubClass">{{ row.finishCountText }}</span>
             }
           </div>
 
@@ -199,7 +199,7 @@
                 @if (badge.kind === noteKinds.plain) {
                   <span class="participants-table__note-text">{{ badge.text }}</span>
                 } @else {
-                  <span class="participants-table__note-badge {{ badge.className }}">
+                  <span class="participants-table__note-badge" [class]="badge.className">
                     <svg aria-hidden="true" class="participants-table__note-icon" viewBox="0 0 12 12">
                       @switch (badge.kind) {
                         @case (noteKinds.record) {

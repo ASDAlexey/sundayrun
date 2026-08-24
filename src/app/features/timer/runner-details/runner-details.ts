@@ -3,12 +3,12 @@ import { Component, ElementRef, afterNextRender, computed, inject, input, output
 import { formatRaceTime } from '../../../core/time/duration';
 import { removeRunner, setRunnerOutcome, swapRunnerSplits } from '../../../core/timer/session-actions';
 import { runnerSplitTimesMs } from '../../../core/timer/session-splits';
-import { TimerRunnerOutcome, TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { TimerRunnerOutcome, type TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
 import { TIMER_CARD_FINISH_INDEX, TIMER_CARD_LAP_INDEX, TIMER_CARD_NO_TIME, TIMER_CARD_TIME_SEPARATOR } from './runner-details.constant';
-import { TimerCardRunner } from './runner-details.interface';
+import { type TimerCardRunner } from './runner-details.interface';
 import { cardRemoveNoteText } from './runner-details.text';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
@@ -51,7 +51,7 @@ export class TimerRunnerCard {
   readonly #timesMs = computed(() => {
     const session = this.#sessions.active();
 
-    return session === null ? [] : runnerSplitTimesMs(session, this.runnerId());
+    return session === null ? [] : runnerSplitTimesMs(session, { runnerId: this.runnerId() });
   });
 
   readonly runnerId = input.required<string>();
@@ -106,7 +106,7 @@ export class TimerRunnerCard {
 
   /** «сошёл» / «только круг» / back into the race — the organiser's word, not a tap count. */
   onOutcome(outcome: TimerRunnerOutcomeType): void {
-    this.#sessions.updateActive((session) => setRunnerOutcome(session, this.runnerId(), outcome));
+    this.#sessions.updateActive((session) => setRunnerOutcome(session, { runnerId: this.runnerId(), outcome }));
   }
 
   onToggleSwap(): void {
@@ -116,7 +116,7 @@ export class TimerRunnerCard {
   /** Both runners exchange every time recorded for them: the classic «тапнул не того». */
   onSwap(otherId: string): void {
     this.swapping.set(false);
-    this.#sessions.updateActive((session) => swapRunnerSplits(session, this.runnerId(), otherId));
+    this.#sessions.updateActive((session) => swapRunnerSplits(session, { leftRunnerId: this.runnerId(), rightRunnerId: otherId }));
   }
 
   onRemoveAsk(): void {
@@ -138,7 +138,7 @@ function timeAt(timesMs: readonly number[], index: number): string {
 }
 
 function timesText(session: TimerSession, runnerId: string): string {
-  return joinTimes(runnerSplitTimesMs(session, runnerId));
+  return joinTimes(runnerSplitTimesMs(session, { runnerId }));
 }
 
 /** «9:26 · 23:26», or a dash while nothing is written down for him yet. */

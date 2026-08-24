@@ -1,5 +1,5 @@
 import { EXPECTED_EMPTY_YEAR_REVIEW, EXPECTED_YEAR_REVIEW } from '../../core/history/year-review.mock';
-import { YearReview } from '../../core/history/year-review.interface';
+import { type YearReview } from '../../core/history/year-review.interface';
 
 export const AVAILABLE_YEARS = ['2026', '2025'];
 

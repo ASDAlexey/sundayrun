@@ -2,7 +2,7 @@ import { DECIMAL_COMMA, DECIMAL_POINT } from '../../../core/history/score-text.c
 import { formatDuration, formatRaceTime } from '../../../core/time/duration';
 import { MS_IN_SECOND } from '../../../core/time/duration.constant';
 import { METERS_IN_KM } from '../../../core/track/track-distance.constant';
-import { TrackRun } from '../../../core/track/track-run.interface';
+import { type TrackRun } from '../../../core/track/track-run.interface';
 import {
   COURSE_ALLEY_PATH,
   COURSE_FINISH_POINT,
@@ -10,7 +10,7 @@ import {
   COURSE_VIEW_BOX,
 } from '../../home/course-track/course-geometry.constant';
 import { KM_FRACTION_DIGITS } from './my-track.constant';
-import { MyTrackView } from './my-track.interface';
+import { type MyTrackView } from './my-track.interface';
 import { buildPaceChart } from './pace-chart';
 import { buildFrames, buildTraces } from './track-shape';
 

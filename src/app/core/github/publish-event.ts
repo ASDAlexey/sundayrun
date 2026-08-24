@@ -1,18 +1,39 @@
 import { bytesToBase64 } from '../encoding/base64';
 import { applyEventsToDb } from '../sqlite/protocol-db-write';
 import { isoToday } from '../time/iso-today';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 import { fetchEventsWeather } from '../weather/fetch-event-weather';
 import { eventFilePaths } from './event-paths';
 import { COMMIT_MESSAGE_PREFIX } from './github-api.constant';
-import { CommitFile } from './github-api.interface';
+import { type CommitFile } from './github-api.interface';
 import { commitFilesAtomically } from './github-commit';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubAccess, type GithubFetchFn } from './github-fetch.type';
 import { buildProtocolDbCommitFile } from './protocol-db-file';
-import { PublishEventInput, PublishEventResult } from './publish-event.interface';
+import { type PublishEventInput, type PublishEventResult } from './publish-event.interface';
 import { BATCH_SLUG_RANGE_SEPARATOR, BATCH_SLUG_SUFFIX_CLOSE, BATCH_SLUG_SUFFIX_OPEN } from './publish-event.constant';
 import { publishVersionPointer } from './version-pointer';
+
+/** One protocol to publish, plus who publishes it and over which transport. */
+export interface PublishEventRequest {
+  readonly token: string;
+  readonly input: PublishEventInput;
+  readonly fetchFn?: GithubFetchFn;
+}
+
+/** The batch form of {@link PublishEventRequest}: every protocol lands in the same commit. */
+export interface PublishEventsRequest {
+  readonly token: string;
+  readonly inputs: PublishEventInput[];
+  readonly fetchFn?: GithubFetchFn;
+}
+
+/** What one commit attempt of a publication works on; `parentSha` moves when the branch does. */
+interface PublishAttempt {
+  readonly ordered: PublishEventInput[];
+  readonly weathers: (EventWeather | null)[];
+  readonly parentSha: string;
+}
 
 /**
  * Publishes one event into the protocols repository as a single atomic commit: the `source.xlsx`
@@ -27,12 +48,10 @@ import { publishVersionPointer } from './version-pointer';
  * (not per commit attempt — the readings cannot change), for the whole batch in a single request
  * per endpoint (see `fetchEventsWeather`), and a failed fetch publishes without it.
  */
-export function publishEvent(
-  token: string,
-  input: PublishEventInput,
-  fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
-): Promise<PublishEventResult> {
-  return publishEvents(token, [input], fetchFn);
+export function publishEvent(request: PublishEventRequest): Promise<PublishEventResult> {
+  const { token, input, fetchFn } = request;
+
+  return publishEvents({ token, inputs: [input], fetchFn });
 }
 
 /**
@@ -40,27 +59,23 @@ export function publishEvent(
  * events land in the SAME atomic commit, so a multi-protocol upload is all-or-nothing — a failed
  * attempt leaves the archive untouched — and is followed by a single pointer update.
  */
-export async function publishEvents(
-  token: string,
-  inputs: PublishEventInput[],
-  fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
-): Promise<PublishEventResult> {
+export async function publishEvents(request: PublishEventsRequest): Promise<PublishEventResult> {
+  const { token, inputs, fetchFn = DEFAULT_GITHUB_FETCH } = request;
+  const access: GithubAccess = { token, fetchFn };
   const ordered = [...inputs].sort((left, right) => left.event.dateIso.localeCompare(right.event.dateIso));
-  const todayIso = isoToday();
   const weathers = await fetchEventsWeather(
     ordered.map((input) => input.event.dateIso),
-    todayIso,
-    fetchFn,
+    { todayIso: isoToday(), fetchFn },
   );
   const slug = batchSlug(ordered);
-  const commitSha = await commitFilesAtomically(
+  const commitSha = await commitFilesAtomically({
     token,
-    (parentSha) => buildCommitFiles(fetchFn, token, ordered, weathers, parentSha),
-    `${COMMIT_MESSAGE_PREFIX}${slug}`,
     fetchFn,
-  );
+    buildFiles: (parentSha) => buildCommitFiles(access, { ordered, weathers, parentSha }),
+    message: `${COMMIT_MESSAGE_PREFIX}${slug}`,
+  });
 
-  await publishVersionPointer(token, slug, commitSha, fetchFn);
+  await publishVersionPointer({ token, slug, dataCommitSha: commitSha, fetchFn });
 
   return { commitSha };
 }
@@ -80,23 +95,16 @@ function batchSlug(ordered: PublishEventInput[]): string {
  * once per attempt. An event without a workbook (timed by the built-in stopwatch) contributes no
  * file at all, so a mixed batch commits only the workbooks it actually has.
  */
-async function buildCommitFiles(
-  fetchFn: GithubFetchFn,
-  token: string,
-  ordered: PublishEventInput[],
-  weathers: (EventWeather | null)[],
-  parentSha: string,
-): Promise<CommitFile[]> {
-  const dbFile = await buildProtocolDbCommitFile(
-    token,
-    (dbBytes) =>
+async function buildCommitFiles(access: GithubAccess, attempt: PublishAttempt): Promise<CommitFile[]> {
+  const { ordered, weathers, parentSha } = attempt;
+  const dbFile = await buildProtocolDbCommitFile(access, {
+    parentSha,
+    updateDb: (dbBytes) =>
       applyEventsToDb(
         dbBytes,
         ordered.map((input, index) => ({ event: input.event, rows: input.rows, weather: weathers[index] })),
       ),
-    fetchFn,
-    parentSha,
-  );
+  });
 
   return [...ordered.flatMap(sourceXlsxCommitFile), dbFile];
 }

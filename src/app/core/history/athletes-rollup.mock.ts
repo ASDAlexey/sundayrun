@@ -1,7 +1,7 @@
 import { Gender } from '../models/gender.enum';
-import { AthleteRecord } from '../models/athlete-history.interface';
-import { AthletesHistory } from '../models/athletes-history.type';
-import { EventRef, EventResult } from './athletes-rollup.interface';
+import { type AthleteRecord } from '../models/athlete-history.interface';
+import { type AthletesHistory } from '../models/athletes-history.type';
+import { type EventRef, type EventResult } from './athletes-rollup.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 
 export const REPEAT_RUNNER_KEY = 'иванов иван';

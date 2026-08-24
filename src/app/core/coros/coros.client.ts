@@ -1,8 +1,12 @@
 import { Service } from '@angular/core';
 
 import { corosDownloadGpx, corosLogin, corosQueryRuns } from './coros-api';
-import { CorosActivity } from './coros-api.interface';
-import { CorosRegionType } from './coros-region.enum';
+import {
+  type CorosActivity,
+  type CorosDownloadGpxRequest,
+  type CorosLoginRequest,
+  type CorosQueryRunsRequest,
+} from './coros-api.interface';
 
 /**
  * Injectable face of the Coros API.
@@ -13,15 +17,15 @@ import { CorosRegionType } from './coros-region.enum';
  */
 @Service()
 export class CorosClient {
-  async login(email: string, password: string, region: CorosRegionType): Promise<string> {
-    return await corosLogin(email, password, region);
+  async login(request: CorosLoginRequest): Promise<string> {
+    return await corosLogin(request);
   }
 
-  async queryRuns(token: string, startDateIso: string, endDateIso: string, region: CorosRegionType): Promise<CorosActivity[]> {
-    return await corosQueryRuns(token, startDateIso, endDateIso, region);
+  async queryRuns(request: CorosQueryRunsRequest): Promise<CorosActivity[]> {
+    return await corosQueryRuns(request);
   }
 
-  async downloadGpx(token: string, labelId: string, region: CorosRegionType): Promise<string> {
-    return await corosDownloadGpx(token, labelId, region);
+  async downloadGpx(request: CorosDownloadGpxRequest): Promise<string> {
+    return await corosDownloadGpx(request);
   }
 }

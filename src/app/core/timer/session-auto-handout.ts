@@ -2,7 +2,7 @@ import { assignNextUnnamed } from './session-actions';
 import { runnerSplits, unassignedSplits } from './session-splits';
 import { NOTHING_RECORDED, SOLE_LAP_CANDIDATE } from './timer-session.constant';
 import { TimerRunnerOutcome } from './timer-session.enum';
-import { TimerRunner, TimerSession } from './timer-session.interface';
+import { type TimerRunner, type TimerSession } from './timer-session.interface';
 
 /**
  * «Круг в приоритете»: while anybody is still out on the 2.3 km, a time in the nameless queue is
@@ -31,6 +31,6 @@ export function handOutSoleLapSplit(session: TimerSession): TimerSession {
 /** Active runners with no tap at all against them — the people the lap is still waiting on. */
 function lapWaiters(session: TimerSession): TimerRunner[] {
   return session.runners.filter(
-    (runner) => runner.outcome === TimerRunnerOutcome.active && runnerSplits(session, runner.id).length === NOTHING_RECORDED,
+    (runner) => runner.outcome === TimerRunnerOutcome.active && runnerSplits(session, { runnerId: runner.id }).length === NOTHING_RECORDED,
   );
 }

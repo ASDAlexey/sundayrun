@@ -1,9 +1,9 @@
-import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
+import { type CdkDrag, type CdkDragDrop, type CdkDropList } from '@angular/cdk/drag-drop';
 
 import { Gender } from '../../../core/models/gender.enum';
 import { INITIAL_PUBLISH_STATUS } from '../../../core/timer/timer-session.constant';
 import { TimerRole, TimerRunnerOutcome, TimerStatus } from '../../../core/timer/timer-session.enum';
-import { TimerRunner, TimerSession, TimerSplit } from '../../../core/timer/timer-session.interface';
+import { type TimerRunner, type TimerSession, type TimerSplit } from '../../../core/timer/timer-session.interface';
 import {
   IVANOV_ATHLETE_KEY,
   IVANOV_LAP_MS,
@@ -26,8 +26,8 @@ import {
   TROILIN_RUNNER_ID,
 } from '../../../core/timer/timer-session.mock';
 import { TIMER_SHELF_MIN_RUNNERS } from './runner-grid.constant';
-import { TimerDensity, TimerDensityType } from './runner-grid.enum';
-import { TimerTileView } from './runner-grid.interface';
+import { TimerDensity, type TimerDensityType } from './runner-grid.enum';
+import { type TimerTileView } from './runner-grid.interface';
 
 /** The archive medians behind the pre-start order; Соколова and Кузнецов are unknown to it. */
 export const GRID_EXPECTED_LAP_MS: ReadonlyMap<string, number> = new Map([
@@ -236,14 +236,12 @@ export const GRID_RESORTED_SURNAMES: readonly string[] = ['Волкова', 'Л�
 const GRID_DROP_ORIGIN = { x: 0, y: 0 };
 
 /**
- * A CDK drop event assembled from the live directives of the fixture: a real drag in jsdom needs a
- * layout, and every field of `CdkDragDrop` is required, so the two instances come from the DOM.
+ * A CDK drop event assembled from the live directives of the fixture: a real drag needs a layout the
+ * DOM shim never computes, and every field of `CdkDragDrop` is required, so the two instances come from the DOM.
  */
 export function gridDropEvent(
   container: CdkDropList,
-  item: CdkDrag,
-  previousIndex: number,
-  currentIndex: number,
+  { item, previousIndex, currentIndex }: { item: CdkDrag; previousIndex: number; currentIndex: number },
 ): CdkDragDrop<TimerTileView[]> {
   return {
     container,

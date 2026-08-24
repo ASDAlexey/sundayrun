@@ -7,7 +7,10 @@ import { NO_BEST_TIME_TEXT } from './athlete-page.constant';
  * профиль»), so its preview has to name them rather than the site. Empty while there is nobody to
  * describe, which is what restores the site-wide description on a missing or failed profile.
  */
-export function athleteDescriptionText(displayName: string, finishCount: number, bestTimeText: string): string {
+export function athleteDescriptionText(
+  displayName: string,
+  { finishCount, bestTimeText }: { finishCount: number; bestTimeText: string },
+): string {
   if (displayName === '') {
     return '';
   }

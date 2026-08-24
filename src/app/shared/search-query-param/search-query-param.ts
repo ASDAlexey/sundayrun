@@ -1,4 +1,4 @@
-import { WritableSignal, effect, inject } from '@angular/core';
+import { type WritableSignal, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { SEARCH_QUERY_PARAM } from './search-query-param.constant';

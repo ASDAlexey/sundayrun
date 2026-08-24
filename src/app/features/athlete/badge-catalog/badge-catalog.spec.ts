@@ -1,10 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { polyfillDialogModal } from '../../spec-utils/dialog-polyfill';
 import { CATALOG_ACTIVITY, CATALOG_RARITY, CATALOG_YEAR, CATALOG_YEAR_BADGES, EXPECTED_CATALOG_ROWS } from './badge-catalog.mock';
 import { BadgeCatalog } from './badge-catalog';
-
-polyfillDialogModal();
 
 describe('BadgeCatalog', () => {
   let fixture: ComponentFixture<BadgeCatalog>;

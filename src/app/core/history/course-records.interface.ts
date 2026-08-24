@@ -1,4 +1,4 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 
 /** One finished 5 km run with its athlete identity — the input of the record progression scan. */
 export interface CourseRecordRun {

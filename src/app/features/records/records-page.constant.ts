@@ -1,5 +1,5 @@
 import { SEASON_ORDER } from '../../core/history/seasons.constant';
-import { Season, SeasonType } from '../../core/history/seasons.enum';
+import { Season, type SeasonType } from '../../core/history/seasons.enum';
 import { RecordsView } from './records-page.enum';
 
 /** routerLink to the all-time best results page, linked from the header navigation. */

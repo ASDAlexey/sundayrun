@@ -23,10 +23,10 @@ describe('weatherExtremes', () => {
 
 describe('athleteWeatherBests', () => {
   it('picks the fastest 5 km per bucket, first setter keeping ties, ignoring lap runs and weather-less events', () => {
-    expect(athleteWeatherBests(WEATHER_RUNS_MOCK, WEATHER_BY_SLUG_MOCK, null)).toEqual(EXPECTED_ALL_TIME_BESTS);
+    expect(athleteWeatherBests(WEATHER_RUNS_MOCK, { weatherBySlug: WEATHER_BY_SLUG_MOCK, year: null })).toEqual(EXPECTED_ALL_TIME_BESTS);
   });
 
   it('scopes to one season, leaving the missed buckets null', () => {
-    expect(athleteWeatherBests(WEATHER_RUNS_MOCK, WEATHER_BY_SLUG_MOCK, '2025')).toEqual(EXPECTED_2025_BESTS);
+    expect(athleteWeatherBests(WEATHER_RUNS_MOCK, { weatherBySlug: WEATHER_BY_SLUG_MOCK, year: '2025' })).toEqual(EXPECTED_2025_BESTS);
   });
 });

@@ -1,6 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Meta, MetaDefinition } from '@angular/platform-browser';
+import { Meta, type MetaDefinition } from '@angular/platform-browser';
 import { NavigationEnd, NavigationStart, Router, TitleStrategy } from '@angular/router';
 import { filter } from 'rxjs';
 
@@ -12,7 +12,7 @@ import {
   PAGE_TITLE_META_TAGS,
   PAGE_URL_META_TAG,
 } from './page-meta.constant';
-import { PageMetaTag } from './page-meta.interface';
+import { type PageMetaTag } from './page-meta.interface';
 
 /**
  * Keeps the link-preview tags — `og:url`, `og:title` and `description`/`og:description` with their

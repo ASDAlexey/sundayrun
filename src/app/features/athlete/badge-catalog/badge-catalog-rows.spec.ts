@@ -4,11 +4,11 @@ import { CATALOG_ACTIVITY, CATALOG_YEAR, CATALOG_YEAR_BADGES, EXPECTED_CATALOG_R
 
 describe('badgeCatalogRows', () => {
   it('lists every badge easiest first with earned years and current-season progress lines', () => {
-    expect(badgeCatalogRows(CATALOG_YEAR_BADGES, CATALOG_ACTIVITY, CATALOG_YEAR)).toEqual(EXPECTED_CATALOG_ROWS);
+    expect(badgeCatalogRows(CATALOG_YEAR_BADGES, { activity: CATALOG_ACTIVITY, currentYear: CATALOG_YEAR })).toEqual(EXPECTED_CATALOG_ROWS);
   });
 
   it('drops every progress line once the year meets all the criteria', () => {
-    const rows = badgeCatalogRows([], FULL_YEAR_ACTIVITY, CATALOG_YEAR);
+    const rows = badgeCatalogRows([], { activity: FULL_YEAR_ACTIVITY, currentYear: CATALOG_YEAR });
 
     expect(
       rows.map((row) => row.progressText),

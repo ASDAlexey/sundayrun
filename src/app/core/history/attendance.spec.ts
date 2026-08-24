@@ -11,15 +11,16 @@ import { Season } from './seasons.enum';
 
 describe('attendanceBoard', () => {
   it('ranks by finish count with shared places, scoped by year and by season', () => {
-    expect(attendanceBoard(ATTENDANCE_RECORDS, null, null), 'the 2.3 km run and the DNF-only athlete stay out').toEqual(
+    expect(attendanceBoard(ATTENDANCE_RECORDS, { year: null, season: null }), 'the 2.3 km run and the DNF-only athlete stay out').toEqual(
       EXPECTED_ATTENDANCE_BOARD,
     );
-    expect(attendanceBoard(ATTENDANCE_RECORDS, ATTENDANCE_LATE_YEAR, null)).toEqual(EXPECTED_LATE_YEAR_BOARD);
-    expect(attendanceBoard(ATTENDANCE_RECORDS, null, Season.summer), 'a seasonless year sums that season over the archive').toEqual(
-      EXPECTED_SUMMER_BOARD,
-    );
-    expect(attendanceBoard(ATTENDANCE_RECORDS, ATTENDANCE_LATE_YEAR, Season.winter), 'no 2026 winter starts').toEqual([]);
-    expect(attendanceBoard([], null, null)).toEqual([]);
+    expect(attendanceBoard(ATTENDANCE_RECORDS, { year: ATTENDANCE_LATE_YEAR, season: null })).toEqual(EXPECTED_LATE_YEAR_BOARD);
+    expect(
+      attendanceBoard(ATTENDANCE_RECORDS, { year: null, season: Season.summer }),
+      'a seasonless year sums that season over the archive',
+    ).toEqual(EXPECTED_SUMMER_BOARD);
+    expect(attendanceBoard(ATTENDANCE_RECORDS, { year: ATTENDANCE_LATE_YEAR, season: Season.winter }), 'no 2026 winter starts').toEqual([]);
+    expect(attendanceBoard([], { year: null, season: null })).toEqual([]);
   });
 
   it('builds the season podiums in calendar order, skipping a season nobody ran', () => {

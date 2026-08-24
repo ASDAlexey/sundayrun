@@ -1,11 +1,11 @@
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
-import { AttendanceRow, SeasonAttendance } from '../../core/history/attendance.interface';
+import { type AttendanceRow, type SeasonAttendance } from '../../core/history/attendance.interface';
 import { pluralText } from '../../core/i18n/plural-text';
-import { Gender, GenderType } from '../../core/models/gender.enum';
+import { Gender, type GenderType } from '../../core/models/gender.enum';
 import { formatRussianDateShort } from '../../core/time/russian-date';
 import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { ATTENDANCE_ALL_TIME_SCOPE, ATTENDANCE_MEDALS, SEASON_LABELS, UNKNOWN_GENDER_TEXT } from './records-page.constant';
-import { AttendanceRowView, SeasonAttendanceView } from './records-page.interface';
+import { type AttendanceRowView, type SeasonAttendanceView } from './records-page.interface';
 
 /** The «Кто чаще всех» rows prepared for the template: medals for the top three, numbers below. */
 export function toAttendanceViews(rows: readonly AttendanceRow[]): AttendanceRowView[] {

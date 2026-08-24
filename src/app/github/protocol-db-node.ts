@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 import type { Database } from '@sqlite.org/sqlite-wasm';
 
 import { deserializeDbInto } from '../core/sqlite/deserialize-db';
-import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
-import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
+import { type ProtocolDb } from '../core/sqlite/protocol-db.interface';
+import { type ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 import { loadSqlite3Node } from '../core/sqlite/sqlite-loader-node';
 import { narrowValues } from '../core/sqlite/protocol-db-narrow';
 
@@ -37,7 +37,7 @@ async function openDatabase(dbPath: string): Promise<Database> {
   const dbBytes = new Uint8Array(await readFile(dbPath));
   const db = new sqlite3.oo1.DB();
 
-  deserializeDbInto(sqlite3, db, dbBytes);
+  deserializeDbInto(sqlite3, { db, dbBytes });
 
   return db;
 }

@@ -1,8 +1,8 @@
 import { inferGender } from '../gender/gender-inference';
 import { RUSSIAN_FEMALE_NAMES, RUSSIAN_MALE_NAMES } from '../gender/russian-names.constant';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { GenderConfidence, GenderSource } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { normalizeAthleteKey } from './athlete-key';
 import { SINGLE_SPACE, WHITESPACE_RUN_PATTERN } from './athlete-key.constant';
 import { SWAPPABLE_NAME_TOKEN_COUNT } from './name-order.constant';

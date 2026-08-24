@@ -1,8 +1,8 @@
-import { EventResult } from '../history/athletes-rollup.interface';
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
+import { type EventResult } from '../history/athletes-rollup.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
 import { DNF_DISTANCE_KM, RESULTS_FILE_SCHEMA_VERSION } from './results-file.constant';
-import { EventResultsFile } from './results-file.interface';
+import { type EventResultsFile } from './results-file.interface';
 
 export function buildEventResultsFile(event: RaceEvent, rows: ProtocolRow[]): EventResultsFile {
   return { schemaVersion: RESULTS_FILE_SCHEMA_VERSION, event, rows };

@@ -1,15 +1,15 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { isoYear } from './iso-year';
 import { FROST_MAX_TEMPERATURE_C, HEAT_MIN_TEMPERATURE_C, RAIN_WEATHER_CODES, SNOW_WEATHER_CODES } from './weather-records.constant';
 import {
-  AthleteWeatherBest,
-  AthleteWeatherBests,
-  EventWeatherRow,
-  WeatherExtreme,
-  WeatherExtremes,
-  WindiestExtreme,
+  type AthleteWeatherBest,
+  type AthleteWeatherBests,
+  type EventWeatherRow,
+  type WeatherExtreme,
+  type WeatherExtremes,
+  type WindiestExtreme,
 } from './weather-records.interface';
 
 /**
@@ -61,8 +61,7 @@ export function weatherExtremes(rows: EventWeatherRow[], year: string | null): W
  */
 export function athleteWeatherBests(
   runs: AthleteRun[],
-  weatherBySlug: ReadonlyMap<string, EventWeather>,
-  year: string | null,
+  { weatherBySlug, year }: { weatherBySlug: ReadonlyMap<string, EventWeather>; year: string | null },
 ): AthleteWeatherBests {
   const bests: AthleteWeatherBests = { rain: null, snow: null, frost: null, heat: null };
   const scoped = runs
@@ -77,19 +76,19 @@ export function athleteWeatherBests(
     }
 
     if (weather.weatherCode !== null && RAIN_WEATHER_CODES.has(weather.weatherCode)) {
-      bests.rain = fasterOf(bests.rain, run, weather);
+      bests.rain = fasterOf(bests.rain, { run, weather });
     }
 
     if (weather.weatherCode !== null && SNOW_WEATHER_CODES.has(weather.weatherCode)) {
-      bests.snow = fasterOf(bests.snow, run, weather);
+      bests.snow = fasterOf(bests.snow, { run, weather });
     }
 
     if (weather.temperatureC !== null && weather.temperatureC <= FROST_MAX_TEMPERATURE_C) {
-      bests.frost = fasterOf(bests.frost, run, weather);
+      bests.frost = fasterOf(bests.frost, { run, weather });
     }
 
     if (weather.temperatureC !== null && weather.temperatureC >= HEAT_MIN_TEMPERATURE_C) {
-      bests.heat = fasterOf(bests.heat, run, weather);
+      bests.heat = fasterOf(bests.heat, { run, weather });
     }
   }
 
@@ -97,7 +96,7 @@ export function athleteWeatherBests(
 }
 
 /** Runs arrive date-ascending, so a strict comparison keeps the earlier run on equal times. */
-function fasterOf(current: AthleteWeatherBest | null, run: AthleteRun, weather: EventWeather): AthleteWeatherBest {
+function fasterOf(current: AthleteWeatherBest | null, { run, weather }: { run: AthleteRun; weather: EventWeather }): AthleteWeatherBest {
   if (current !== null && current.timeMs <= run.timeMs) {
     return current;
   }

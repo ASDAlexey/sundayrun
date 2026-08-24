@@ -268,7 +268,7 @@
 
                   <span class="athlete__run-time"><app-race-time [value]="run.timeText" /></span>
 
-                  <span class="athlete__run-delta {{ run.prDeltaClass }}" [title]="run.prDeltaHint">
+                  <span class="athlete__run-delta" [class]="run.prDeltaClass" [title]="run.prDeltaHint">
                     <app-race-time [value]="run.prDeltaText" />
                   </span>
 

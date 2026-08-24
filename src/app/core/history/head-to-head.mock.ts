@@ -1,13 +1,13 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { HeadToHead } from './head-to-head.interface';
+import { type HeadToHead } from './head-to-head.interface';
 
 /**
  * Two run histories covering every duel branch: a left win, a right win, a draw, races only one
  * side ran, and a shared slug where the left athlete ran the short course (never a meeting).
  */
 
-const run = (dateIso: string, timeMs: number, distanceKm: number = FIVE_KM_DISTANCE_KM): AthleteRun => ({
+const run = (dateIso: string, { timeMs, distanceKm = FIVE_KM_DISTANCE_KM }: { timeMs: number; distanceKm?: number }): AthleteRun => ({
   dateIso,
   slug: dateIso,
   timeMs,
@@ -15,19 +15,19 @@ const run = (dateIso: string, timeMs: number, distanceKm: number = FIVE_KM_DISTA
 });
 
 export const LEFT_DUEL_RUNS: AthleteRun[] = [
-  run('2024-01-07', 1500000),
-  run('2024-02-04', 1600000),
-  run('2024-03-03', 1550000),
-  run('2024-04-07', 1400000),
-  run('2024-05-05', 999000, 2.3),
+  run('2024-01-07', { timeMs: 1500000 }),
+  run('2024-02-04', { timeMs: 1600000 }),
+  run('2024-03-03', { timeMs: 1550000 }),
+  run('2024-04-07', { timeMs: 1400000 }),
+  run('2024-05-05', { timeMs: 999000, distanceKm: 2.3 }),
 ];
 
 export const RIGHT_DUEL_RUNS: AthleteRun[] = [
-  run('2024-01-07', 1520000),
-  run('2024-02-04', 1580000),
-  run('2024-03-03', 1550000),
-  run('2024-05-05', 1490000),
-  run('2024-06-02', 1470000),
+  run('2024-01-07', { timeMs: 1520000 }),
+  run('2024-02-04', { timeMs: 1580000 }),
+  run('2024-03-03', { timeMs: 1550000 }),
+  run('2024-05-05', { timeMs: 1490000 }),
+  run('2024-06-02', { timeMs: 1470000 }),
 ];
 
 export const EXPECTED_HEAD_TO_HEAD: HeadToHead = {

@@ -1,14 +1,14 @@
 import { Service, computed, signal } from '@angular/core';
 
-import { PublishEventInput } from '../core/github/publish-event.interface';
+import { type PublishEventInput } from '../core/github/publish-event.interface';
 import {
   EMPTY_PENDING_ARCHIVE_CHANGES,
   PENDING_ARCHIVE_MAX_AGE_MS,
   PENDING_ARCHIVE_SSR_NOOP_STORAGE,
   PENDING_ARCHIVE_STORAGE_KEY,
 } from './pending-archive.constant';
-import { PendingArchiveChanges, PendingDeletion, PendingUpload } from './pending-archive.interface';
-import { PendingArchiveStorage } from './pending-archive.type';
+import { type PendingArchiveChanges, type PendingDeletion, type PendingUpload } from './pending-archive.interface';
+import { type PendingArchiveStorage } from './pending-archive.type';
 
 /**
  * Bridges the gap between a session's archive write and the moment the archive db reflects it. The db
@@ -75,9 +75,9 @@ export class PendingArchiveService {
    * lands once the archive serves its slug OR its race number (a date-corrected re-publish lands under a
    * new slug but the same number), a deletion once the archive drops its slug.
    */
-  reconcile(archivedSlugs: readonly string[], archivedNumbers: readonly number[], nowMs: number): void {
-    const slugs = new Set(archivedSlugs);
-    const numbers = new Set(archivedNumbers);
+  reconcile(archived: { slugs: readonly string[]; numbers: readonly number[] }, nowMs: number): void {
+    const slugs = new Set(archived.slugs);
+    const numbers = new Set(archived.numbers);
     const changes = this.#changes();
 
     this.#write({

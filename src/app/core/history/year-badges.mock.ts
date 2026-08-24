@@ -1,7 +1,7 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { AthleteYearBadges, YearActivity } from './year-badges';
-import { YearBadge, YearBadgeType } from './year-badges.enum';
+import { type AthleteYearBadges, type YearActivity } from './year-badges';
+import { YearBadge, type YearBadgeType } from './year-badges.enum';
 
 const run = (dateIso: string): AthleteRun => ({ dateIso, slug: dateIso, timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM });
 

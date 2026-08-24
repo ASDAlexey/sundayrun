@@ -1,4 +1,4 @@
-import { Gender, GenderType } from '../../../core/models/gender.enum';
+import { Gender, type GenderType } from '../../../core/models/gender.enum';
 
 /**
  * Suggestions shown at once. Eight is enough to tell two namesakes apart and still short enough to

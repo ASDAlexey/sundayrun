@@ -27,7 +27,7 @@ vi.mock('pdfmake/build/pdfmake', async () => {
 
   return {
     ...pdfMake,
-    get default() {
+    get default(): typeof pdfMake | undefined {
       return mock.PDF_MAKE_SHAPE.useDefault ? pdfMake : undefined;
     },
   };

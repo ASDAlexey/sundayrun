@@ -1,4 +1,4 @@
-import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
+import { type ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 
 /** A seed row so the exported real db answers a keyed lookup with a known value array. */
 export const NODE_SEED_SQL: readonly string[] = [

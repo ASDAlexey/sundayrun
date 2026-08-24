@@ -88,6 +88,8 @@ describe('pacingBoards', () => {
 
 describe('meetingSplitLeads', () => {
   it('pairs both plausible splits per shared race, null when either side lacks or fumbles one', () => {
-    expect(meetingSplitLeads(SPLIT_LEAD_MEETINGS, LEFT_MEETING_LAPS, RIGHT_MEETING_LAPS)).toEqual(EXPECTED_SPLIT_LEADS);
+    expect(meetingSplitLeads(SPLIT_LEAD_MEETINGS, { leftLaps: LEFT_MEETING_LAPS, rightLaps: RIGHT_MEETING_LAPS })).toEqual(
+      EXPECTED_SPLIT_LEADS,
+    );
   });
 });

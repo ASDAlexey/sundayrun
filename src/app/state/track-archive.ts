@@ -1,8 +1,8 @@
-import { gunzipSync, gzipSync, strFromU8, strToU8, unzipSync, Unzipped, zipSync, Zippable } from 'fflate';
+import { gunzipSync, gzipSync, strFromU8, strToU8, unzipSync, type Unzipped, zipSync, type Zippable } from 'fflate';
 
 import { TRACK_EXPORT_MANIFEST_NAME } from '../features/athlete/watch-sync/watch-sync.constant';
-import { TrackManifestEntry } from '../features/athlete/watch-sync/watch-sync.interface';
-import { AthleteTrack } from './athlete-track.interface';
+import { type TrackManifestEntry } from '../features/athlete/watch-sync/watch-sync.interface';
+import { type AthleteTrack } from './athlete-track.interface';
 
 /**
  * The «выгрузить всё» archive.

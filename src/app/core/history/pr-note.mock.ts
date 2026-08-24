@@ -1,5 +1,5 @@
-import { PrNoteParts } from './pr-note.interface';
-import { PreviousBest } from './previous-bests.interface';
+import { type PrNoteParts } from './pr-note.interface';
+import { type PreviousBest } from './previous-bests.interface';
 
 export const PR_NOTE_PLAIN = 'ЛР (было 20:52)';
 

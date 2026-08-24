@@ -1,12 +1,18 @@
-import { AthleteRecord, AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRecord, type AthleteRun } from '../models/athlete-history.interface';
 import { NAME_COLLATION_LOCALE } from './athletes-list.constant';
 import { ATTENDANCE_PODIUM_SIZE } from './attendance.constant';
-import { AttendanceRow, SeasonAttendance } from './attendance.interface';
+import { type AttendanceRow, type SeasonAttendance } from './attendance.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { isoYear } from './iso-year';
 import { seasonOfIso } from './seasons';
 import { SEASON_ORDER } from './seasons.constant';
-import { SeasonType } from './seasons.enum';
+import { type SeasonType } from './seasons.enum';
+
+/** How far the board looks: one calendar year, one season inside it, or null for the whole archive. */
+export interface AttendanceScope {
+  readonly year: string | null;
+  readonly season: SeasonType | null;
+}
 
 /**
  * The «Кто чаще всех» board: everyone with a 5 km finish inside the scope, the most finishes first
@@ -15,9 +21,9 @@ import { SeasonType } from './seasons.enum';
  * sums every summer. Short-course runs and DNFs stay out: this counts finishes, like the
  * protocol's «Финишей» column, so the board and that tally can never disagree.
  */
-export function attendanceBoard(records: readonly AthleteRecord[], year: string | null, season: SeasonType | null): AttendanceRow[] {
+export function attendanceBoard(records: readonly AthleteRecord[], scope: AttendanceScope): AttendanceRow[] {
   const rows = records.flatMap<Omit<AttendanceRow, 'place'>>((record) => {
-    const finishes = record.runs.filter((run) => inScope(run, year, season));
+    const finishes = record.runs.filter((run) => inScope(run, scope));
 
     if (finishes.length === 0) {
       return [];
@@ -48,7 +54,7 @@ export function attendanceBoard(records: readonly AthleteRecord[], year: string 
  */
 export function seasonAttendance(records: readonly AthleteRecord[], year: string | null): SeasonAttendance[] {
   return SEASON_ORDER.flatMap<SeasonAttendance>((season) => {
-    const rows = attendanceBoard(records, year, season).filter((row) => row.place <= ATTENDANCE_PODIUM_SIZE);
+    const rows = attendanceBoard(records, { year, season }).filter((row) => row.place <= ATTENDANCE_PODIUM_SIZE);
 
     return rows.length === 0 ? [] : [{ season, rows }];
   });
@@ -69,10 +75,10 @@ function withPlaces(rows: readonly Omit<AttendanceRow, 'place'>[]): AttendanceRo
   });
 }
 
-function inScope(run: AthleteRun, year: string | null, season: SeasonType | null): boolean {
+function inScope(run: AthleteRun, scope: AttendanceScope): boolean {
   return (
     run.distanceKm === FIVE_KM_DISTANCE_KM &&
-    (year === null || isoYear(run.dateIso) === year) &&
-    (season === null || seasonOfIso(run.dateIso) === season)
+    (scope.year === null || isoYear(run.dateIso) === scope.year) &&
+    (scope.season === null || seasonOfIso(run.dateIso) === scope.season)
   );
 }

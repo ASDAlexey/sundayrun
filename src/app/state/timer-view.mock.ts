@@ -1,4 +1,4 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 import { TIMER_ID_NOW_MS, TIMER_ID_RANDOM } from '../core/timer/timer-id.mock';
 

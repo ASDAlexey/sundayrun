@@ -1,4 +1,4 @@
-import { TimerSession } from './timer-session.interface';
+import { type TimerSession } from './timer-session.interface';
 
 /** What the shareable message is built from: the measurement, and the page it lives on if it has one. */
 export interface SessionShareTextInput {

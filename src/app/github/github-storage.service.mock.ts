@@ -1,5 +1,5 @@
 import { HTTP_NOT_FOUND } from '../core/github/github-api.constant';
-import { GithubFetchFn } from '../core/github/github-fetch.type';
+import { type GithubFetchFn } from '../core/github/github-fetch.type';
 import { dbContentsKey } from '../core/github/protocol-db-file.mock';
 import { PUBLISH_SHAS } from '../core/github/publish-event.mock';
 import { createGitDataRoutes } from '../core/github/spec-utils/git-data-routes';

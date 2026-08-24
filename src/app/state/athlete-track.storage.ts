@@ -1,6 +1,6 @@
-import { TrackDb, TrackDbFactory, TrackDbRequest, TrackDbStore } from './athlete-track-db.type';
+import { type TrackDb, type TrackDbFactory, type TrackDbRequest, type TrackDbStore } from './athlete-track-db.type';
 import { TRACK_CHECK_STORE, TRACK_DB_NAME, TRACK_DB_VERSION, TRACK_STORE } from './athlete-track.constant';
-import { AthleteTrack, TrackDayCheck } from './athlete-track.interface';
+import { type AthleteTrack, type TrackDayCheck } from './athlete-track.interface';
 
 /**
  * IndexedDB home of the personal tracks.
@@ -13,36 +13,55 @@ import { AthleteTrack, TrackDayCheck } from './athlete-track.interface';
  * during prerender it does not exist at all, and a browser in private mode may refuse it.
  */
 export async function readTracks(): Promise<AthleteTrack[]> {
-  return await withStore<AthleteTrack, AthleteTrack[]>(TRACK_STORE, 'readonly', (store) => request(store.getAll()), []);
+  return await withStore<AthleteTrack, AthleteTrack[]>(TRACK_STORE, {
+    mode: 'readonly',
+    run: (store) => request(store.getAll()),
+    fallback: [],
+  });
 }
 
 export async function readTrack(slug: string): Promise<AthleteTrack | null> {
-  const track = await withStore<AthleteTrack, AthleteTrack | undefined>(
-    TRACK_STORE,
-    'readonly',
-    (store) => request(store.get(slug)),
-    undefined,
-  );
+  const track = await withStore<AthleteTrack, AthleteTrack | undefined>(TRACK_STORE, {
+    mode: 'readonly',
+    run: (store) => request(store.get(slug)),
+    fallback: undefined,
+  });
 
   return track ?? null;
 }
 
 export async function saveTrack(track: AthleteTrack): Promise<void> {
-  await withStore<AthleteTrack, unknown>(TRACK_STORE, 'readwrite', (store) => request(store.put(track)), undefined);
+  await withStore<AthleteTrack, unknown>(TRACK_STORE, {
+    mode: 'readwrite',
+    run: (store) => request(store.put(track)),
+    fallback: undefined,
+  });
 }
 
 export async function readChecks(): Promise<TrackDayCheck[]> {
-  return await withStore<TrackDayCheck, TrackDayCheck[]>(TRACK_CHECK_STORE, 'readonly', (store) => request(store.getAll()), []);
+  return await withStore<TrackDayCheck, TrackDayCheck[]>(TRACK_CHECK_STORE, {
+    mode: 'readonly',
+    run: (store) => request(store.getAll()),
+    fallback: [],
+  });
 }
 
 export async function saveCheck(check: TrackDayCheck): Promise<void> {
-  await withStore<TrackDayCheck, unknown>(TRACK_CHECK_STORE, 'readwrite', (store) => request(store.put(check)), undefined);
+  await withStore<TrackDayCheck, unknown>(TRACK_CHECK_STORE, {
+    mode: 'readwrite',
+    run: (store) => request(store.put(check)),
+    fallback: undefined,
+  });
 }
 
 /** Wipes everything this device holds — what «отвязать и удалить треки» actually does. */
 export async function clearTracks(): Promise<void> {
-  await withStore<AthleteTrack, unknown>(TRACK_STORE, 'readwrite', (store) => request(store.clear()), undefined);
-  await withStore<TrackDayCheck, unknown>(TRACK_CHECK_STORE, 'readwrite', (store) => request(store.clear()), undefined);
+  await withStore<AthleteTrack, unknown>(TRACK_STORE, { mode: 'readwrite', run: (store) => request(store.clear()), fallback: undefined });
+  await withStore<TrackDayCheck, unknown>(TRACK_CHECK_STORE, {
+    mode: 'readwrite',
+    run: (store) => request(store.clear()),
+    fallback: undefined,
+  });
 }
 
 /** Opens (and, on first use, creates) the database. */
@@ -72,9 +91,7 @@ async function openTrackDb(): Promise<TrackDb | null> {
 
 async function withStore<TValue, TResult>(
   storeName: string,
-  mode: IDBTransactionMode,
-  run: (store: TrackDbStore<TValue>) => Promise<TResult>,
-  fallback: TResult,
+  { mode, run, fallback }: { mode: IDBTransactionMode; run: (store: TrackDbStore<TValue>) => Promise<TResult>; fallback: TResult },
 ): Promise<TResult> {
   const db = await openTrackDb();
 

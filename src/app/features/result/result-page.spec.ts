@@ -1,3 +1,4 @@
+import { mockValueProp } from 'vitest-auto-spy/angular';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
@@ -54,6 +55,7 @@ import {
   VK_URL_MOCK,
 } from './result-page.mock';
 import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';
+import { type ShareCaption } from '../../share/share-caption.interface';
 
 describe('ResultPage', () => {
   const event = signal<RaceEvent | null>(PDF_EVENT_MOCK);
@@ -73,7 +75,7 @@ describe('ResultPage', () => {
   const canShareFile = vi.fn(() => true);
   const canShareFiles = vi.fn((_files: File[]) => true);
   const shareFile = vi.fn(() => Promise.resolve(true));
-  const shareFiles = vi.fn((_files: File[], _title: string, _text: string) => Promise.resolve(true));
+  const shareFiles = vi.fn((_files: File[], _caption: ShareCaption) => Promise.resolve(true));
   const render = vi.fn((_pdf: Blob) => Promise.resolve<Blob>(PROTOCOL_IMAGE_BLOB_MOCK));
   const copyToClipboard = vi.fn(() => Promise.resolve(true));
   const buildVkShareUrl = vi.fn(() => VK_URL_MOCK);
@@ -203,7 +205,7 @@ describe('ResultPage', () => {
 
     element.querySelector('.result__share').click();
 
-    expect(shareFile).toHaveBeenCalledWith(file, EXPECTED_TITLE_LINE, EXPECTED_DESCRIPTION);
+    expect(shareFile).toHaveBeenCalledWith(file, { title: EXPECTED_TITLE_LINE, text: EXPECTED_DESCRIPTION });
 
     fixture.destroy();
 
@@ -337,7 +339,7 @@ describe('ResultPage', () => {
 
     expect(render, 'the protocol is rasterized to a png for VK').toHaveBeenCalledWith(RESULT_BLOB_MOCK);
 
-    const [files, title, text] = shareFiles.mock.calls[0];
+    const [files, { title, text }] = shareFiles.mock.calls[0];
 
     expect(files.length, 'only the protocol image, no run photo picked').toBe(1);
     expect(files[0].name).toBe(EXPECTED_IMAGE_FILE_NAME);
@@ -355,7 +357,7 @@ describe('ResultPage', () => {
     const element = fixture.nativeElement;
     const input = element.querySelector('input[type="file"]');
 
-    Object.defineProperty(input, 'files', { value: [RUN_PHOTO_MOCK], configurable: true });
+    mockValueProp(input, 'files', [RUN_PHOTO_MOCK]);
     page.onRunPhotoSelected(input);
     fixture.detectChanges();
 
@@ -374,7 +376,7 @@ describe('ResultPage', () => {
 
     expect(render, 'the rasterized image is cached, not rebuilt on every share').toHaveBeenCalledOnce();
 
-    Object.defineProperty(input, 'files', { value: null, configurable: true });
+    mockValueProp(input, 'files', null);
     page.onRunPhotoSelected(input);
 
     expect(page.runPhotoName(), 'clearing the picker drops the attached photo').toBe('');

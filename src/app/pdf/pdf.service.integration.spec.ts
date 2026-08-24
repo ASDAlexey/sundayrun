@@ -37,7 +37,9 @@ import { PROTOCOL_IMAGE_PAGE } from './protocol-image.service.constant';
 describe('PdfService against the real pdfmake bundle', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{ provide: PdfFontsService, useValue: { load: () => loadPtSerifVfs(fetchFontFromDisk) } }],
+      providers: [
+        { provide: PdfFontsService, useValue: { load: (): ReturnType<typeof loadPtSerifVfs> => loadPtSerifVfs(fetchFontFromDisk) } },
+      ],
     });
   });
 
@@ -68,8 +70,6 @@ describe('PdfService against the real pdfmake bundle', () => {
   it(
     'produces a single A4 page pdf.js reads back with its Cyrillic text intact',
     async () => {
-      installPdfJsBrowserApis();
-
       // The legacy bundle, the one pdf.js asks Node to use: the default build reaches for language
       // features this runtime has yet to ship (`Math.sumPrecise`) and warns on every import. Only
       // the reading side is swapped — the pdf under test is still produced by the real pdfmake.
@@ -92,8 +92,6 @@ describe('PdfService against the real pdfmake bundle', () => {
   it(
     'keeps a full-size protocol — table, notes and signature — on that single page',
     async () => {
-      installPdfJsBrowserApis();
-
       const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
       const blob = await TestBed.inject(PdfService).generateProtocolBlob(FULL_PAGE_DOC_INPUT_MOCK);
       const document = await pdfjs.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
@@ -104,17 +102,6 @@ describe('PdfService against the real pdfmake bundle', () => {
     RENDER_TIMEOUT_MS,
   );
 });
-
-/**
- * Fills the one browser API pdf.js relies on that this test runtime lacks, and that is not a
- * stand-in for behaviour under test: jsdom ships no `DOMMatrix` (pdf.js news one up in a static
- * field at module scope, and only its canvas rasterizer ever reads it), and the legacy bundle only
- * warns instead of polyfilling it. The language-level gaps it does close itself — its own
- * `Uint8Array.prototype.toHex` shim covers the document fingerprint.
- */
-function installPdfJsBrowserApis(): void {
-  vi.stubGlobal('DOMMatrix', class {});
-}
 
 function renderProtocol(): Promise<Blob> {
   return TestBed.inject(PdfService).generateProtocolBlob(PDF_DOC_INPUT_MOCK);

@@ -1,7 +1,7 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
-import { DeltaBase, DeltaBaseType } from '../../state/delta-base.enum';
+import { DeltaBase, type DeltaBaseType } from '../../state/delta-base.enum';
 
 /** The stand-in the card gets: one flag the spec drives, one spy it asserts on. */
 export interface HundredthsServiceMock {

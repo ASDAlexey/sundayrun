@@ -6,7 +6,7 @@ import {
   HUNDREDTHS_SSR_NOOP_STORAGE,
   HUNDREDTHS_STORAGE_KEY,
 } from './hundredths.constant';
-import { HundredthsStorage } from './hundredths.type';
+import { type HundredthsStorage } from './hundredths.type';
 
 /**
  * Remembers whether this device draws results to hundredths («Настройки» in the header).

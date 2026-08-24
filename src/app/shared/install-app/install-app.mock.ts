@@ -1,4 +1,4 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 import { APP_INSTALLED_EVENT, INSTALL_PROMPT_EVENT } from './install-app.constant';
 
@@ -22,7 +22,7 @@ export function appInstalledEvent(): Event {
   return new Event(APP_INSTALLED_EVENT);
 }
 
-/** A browser tab (`false`) or an installed app window (`true`) — jsdom answers everything «false». */
+/** A browser tab (`false`) or an installed app window (`true`); the real media query is never consulted. */
 export function stubStandalone(matches: boolean): void {
   vi.stubGlobal('matchMedia', () => ({ matches }));
 }

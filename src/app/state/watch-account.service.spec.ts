@@ -40,9 +40,9 @@ describe('WatchAccountService', () => {
 
     expect(service.linked()).toBe(false);
 
-    await service.link(WATCH_EMAIL_MOCK, WATCH_PASSWORD_MOCK, CorosRegion.Eu);
+    await service.link({ email: WATCH_EMAIL_MOCK, password: WATCH_PASSWORD_MOCK, region: CorosRegion.Eu });
 
-    expect(login).toHaveBeenCalledWith(WATCH_EMAIL_MOCK, WATCH_PASSWORD_MOCK, CorosRegion.Eu);
+    expect(login).toHaveBeenCalledWith({ email: WATCH_EMAIL_MOCK, password: WATCH_PASSWORD_MOCK, region: CorosRegion.Eu });
     expect(service.account()).toEqual(STORED_WATCH_ACCOUNT);
     expect(service.linked()).toBe(true);
 

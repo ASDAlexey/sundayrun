@@ -1,5 +1,5 @@
 import { GenderConfidence, GenderSource } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { parseDuration } from '../time/duration';
 import { normalizeFullNameCase } from './full-name-case';
 import {
@@ -33,13 +33,13 @@ export function parseTimerExport(rows: string[][]): Participant[] {
       break;
     }
 
-    participants.push(buildParticipant(row, normalizeFullNameCase(fullName), participants.length + FIRST_PARTICIPANT_ID));
+    participants.push(buildParticipant(row, { fullName: normalizeFullNameCase(fullName), id: participants.length + FIRST_PARTICIPANT_ID }));
   }
 
   return participants;
 }
 
-function buildParticipant(row: string[], fullName: string, id: number): Participant {
+function buildParticipant(row: string[], { fullName, id }: { fullName: string; id: number }): Participant {
   return {
     id,
     fullName,

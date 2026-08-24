@@ -1,6 +1,6 @@
 import { CorosRegion } from '../core/coros/coros-region.enum';
 import { TrackSource } from './track-source.enum';
-import { WatchAccount } from './watch-account.interface';
+import { type WatchAccount } from './watch-account.interface';
 
 export const WATCH_EMAIL_MOCK = 'runner@example.com';
 

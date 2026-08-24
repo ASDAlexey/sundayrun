@@ -1,6 +1,6 @@
-import { YearBadge, YearBadgeType } from './year-badges.enum';
+import { YearBadge, type YearBadgeType } from './year-badges.enum';
 import { YEAR_KING_RANK, YEAR_PODIUM_MAX_RANK, YEAR_TOP_TEN_MAX_RANK, YEAR_TOP_THIRTY_MAX_RANK } from './year-ranks.constant';
-import { YearBestRow, YearRankedBadge } from './year-ranks.interface';
+import { type YearBestRow, type YearRankedBadge } from './year-ranks.interface';
 
 /** The badge a year rank earns: 1st is the crown, 2–3 the podium, then the top-10 and top-30 cuts. */
 export function yearRankBadge(rank: number): YearBadgeType | null {

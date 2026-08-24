@@ -1,6 +1,6 @@
 import { EMPTY_ROSTER } from './timer-session.constant';
 import { TimerStatus } from './timer-session.enum';
-import { TimerSession } from './timer-session.interface';
+import { type TimerSession } from './timer-session.interface';
 
 /**
  * «Сбросить забег»: the roster survives, everything the clock produced does not. The organiser only

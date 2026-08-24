@@ -1,4 +1,4 @@
-import { RuPluralForms } from './plural-text.interface';
+import { type RuPluralForms } from './plural-text.interface';
 
 export const PLURAL_FORMS: RuPluralForms = { one: 'забег', few: 'забега', many: 'забегов' };
 

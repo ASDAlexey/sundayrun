@@ -5,9 +5,9 @@ import { RouterLink } from '@angular/router';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
-import { OverallStats } from '../../core/history/overall-stats.interface';
+import { type OverallStats } from '../../core/history/overall-stats.interface';
 import { athleteStreaks } from '../../core/history/streaks';
-import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
+import { type AthleteRecord, type AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatRaceTime } from '../../core/time/duration';
 import { loadWithTransfer } from '../../core/transfer/transfer-load';
 import { ArchiveService } from '../../github/archive.service';
@@ -20,15 +20,15 @@ import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { RollNumber } from '../../shared/roll-number/roll-number';
 import { CourseTrack } from './course-track/course-track';
-import { SelfAthlete } from '../../state/self-athlete.interface';
+import { type SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { toRaceListItems } from '../races/race-list-item';
 import { RaceCard } from '../races/race-card/race-card';
-import { RacesStatus, RacesStatusType } from '../races/races-page.enum';
+import { RacesStatus, type RacesStatusType } from '../races/races-page.enum';
 import { TREND_WINDOW_SIZE } from '../races/races-page.constant';
-import { RaceListItem } from '../races/races-page.interface';
+import { type RaceListItem } from '../races/races-page.interface';
 import { YEAR_PAGE_BASE_LINK } from '../year/year-page.constant';
 import {
   HOME_META_TRANSFER_KEY,
@@ -41,9 +41,9 @@ import {
   STATS_AVERAGE_FORMAT,
   STATS_NUMBER_FORMAT,
 } from './home-page.constant';
-import { HomeSelfView, HomeStatsView } from './home-page.interface';
+import { type HomeSelfView, type HomeStatsView } from './home-page.interface';
 import { COUNTDOWN_TICK_MS, DEFAULT_START_TIME } from './next-start.constant';
-import { NextStartView } from './next-start.interface';
+import { type NextStartView } from './next-start.interface';
 import { RaceTime } from '../../shared/race-time/race-time';
 import {
   formatCountdown,
@@ -92,7 +92,7 @@ export class HomePage {
   readonly latestRaces = signal<RaceListItem[]>([]);
   readonly siteMeta = signal(EMPTY_SITE_META);
   readonly statsView = computed(() => toStatsView(this.#stats()));
-  readonly selfView = computed(() => toSelfView(this.#selfAthlete.self(), this.#selfRecord(), this.#eventSlugs()));
+  readonly selfView = computed(() => toSelfView(this.#selfAthlete.self(), { record: this.#selfRecord(), eventSlugs: this.#eventSlugs() }));
   readonly startTime = computed(() => this.siteMeta().startTime || DEFAULT_START_TIME);
   readonly startLabel = computed(() => formatStartTimeLabel(this.startTime()));
   readonly registrationLabel = computed(() => registrationTimeLabel(this.startTime()));
@@ -231,13 +231,16 @@ function toStatsView(stats: OverallStats | null): HomeStatsView | null {
 }
 
 /** A stale record from the previous pick must not flash under the new name, hence the key check. */
-function toSelfView(self: SelfAthlete | null, record: AthleteRecord | null, eventSlugs: string[]): HomeSelfView | null {
+function toSelfView(
+  self: SelfAthlete | null,
+  { record, eventSlugs }: { record: AthleteRecord | null; eventSlugs: string[] },
+): HomeSelfView | null {
   if (self === null || record?.key !== self.key) {
     return null;
   }
 
   const fiveKmRuns = record.runs.filter((run) => run.distanceKm === FIVE_KM_DISTANCE_KM);
-  const streaks = athleteStreaks(record.participationSlugs, record.runs, eventSlugs);
+  const streaks = athleteStreaks(record.participationSlugs, { runs: record.runs, eventSlugs });
   // The card is browser-only (the pick lives in localStorage), so the client clock is the season.
   const year = String(new Date().getFullYear());
   const yearRuns = fiveKmRuns.filter((run) => run.dateIso.startsWith(`${year}-`));

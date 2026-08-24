@@ -1,6 +1,6 @@
-import { drizzle, SqliteRemoteDatabase } from 'drizzle-orm/sqlite-proxy';
+import { drizzle, type SqliteRemoteDatabase } from 'drizzle-orm/sqlite-proxy';
 
-import { ProtocolDb } from './protocol-db.interface';
+import { type ProtocolDb } from './protocol-db.interface';
 import * as schema from './protocol-db.schema';
 
 /** The typed drizzle handle the query/write layers run against, schema-aware for relational queries. */

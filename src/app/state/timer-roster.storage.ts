@@ -1,5 +1,5 @@
-import { Gender, GenderType } from '../core/models/gender.enum';
-import { AthleteRecord } from '../core/models/athlete-history.interface';
+import { Gender, type GenderType } from '../core/models/gender.enum';
+import { type AthleteRecord } from '../core/models/athlete-history.interface';
 import {
   CACHED_ATHLETE_BEST_MS,
   EMPTY_COURSE_RECORD_LAP_MS,
@@ -9,7 +9,7 @@ import {
   KEY_NUMBER_PAIR_VALUE_INDEX,
   TIMER_ROSTER_SCHEMA_VERSION,
 } from './timer-roster.constant';
-import { CachedAthleteEntry, TimerRosterCache } from './timer-roster.interface';
+import { type CachedAthleteEntry, type TimerRosterCache } from './timer-roster.interface';
 import { isNonEmptyString, isNullableGender, isNullableNumber, isRecord } from './timer-storage';
 
 /** One cached per-athlete number — a median lap, a best lap or a count — on its way through JSON. */

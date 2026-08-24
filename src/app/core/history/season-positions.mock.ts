@@ -1,5 +1,5 @@
-import { Gender, GenderType } from '../models/gender.enum';
-import { SeasonPositionLine, SeasonPositionPoint, SeasonPositions, SeasonRun } from './season-positions.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
+import { type SeasonPositionLine, type SeasonPositionPoint, type SeasonPositions, type SeasonRun } from './season-positions.interface';
 
 /** Three season Sundays; the men's standings reshuffle after each one. */
 export const SEASON_EVENT_DATES = ['2025-04-06', '2025-04-13', '2025-04-20'];
@@ -10,7 +10,10 @@ const FILLER_BASE_MS = 1320000;
 
 const MINUTE_MS = 60000;
 
-const run = (key: string, displayName: string, gender: GenderType | null, dateIso: string, timeMs: number): SeasonRun => ({
+const run = (
+  key: string,
+  { displayName, gender, dateIso, timeMs }: { displayName: string; gender: GenderType | null; dateIso: string; timeMs: number },
+): SeasonRun => ({
   key,
   displayName,
   gender,
@@ -24,7 +27,12 @@ const point = (position: number, bestMs: number): SeasonPositionPoint => ({ posi
 const fillerName = (index: number): string => `Филлеров Ф${String(index).padStart(2, '0')}`;
 
 const filler = (index: number): SeasonRun =>
-  run(fillerName(index).toLowerCase(), fillerName(index), Gender.male, SEASON_EVENT_DATES[0], FILLER_BASE_MS + index * MINUTE_MS);
+  run(fillerName(index).toLowerCase(), {
+    displayName: fillerName(index),
+    gender: Gender.male,
+    dateIso: SEASON_EVENT_DATES[0],
+    timeMs: FILLER_BASE_MS + index * MINUTE_MS,
+  });
 
 /**
  * The men's plot: Волков leads wire-to-wire (his later slower runs never hurt); Антонов and Яшин
@@ -33,15 +41,15 @@ const filler = (index: number): SeasonRun =>
  * A woman and a genderless finisher are noise for the men's chart.
  */
 export const SEASON_RUNS: SeasonRun[] = [
-  run('волков виктор', 'Волков Виктор', Gender.male, SEASON_EVENT_DATES[0], 1200000),
-  run('волков виктор', 'Волков Виктор', Gender.male, SEASON_EVENT_DATES[1], 1350000),
-  run('антонов андрей', 'Антонов Андрей', Gender.male, SEASON_EVENT_DATES[0], 1260000),
-  run('яшин яков', 'Яшин Яков', Gender.male, SEASON_EVENT_DATES[0], 1260000),
-  run('громов глеб', 'Громов Глеб', Gender.male, SEASON_EVENT_DATES[0], 2040000),
-  run('громов глеб', 'Громов Глеб', Gender.male, SEASON_EVENT_DATES[2], 1230000),
-  run('дубов даниил', 'Дубов Даниил', Gender.male, SEASON_EVENT_DATES[1], 1290000),
-  run('ланская лидия', 'Ланская Лидия', Gender.female, SEASON_EVENT_DATES[0], 1260000),
-  run('серов саша', 'Серов Саша', null, SEASON_EVENT_DATES[0], 1230000),
+  run('волков виктор', { displayName: 'Волков Виктор', gender: Gender.male, dateIso: SEASON_EVENT_DATES[0], timeMs: 1200000 }),
+  run('волков виктор', { displayName: 'Волков Виктор', gender: Gender.male, dateIso: SEASON_EVENT_DATES[1], timeMs: 1350000 }),
+  run('антонов андрей', { displayName: 'Антонов Андрей', gender: Gender.male, dateIso: SEASON_EVENT_DATES[0], timeMs: 1260000 }),
+  run('яшин яков', { displayName: 'Яшин Яков', gender: Gender.male, dateIso: SEASON_EVENT_DATES[0], timeMs: 1260000 }),
+  run('громов глеб', { displayName: 'Громов Глеб', gender: Gender.male, dateIso: SEASON_EVENT_DATES[0], timeMs: 2040000 }),
+  run('громов глеб', { displayName: 'Громов Глеб', gender: Gender.male, dateIso: SEASON_EVENT_DATES[2], timeMs: 1230000 }),
+  run('дубов даниил', { displayName: 'Дубов Даниил', gender: Gender.male, dateIso: SEASON_EVENT_DATES[1], timeMs: 1290000 }),
+  run('ланская лидия', { displayName: 'Ланская Лидия', gender: Gender.female, dateIso: SEASON_EVENT_DATES[0], timeMs: 1260000 }),
+  run('серов саша', { displayName: 'Серов Саша', gender: null, dateIso: SEASON_EVENT_DATES[0], timeMs: 1230000 }),
   ...Array.from({ length: FILLER_COUNT }, (_, index) => filler(index + 1)),
 ];
 

@@ -52,7 +52,7 @@ describe('TimerShare', () => {
 
     await press('.timer-share__action_lead');
 
-    const [file, title] = share.shareFile.mock.calls[0];
+    const [file, { title }] = share.shareFile.mock.calls[0];
 
     expect(file instanceof File && file.name).toBe(SHARE_FILE_NAME);
     expect(title, 'the system sheet is titled with the race date').toBeTruthy();

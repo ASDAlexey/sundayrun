@@ -1,6 +1,6 @@
 import { Gender } from '../models/gender.enum';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { PlaceGapRow } from './place-gaps.interface';
+import { type PlaceGapRow } from './place-gaps.interface';
 
 /**
  * Smashrun-style rank breakdown for the protocol: row index → how far the finisher is from the

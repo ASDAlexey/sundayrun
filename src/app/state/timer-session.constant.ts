@@ -1,5 +1,5 @@
-import { TimerSessionState } from './timer-session.interface';
-import { TimerStorage } from './timer-storage.type';
+import { type TimerSessionState } from './timer-session.interface';
+import { type TimerStorage } from './timer-storage.type';
 
 /** localStorage key of every measurement taken on this device (docs/TIMER.md §8). */
 export const TIMER_SESSION_STORAGE_KEY = 'sundayrun.timer.v1';

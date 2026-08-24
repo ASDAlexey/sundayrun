@@ -1,8 +1,8 @@
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
-import { EventWeatherRow } from '../../core/history/weather-records.interface';
-import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { type EventWeatherRow } from '../../core/history/weather-records.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { WeatherBestView } from './weather-card.interface';
+import { type WeatherBestView } from './weather-card.interface';
 
 /** `WEATHER_RUNS_MOCK` over `WEATHER_ROWS_MOCK` (see weather-records.mock), all time, as the card renders it. */
 export const EXPECTED_WEATHER_BEST_VIEWS: WeatherBestView[] = [

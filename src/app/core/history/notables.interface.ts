@@ -1,4 +1,4 @@
-import { NotableKindType } from './notables.enum';
+import { type NotableKindType } from './notables.enum';
 
 /** One run of an event participant as the notables builder consumes it; keyed selects feed it. */
 export interface ParticipantRun {

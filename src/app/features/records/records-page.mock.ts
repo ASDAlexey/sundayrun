@@ -1,16 +1,16 @@
 import { LEADERBOARD_RECORDS, LEADERBOARD_YEAR } from '../../core/history/best-results.mock';
 import { EXPECTED_COURSE_RECORD_HISTORY } from '../../core/history/course-records.mock';
-import { CourseRecordHistory } from '../../core/history/course-records.type';
+import { type CourseRecordHistory } from '../../core/history/course-records.type';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { EXPECTED_FIRST_LAP_RECORDS } from '../../core/history/first-lap.mock';
 import { EVEN_TOTAL_MS, NEGATIVE_LAP_MS, indexOf } from '../../core/history/pacing.mock';
-import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
-import { EventWeatherRow } from '../../core/history/weather-records.interface';
+import { type EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { type EventWeatherRow } from '../../core/history/weather-records.interface';
 import { WEATHER_ROWS_MOCK } from '../../core/history/weather-records.mock';
-import { SeasonRun } from '../../core/history/season-positions.interface';
+import { type SeasonRun } from '../../core/history/season-positions.interface';
 import { Season } from '../../core/history/seasons.enum';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { Gender, GenderType } from '../../core/models/gender.enum';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
+import { Gender, type GenderType } from '../../core/models/gender.enum';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { FEMALE_GENDER_TEXT, MALE_GENDER_TEXT, RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import {
@@ -33,14 +33,14 @@ import {
   WEATHER_WINDIEST_LABEL,
 } from './records-page.constant';
 import {
-  AttendanceRowView,
-  ChartPick,
-  FirstLapRecordView,
-  PacingNomineeView,
-  RatingRowView,
-  RecordsData,
-  SeasonAttendanceView,
-  WeatherExtremeView,
+  type AttendanceRowView,
+  type ChartPick,
+  type FirstLapRecordView,
+  type PacingNomineeView,
+  type RatingRowView,
+  type RecordsData,
+  type SeasonAttendanceView,
+  type WeatherExtremeView,
 } from './records-page.interface';
 
 export const HISTORY_LOAD_ERROR_MESSAGE = 'history load failed';
@@ -165,12 +165,14 @@ export const RATING_WINNER_EVENTS: EventWinnerTimes[] = [
 
 const ratingRow = (
   place: number,
-  key: string,
-  displayName: string,
-  gender: GenderType,
-  formText: string,
-  rankText: string,
-  gradeText: string,
+  {
+    key,
+    displayName,
+    gender,
+    formText,
+    rankText,
+    gradeText,
+  }: { key: string; displayName: string; gender: GenderType; formText: string; rankText: string; gradeText: string },
 ): RatingRowView => ({
   place,
   key,
@@ -196,22 +198,61 @@ export const RATING_COURSE_RECORDS: CourseRecordHistory = {
  * vacant here. Сошедшая Софья never ran — no row.
  */
 export const EXPECTED_RATING_ROWS: RatingRowView[] = [
-  ratingRow(1, 'быстров борис', 'Быстров Борис', Gender.male, '99', '99,2', '100'),
-  ratingRow(2, 'ланская лидия', 'Ланская Лидия', Gender.female, '96', '96', NO_GRADE_TEXT),
-  ratingRow(3, 'азбукин андрей', 'Азбукин Андрей', Gender.male, '95', '95', '100'),
-  ratingRow(4, 'тихонов трофим', 'Тихонов Трофим', Gender.male, '90', '90', '63,3'),
+  ratingRow(1, {
+    key: 'быстров борис',
+    displayName: 'Быстров Борис',
+    gender: Gender.male,
+    formText: '99',
+    rankText: '99,2',
+    gradeText: '100',
+  }),
+  ratingRow(2, {
+    key: 'ланская лидия',
+    displayName: 'Ланская Лидия',
+    gender: Gender.female,
+    formText: '96',
+    rankText: '96',
+    gradeText: NO_GRADE_TEXT,
+  }),
+  ratingRow(3, {
+    key: 'азбукин андрей',
+    displayName: 'Азбукин Андрей',
+    gender: Gender.male,
+    formText: '95',
+    rankText: '95',
+    gradeText: '100',
+  }),
+  ratingRow(4, {
+    key: 'тихонов трофим',
+    displayName: 'Тихонов Трофим',
+    gender: Gender.male,
+    formText: '90',
+    rankText: '90',
+    gradeText: '63,3',
+  }),
 ];
 
 const attendanceRow = (
   place: number,
-  medal: string | null,
-  key: string,
-  displayName: string,
-  gender: GenderType,
-  finishes: number,
-  countText: string,
-  lastSlug: string,
-  dateShort: string,
+  {
+    medal,
+    key,
+    displayName,
+    gender,
+    finishes,
+    countText,
+    lastSlug,
+    dateShort,
+  }: {
+    medal: string | null;
+    key: string;
+    displayName: string;
+    gender: GenderType;
+    finishes: number;
+    countText: string;
+    lastSlug: string;
+    dateShort: string;
+  },
 ): AttendanceRowView => ({
   place,
   medal,
@@ -231,10 +272,46 @@ const attendanceRow = (
  * one-start athletes all share silver — a shared place shares its medal, so nobody wears bronze.
  */
 export const EXPECTED_ATTENDANCE_ROWS: AttendanceRowView[] = [
-  attendanceRow(1, ATTENDANCE_MEDALS[0], 'быстров борис', 'Быстров Борис', Gender.male, 6, '6 финишей', '2025-03-30', '30.03.2025 г.'),
-  attendanceRow(2, ATTENDANCE_MEDALS[1], 'азбукин андрей', 'Азбукин Андрей', Gender.male, 1, '1 финиш', '2025-04-06', '06.04.2025 г.'),
-  attendanceRow(2, ATTENDANCE_MEDALS[1], 'ланская лидия', 'Ланская Лидия', Gender.female, 1, '1 финиш', '2025-05-11', '11.05.2025 г.'),
-  attendanceRow(2, ATTENDANCE_MEDALS[1], 'тихонов трофим', 'Тихонов Трофим', Gender.male, 1, '1 финиш', '2025-05-04', '04.05.2025 г.'),
+  attendanceRow(1, {
+    medal: ATTENDANCE_MEDALS[0],
+    key: 'быстров борис',
+    displayName: 'Быстров Борис',
+    gender: Gender.male,
+    finishes: 6,
+    countText: '6 финишей',
+    lastSlug: '2025-03-30',
+    dateShort: '30.03.2025 г.',
+  }),
+  attendanceRow(2, {
+    medal: ATTENDANCE_MEDALS[1],
+    key: 'азбукин андрей',
+    displayName: 'Азбукин Андрей',
+    gender: Gender.male,
+    finishes: 1,
+    countText: '1 финиш',
+    lastSlug: '2025-04-06',
+    dateShort: '06.04.2025 г.',
+  }),
+  attendanceRow(2, {
+    medal: ATTENDANCE_MEDALS[1],
+    key: 'ланская лидия',
+    displayName: 'Ланская Лидия',
+    gender: Gender.female,
+    finishes: 1,
+    countText: '1 финиш',
+    lastSlug: '2025-05-11',
+    dateShort: '11.05.2025 г.',
+  }),
+  attendanceRow(2, {
+    medal: ATTENDANCE_MEDALS[1],
+    key: 'тихонов трофим',
+    displayName: 'Тихонов Трофим',
+    gender: Gender.male,
+    finishes: 1,
+    countText: '1 финиш',
+    lastSlug: '2025-05-04',
+    dateShort: '04.05.2025 г.',
+  }),
 ];
 
 /** Every archived run falls in March–May, so spring is the only season card of the whole archive. */
@@ -247,7 +324,16 @@ export const EXPECTED_2024_ATTENDANCE_PODIUMS: SeasonAttendanceView[] = [
   {
     title: `${SEASON_LABELS[Season.spring]} ${LEADERBOARD_YEAR}`,
     rows: [
-      attendanceRow(1, ATTENDANCE_MEDALS[0], 'быстров борис', 'Быстров Борис', Gender.male, 1, '1 финиш', '2024-03-10', '10.03.2024 г.'),
+      attendanceRow(1, {
+        medal: ATTENDANCE_MEDALS[0],
+        key: 'быстров борис',
+        displayName: 'Быстров Борис',
+        gender: Gender.male,
+        finishes: 1,
+        countText: '1 финиш',
+        lastSlug: '2024-03-10',
+        dateShort: '10.03.2024 г.',
+      }),
     ],
   },
 ];
@@ -379,7 +465,7 @@ export const EXPECTED_WINDLESS_WEATHER_VIEWS: WeatherExtremeView[] = [
   },
 ];
 
-const tieRecord = (key: string, displayName: string, dateIso: string): AthleteRecord => ({
+const tieRecord = (key: string, { displayName, dateIso }: { displayName: string; dateIso: string }): AthleteRecord => ({
   key,
   displayName,
   gender: Gender.male,
@@ -394,9 +480,9 @@ const tieRecord = (key: string, displayName: string, dateIso: string): AthleteRe
  * reduce inside `crownedKey` takes both of its branches before settling on Быстров.
  */
 export const TIE_RECORDS: AthleteRecord[] = [
-  tieRecord('азбукин андрей', 'Азбукин Андрей', '2025-03-16'),
-  tieRecord('быстров борис', 'Быстров Борис', '2025-03-09'),
-  tieRecord('веселов василий', 'Веселов Василий', '2025-03-23'),
+  tieRecord('азбукин андрей', { displayName: 'Азбукин Андрей', dateIso: '2025-03-16' }),
+  tieRecord('быстров борис', { displayName: 'Быстров Борис', dateIso: '2025-03-09' }),
+  tieRecord('веселов василий', { displayName: 'Веселов Василий', dateIso: '2025-03-23' }),
 ];
 
 export const EXPECTED_TIE_CROWNED_KEY = 'быстров борис';

@@ -1,4 +1,4 @@
-import { TrackSourceType } from './track-source.enum';
+import { type TrackSourceType } from './track-source.enum';
 
 /**
  * One race track, as it lives on this device and nowhere else.

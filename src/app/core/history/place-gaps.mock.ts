@@ -1,6 +1,6 @@
 import { Gender } from '../models/gender.enum';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { PlaceGapRow } from './place-gaps.interface';
+import { type PlaceGapRow } from './place-gaps.interface';
 
 /**
  * One protocol covering every silent row: the gender winners, a dead heat, a one-lap runner,

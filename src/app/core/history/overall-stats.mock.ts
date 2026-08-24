@@ -1,7 +1,7 @@
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { OverallStats } from './overall-stats.interface';
+import { type OverallStats } from './overall-stats.interface';
 
 /**
  * Three finishers across three events plus a DNF-only athlete: three events, eight finishes

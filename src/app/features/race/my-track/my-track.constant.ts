@@ -1,4 +1,4 @@
-import { PaceTone, PaceToneType } from './pace-tone.enum';
+import { PaceTone, type PaceToneType } from './pace-tone.enum';
 
 /**
  * The pace bands, as a fraction of the run's own average pace — under 1 is quicker than average.

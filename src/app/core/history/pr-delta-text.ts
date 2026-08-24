@@ -2,7 +2,7 @@ import { formatRaceTime } from '../time/duration';
 import { formatRussianDateCompact } from '../time/russian-date';
 import { isoYear } from './iso-year';
 import { PR_DELTA_HINT_SEPARATOR } from './pr-delta.constant';
-import { PreviousBest } from './previous-bests.interface';
+import { type PreviousBest } from './previous-bests.interface';
 
 /**
  * The hint behind a «Δ ЛР» figure — «ЛР 19:46,00 · 12 янв 2025 · лучшее в 2026 — 20:05,00».

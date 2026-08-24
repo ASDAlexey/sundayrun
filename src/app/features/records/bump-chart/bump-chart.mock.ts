@@ -1,6 +1,6 @@
 import { ATHLETES_PAGE_LINK } from '../../../app.constant';
-import { SeasonPositions } from '../../../core/history/season-positions.interface';
-import { BumpChartView, BumpTooltipView } from './bump-chart.interface';
+import { type SeasonPositions } from '../../../core/history/season-positions.interface';
+import { type BumpChartView, type BumpTooltipView } from './bump-chart.interface';
 
 /**
  * A two-athlete season: Волков leads wire-to-wire, Громов debuts a week later with a deep 34:00

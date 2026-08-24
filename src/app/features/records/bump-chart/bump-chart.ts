@@ -2,7 +2,7 @@ import { Component, computed, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ATHLETES_PAGE_LINK } from '../../../app.constant';
-import { SeasonPositionLine, SeasonPositions } from '../../../core/history/season-positions.interface';
+import { type SeasonPositionLine, type SeasonPositions } from '../../../core/history/season-positions.interface';
 import { lapTimeTextOf } from '../../../core/protocol/race-time-cells';
 import { formatRaceTime } from '../../../core/time/duration';
 import { formatRussianDateLong } from '../../../core/time/russian-date';
@@ -27,7 +27,14 @@ import {
   ISO_MONTH_END,
   ISO_MONTH_START,
 } from './bump-chart.constant';
-import { BumpChartView, BumpDotView, BumpLabelView, BumpLineView, BumpRowView, BumpTooltipView } from './bump-chart.interface';
+import {
+  type BumpChartView,
+  type BumpDotView,
+  type BumpLabelView,
+  type BumpLineView,
+  type BumpRowView,
+  type BumpTooltipView,
+} from './bump-chart.interface';
 
 /**
  * The standings race as an SVG bump chart: one line per ranked athlete, one column per event,
@@ -54,7 +61,7 @@ export class BumpChart {
   readonly highlighted = input<readonly string[]>([]);
   readonly hovered = signal<string | null>(null);
   readonly tooltip = signal<BumpTooltipView | null>(null);
-  readonly view = computed(() => withStates(this.#geometry(), this.hovered(), this.highlighted()));
+  readonly view = computed(() => withStates(this.#geometry(), { hovered: this.hovered(), highlighted: this.highlighted() }));
 
   protected readonly dotRadius = BUMP_DOT_RADIUS;
   protected readonly dotHitRadius = BUMP_DOT_HIT_RADIUS;
@@ -77,11 +84,11 @@ export class BumpChart {
 
     const rect = svg.getBoundingClientRect();
 
-    this.tooltip.set(toTooltip(line, event.clientX - rect.left, event.clientY - rect.top, null));
+    this.tooltip.set(toTooltip(line, { x: event.clientX - rect.left, y: event.clientY - rect.top, label: null }));
   }
 
   onDotEnter(line: BumpLineView, dot: BumpDotView): void {
-    this.tooltip.set(toTooltip(line, dot.x, dot.y, dot.label));
+    this.tooltip.set(toTooltip(line, { x: dot.x, y: dot.y, label: dot.label }));
   }
 
   onDotLeave(): void {
@@ -90,7 +97,7 @@ export class BumpChart {
 }
 
 /** The shared tooltip placement: clamped off the left edge, flipped below near the top. */
-function toTooltip(line: BumpLineView, x: number, y: number, label: BumpLabelView | null): BumpTooltipView {
+function toTooltip(line: BumpLineView, { x, y, label }: { x: number; y: number; label: BumpLabelView | null }): BumpTooltipView {
   const below = y < BUMP_TOOLTIP_FLIP_Y;
 
   return {
@@ -104,7 +111,10 @@ function toTooltip(line: BumpLineView, x: number, y: number, label: BumpLabelVie
 }
 
 /** The hover/pick overlay: the hovered line wins, otherwise the picked set keeps its lines lit. */
-function withStates(geometry: BumpChartView, hovered: string | null, highlighted: readonly string[]): BumpChartView {
+function withStates(
+  geometry: BumpChartView,
+  { hovered, highlighted }: { hovered: string | null; highlighted: readonly string[] },
+): BumpChartView {
   if (hovered === null && highlighted.length === 0) {
     return geometry;
   }
@@ -148,7 +158,7 @@ function toChartView(data: SeasonPositions, firstLap: boolean): BumpChartView {
     tickY: plotBottom + BUMP_TICK_OFFSET,
     ticks: data.eventDates.map((dateIso, index) => ({ x: eventX(index), label: tickLabel(dateIso) })),
     rows,
-    lines: data.lines.map((line, index) => toLineView(line, index, data.eventDates, firstLap)),
+    lines: data.lines.map((line, index) => toLineView(line, { index, eventDates: data.eventDates, firstLap })),
   };
 }
 
@@ -163,7 +173,10 @@ function buildRows(rowCount: number): BumpRowView[] {
   }));
 }
 
-function toLineView(line: SeasonPositionLine, index: number, eventDates: string[], firstLap: boolean): BumpLineView {
+function toLineView(
+  line: SeasonPositionLine,
+  { index, eventDates, firstLap }: { index: number; eventDates: string[]; firstLap: boolean },
+): BumpLineView {
   const dots = line.points.flatMap<BumpDotView>((point, eventIndex) => {
     if (point === null) {
       return [];

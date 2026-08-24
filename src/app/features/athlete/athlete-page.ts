@@ -7,41 +7,40 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
-import { AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { type AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { genderFinisherCount } from '../../core/history/gender-finishers';
-import { EventGenderFinishers } from '../../core/history/gender-finishers.interface';
+import { type EventGenderFinishers } from '../../core/history/gender-finishers.interface';
 import { currentCourseRecordEntries } from '../../core/history/course-records';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
 import { legendBoard, legendProgress } from '../../core/history/legend';
 import { LEGEND_WINDOW_DAYS } from '../../core/history/legend.constant';
 import { newestEventIso } from '../../core/history/runner-scores';
-import { LegendProgress } from '../../core/history/legend.interface';
+import { type LegendProgress } from '../../core/history/legend.interface';
 import { isoYear } from '../../core/history/iso-year';
 import { athleteStreaks } from '../../core/history/streaks';
-import { AthleteStreaks } from '../../core/history/streaks.interface';
+import { type AthleteStreaks } from '../../core/history/streaks.interface';
 import { athleteYearActivity, athleteYearBadges } from '../../core/history/year-badges';
-import { YearBadge, YearBadgeType } from '../../core/history/year-badges.enum';
-import { EventWeatherRow } from '../../core/history/weather-records.interface';
+import { YearBadge, type YearBadgeType } from '../../core/history/year-badges.enum';
+import { type EventWeatherRow } from '../../core/history/weather-records.interface';
 import { athleteSeasonRankBadges } from '../../core/history/season-ranks';
 import { athleteYearRankBadges } from '../../core/history/year-ranks';
 import { distinctRunYears, filterRuns, sortRuns, yearBestEntries } from '../../core/history/athlete-runs';
 import { RunsSort } from '../../core/history/athlete-runs.enum';
-import { YearBestEntry } from '../../core/history/athlete-runs.interface';
+import { type YearBestEntry } from '../../core/history/athlete-runs.interface';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { memeStandings } from '../../core/history/meme-thresholds';
 import { MEME_THRESHOLDS } from '../../core/history/meme-thresholds.constant';
-import { MemeStanding } from '../../core/history/meme-thresholds.interface';
+import { type MemeStanding } from '../../core/history/meme-thresholds.interface';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { athletePlacements } from '../../core/history/placements';
-import { AthletePlacements } from '../../core/history/placements.interface';
+import { type AthletePlacements } from '../../core/history/placements.interface';
 import { prDelta, previousBestBySlug, previousYearBestBySlug } from '../../core/history/pr-delta';
 import { prDeltaHint } from '../../core/history/pr-delta-text';
-import { PreviousBest } from '../../core/history/previous-bests.interface';
 import { closeRivals } from '../../core/history/rivals';
 import { CLOSE_FINISH_GAP_MS } from '../../core/history/rivals.constant';
-import { Rival } from '../../core/history/rivals.interface';
-import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { GenderType } from '../../core/models/gender.enum';
+import { type Rival } from '../../core/history/rivals.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
+import { type GenderType } from '../../core/models/gender.enum';
 import { lapTimeTextOf } from '../../core/protocol/race-time-cells';
 import { formatRaceTime } from '../../core/time/duration';
 import { MS_IN_SECOND } from '../../core/time/duration.constant';
@@ -50,7 +49,7 @@ import { formatRussianDateNumeric } from '../../core/time/russian-date';
 import { AthletesService } from '../../github/athletes.service';
 import { PageMetaService } from '../../shared/seo/page-meta.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
-import { RaceDay } from '../../state/track-sync.interface';
+import { type RaceDay } from '../../state/track-sync.interface';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
@@ -71,17 +70,18 @@ import {
   SELF_MEME_KEY,
 } from './athlete-page.constant';
 import { athleteDescriptionText, closeTimesText, finishesText, runsCountText, weeksText } from './athlete-page-text';
-import { AthleteStatus, AthleteStatusType } from './athlete-page.enum';
+import { AthleteStatus, type AthleteStatusType } from './athlete-page.enum';
 import {
-  AthletePageState,
-  AthleteRunView,
-  FirstLapView,
-  LegendView,
-  MemeRowView,
-  PlacementsView,
-  RivalView,
-  StreaksView,
-  YearBestView,
+  type AthletePageState,
+  type AthleteRunInputs,
+  type AthleteRunView,
+  type FirstLapView,
+  type LegendView,
+  type MemeRowView,
+  type PlacementsView,
+  type RivalView,
+  type StreaksView,
+  type YearBestView,
 } from './athlete-page.interface';
 import { BadgeCatalog } from './badge-catalog/badge-catalog';
 import { FormCard } from './form-card';
@@ -140,7 +140,7 @@ export class AthletePage {
   /** The month-final events («итоговые») of the archive; the still-open current month marks none. */
   readonly #monthFinals = computed(() => monthFinalSlugs(this.#state().eventSlugs, this.#todayIso));
   // The whole page is about the full distance: one-lap runs never reach the table or the filters.
-  readonly #fiveKmRuns = computed(() => filterRuns(this.#record()?.runs ?? [], null, FIVE_KM_DISTANCE_KM));
+  readonly #fiveKmRuns = computed(() => filterRuns(this.#record()?.runs ?? [], { year: null, distanceKm: FIVE_KM_DISTANCE_KM }));
   /**
    * The ranking crowns per year, merged in front of the activity badges: the standing course
    * record and the athlete's cut in the year's best-times table. The current season recomputes
@@ -230,7 +230,10 @@ export class AthletePage {
   readonly firstLaps = computed(() => this.#state().firstLaps);
   /** Badges count every finished run (the short course included); badge-less years are omitted. */
   readonly yearBadges = computed(() =>
-    athleteYearBadges(this.#record()?.runs ?? [], this.#state().firstEventDateByYear, this.#rankBadgesByYear()),
+    athleteYearBadges(this.#record()?.runs ?? [], {
+      firstEventDateByYear: this.#state().firstEventDateByYear,
+      rankBadgesByYear: this.#rankBadgesByYear(),
+    }),
   );
 
   /** Badge → the share of participants owning it — «есть у 12% участников» on the chips. */
@@ -248,12 +251,17 @@ export class AthletePage {
   readonly currentYear = isoYear(this.#todayIso);
   /** The running year's activity — the «Все награды» catalog teases the next badge with it. */
   readonly currentActivity = computed(() =>
-    athleteYearActivity(this.#record()?.runs ?? [], this.currentYear, this.#state().firstEventDateByYear[this.currentYear]),
+    athleteYearActivity(this.#record()?.runs ?? [], {
+      year: this.currentYear,
+      firstEventDate: this.#state().firstEventDateByYear[this.currentYear],
+    }),
   );
 
   /** Streaks count participations (a DNF still extends one) over the full event chronology. */
   readonly streaks = computed(() =>
-    toStreaksView(athleteStreaks(this.#record()?.participationSlugs ?? [], this.#record()?.runs ?? [], this.#state().eventSlugs)),
+    toStreaksView(
+      athleteStreaks(this.#record()?.participationSlugs ?? [], { runs: this.#record()?.runs ?? [], eventSlugs: this.#state().eventSlugs }),
+    ),
   );
 
   /** «Легенда трассы»: the transferable rolling-window crown for showing up, the pace never matters. */
@@ -266,11 +274,13 @@ export class AthletePage {
   readonly rivals = computed(() => {
     const key = this.#record()?.key ?? '';
 
-    return closeRivals(this.#state().rivalRuns, key, this.rivalsYear()).map((rival) => toRivalView(rival, key));
+    return closeRivals(this.#state().rivalRuns, { athleteKey: key, year: this.rivalsYear() }).map((rival) => toRivalView(rival, key));
   });
 
   /** The card (with its year chips) stays while the all-time list is non-empty; a dry season only empties the list. */
-  readonly hasRivals = computed(() => closeRivals(this.#state().rivalRuns, this.#record()?.key ?? '', null).length > 0);
+  readonly hasRivals = computed(
+    () => closeRivals(this.#state().rivalRuns, { athleteKey: this.#record()?.key ?? '', year: null }).length > 0,
+  );
 
   /** The «Мем-пороги» ladder with the athlete's best slotted in; no best hides the card. */
   readonly memes = computed(() => {
@@ -280,7 +290,7 @@ export class AthletePage {
       return [];
     }
 
-    return toMemeRows(memeStandings(MEME_THRESHOLDS, bestMs), bestMs, this.displayName());
+    return toMemeRows(memeStandings(MEME_THRESHOLDS, bestMs), { bestMs, displayName: this.displayName() });
   });
 
   readonly yearBests = computed(() => {
@@ -319,8 +329,17 @@ export class AthletePage {
     const previousBests = this.#previousBests();
     const previousYearBests = this.#previousYearBests();
 
-    return sortRuns(filterRuns(this.#fiveKmRuns(), this.year(), null), RunsSort.byTime).map((run, index) =>
-      toRunView(run, index + 1, runPlaces, runFinisherCounts, lapMsBySlug, monthFinals, gender, previousBests, previousYearBests),
+    return sortRuns(filterRuns(this.#fiveKmRuns(), { year: this.year(), distanceKm: null }), RunsSort.byTime).map((run, index) =>
+      toRunView(run, {
+        rank: index + 1,
+        places: runPlaces,
+        finisherCounts: runFinisherCounts,
+        lapMsBySlug,
+        monthFinals,
+        gender,
+        previousBests,
+        previousYearBests,
+      }),
     );
   });
 
@@ -396,7 +415,9 @@ export class AthletePage {
 
     this.#state.set(next);
     this.#weatherRows.set(weatherRows);
-    this.#pageMeta.setDescription(athleteDescriptionText(this.displayName(), this.finishCount(), this.bestTimeText()));
+    this.#pageMeta.setDescription(
+      athleteDescriptionText(this.displayName(), { finishCount: this.finishCount(), bestTimeText: this.bestTimeText() }),
+    );
   }
 
   async #resolveState(key: string): Promise<AthletePageState> {
@@ -482,17 +503,8 @@ function emptyAthleteState(status: AthleteStatusType): AthletePageState {
   };
 }
 
-function toRunView(
-  run: AthleteRun,
-  rank: number,
-  places: Record<string, number>,
-  finisherCounts: Record<string, EventGenderFinishers>,
-  lapMsBySlug: ReadonlyMap<string, number>,
-  monthFinals: Set<string>,
-  gender: GenderType | null,
-  previousBests: ReadonlyMap<string, PreviousBest>,
-  previousYearBests: ReadonlyMap<string, PreviousBest>,
-): AthleteRunView {
+function toRunView(run: AthleteRun, inputs: AthleteRunInputs): AthleteRunView {
+  const { rank, places, finisherCounts, lapMsBySlug, monthFinals, gender, previousBests, previousYearBests } = inputs;
   const place = places[run.slug];
   const lapMs = lapMsBySlug.get(run.slug);
   const previousBest = previousBests.get(run.slug);
@@ -505,7 +517,7 @@ function toRunView(
     dateShort: formatRussianDateNumeric(run.dateIso),
     timeText: formatRaceTime(run.timeMs),
     lapText: lapMs === undefined ? NO_LAP_TEXT : lapTimeTextOf(lapMs),
-    placeText: placeText(place, finisherCounts[run.slug], gender),
+    placeText: placeText(place, { finishers: finisherCounts[run.slug], gender }),
     prDeltaText: delta?.text ?? NO_PR_DELTA_TEXT,
     prDeltaClass: delta === null ? '' : PR_DELTA_CLASSES[delta.kind],
     prDeltaHint: delta === null ? '' : prDeltaHint(previousBest, previousYearBests.get(run.slug)),
@@ -515,7 +527,9 @@ function toRunView(
 }
 
 /** «3/22» — the place over the athlete's own gender finisher count; a bare place, or a dash when unknown. */
-function placeText(place: number | undefined, finishers: EventGenderFinishers | undefined, gender: GenderType | null): string {
+function placeText(place: number | undefined, field: { finishers: EventGenderFinishers | undefined; gender: GenderType | null }): string {
+  const { finishers, gender } = field;
+
   if (place === undefined) {
     // Old protocols published without places simply show the dash.
     return NO_PLACE_TEXT;
@@ -592,7 +606,7 @@ function toLegendView(progress: LegendProgress): LegendView {
 }
 
 /** The athlete's own rung slots in right after the unbeaten benchmarks — the ladder stays time-sorted. */
-function toMemeRows(standings: MemeStanding[], bestMs: number, displayName: string): MemeRowView[] {
+function toMemeRows(standings: MemeStanding[], { bestMs, displayName }: { bestMs: number; displayName: string }): MemeRowView[] {
   const rows = standings.map(toMemeRow);
   const selfIndex = standings.filter((standing) => !standing.isBeaten).length;
 

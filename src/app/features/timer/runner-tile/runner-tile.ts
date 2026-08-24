@@ -1,8 +1,8 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 
-import { TimerRunnerStage, TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
-import { TimerRunner } from '../../../core/timer/timer-session.interface';
-import { TimerTilePress, TimerTileTimeFrame } from './runner-tile.interface';
+import { TimerRunnerStage, type TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
+import { type TimerRunner } from '../../../core/timer/timer-session.interface';
+import { type TimerTilePress, type TimerTileTimeFrame } from './runner-tile.interface';
 import { tileRemoveLabelText } from './runner-tile.text';
 import {
   TIMER_DOUBLE_TAP_GUARD_MS,

@@ -1,7 +1,7 @@
-import { GenderType } from '../models/gender.enum';
-import { HistoryRunRow } from './badge-signals.interface';
-import { YearBadgeType } from './year-badges.enum';
-import { YearProgressRow } from './year-progress.interface';
+import { type GenderType } from '../models/gender.enum';
+import { type HistoryRunRow } from './badge-signals.interface';
+import { type YearBadgeType } from './year-badges.enum';
+import { type YearProgressRow } from './year-progress.interface';
 
 /** One finished run of the year joined with its athlete, the raw material of the review. */
 export interface YearRunRow {

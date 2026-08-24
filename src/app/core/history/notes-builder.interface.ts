@@ -1,4 +1,4 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 
 /** One athlete's result at the event being processed, against which the auto note is computed. */
 export interface AutoNoteInput {

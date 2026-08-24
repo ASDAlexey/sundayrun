@@ -1,5 +1,5 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
 import { TIMER_CLOCK_IDLE_MS } from './timer-clock.constant';
 

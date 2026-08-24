@@ -46,7 +46,7 @@ describe('RacesPage', () => {
         provideRouter([]),
         { provide: ArchiveService, useValue: { loadIndex } },
         { provide: CdnRefService, useValue: cdnRefServiceMock() },
-        { provide: PLATFORM_ID, useFactory: () => platformId },
+        { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
       ],
     });
   });

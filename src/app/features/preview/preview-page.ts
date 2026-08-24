@@ -3,14 +3,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
 import { eventDatesFromHistory } from '../../core/history/event-dates';
-import { AthletesHistory } from '../../core/models/athletes-history.type';
+import { type AthletesHistory } from '../../core/models/athletes-history.type';
 import { HistoryService } from '../../github/history.service';
 import { ProtocolPager } from '../../shared/protocol-pager/protocol-pager';
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { EventForm } from './event-form/event-form';
 import { ParticipantsTable } from './participants-table/participants-table';
 import { HISTORY_SPINNER_DIAMETER, RESULT_ROUTE_COMMANDS } from './preview-page.constant';
-import { HistoryNotesStatus, HistoryNotesStatusType } from './preview-page.enum';
+import { HistoryNotesStatus, type HistoryNotesStatusType } from './preview-page.enum';
 
 /** The /preview page: participants editing plus the race event form before PDF generation, paging through the batch's drafts. */
 @Component({

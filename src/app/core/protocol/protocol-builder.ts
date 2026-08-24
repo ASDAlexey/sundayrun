@@ -1,11 +1,11 @@
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { Gender, GenderType } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
+import { type Participant } from '../models/participant.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 import { formatRaceTime } from '../time/duration';
 import { lapTimeText, lapsCarryHundredths } from './race-time-cells';
 import { EMPTY_TIME, FIRST_LAP_INDEX, FIRST_ROW_INDEX, FIVE_KM_LAP_COUNT, TWO_THREE_KM_LAP_COUNT } from './protocol-builder.constant';
-import { TimedParticipant } from './protocol-builder.type';
+import { type TimedParticipant } from './protocol-builder.type';
 
 /**
  * Builds display-ready protocol rows:
@@ -28,11 +28,11 @@ export function buildProtocolRows(participants: Participant[]): ProtocolRow[] {
 
   return ordered.map((participant, index) => {
     if (isFiveKmFinisher(participant)) {
-      return toFiveKmRow(participant, index + FIRST_ROW_INDEX, places, lapHundredths);
+      return toFiveKmRow(participant, { index: index + FIRST_ROW_INDEX, places, lapHundredths });
     }
 
     if (isTwoThreeKmRunner(participant)) {
-      return toTwoThreeKmRow(participant, index + FIRST_ROW_INDEX, lapHundredths);
+      return toTwoThreeKmRow(participant, { index: index + FIRST_ROW_INDEX, lapHundredths });
     }
 
     return toUntimedRow(participant, index + FIRST_ROW_INDEX);
@@ -81,9 +81,7 @@ function sortByTotalMs(participants: TimedParticipant[]): TimedParticipant[] {
 
 function toFiveKmRow(
   participant: TimedParticipant,
-  index: number,
-  places: Record<GenderType, number>,
-  lapHundredths: boolean,
+  { index, places, lapHundredths }: { index: number; places: Record<GenderType, number>; lapHundredths: boolean },
 ): ProtocolRow {
   const gender = participant.gender;
   const place = gender === null ? null : (places[gender] += 1);
@@ -104,7 +102,7 @@ function toFiveKmRow(
   };
 }
 
-function toTwoThreeKmRow(participant: TimedParticipant, index: number, lapHundredths: boolean): ProtocolRow {
+function toTwoThreeKmRow(participant: TimedParticipant, { index, lapHundredths }: { index: number; lapHundredths: boolean }): ProtocolRow {
   return {
     index,
     fullName: participant.fullName,

@@ -1,9 +1,9 @@
-import { AthleteRecord } from '../models/athlete-history.interface';
-import { GenderType } from '../models/gender.enum';
+import { type AthleteRecord } from '../models/athlete-history.interface';
+import { type GenderType } from '../models/gender.enum';
 import { NAME_COLLATION_LOCALE } from './athletes-list.constant';
-import { CourseRecordHistory } from './course-records.type';
+import { type CourseRecordHistory } from './course-records.type';
 import { formIndex, localGrade, runnerRank, scoredRuns, windowScoredRuns } from './runner-scores';
-import { EventWinnerTimes, RatingRow } from './runner-scores.interface';
+import { type EventWinnerTimes, type RatingRow } from './runner-scores.interface';
 
 /**
  * The combined М+Ж rating board: every gendered athlete with a scored finish inside the
@@ -13,9 +13,11 @@ import { EventWinnerTimes, RatingRow } from './runner-scores.interface';
  */
 export function ratingBoard(
   records: readonly AthleteRecord[],
-  winners: ReadonlyMap<string, EventWinnerTimes>,
-  courseRecords: CourseRecordHistory,
-  todayIso: string,
+  {
+    winners,
+    courseRecords,
+    todayIso,
+  }: { winners: ReadonlyMap<string, EventWinnerTimes>; courseRecords: CourseRecordHistory; todayIso: string },
 ): RatingRow[] {
   return records
     .flatMap<RatingRow>((record) => {
@@ -23,7 +25,7 @@ export function ratingBoard(
         return [];
       }
 
-      const row = toRatingRow(record, record.gender, winners, courseRecords, todayIso);
+      const row = toRatingRow(record, { gender: record.gender, winners, courseRecords, todayIso });
 
       return row === null ? [] : [row];
     })
@@ -38,12 +40,14 @@ export function ratingBoard(
 /** One athlete's row; null for the never-scored and for those without a window finish. */
 function toRatingRow(
   record: AthleteRecord,
-  gender: GenderType,
-  winners: ReadonlyMap<string, EventWinnerTimes>,
-  courseRecords: CourseRecordHistory,
-  todayIso: string,
+  {
+    gender,
+    winners,
+    courseRecords,
+    todayIso,
+  }: { gender: GenderType; winners: ReadonlyMap<string, EventWinnerTimes>; courseRecords: CourseRecordHistory; todayIso: string },
 ): RatingRow | null {
-  const scored = scoredRuns(record.runs, gender, winners);
+  const scored = scoredRuns(record.runs, { gender, winners });
   const rank = runnerRank(scored);
 
   if (rank === null) {

@@ -1,5 +1,5 @@
-import { GenderType } from '../models/gender.enum';
-import { SeasonType } from './seasons.enum';
+import { type GenderType } from '../models/gender.enum';
+import { type SeasonType } from './seasons.enum';
 
 /**
  * One row of the «Кто чаще всех» board: the athlete's 5 km finishes inside the chosen scope.

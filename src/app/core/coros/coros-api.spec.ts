@@ -31,7 +31,9 @@ describe('corosLogin', () => {
   it('sends the password as MD5 and returns the token', async () => {
     const fetchFn = okFetch({ accessToken: COROS_TOKEN_MOCK });
 
-    await expect(corosLogin(COROS_EMAIL_MOCK, COROS_PASSWORD_MOCK, CorosRegion.Eu, fetchFn)).resolves.toBe(COROS_TOKEN_MOCK);
+    await expect(corosLogin({ email: COROS_EMAIL_MOCK, password: COROS_PASSWORD_MOCK, region: CorosRegion.Eu }, fetchFn)).resolves.toBe(
+      COROS_TOKEN_MOCK,
+    );
 
     const [url, init] = fetchFn.mock.calls[0];
     const body: Record<string, unknown> = JSON.parse(String(init?.body));
@@ -44,7 +46,7 @@ describe('corosLogin', () => {
   it('reports the region host the account lives in', async () => {
     const fetchFn = okFetch({ accessToken: COROS_TOKEN_MOCK });
 
-    await corosLogin(COROS_EMAIL_MOCK, COROS_PASSWORD_MOCK, CorosRegion.Cn, fetchFn);
+    await corosLogin({ email: COROS_EMAIL_MOCK, password: COROS_PASSWORD_MOCK, region: CorosRegion.Cn }, fetchFn);
 
     expect(fetchFn.mock.calls[0][0]).toBe(`${COROS_REGION_API_URLS[CorosRegion.Cn]}/account/login`);
   });
@@ -52,13 +54,17 @@ describe('corosLogin', () => {
   it('fails when the answer carries no token', async () => {
     const fetchFn = okFetch({});
 
-    await expect(corosLogin(COROS_EMAIL_MOCK, COROS_PASSWORD_MOCK, CorosRegion.Eu, fetchFn)).rejects.toThrow(CorosApiError);
+    await expect(corosLogin({ email: COROS_EMAIL_MOCK, password: COROS_PASSWORD_MOCK, region: CorosRegion.Eu }, fetchFn)).rejects.toThrow(
+      CorosApiError,
+    );
   });
 
   it('surfaces the Coros result code of a rejected login', async () => {
     const fetchFn: Mock<CorosFetchFn> = vi.fn(() => Promise.resolve(jsonResponse(COROS_FAILURE_BODY_MOCK)));
 
-    await expect(corosLogin(COROS_EMAIL_MOCK, COROS_PASSWORD_MOCK, CorosRegion.Eu, fetchFn)).rejects.toMatchObject({
+    await expect(
+      corosLogin({ email: COROS_EMAIL_MOCK, password: COROS_PASSWORD_MOCK, region: CorosRegion.Eu }, fetchFn),
+    ).rejects.toMatchObject({
       result: COROS_FAILURE_BODY_MOCK.result,
       message: COROS_FAILURE_BODY_MOCK.message,
     });
@@ -68,7 +74,10 @@ describe('corosLogin', () => {
 describe('corosQueryRuns', () => {
   it('asks Coros to filter the days and parses the rows', async () => {
     const fetchFn = okFetch({ dataList: [COROS_RACE_ROW_MOCK, COROS_WARMUP_ROW_MOCK] });
-    const runs = await corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu, fetchFn);
+    const runs = await corosQueryRuns(
+      { token: COROS_TOKEN_MOCK, startDateIso: COROS_RACE_DATE_ISO_MOCK, endDateIso: COROS_RACE_DATE_ISO_MOCK, region: CorosRegion.Eu },
+      fetchFn,
+    );
 
     expect(runs[0]).toEqual(COROS_RACE_ACTIVITY_MOCK);
     expect(runs).toHaveLength(2);
@@ -84,7 +93,10 @@ describe('corosQueryRuns', () => {
     const fetchFn = okFetch({ dataList: COROS_BROKEN_ROWS_MOCK });
 
     await expect(
-      corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu, fetchFn),
+      corosQueryRuns(
+        { token: COROS_TOKEN_MOCK, startDateIso: COROS_RACE_DATE_ISO_MOCK, endDateIso: COROS_RACE_DATE_ISO_MOCK, region: CorosRegion.Eu },
+        fetchFn,
+      ),
     ).resolves.toEqual([]);
   });
 
@@ -92,7 +104,10 @@ describe('corosQueryRuns', () => {
     const fetchFn = okFetch({});
 
     await expect(
-      corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu, fetchFn),
+      corosQueryRuns(
+        { token: COROS_TOKEN_MOCK, startDateIso: COROS_RACE_DATE_ISO_MOCK, endDateIso: COROS_RACE_DATE_ISO_MOCK, region: CorosRegion.Eu },
+        fetchFn,
+      ),
     ).resolves.toEqual([]);
   });
 
@@ -100,7 +115,10 @@ describe('corosQueryRuns', () => {
     const fetchFn: Mock<CorosFetchFn> = vi.fn(() => Promise.resolve(new Response('', { status: 500 })));
 
     await expect(
-      corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu, fetchFn),
+      corosQueryRuns(
+        { token: COROS_TOKEN_MOCK, startDateIso: COROS_RACE_DATE_ISO_MOCK, endDateIso: COROS_RACE_DATE_ISO_MOCK, region: CorosRegion.Eu },
+        fetchFn,
+      ),
     ).rejects.toThrow(CorosApiError);
   });
 
@@ -108,7 +126,10 @@ describe('corosQueryRuns', () => {
     const fetchFn: Mock<CorosFetchFn> = vi.fn(() => Promise.resolve(new Response('<html>maintenance</html>')));
 
     await expect(
-      corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu, fetchFn),
+      corosQueryRuns(
+        { token: COROS_TOKEN_MOCK, startDateIso: COROS_RACE_DATE_ISO_MOCK, endDateIso: COROS_RACE_DATE_ISO_MOCK, region: CorosRegion.Eu },
+        fetchFn,
+      ),
     ).rejects.toThrow(CorosApiError);
   });
 });
@@ -120,7 +141,9 @@ describe('corosDownloadGpx', () => {
       .mockResolvedValueOnce(jsonResponse({ result: COROS_OK_RESULT, data: { fileUrl: COROS_FILE_URL_MOCK } }))
       .mockResolvedValueOnce(new Response(COROS_GPX_MOCK));
 
-    await expect(corosDownloadGpx(COROS_TOKEN_MOCK, COROS_LABEL_ID_MOCK, CorosRegion.Eu, fetchFn)).resolves.toBe(COROS_GPX_MOCK);
+    await expect(
+      corosDownloadGpx({ token: COROS_TOKEN_MOCK, labelId: COROS_LABEL_ID_MOCK, region: CorosRegion.Eu }, fetchFn),
+    ).resolves.toBe(COROS_GPX_MOCK);
 
     const [downloadUrl, downloadInit] = fetchFn.mock.calls[0];
     const [fileUrl, fileInit] = fetchFn.mock.calls[1];
@@ -134,7 +157,9 @@ describe('corosDownloadGpx', () => {
   it('fails when the activity has no file behind it', async () => {
     const fetchFn = okFetch({});
 
-    await expect(corosDownloadGpx(COROS_TOKEN_MOCK, COROS_LABEL_ID_MOCK, CorosRegion.Eu, fetchFn)).rejects.toThrow(CorosApiError);
+    await expect(
+      corosDownloadGpx({ token: COROS_TOKEN_MOCK, labelId: COROS_LABEL_ID_MOCK, region: CorosRegion.Eu }, fetchFn),
+    ).rejects.toThrow(CorosApiError);
   });
 
   it('fails when the CDN refuses the link', async () => {
@@ -143,7 +168,9 @@ describe('corosDownloadGpx', () => {
       .mockResolvedValueOnce(jsonResponse({ result: COROS_OK_RESULT, data: { fileUrl: COROS_FILE_URL_MOCK } }))
       .mockResolvedValueOnce(new Response('', { status: 403 }));
 
-    await expect(corosDownloadGpx(COROS_TOKEN_MOCK, COROS_LABEL_ID_MOCK, CorosRegion.Eu, fetchFn)).rejects.toThrow(CorosApiError);
+    await expect(
+      corosDownloadGpx({ token: COROS_TOKEN_MOCK, labelId: COROS_LABEL_ID_MOCK, region: CorosRegion.Eu }, fetchFn),
+    ).rejects.toThrow(CorosApiError);
   });
 });
 
@@ -162,9 +189,20 @@ describe('coros defaults and gaps', () => {
 
     vi.stubGlobal('fetch', fetchSpy);
 
-    await expect(corosLogin(COROS_EMAIL_MOCK, COROS_PASSWORD_MOCK, CorosRegion.Eu)).resolves.toBe(COROS_TOKEN_MOCK);
-    await expect(corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu)).resolves.toEqual([]);
-    await expect(corosDownloadGpx(COROS_TOKEN_MOCK, COROS_LABEL_ID_MOCK, CorosRegion.Eu)).resolves.toBe(COROS_GPX_MOCK);
+    await expect(corosLogin({ email: COROS_EMAIL_MOCK, password: COROS_PASSWORD_MOCK, region: CorosRegion.Eu })).resolves.toBe(
+      COROS_TOKEN_MOCK,
+    );
+    await expect(
+      corosQueryRuns({
+        token: COROS_TOKEN_MOCK,
+        startDateIso: COROS_RACE_DATE_ISO_MOCK,
+        endDateIso: COROS_RACE_DATE_ISO_MOCK,
+        region: CorosRegion.Eu,
+      }),
+    ).resolves.toEqual([]);
+    await expect(corosDownloadGpx({ token: COROS_TOKEN_MOCK, labelId: COROS_LABEL_ID_MOCK, region: CorosRegion.Eu })).resolves.toBe(
+      COROS_GPX_MOCK,
+    );
 
     vi.unstubAllGlobals();
   });
@@ -173,20 +211,30 @@ describe('coros defaults and gaps', () => {
     const emptyToken = okFetch({ accessToken: '' });
     const emptyLink = okFetch({ fileUrl: '' });
 
-    await expect(corosLogin(COROS_EMAIL_MOCK, COROS_PASSWORD_MOCK, CorosRegion.Eu, emptyToken)).rejects.toThrow(CorosApiError);
-    await expect(corosDownloadGpx(COROS_TOKEN_MOCK, COROS_LABEL_ID_MOCK, CorosRegion.Eu, emptyLink)).rejects.toThrow(CorosApiError);
+    await expect(
+      corosLogin({ email: COROS_EMAIL_MOCK, password: COROS_PASSWORD_MOCK, region: CorosRegion.Eu }, emptyToken),
+    ).rejects.toThrow(CorosApiError);
+    await expect(
+      corosDownloadGpx({ token: COROS_TOKEN_MOCK, labelId: COROS_LABEL_ID_MOCK, region: CorosRegion.Eu }, emptyLink),
+    ).rejects.toThrow(CorosApiError);
   });
 
   it('keeps a nameless activity, and explains a failure Coros left unexplained', async () => {
     const nameless = okFetch({ dataList: [{ ...COROS_RACE_ROW_MOCK, name: undefined }] });
     const silent: Mock<CorosFetchFn> = vi.fn(() => Promise.resolve(jsonResponse({ result: '1002' })));
 
-    const runs = await corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu, nameless);
+    const runs = await corosQueryRuns(
+      { token: COROS_TOKEN_MOCK, startDateIso: COROS_RACE_DATE_ISO_MOCK, endDateIso: COROS_RACE_DATE_ISO_MOCK, region: CorosRegion.Eu },
+      nameless,
+    );
 
     expect(runs[0].name).toBe('');
 
     await expect(
-      corosQueryRuns(COROS_TOKEN_MOCK, COROS_RACE_DATE_ISO_MOCK, COROS_RACE_DATE_ISO_MOCK, CorosRegion.Eu, silent),
+      corosQueryRuns(
+        { token: COROS_TOKEN_MOCK, startDateIso: COROS_RACE_DATE_ISO_MOCK, endDateIso: COROS_RACE_DATE_ISO_MOCK, region: CorosRegion.Eu },
+        silent,
+      ),
     ).rejects.toThrow('Coros request failed');
   });
 });

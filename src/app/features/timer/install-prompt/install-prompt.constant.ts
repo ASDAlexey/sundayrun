@@ -1,4 +1,4 @@
-import { TimerStorage } from '../../../state/timer-storage.type';
+import { type TimerStorage } from '../../../state/timer-storage.type';
 
 /** localStorage key remembering that the install hint was answered — it never asks twice. */
 export const TIMER_INSTALL_STORAGE_KEY = 'sundayrun.timer.install.v1';

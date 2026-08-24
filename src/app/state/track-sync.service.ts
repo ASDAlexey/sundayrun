@@ -3,15 +3,15 @@ import { gzipSync, strToU8 } from 'fflate';
 
 import { CorosApiError } from '../core/coros/coros-api.error';
 import { CorosClient } from '../core/coros/coros.client';
-import { CorosActivity } from '../core/coros/coros-api.interface';
+import { type CorosActivity } from '../core/coros/coros-api.interface';
 import { isoToday } from '../core/time/iso-today';
 import { TRACK_CHECK_ATTEMPT_LIMIT } from './athlete-track.constant';
-import { AthleteTrack } from './athlete-track.interface';
+import { type AthleteTrack } from './athlete-track.interface';
 import { readChecks, readTracks, saveCheck, saveTrack } from './athlete-track.storage';
 import { RACE_DISTANCE_MAX_M, RACE_DISTANCE_MIN_M } from './track-sync.constant';
-import { TrackSyncStatus, TrackSyncStatusType } from './track-sync.enum';
-import { RaceDay } from './track-sync.interface';
-import { WatchAccount } from './watch-account.interface';
+import { TrackSyncStatus, type TrackSyncStatusType } from './track-sync.enum';
+import { type RaceDay } from './track-sync.interface';
+import { type WatchAccount } from './watch-account.interface';
 import { WatchAccountService } from './watch-account.service';
 
 /**
@@ -61,10 +61,15 @@ export class TrackSyncService {
     const dates = missing.map((race) => race.dateIso).sort();
 
     try {
-      const runs = await this.#coros.queryRuns(account.token, dates[0], dates[dates.length - 1], account.region);
+      const runs = await this.#coros.queryRuns({
+        token: account.token,
+        startDateIso: dates[0],
+        endDateIso: dates[dates.length - 1],
+        region: account.region,
+      });
 
       for (const race of missing) {
-        await this.#applyRace(race, runs, account);
+        await this.#applyRace(race, { runs, account });
       }
 
       await this.load();
@@ -93,7 +98,7 @@ export class TrackSyncService {
     );
   }
 
-  async #applyRace(race: RaceDay, runs: CorosActivity[], account: WatchAccount): Promise<void> {
+  async #applyRace(race: RaceDay, { runs, account }: { runs: CorosActivity[]; account: WatchAccount }): Promise<void> {
     const match = runs.find(
       (run) => run.dateIso === race.dateIso && run.distanceM >= RACE_DISTANCE_MIN_M && run.distanceM <= RACE_DISTANCE_MAX_M,
     );
@@ -109,7 +114,7 @@ export class TrackSyncService {
       return;
     }
 
-    const gpx = await this.#coros.downloadGpx(account.token, match.labelId, account.region);
+    const gpx = await this.#coros.downloadGpx({ token: account.token, labelId: match.labelId, region: account.region });
 
     await saveTrack({
       slug: race.slug,

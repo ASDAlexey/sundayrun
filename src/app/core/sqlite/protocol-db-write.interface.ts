@@ -1,6 +1,6 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 
 /**
  * Publication payload: the event's metadata and its protocol rows. The write reads the previous

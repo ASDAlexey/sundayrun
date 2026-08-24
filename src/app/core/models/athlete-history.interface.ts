@@ -1,4 +1,4 @@
-import { GenderType } from './gender.enum';
+import { type GenderType } from './gender.enum';
 
 /** One run of an athlete; `dateIso` is 'YYYY-MM-DD', `timeMs` is integer milliseconds. */
 export interface AthleteRun {

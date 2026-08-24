@@ -6,7 +6,7 @@ import { BLOB_URL_REVOKE_DELAY_MS } from './blob-download.constant';
  * because some browsers (Safari) abort a download whose object url is revoked in the same
  * synchronous turn as the click.
  */
-export function triggerBlobDownload(doc: Document, blob: Blob, fileName: string): void {
+export function triggerBlobDownload(doc: Document, { blob, fileName }: { blob: Blob; fileName: string }): void {
   const url = URL.createObjectURL(blob);
   const anchor = doc.createElement('a');
 

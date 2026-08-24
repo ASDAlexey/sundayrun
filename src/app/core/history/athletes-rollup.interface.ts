@@ -1,4 +1,4 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 
 /** Event identity attached to every appended run. */
 export interface EventRef {

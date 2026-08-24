@@ -59,7 +59,7 @@ import { EXPECTED_VERSION_COMMIT_MESSAGE, EXPECTED_VERSION_PURGE_URL, POINTER_CO
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
   const fake = await import('../sqlite/spec-utils/fake-sqlite3');
 
-  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+  return { default: (): Promise<typeof fake.FAKE_SQLITE3> => Promise.resolve(fake.FAKE_SQLITE3) };
 });
 
 function createPublishFetch(overrides: Record<string, RouteHandler> = {}): Mock<GithubFetchFn> {
@@ -75,7 +75,7 @@ function createPublishFetch(overrides: Record<string, RouteHandler> = {}): Mock<
 
 /** Base64 blob contents in upload order: source.xlsx, sundayrun.db, then the version pointer's version.json. */
 function blobContents(fetchFn: Mock<GithubFetchFn>): string[] {
-  const bodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, POST_METHOD, GIT_BLOBS_URL);
+  const bodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_BLOBS_URL });
 
   return bodies.map((body) => body.content);
 }
@@ -99,11 +99,11 @@ describe('publishEvent', () => {
         }),
     });
 
-    const result = await publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT, fetchFn);
+    const result = await publishEvent({ token: PUBLISH_TOKEN, input: PUBLISH_INPUT, fetchFn });
 
     const contents = blobContents(fetchFn);
-    const commitBodies = requestBodiesOf(fetchFn.mock.calls, POST_METHOD, GIT_COMMITS_URL);
-    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+    const commitBodies = requestBodiesOf(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_COMMITS_URL });
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
     const treePaths = treeBodies.map((body) => body.tree.map((entry) => entry.path));
     const calledUrls = fetchFn.mock.calls.map(([url]) => url);
 
@@ -130,11 +130,11 @@ describe('publishEvent', () => {
   it('publishes a batch given out of date order: one atomic commit with every workbook and the db, a range slug and a single pointer', async () => {
     const fetchFn = createPublishFetch();
 
-    const result = await publishEvents(PUBLISH_TOKEN, BATCH_PUBLISH_INPUTS, fetchFn);
+    const result = await publishEvents({ token: PUBLISH_TOKEN, inputs: BATCH_PUBLISH_INPUTS, fetchFn });
 
     const contents = blobContents(fetchFn);
-    const commitBodies = requestBodiesOf(fetchFn.mock.calls, POST_METHOD, GIT_COMMITS_URL);
-    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+    const commitBodies = requestBodiesOf(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_COMMITS_URL });
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
     const treePaths = treeBodies.map((body) => body.tree.map((entry) => entry.path));
     const eventsInsert = FAKE_SQLITE3_STATE.dbs[0].executed.find((call) => call.sql.startsWith(EVENTS_INSERT_SQL_PREFIX));
 
@@ -158,10 +158,12 @@ describe('publishEvent', () => {
   it('commits the db alone for a stopwatch-timed event, which has no workbook to publish', async () => {
     const fetchFn = createPublishFetch();
 
-    await expect(publishEvent(PUBLISH_TOKEN, TIMER_PUBLISH_INPUT, fetchFn)).resolves.toEqual({ commitSha: PUBLISH_SHAS.newCommitSha });
+    await expect(publishEvent({ token: PUBLISH_TOKEN, input: TIMER_PUBLISH_INPUT, fetchFn })).resolves.toEqual({
+      commitSha: PUBLISH_SHAS.newCommitSha,
+    });
 
     const contents = blobContents(fetchFn);
-    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
 
     expect(
       treeBodies[0].tree.map((entry) => entry.path),
@@ -174,12 +176,12 @@ describe('publishEvent', () => {
   it('skips only the missing workbook in a mixed batch, keeping the remaining ones date-ordered', async () => {
     const fetchFn = createPublishFetch();
 
-    await expect(publishEvents(PUBLISH_TOKEN, MIXED_BATCH_PUBLISH_INPUTS, fetchFn)).resolves.toEqual({
+    await expect(publishEvents({ token: PUBLISH_TOKEN, inputs: MIXED_BATCH_PUBLISH_INPUTS, fetchFn })).resolves.toEqual({
       commitSha: PUBLISH_SHAS.newCommitSha,
     });
 
     const contents = blobContents(fetchFn);
-    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
 
     expect(
       treeBodies[0].tree.map((entry) => entry.path),
@@ -193,7 +195,9 @@ describe('publishEvent', () => {
   it('creates a fresh db from scratch when none is published yet', async () => {
     const fetchFn = createPublishFetch({ [dbContentsKey(PUBLISH_SHAS.headSha)]: () => statusResponse(HTTP_NOT_FOUND) });
 
-    await expect(publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT, fetchFn)).resolves.toEqual({ commitSha: PUBLISH_SHAS.newCommitSha });
+    await expect(publishEvent({ token: PUBLISH_TOKEN, input: PUBLISH_INPUT, fetchFn })).resolves.toEqual({
+      commitSha: PUBLISH_SHAS.newCommitSha,
+    });
 
     const contents = blobContents(fetchFn);
 
@@ -208,7 +212,7 @@ describe('publishEvent', () => {
       [`PATCH ${GIT_REF_UPDATE_URL}`]: () => statusResponse(refUpdates++ === 0 ? HTTP_CONFLICT : OK_STATUS),
     });
 
-    const result = await publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT, fetchFn);
+    const result = await publishEvent({ token: PUBLISH_TOKEN, input: PUBLISH_INPUT, fetchFn });
     const contents = blobContents(fetchFn);
 
     expect(result.commitSha).toBe(PUBLISH_SHAS.newCommitSha);
@@ -221,7 +225,9 @@ describe('publishEvent', () => {
   it('fails the publication when the db cannot be rebuilt, since it is now the source of truth', async () => {
     FAKE_SQLITE3_STATE.deserializeRc = SQLITE_ERROR_RC;
 
-    await expect(publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT, createPublishFetch())).rejects.toThrow(String(SQLITE_ERROR_RC));
+    await expect(publishEvent({ token: PUBLISH_TOKEN, input: PUBLISH_INPUT, fetchFn: createPublishFetch() })).rejects.toThrow(
+      String(SQLITE_ERROR_RC),
+    );
   });
 
   it('falls back to the global fetch by default', async () => {
@@ -230,9 +236,10 @@ describe('publishEvent', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED))),
     );
 
-    await expect(publishEvent(PUBLISH_TOKEN, PUBLISH_INPUT)).rejects.toBeInstanceOf(GithubAuthError);
-    await expect(publishEvents(PUBLISH_TOKEN, [PUBLISH_INPUT]), 'the batch form defaults to the global fetch too').rejects.toBeInstanceOf(
-      GithubAuthError,
-    );
+    await expect(publishEvent({ token: PUBLISH_TOKEN, input: PUBLISH_INPUT })).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(
+      publishEvents({ token: PUBLISH_TOKEN, inputs: [PUBLISH_INPUT] }),
+      'the batch form defaults to the global fetch too',
+    ).rejects.toBeInstanceOf(GithubAuthError);
   });
 });

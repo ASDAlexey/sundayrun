@@ -1,6 +1,6 @@
 import { EMPTY_FIRST_LAP_RECORDS } from './first-lap.constant';
-import { AthleteFirstLap, FirstLapRun } from './first-lap.interface';
-import { FirstLapRecords } from './first-lap.type';
+import { type AthleteFirstLap, type FirstLapRun } from './first-lap.interface';
+import { type FirstLapRecords } from './first-lap.type';
 
 /**
  * The standing first-lap (2.3 km) record per gender: the fastest recorded split, regardless of

@@ -1,4 +1,4 @@
-import { DurationHistoryStorage } from './duration-history.type';
+import { type DurationHistoryStorage } from './duration-history.type';
 
 /** Enough history for a stable average while old CI timings age out quickly. */
 export const DURATION_HISTORY_MAX_ENTRIES = 10;

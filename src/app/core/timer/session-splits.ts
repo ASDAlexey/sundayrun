@@ -8,8 +8,8 @@ import {
   NOTHING_RECORDED,
   SURNAME_INDEX,
 } from './timer-session.constant';
-import { TimerRunnerOutcome, TimerRunnerStage, TimerRunnerStageType } from './timer-session.enum';
-import { TimerRunner, TimerSession, TimerSplit } from './timer-session.interface';
+import { TimerRunnerOutcome, TimerRunnerStage, type TimerRunnerStageType } from './timer-session.enum';
+import { type TimerRunner, type TimerSession, type TimerSplit } from './timer-session.interface';
 
 /**
  * The journal grouped by the runner each tap belongs to, every group earliest first and the unnamed
@@ -55,18 +55,21 @@ export function indexSplitsByRunner(session: TimerSession): SplitsByRunner {
  * `index` is the shortcut for a caller walking the whole roster: hand over the map
  * `indexSplitsByRunner` built and the answer is a lookup rather than another walk of the journal.
  */
-export function runnerSplits(session: TimerSession, runnerId: string, index?: SplitsByRunner): readonly TimerSplit[] {
-  return splitsOf(session, runnerId, index);
+export function runnerSplits(
+  session: TimerSession,
+  { runnerId, index }: { runnerId: string; index?: SplitsByRunner },
+): readonly TimerSplit[] {
+  return splitsOf(session, { runnerId, index });
 }
 
 /** The same taps as plain elapsed times: `[lapMs, finishMs]` for a runner who is done. */
-export function runnerSplitTimesMs(session: TimerSession, runnerId: string, index?: SplitsByRunner): number[] {
-  return runnerSplits(session, runnerId, index).map((split) => split.atMs);
+export function runnerSplitTimesMs(session: TimerSession, { runnerId, index }: { runnerId: string; index?: SplitsByRunner }): number[] {
+  return runnerSplits(session, { runnerId, index }).map((split) => split.atMs);
 }
 
 /** Times recorded with the «Отсечка без имени» button and still waiting for a name, earliest first. */
 export function unassignedSplits(session: TimerSession, index?: SplitsByRunner): readonly TimerSplit[] {
-  return splitsOf(session, null, index);
+  return splitsOf(session, { runnerId: null, index });
 }
 
 /**
@@ -76,7 +79,7 @@ export function unassignedSplits(session: TimerSession, index?: SplitsByRunner):
  * over would write a finish that happened before the man went round.
  */
 export function nextSplitForRunner(session: TimerSession, runnerId: string): TimerSplit | undefined {
-  const own = runnerSplits(session, runnerId);
+  const own = runnerSplits(session, { runnerId });
   const last = own[own.length - 1];
 
   return unassignedSplits(session).find((split) => last === undefined || split.atMs > last.atMs);
@@ -87,14 +90,17 @@ export function nextSplitForRunner(session: TimerSession, runnerId: string): Tim
  * whatever the journal holds — the organiser's word wins over the tap count. An id that is not in
  * the roster has no tile to colour, so it reports `retired` as well.
  */
-export function runnerStage(session: TimerSession, runnerId: string, index?: SplitsByRunner): TimerRunnerStageType {
+export function runnerStage(
+  session: TimerSession,
+  { runnerId, index }: { runnerId: string; index?: SplitsByRunner },
+): TimerRunnerStageType {
   const runner = session.runners.find((candidate) => candidate.id === runnerId);
 
   if (runner === undefined) {
     return TimerRunnerStage.retired;
   }
 
-  return stageOf(runner, runnerSplits(session, runnerId, index).length);
+  return stageOf(runner, runnerSplits(session, { runnerId, index }).length);
 }
 
 /**
@@ -107,14 +113,14 @@ export function runnerStage(session: TimerSession, runnerId: string, index?: Spl
 export function lapDoneCount(session: TimerSession): number {
   const index = indexSplitsByRunner(session);
 
-  return countRunnersWithSplits(session, LAP_DONE_MIN_SPLITS, index) + queuedLapCount(session, index);
+  return countRunnersWithSplits(session, { minimum: LAP_DONE_MIN_SPLITS, index }) + queuedLapCount(session, index);
 }
 
 /** How many runners are already through the 5 km finish — the right half, by the same rule. */
 export function finishDoneCount(session: TimerSession): number {
   const index = indexSplitsByRunner(session);
   const queued = ownSplits(index, null).length - queuedLapCount(session, index);
-  const named = countRunnersWithSplits(session, MAX_SPLITS_PER_RUNNER, index);
+  const named = countRunnersWithSplits(session, { minimum: MAX_SPLITS_PER_RUNNER, index });
 
   return named + Math.min(queued, owedFinishCount(session, index));
 }
@@ -177,7 +183,10 @@ export function runnersWithoutGender(session: TimerSession): TimerRunner[] {
 }
 
 /** One group of the journal: read off the index when the caller built one, scanned out when not. */
-function splitsOf(session: TimerSession, runnerId: string | null, index: SplitsByRunner | undefined): readonly TimerSplit[] {
+function splitsOf(
+  session: TimerSession,
+  { runnerId, index }: { runnerId: string | null; index: SplitsByRunner | undefined },
+): readonly TimerSplit[] {
   if (index !== undefined) {
     return ownSplits(index, runnerId);
   }
@@ -213,22 +222,22 @@ function stageOf(runner: TimerRunner, splitCount: number): TimerRunnerStageType 
   return splitCount < LAP_DONE_MIN_SPLITS ? TimerRunnerStage.waitingLap : TimerRunnerStage.waitingFinish;
 }
 
-function countRunnersWithSplits(session: TimerSession, minimum: number, index: SplitsByRunner): number {
+function countRunnersWithSplits(session: TimerSession, { minimum, index }: { minimum: number; index: SplitsByRunner }): number {
   return session.runners.filter((runner) => ownSplits(index, runner.id).length >= minimum).length;
 }
 
 /** How much of the queue can only be laps: nobody can be given a second tap before their first. */
 function queuedLapCount(session: TimerSession, index: SplitsByRunner): number {
-  return Math.min(ownSplits(index, null).length, activeRunnersWithSplits(session, NOTHING_RECORDED, index));
+  return Math.min(ownSplits(index, null).length, activeRunnersWithSplits(session, { count: NOTHING_RECORDED, index }));
 }
 
 /** Whom a queued time could still finish: those with a lap, plus those the queue is about to give one. */
 function owedFinishCount(session: TimerSession, index: SplitsByRunner): number {
-  return activeRunnersWithSplits(session, LAP_DONE_MIN_SPLITS, index) + queuedLapCount(session, index);
+  return activeRunnersWithSplits(session, { count: LAP_DONE_MIN_SPLITS, index }) + queuedLapCount(session, index);
 }
 
 /** Active runners holding exactly this many taps — a retired one owes nothing, he is not coming round. */
-function activeRunnersWithSplits(session: TimerSession, count: number, index: SplitsByRunner): number {
+function activeRunnersWithSplits(session: TimerSession, { count, index }: { count: number; index: SplitsByRunner }): number {
   return session.runners.filter((runner) => runner.outcome === TimerRunnerOutcome.active && ownSplits(index, runner.id).length === count)
     .length;
 }

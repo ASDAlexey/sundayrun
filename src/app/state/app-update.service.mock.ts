@@ -1,6 +1,6 @@
-import { VersionEvent } from '@angular/service-worker';
-import { Mock, vi } from 'vitest';
-import { Observable, Subject } from 'rxjs';
+import { type VersionEvent } from '@angular/service-worker';
+import { type Mock, vi } from 'vitest';
+import { type Observable, Subject } from 'rxjs';
 
 import { VERSION_READY_EVENT } from './app-update.constant';
 

@@ -1,5 +1,5 @@
-import { CorosRegionType } from '../core/coros/coros-region.enum';
-import { TrackSourceType } from './track-source.enum';
+import { type CorosRegionType } from '../core/coros/coros-region.enum';
+import { type TrackSourceType } from './track-source.enum';
 
 /**
  * A linked watch account, as remembered on this device.

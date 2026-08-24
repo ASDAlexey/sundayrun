@@ -1,7 +1,7 @@
-import { Gender, GenderType } from '../core/models/gender.enum';
-import { AthleteRecord } from '../core/models/athlete-history.interface';
-import { PacingRow } from '../core/history/pacing.interface';
-import { TimerRosterSummary } from '../core/sqlite/protocol-db-summary';
+import { Gender, type GenderType } from '../core/models/gender.enum';
+import { type AthleteRecord } from '../core/models/athlete-history.interface';
+import { type PacingRow } from '../core/history/pacing.interface';
+import { type TimerRosterSummary } from '../core/sqlite/protocol-db-summary';
 import {
   POPOV_ALEKSEY_ATHLETE_KEY,
   ROMANENKO_ATHLETE_KEY,
@@ -10,7 +10,7 @@ import {
   TROILIN_LAP_MS,
 } from '../core/timer/timer-session.mock';
 import { TIMER_ROSTER_SCHEMA_VERSION } from './timer-roster.constant';
-import { TimerRosterCache } from './timer-roster.interface';
+import { type TimerRosterCache } from './timer-roster.interface';
 
 /** The directory as the archive hands it over: full records, of which the cache keeps three fields. */
 export const ROSTER_RECORDS: AthleteRecord[] = [

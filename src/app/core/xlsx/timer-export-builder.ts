@@ -1,5 +1,5 @@
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { FIVE_KM_LAP_COUNT } from '../protocol/protocol-builder.constant';
 import { formatDurationPrecise } from '../time/duration';
 import { EMPTY_TIME_CELL, FIRST_LAP_INDEX, NO_LAPS, SECOND_LAP_INDEX, TIMER_EXPORT_HEADER_ROW } from './timer-export-builder.constant';

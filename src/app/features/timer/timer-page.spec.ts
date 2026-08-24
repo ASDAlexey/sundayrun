@@ -108,7 +108,7 @@ describe('TimerPage', () => {
         { provide: WakeLockService, useValue: wakeLockServiceMock() },
         { provide: AdminTokenService, useValue: { isAdmin } },
         { provide: ShareService, useValue: { canShareFile: vi.fn(() => false), shareFile: vi.fn() } },
-        { provide: PLATFORM_ID, useFactory: () => platformId },
+        { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
         // The empty state carries the install hint, whose readiness badge asks the worker channel.
         { provide: SwUpdate, useValue: { isEnabled: false } },
       ],

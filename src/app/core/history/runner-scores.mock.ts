@@ -1,6 +1,6 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { AthleteRating, EventWinnerTimes, ScoredRun } from './runner-scores.interface';
+import { type AthleteRating, type EventWinnerTimes, type ScoredRun } from './runner-scores.interface';
 
 /** The anchor day of every form-index expectation. */
 export const SCORES_TODAY_ISO = '2026-01-31';
@@ -18,7 +18,10 @@ export const WINNER_EVENTS: EventWinnerTimes[] = [
 /** A runless race on the anchor day: appending it moves the `newestEventIso` anchor there. */
 export const ANCHOR_EVENT: EventWinnerTimes = { slug: 'e-anchor', dateIso: SCORES_TODAY_ISO, bestMaleMs: 1_200_000, bestFemaleMs: null };
 
-const run = (dateIso: string, slug: string, timeMs: number, distanceKm = FIVE_KM_DISTANCE_KM): AthleteRun => ({
+const run = (
+  dateIso: string,
+  { slug, timeMs, distanceKm = FIVE_KM_DISTANCE_KM }: { slug: string; timeMs: number; distanceKm?: number },
+): AthleteRun => ({
   dateIso,
   slug,
   timeMs,
@@ -30,11 +33,11 @@ const run = (dateIso: string, slug: string, timeMs: number, distanceKm = FIVE_KM
  * score 80, 96 and 100 (the athlete wins the fresh event) — listed newest first to prove the sort.
  */
 export const MALE_RUNS: AthleteRun[] = [
-  run('2026-01-01', 'e-2026-01-01', 1_140_000),
-  run('2026-01-01', 'e-2026-01-01', 660_000, TWO_THREE_KM_DISTANCE_KM),
-  run('2025-06-01', 'e-2025-06-01', 1_250_000),
-  run('2025-06-01', 'unknown', 1_250_000),
-  run('2025-01-01', 'e-2025-01-01', 1_500_000),
+  run('2026-01-01', { slug: 'e-2026-01-01', timeMs: 1_140_000 }),
+  run('2026-01-01', { slug: 'e-2026-01-01', timeMs: 660_000, distanceKm: TWO_THREE_KM_DISTANCE_KM }),
+  run('2025-06-01', { slug: 'e-2025-06-01', timeMs: 1_250_000 }),
+  run('2025-06-01', { slug: 'unknown', timeMs: 1_250_000 }),
+  run('2025-01-01', { slug: 'e-2025-01-01', timeMs: 1_500_000 }),
 ];
 
 export const EXPECTED_MALE_SCORED: ScoredRun[] = [
@@ -74,12 +77,12 @@ export const TRIM_EVENTS: EventWinnerTimes[] = ['t1', 't2', 't3', 't4', 't5', 't
 }));
 
 export const TRIM_RUNS: AthleteRun[] = [
-  run(SCORES_TODAY_ISO, 't1', 1_200_000),
-  run(SCORES_TODAY_ISO, 't2', 1_250_000),
-  run(SCORES_TODAY_ISO, 't3', 1_500_000),
-  run(SCORES_TODAY_ISO, 't4', 1_600_000),
-  run(SCORES_TODAY_ISO, 't5', 2_000_000),
-  run(SCORES_TODAY_ISO, 't6', 2_400_000),
+  run(SCORES_TODAY_ISO, { slug: 't1', timeMs: 1_200_000 }),
+  run(SCORES_TODAY_ISO, { slug: 't2', timeMs: 1_250_000 }),
+  run(SCORES_TODAY_ISO, { slug: 't3', timeMs: 1_500_000 }),
+  run(SCORES_TODAY_ISO, { slug: 't4', timeMs: 1_600_000 }),
+  run(SCORES_TODAY_ISO, { slug: 't5', timeMs: 2_000_000 }),
+  run(SCORES_TODAY_ISO, { slug: 't6', timeMs: 2_400_000 }),
 ];
 
 export const EXPECTED_TRIM_FORM_INDEX = 82.2;

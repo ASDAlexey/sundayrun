@@ -1,6 +1,6 @@
-import { TimerPublishStepType } from '../../../state/timer-publish.enum';
+import { type TimerPublishStepType } from '../../../state/timer-publish.enum';
 import { TIMER_PUBLISH_STEP_ORDER } from './session-publish.constant';
-import { TimerPublishStepView } from './session-publish.interface';
+import { type TimerPublishStepView } from './session-publish.interface';
 
 /**
  * Places one step against the flow's current one. Order is the only thing that matters: a step

@@ -1,6 +1,6 @@
-import { EventPhoto } from '../../core/models/event-photo.interface';
-import { NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
-import { RaceStatusType } from './race-page.enum';
+import { type EventPhoto } from '../../core/models/event-photo.interface';
+import { type NoteBadgeKindType } from '../../core/protocol/note-badge-kind.enum';
+import { type RaceStatusType } from './race-page.enum';
 
 /** The «ЛР (было X)» note split around the previous record, which links to the race where it was set. */
 export interface RacePrNoteView {

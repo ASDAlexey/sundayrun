@@ -1,7 +1,7 @@
 /**
  * Structural subsets of the native drag/keyboard events: the component needs only
  * these members, and plain objects can implement them in specs without type
- * assertions (jsdom has no DragEvent/DataTransfer constructors).
+ * assertions, which the lint config forbids outright.
  */
 export interface PreventableEvent {
   preventDefault(): void;

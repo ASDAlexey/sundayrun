@@ -1,4 +1,4 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 import { TIMER_INSTALL_PROMPT_EVENT } from './install-prompt.constant';
 

@@ -24,9 +24,7 @@ describe('resultGuard', () => {
   });
 
   it('redirects to /preview while generation is unavailable and allows activation once ready', () => {
-    const redirect = TestBed.runInInjectionContext(() => resultGuard(GUARD_ROUTE_SNAPSHOT, GUARD_STATE_SNAPSHOT));
-
-    expect(redirect).toBe(PREVIEW_URL_TREE);
+    expect(TestBed.runInInjectionContext(() => resultGuard(GUARD_ROUTE_SNAPSHOT, GUARD_STATE_SNAPSHOT))).toBe(PREVIEW_URL_TREE);
     expect(createUrlTree).toHaveBeenCalledWith(PREVIEW_ROUTE_COMMANDS);
 
     canGenerate.set(true);

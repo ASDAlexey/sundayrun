@@ -1,4 +1,4 @@
-import { AthleteWeatherBests } from '../../core/history/weather-records.interface';
+import { type AthleteWeatherBests } from '../../core/history/weather-records.interface';
 
 /** The bucket rows in display order, each with its icon and label; a null best hides its row. */
 export const WEATHER_BUCKETS: readonly { key: keyof AthleteWeatherBests; icon: string; label: string }[] = [

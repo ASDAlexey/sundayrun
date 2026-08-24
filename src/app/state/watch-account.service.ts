@@ -1,12 +1,13 @@
 import { computed, inject, Service, signal } from '@angular/core';
 
 import { CorosClient } from '../core/coros/coros.client';
-import { CorosRegion, CorosRegionType } from '../core/coros/coros-region.enum';
-import { SelfAthleteStorage } from './self-athlete.type';
+import { type CorosLoginRequest } from '../core/coros/coros-api.interface';
+import { CorosRegion } from '../core/coros/coros-region.enum';
+import { type SelfAthleteStorage } from './self-athlete.type';
 import { clearTracks } from './athlete-track.storage';
 import { TrackSource } from './track-source.enum';
 import { WATCH_ACCOUNT_STORAGE_KEY, WATCH_SSR_NOOP_STORAGE } from './watch-account.constant';
-import { WatchAccount } from './watch-account.interface';
+import { type WatchAccount } from './watch-account.interface';
 
 /**
  * The watch account this device is linked to («Привязать часы» on your own profile).
@@ -25,8 +26,8 @@ export class WatchAccountService {
   readonly linked = computed(() => this.#account() !== null);
 
   /** Exchanges the password for a token; the password itself is gone by the time this resolves. */
-  async link(email: string, password: string, region: CorosRegionType): Promise<void> {
-    const token = await this.#coros.login(email, password, region);
+  async link({ email, password, region }: CorosLoginRequest): Promise<void> {
+    const token = await this.#coros.login({ email, password, region });
 
     this.#save({ source: TrackSource.Coros, email, region, token });
   }

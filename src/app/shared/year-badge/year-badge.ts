@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 
-import { YearBadgeType } from '../../core/history/year-badges.enum';
-import { Gender, GenderType } from '../../core/models/gender.enum';
+import { type YearBadgeType } from '../../core/history/year-badges.enum';
+import { Gender, type GenderType } from '../../core/models/gender.enum';
 import {
   YEAR_BADGE_ART,
   YEAR_BADGE_FEMALE_LABELS,

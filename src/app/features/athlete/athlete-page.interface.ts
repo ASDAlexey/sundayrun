@@ -1,14 +1,16 @@
-import { YearBadgeRarity } from '../../core/history/badge-rarity.type';
-import { CourseRecordHistory } from '../../core/history/course-records.type';
-import { AthleteFirstLap } from '../../core/history/first-lap.interface';
-import { EventGenderFinishers } from '../../core/history/gender-finishers.interface';
-import { LegendFinish } from '../../core/history/legend.interface';
-import { RivalRun } from '../../core/history/rivals.interface';
-import { SeasonBestRow } from '../../core/history/season-ranks.interface';
-import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
-import { YearBestRow } from '../../core/history/year-ranks.interface';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { AthleteStatusType } from './athlete-page.enum';
+import { type YearBadgeRarity } from '../../core/history/badge-rarity.type';
+import { type CourseRecordHistory } from '../../core/history/course-records.type';
+import { type AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { type EventGenderFinishers } from '../../core/history/gender-finishers.interface';
+import { type LegendFinish } from '../../core/history/legend.interface';
+import { type PreviousBest } from '../../core/history/previous-bests.interface';
+import { type RivalRun } from '../../core/history/rivals.interface';
+import { type SeasonBestRow } from '../../core/history/season-ranks.interface';
+import { type EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { type YearBestRow } from '../../core/history/year-ranks.interface';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
+import { type GenderType } from '../../core/models/gender.enum';
+import { type AthleteStatusType } from './athlete-page.enum';
 
 /** The resolved page state for one athlete key, applied atomically after the load settles. */
 export interface AthletePageState {
@@ -145,4 +147,16 @@ export interface YearBestView {
   raceLink: string[];
   /** True when this year's best IS the all-time record — the cell gets the accent treatment. */
   isAllTime: boolean;
+}
+
+/** What one row of the athlete's run table is rendered against, on top of the run itself. */
+export interface AthleteRunInputs {
+  readonly rank: number;
+  readonly places: Record<string, number>;
+  readonly finisherCounts: Record<string, EventGenderFinishers>;
+  readonly lapMsBySlug: ReadonlyMap<string, number>;
+  readonly monthFinals: Set<string>;
+  readonly gender: GenderType | null;
+  readonly previousBests: ReadonlyMap<string, PreviousBest>;
+  readonly previousYearBests: ReadonlyMap<string, PreviousBest>;
 }

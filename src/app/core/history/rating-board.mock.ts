@@ -1,8 +1,8 @@
-import { AthleteRecord, AthleteRun } from '../models/athlete-history.interface';
-import { Gender, GenderType } from '../models/gender.enum';
-import { CourseRecordHistory } from './course-records.type';
+import { type AthleteRecord, type AthleteRun } from '../models/athlete-history.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
+import { type CourseRecordHistory } from './course-records.type';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { EventWinnerTimes, RatingRow } from './runner-scores.interface';
+import { type EventWinnerTimes, type RatingRow } from './runner-scores.interface';
 
 export const BOARD_TODAY_ISO = '2026-01-31';
 
@@ -38,7 +38,10 @@ export const BOARD_COURSE_RECORDS: CourseRecordHistory = {
   ],
 };
 
-const record = (key: string, displayName: string, gender: GenderType | null, runs: AthleteRun[]): AthleteRecord => ({
+const record = (
+  key: string,
+  { displayName, gender, runs }: { displayName: string; gender: GenderType | null; runs: AthleteRun[] },
+): AthleteRecord => ({
   key,
   displayName,
   gender,
@@ -58,13 +61,13 @@ const oldRun = (timeMs: number): AthleteRun => ({ dateIso: '2024-06-01', slug: '
  * genderless, the long-silent and the never-scored athletes never reach the board.
  */
 export const BOARD_RECORDS: AthleteRecord[] = [
-  record('атлетов андрей', 'Атлетов Андрей', Gender.male, [freshRun(1_200_000)]),
-  record('бодрый борис', 'Бодрый Борис', Gender.male, [freshRun(1_250_000), oldRun(1_500_000)]),
-  record('быстрая вера', 'Быстрая Вера', Gender.female, [freshRun(1_562_500)]),
-  record('дружный давид', 'Дружный Давид', Gender.male, [freshRun(1_250_000)]),
-  record('безымянный батыр', 'Безымянный Батыр', null, [freshRun(1_250_000)]),
-  record('ветеран венедикт', 'Ветеран Венедикт', Gender.male, [oldRun(1_250_000)]),
-  record('пустой пётр', 'Пустой Пётр', Gender.male, []),
+  record('атлетов андрей', { displayName: 'Атлетов Андрей', gender: Gender.male, runs: [freshRun(1_200_000)] }),
+  record('бодрый борис', { displayName: 'Бодрый Борис', gender: Gender.male, runs: [freshRun(1_250_000), oldRun(1_500_000)] }),
+  record('быстрая вера', { displayName: 'Быстрая Вера', gender: Gender.female, runs: [freshRun(1_562_500)] }),
+  record('дружный давид', { displayName: 'Дружный Давид', gender: Gender.male, runs: [freshRun(1_250_000)] }),
+  record('безымянный батыр', { displayName: 'Безымянный Батыр', gender: null, runs: [freshRun(1_250_000)] }),
+  record('ветеран венедикт', { displayName: 'Ветеран Венедикт', gender: Gender.male, runs: [oldRun(1_250_000)] }),
+  record('пустой пётр', { displayName: 'Пустой Пётр', gender: Gender.male, runs: [] }),
 ];
 
 export const EXPECTED_BOARD: RatingRow[] = [

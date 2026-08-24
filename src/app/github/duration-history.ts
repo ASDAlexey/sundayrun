@@ -1,8 +1,8 @@
 import { computed, signal } from '@angular/core';
 
 import { DURATION_HISTORY_MAX_ENTRIES, DURATION_HISTORY_SSR_NOOP_STORAGE } from './duration-history.constant';
-import { DurationHistory } from './duration-history.interface';
-import { DurationHistoryStorage } from './duration-history.type';
+import { type DurationHistory } from './duration-history.interface';
+import { type DurationHistoryStorage } from './duration-history.type';
 
 /**
  * One localStorage-backed «how long did the last few of these take» history. Publishing and deleting

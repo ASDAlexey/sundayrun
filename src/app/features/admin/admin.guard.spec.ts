@@ -24,9 +24,7 @@ describe('adminGuard', () => {
   });
 
   it('redirects visitors to the race list and allows activation in admin mode', () => {
-    const redirect = TestBed.runInInjectionContext(() => adminGuard(GUARD_ROUTE_SNAPSHOT, GUARD_STATE_SNAPSHOT));
-
-    expect(redirect).toBe(HOME_URL_TREE);
+    expect(TestBed.runInInjectionContext(() => adminGuard(GUARD_ROUTE_SNAPSHOT, GUARD_STATE_SNAPSHOT))).toBe(HOME_URL_TREE);
     expect(createUrlTree).toHaveBeenCalledWith(HOME_ROUTE_COMMANDS);
 
     isAdmin.set(true);

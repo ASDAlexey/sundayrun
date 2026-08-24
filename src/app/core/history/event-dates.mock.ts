@@ -1,5 +1,5 @@
 import { Gender } from '../models/gender.enum';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 
 /**

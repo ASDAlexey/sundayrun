@@ -1,4 +1,4 @@
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { SOKOLOVA_RUNNER_ID, TIMER_SESSION, TIMER_SESSION_SPLITS } from '../../../core/timer/timer-session.mock';
 
 /**

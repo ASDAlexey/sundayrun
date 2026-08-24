@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { DOCUMENT, PLATFORM_ID, Service, Signal, inject, signal } from '@angular/core';
+import { DOCUMENT, PLATFORM_ID, Service, type Signal, inject, signal } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import { pinnedProtocolDbPath } from '../core/github/protocol-db-path';
@@ -9,7 +9,7 @@ import { parseVersionSha } from '../core/github/version-file';
 import { COMMIT_SHA_PATTERN } from '../core/github/version-file.constant';
 import { DbSource } from '../core/sqlite/db-source.enum';
 import { CdnRefService } from './cdn-ref.service';
-import { DbFreshness, DbFreshnessType } from './db-freshness.enum';
+import { DbFreshness, type DbFreshnessType } from './db-freshness.enum';
 import {
   DB_FRESHNESS_POLL_ATTEMPTS,
   DB_FRESHNESS_POLL_INTERVAL_MS,

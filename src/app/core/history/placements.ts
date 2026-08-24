@@ -1,5 +1,5 @@
 import { FIRST_PLACE, SECOND_PLACE, THIRD_PLACE } from './placements.constant';
-import { AthletePlacements } from './placements.interface';
+import { type AthletePlacements } from './placements.interface';
 
 /**
  * Splits the athlete's protocol places by race kind: the best place ever taken at a monthly final

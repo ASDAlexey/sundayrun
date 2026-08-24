@@ -1,12 +1,12 @@
 import { computeOverallStats } from '../../core/history/overall-stats';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { STATS_HISTORY } from '../../core/history/overall-stats.mock';
-import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
-import { SelfAthlete } from '../../state/self-athlete.interface';
+import { type AthleteRecord, type AthleteRun } from '../../core/models/athlete-history.interface';
+import { type SelfAthlete } from '../../state/self-athlete.interface';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
-import { HomeSelfView } from './home-page.interface';
+import { type HomeSelfView } from './home-page.interface';
 
 export { BAKED_RACE_ITEMS, EXPECTED_RACE_ITEMS, EXPECTED_RACE_TITLES, INDEX_LOAD_ERROR_MESSAGE } from '../races/races-page.mock';
 

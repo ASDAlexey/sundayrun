@@ -1,4 +1,4 @@
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubFetchFn } from './github-fetch.type';
 
 /**
  * The default cache mode is load-bearing: api.github.com answers authenticated GETs with

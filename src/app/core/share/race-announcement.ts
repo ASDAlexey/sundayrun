@@ -1,5 +1,5 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
 import { EMPTY_TIME } from '../protocol/protocol-builder.constant';
 import { formatRussianDateShort } from '../time/russian-date';
 import {

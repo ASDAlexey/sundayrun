@@ -1,4 +1,4 @@
-import { PacingProfile, PacingProfileType } from '../../core/history/pacing.enum';
+import { PacingProfile, type PacingProfileType } from '../../core/history/pacing.enum';
 
 /** The headline of each pacing archetype. */
 export const PACING_PROFILE_TEXTS: Record<PacingProfileType, string> = {

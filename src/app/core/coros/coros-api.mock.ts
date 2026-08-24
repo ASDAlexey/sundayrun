@@ -1,4 +1,4 @@
-import { CorosActivity, CorosActivityRow } from './coros-api.interface';
+import { type CorosActivity, type CorosActivityRow } from './coros-api.interface';
 
 export const COROS_TOKEN_MOCK = 'token-mock';
 

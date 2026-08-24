@@ -1,5 +1,5 @@
-import { YearBadge, YearBadgeType } from '../../core/history/year-badges.enum';
-import { YearBadgeArt, YearBadgeArtType } from './year-badge.enum';
+import { YearBadge, type YearBadgeType } from '../../core/history/year-badges.enum';
+import { YearBadgeArt, type YearBadgeArtType } from './year-badge.enum';
 
 /** BEM modifier suffix per badge; obsessive tiers get their medal styling. */
 export const YEAR_BADGE_MODIFIERS: Record<YearBadgeType, string> = {

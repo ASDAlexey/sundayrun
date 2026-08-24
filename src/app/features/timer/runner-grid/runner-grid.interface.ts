@@ -1,5 +1,5 @@
-import { TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
-import { TimerRunner } from '../../../core/timer/timer-session.interface';
+import { type TimerRunnerStageType } from '../../../core/timer/timer-session.enum';
+import { type TimerRunner } from '../../../core/timer/timer-session.interface';
 
 /** Everything one tile renders — the grid computes it, the tile only draws it. */
 export interface TimerTileView {

@@ -1,15 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  ElementRef,
-  afterNextRender,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, input, signal } from '@angular/core';
 import { gunzipSync, strFromU8 } from 'fflate';
 
 import { formatDuration } from '../../../core/time/duration';
@@ -20,7 +9,7 @@ import { readTrack } from '../../../state/athlete-track.storage';
 import { COURSE_AUTOPLAY_OBSERVER_OPTIONS, COURSE_REDUCED_MOTION_QUERY } from '../../home/course-track/course-track.constant';
 import { RaceTime } from '../../../shared/race-time/race-time';
 import { CHART_HEIGHT, CHART_PAD, CHART_WIDTH, MARKER_MIN_SPAN_S, MARKER_RADIUS, PIN_RADIUS, REPLAY_SECONDS } from './my-track.constant';
-import { MyTrackView, TrackFrame, TrackMarker } from './my-track.interface';
+import { type MyTrackView, type TrackFrame, type TrackMarker } from './my-track.interface';
 
 /**
  * «Твой трек» — the athlete's own recording of this race, drawn on the course map.
@@ -38,7 +27,6 @@ import { MyTrackView, TrackFrame, TrackMarker } from './my-track.interface';
   imports: [RaceTime],
   templateUrl: './my-track.html',
   styleUrl: './my-track.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MyTrack {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -211,7 +199,7 @@ function markerAt(frames: TrackFrame[], seconds: number): TrackMarker {
   };
 }
 
-/** Guarded because `matchMedia` is missing in jsdom and in any non-browser DOM shim. */
+/** Guarded because `matchMedia` is missing in the prerender worker and in any non-browser runtime. */
 function prefersReducedMotion(): boolean {
   return typeof matchMedia === 'function' && matchMedia(COURSE_REDUCED_MOTION_QUERY).matches;
 }

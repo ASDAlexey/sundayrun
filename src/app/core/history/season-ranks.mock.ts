@@ -1,8 +1,8 @@
 import { Gender } from '../models/gender.enum';
-import { SeasonBestRow } from './season-ranks.interface';
+import { type SeasonBestRow } from './season-ranks.interface';
 import { Season } from './seasons.enum';
 import { YearBadge } from './year-badges.enum';
-import { YearRankedBadge } from './year-ranks.interface';
+import { type YearRankedBadge } from './year-ranks.interface';
 
 export const SEASON_RANK_ATHLETE = 'иванов иван';
 

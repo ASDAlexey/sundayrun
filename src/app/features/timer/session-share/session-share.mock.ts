@@ -1,4 +1,5 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
+import { type ShareCaption } from '../../../share/share-caption.interface';
 
 /** The slug of a measurement that already has a page of its own. */
 export const SHARE_SLUG = '2026-07-26';
@@ -20,7 +21,7 @@ export const SHARE_OBJECT_URL = 'blob:share';
 /** Every method of `ShareService` the sheet can reach, each one a spy the spec reads back. */
 export interface ShareServiceMock {
   canShareFile: Mock<(file: File) => boolean>;
-  shareFile: Mock<(file: File, title: string, text: string) => Promise<boolean>>;
+  shareFile: Mock<(file: File, caption: ShareCaption) => Promise<boolean>>;
   copyToClipboard: Mock<(text: string) => Promise<boolean>>;
   buildTelegramShareUrl: Mock<(url: string, text: string) => string>;
   buildMaxShareUrl: Mock<(text: string) => string>;
@@ -30,7 +31,7 @@ export interface ShareServiceMock {
 export function shareServiceMock(): ShareServiceMock {
   return {
     canShareFile: vi.fn<(file: File) => boolean>().mockReturnValue(true),
-    shareFile: vi.fn<(file: File, title: string, text: string) => Promise<boolean>>().mockResolvedValue(true),
+    shareFile: vi.fn<(file: File, caption: ShareCaption) => Promise<boolean>>().mockResolvedValue(true),
     copyToClipboard: vi.fn<(text: string) => Promise<boolean>>().mockResolvedValue(true),
     buildTelegramShareUrl: vi.fn<(url: string, text: string) => string>().mockReturnValue(SHARE_TELEGRAM_URL),
     buildMaxShareUrl: vi.fn<(text: string) => string>().mockReturnValue(SHARE_MAX_URL),

@@ -103,6 +103,8 @@ describe('ScrollReveal', () => {
   });
 
   it('reveals the element immediately when IntersectionObserver is unavailable', () => {
+    // Явно гасим API: happy-dom, в отличие от jsdom, свой IntersectionObserver имеет.
+    vi.stubGlobal('IntersectionObserver', undefined);
     fixture = TestBed.createComponent(RevealHost);
     fixture.detectChanges();
     TestBed.tick();

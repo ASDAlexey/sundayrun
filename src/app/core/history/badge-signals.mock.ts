@@ -1,4 +1,4 @@
-import { AthleteBadgeSignals, BadgeSignalRun, HistoryRunRow } from './badge-signals.interface';
+import { type AthleteBadgeSignals, type BadgeSignalRun, type HistoryRunRow } from './badge-signals.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 
 const fiveKm = (dateIso: string, timeMs: number): BadgeSignalRun => ({ dateIso, timeMs, distanceKm: FIVE_KM_DISTANCE_KM });

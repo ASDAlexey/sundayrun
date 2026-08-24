@@ -106,10 +106,12 @@ describe('CdnRefService', () => {
   });
 
   it('swallows storage failures: noting stays silent and resolving falls back to the pointer', async () => {
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    // Спай вешается на сам объект хранилища, а не на `Storage.prototype`: happy-dom отдаёт
+    // `sessionStorage` прокси, чьи методы не совпадают с прототипными, и подмена прототипа мимо.
+    const setItemSpy = vi.spyOn(sessionStorage, 'setItem').mockImplementation(() => {
       throw new Error(CDN_REF_NETWORK_ERROR_MESSAGE);
     });
-    const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    const getItemSpy = vi.spyOn(sessionStorage, 'getItem').mockImplementation(() => {
       throw new Error(CDN_REF_NETWORK_ERROR_MESSAGE);
     });
 

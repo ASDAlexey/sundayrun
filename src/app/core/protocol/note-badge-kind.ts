@@ -5,7 +5,7 @@ import {
   YEAR_BEST_TOKEN_PATTERN,
 } from '../history/notes-builder.constant';
 import { KIDS_NOTE_TOKEN_PATTERN, STATUS_NOTE_TOKEN_PATTERN } from './note-badge-kind.constant';
-import { NoteBadgeKind, NoteBadgeKindType } from './note-badge-kind.enum';
+import { NoteBadgeKind, type NoteBadgeKindType } from './note-badge-kind.enum';
 
 /** Recognizes the auto-note tokens plus the organiser-written kids and DNF/DSQ marks. */
 export function noteBadgeKindOf(token: string): NoteBadgeKindType {

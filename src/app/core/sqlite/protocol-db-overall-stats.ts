@@ -1,8 +1,8 @@
 import { computeOverallStats } from '../history/overall-stats';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { meta } from './protocol-db.schema';
 import { PROTOCOL_DB_META_OVERALL_STATS_KEY } from './protocol-db-schema.constant';
-import { ProtocolDrizzle } from './protocol-drizzle';
+import { type ProtocolDrizzle } from './protocol-drizzle';
 
 /**
  * Materialises the site-wide totals (`OverallStats`) into the `meta` kv row `overallStats`, so the

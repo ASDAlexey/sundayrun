@@ -1,4 +1,4 @@
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 
 /**
  * The dates of every published event, recovered from the athletes' participations (each

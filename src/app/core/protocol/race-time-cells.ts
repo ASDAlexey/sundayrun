@@ -1,5 +1,5 @@
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 import { formatDuration, formatRaceTime, parseDuration } from '../time/duration';
 import { MS_IN_SECOND } from '../time/duration.constant';
 
@@ -48,7 +48,7 @@ export function withRaceTimeCells(rows: ProtocolRow[]): ProtocolRow[] {
 
   return rows.map((row) => ({
     ...row,
-    time23: lapCell(row.time23, lapMsOf(row), withHundredths),
+    time23: lapCell(row.time23, { ms: lapMsOf(row), withHundredths }),
     time5: finishCell(row.time5, row.distanceKm === FIVE_KM_DISTANCE_KM ? row.totalMs : null),
   }));
 }
@@ -58,7 +58,7 @@ function lapMsOf(row: ProtocolRow): number | null {
   return row.distanceKm === TWO_THREE_KM_DISTANCE_KM ? row.totalMs : parseDuration(row.time23);
 }
 
-function lapCell(text: string, ms: number | null, withHundredths: boolean): string {
+function lapCell(text: string, { ms, withHundredths }: { ms: number | null; withHundredths: boolean }): string {
   return ms === null ? text : lapTimeText(ms, withHundredths);
 }
 

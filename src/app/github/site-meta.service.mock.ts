@@ -1,7 +1,7 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 import { OK_STATUS } from '../core/github/github-commit.mock';
-import { GithubFetchFn } from '../core/github/github-fetch.type';
+import { type GithubFetchFn } from '../core/github/github-fetch.type';
 import { EXPECTED_SITE_META_PURGE_URL, SITE_META_SHAS } from '../core/github/publish-site-meta.mock';
 import { createGitDataRoutes } from '../core/github/spec-utils/git-data-routes';
 import { routeFetch, statusResponse } from '../core/github/spec-utils/github-fetch-router';

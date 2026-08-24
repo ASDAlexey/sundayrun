@@ -1,7 +1,7 @@
-import { TimerPublishStatus, TimerRunner, TimerSession, TimerSplit } from '../core/timer/timer-session.interface';
+import { type TimerPublishStatus, type TimerRunner, type TimerSession, type TimerSplit } from '../core/timer/timer-session.interface';
 import { EMPTY_TIMER_SESSION_STATE, TIMER_SESSION_SCHEMA_VERSION } from './timer-session.constant';
-import { TimerSessionState } from './timer-session.interface';
-import { StoredTimerSession } from './timer-session.type';
+import { type TimerSessionState } from './timer-session.interface';
+import { type StoredTimerSession } from './timer-session.type';
 import { isArrayOf, isNonEmptyString, isNullableGender, isNullableNumber, isNullableString, isOneOf, isRecord } from './timer-storage';
 import { TIMER_PUBLISH_STATE_VALUES, TIMER_ROLE_VALUES, TIMER_RUNNER_OUTCOME_VALUES, TIMER_STATUS_VALUES } from './timer-storage.constant';
 

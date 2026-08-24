@@ -1,6 +1,6 @@
-import { AthleteRecord } from '../models/athlete-history.interface';
+import { type AthleteRecord } from '../models/athlete-history.interface';
 import { Gender } from '../models/gender.enum';
-import { AttendanceRow, SeasonAttendance } from './attendance.interface';
+import { type AttendanceRow, type SeasonAttendance } from './attendance.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 import { Season } from './seasons.enum';
 
@@ -67,36 +67,46 @@ export const ATTENDANCE_RECORDS: AthleteRecord[] = [
 
 const row = (
   place: number,
-  key: string,
-  displayName: string,
-  gender: AttendanceRow['gender'],
-  finishes: number,
-  lastDateIso: string,
+  {
+    key,
+    displayName,
+    gender,
+    finishes,
+    lastDateIso,
+  }: { key: string; displayName: string; gender: AttendanceRow['gender']; finishes: number; lastDateIso: string },
 ): AttendanceRow => ({ key, displayName, gender, place, finishes, lastDateIso, lastSlug: lastDateIso });
 
 /** All time: Фёдор alone on five, the three-finish pair sharing second, the single finish fourth. */
 export const EXPECTED_ATTENDANCE_BOARD: AttendanceRow[] = [
-  row(1, 'частый фёдор', 'Частый Фёдор', Gender.male, 5, '2026-06-07'),
-  row(2, 'адамов антон', 'Адамов Антон', Gender.male, 3, '2025-07-06'),
-  row(2, 'вторая вера', 'Вторая Вера', Gender.female, 3, '2025-07-06'),
-  row(4, 'редкий роман', 'Редкий Роман', null, 1, '2025-10-05'),
+  row(1, { key: 'частый фёдор', displayName: 'Частый Фёдор', gender: Gender.male, finishes: 5, lastDateIso: '2026-06-07' }),
+  row(2, { key: 'адамов антон', displayName: 'Адамов Антон', gender: Gender.male, finishes: 3, lastDateIso: '2025-07-06' }),
+  row(2, { key: 'вторая вера', displayName: 'Вторая Вера', gender: Gender.female, finishes: 3, lastDateIso: '2025-07-06' }),
+  row(4, { key: 'редкий роман', displayName: 'Редкий Роман', gender: null, finishes: 1, lastDateIso: '2025-10-05' }),
 ];
 
 /** The 2026 cut leaves Фёдор's single June start. */
 export const ATTENDANCE_LATE_YEAR = '2026';
 
-export const EXPECTED_LATE_YEAR_BOARD: AttendanceRow[] = [row(1, 'частый фёдор', 'Частый Фёдор', Gender.male, 1, '2026-06-07')];
+export const EXPECTED_LATE_YEAR_BOARD: AttendanceRow[] = [
+  row(1, { key: 'частый фёдор', displayName: 'Частый Фёдор', gender: Gender.male, finishes: 1, lastDateIso: '2026-06-07' }),
+];
 
 /** Summer across the whole archive: Фёдор's four Junes and Julys against the three-finish pair. */
 export const EXPECTED_SUMMER_BOARD: AttendanceRow[] = [
-  row(1, 'частый фёдор', 'Частый Фёдор', Gender.male, 4, '2026-06-07'),
-  row(2, 'адамов антон', 'Адамов Антон', Gender.male, 3, '2025-07-06'),
-  row(2, 'вторая вера', 'Вторая Вера', Gender.female, 3, '2025-07-06'),
+  row(1, { key: 'частый фёдор', displayName: 'Частый Фёдор', gender: Gender.male, finishes: 4, lastDateIso: '2026-06-07' }),
+  row(2, { key: 'адамов антон', displayName: 'Адамов Антон', gender: Gender.male, finishes: 3, lastDateIso: '2025-07-06' }),
+  row(2, { key: 'вторая вера', displayName: 'Вторая Вера', gender: Gender.female, finishes: 3, lastDateIso: '2025-07-06' }),
 ];
 
 /** Nobody ran in spring, so only three of the four season cards survive. */
 export const EXPECTED_SEASON_ATTENDANCE: SeasonAttendance[] = [
-  { season: Season.winter, rows: [row(1, 'частый фёдор', 'Частый Фёдор', Gender.male, 1, '2025-01-05')] },
+  {
+    season: Season.winter,
+    rows: [row(1, { key: 'частый фёдор', displayName: 'Частый Фёдор', gender: Gender.male, finishes: 1, lastDateIso: '2025-01-05' })],
+  },
   { season: Season.summer, rows: EXPECTED_SUMMER_BOARD },
-  { season: Season.autumn, rows: [row(1, 'редкий роман', 'Редкий Роман', null, 1, '2025-10-05')] },
+  {
+    season: Season.autumn,
+    rows: [row(1, { key: 'редкий роман', displayName: 'Редкий Роман', gender: null, finishes: 1, lastDateIso: '2025-10-05' })],
+  },
 ];

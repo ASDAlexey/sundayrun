@@ -1,6 +1,6 @@
 import { isoYear } from './iso-year';
 import { CLOSE_FINISH_GAP_MS, RIVAL_MIN_CLOSE_COUNT, RIVALS_LIMIT } from './rivals.constant';
-import { Rival, RivalRun, RivalTally } from './rivals.interface';
+import { type Rival, type RivalRun, type RivalTally } from './rivals.interface';
 
 /**
  * «Соперники»: who finished next to the athlete most often. Every event both sides finished on the
@@ -10,7 +10,7 @@ import { Rival, RivalRun, RivalTally } from './rivals.interface';
  * `year` narrows the scan to one season; null spans the whole history. The rows are expected to be
  * 5 km finishes only — the db read (`selectRivalRuns`) filters the distance on both sides.
  */
-export function closeRivals(rows: RivalRun[], athleteKey: string, year: string | null): Rival[] {
+export function closeRivals(rows: RivalRun[], { athleteKey, year }: { athleteKey: string; year: string | null }): Rival[] {
   const scoped = year === null ? rows : rows.filter((row) => isoYear(row.dateIso) === year);
   const ownMsBySlug = scoped.reduce(
     (bySlug, row) => (row.key === athleteKey ? bySlug.set(row.slug, row.timeMs) : bySlug),

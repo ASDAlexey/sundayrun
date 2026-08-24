@@ -1,4 +1,4 @@
-import { SleepFn } from './version-pointer.type';
+import { type SleepFn } from './version-pointer.type';
 
 /** Pointer commit message template; append the event slug. */
 export const VERSION_COMMIT_MESSAGE_PREFIX = 'Обновление указателя версии: ';

@@ -1,8 +1,8 @@
 import { formatRussianDateChip } from '../../core/time/russian-date';
 import { finishDoneCount, lapDoneCount } from '../../core/timer/session-splits';
-import { TimerSession } from '../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../core/timer/timer-session.interface';
 import { TIMER_HEADER_EMPTY } from './timer-page.constant';
-import { TimerHeaderView } from './timer-page.interface';
+import { type TimerHeaderView } from './timer-page.interface';
 
 /**
  * The header of the race screen in one pass. It is a plain function rather than four computed

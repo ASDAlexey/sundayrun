@@ -23,9 +23,7 @@ describe('previewGuard', () => {
   });
 
   it('redirects to /upload without participants and allows activation with them', () => {
-    const redirect = TestBed.runInInjectionContext(() => previewGuard(GUARD_ROUTE_SNAPSHOT, GUARD_STATE_SNAPSHOT));
-
-    expect(redirect).toBe(UPLOAD_URL_TREE);
+    expect(TestBed.runInInjectionContext(() => previewGuard(GUARD_ROUTE_SNAPSHOT, GUARD_STATE_SNAPSHOT))).toBe(UPLOAD_URL_TREE);
     expect(createUrlTree).toHaveBeenCalledWith(UPLOAD_ROUTE_COMMANDS);
 
     hasParticipants.set(true);

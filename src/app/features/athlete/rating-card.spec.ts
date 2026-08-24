@@ -21,7 +21,10 @@ describe('RatingCard', () => {
     fixture.destroy();
   });
 
-  function createCard(gender: GenderType | null, courseRecords: CourseRecordHistory, winnerEvents: EventWinnerTimes[]): RatingCard {
+  function createCard(
+    gender: GenderType | null,
+    { courseRecords, winnerEvents }: { courseRecords: CourseRecordHistory; winnerEvents: EventWinnerTimes[] },
+  ): RatingCard {
     fixture = TestBed.createComponent(RatingCard);
     fixture.componentRef.setInput('runs', MALE_RUNS);
     fixture.componentRef.setInput('gender', gender);
@@ -32,7 +35,7 @@ describe('RatingCard', () => {
   }
 
   it('quotes all three percents with the run tally behind the rank', () => {
-    const card = createCard(Gender.male, CARD_COURSE_RECORDS, CARD_WINNER_EVENTS);
+    const card = createCard(Gender.male, { courseRecords: CARD_COURSE_RECORDS, winnerEvents: CARD_WINNER_EVENTS });
 
     expect(card.view()).toEqual(EXPECTED_RATING_CARD_VIEW);
 
@@ -45,7 +48,7 @@ describe('RatingCard', () => {
   });
 
   it('rests the form index after a silent year and dashes the grade without a course record', () => {
-    const card = createCard(Gender.male, EMPTY_COURSE_RECORD_HISTORY, RESTED_WINNER_EVENTS);
+    const card = createCard(Gender.male, { courseRecords: EMPTY_COURSE_RECORD_HISTORY, winnerEvents: RESTED_WINNER_EVENTS });
 
     expect(card.view()).toEqual(EXPECTED_RESTED_VIEW);
 
@@ -55,7 +58,7 @@ describe('RatingCard', () => {
   });
 
   it('hides the card entirely for a genderless athlete', () => {
-    const card = createCard(null, CARD_COURSE_RECORDS, CARD_WINNER_EVENTS);
+    const card = createCard(null, { courseRecords: CARD_COURSE_RECORDS, winnerEvents: CARD_WINNER_EVENTS });
 
     expect(card.view()).toBeNull();
 

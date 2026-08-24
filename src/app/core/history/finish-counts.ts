@@ -1,7 +1,7 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 import { normalizeAthleteKey } from './athlete-key';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { ParticipantRun } from './notables.interface';
+import { type ParticipantRun } from './notables.interface';
 
 /**
  * The «Финишей» protocol column, keyed by athlete: how many 5 km finishes the athlete has as of

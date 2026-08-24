@@ -1,5 +1,5 @@
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
 
 export const VALID_HISTORY: AthletesHistory = {

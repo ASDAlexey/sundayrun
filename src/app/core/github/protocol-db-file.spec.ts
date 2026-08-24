@@ -15,7 +15,9 @@ describe('buildProtocolDbCommitFile', () => {
     const updateDb = vi.fn(() => Promise.resolve(UPDATED_DB_BYTES));
     const fetchFn = routeFetch({ [DB_CONTENTS_KEY]: () => new Response(CURRENT_DB_BYTES) });
 
-    await expect(buildProtocolDbCommitFile(DB_TOKEN, updateDb, fetchFn, DB_PARENT_SHA)).resolves.toEqual(EXPECTED_DB_COMMIT_FILE);
+    await expect(buildProtocolDbCommitFile({ token: DB_TOKEN, fetchFn }, { updateDb, parentSha: DB_PARENT_SHA })).resolves.toEqual(
+      EXPECTED_DB_COMMIT_FILE,
+    );
     expect(updateDb).toHaveBeenCalledWith(CURRENT_DB_BYTES);
   });
 
@@ -23,7 +25,9 @@ describe('buildProtocolDbCommitFile', () => {
     const updateDb = vi.fn(() => Promise.resolve(UPDATED_DB_BYTES));
     const fetchFn = routeFetch({ [DB_CONTENTS_KEY]: () => statusResponse(HTTP_NOT_FOUND) });
 
-    await expect(buildProtocolDbCommitFile(DB_TOKEN, updateDb, fetchFn, DB_PARENT_SHA)).resolves.toEqual(EXPECTED_DB_COMMIT_FILE);
+    await expect(buildProtocolDbCommitFile({ token: DB_TOKEN, fetchFn }, { updateDb, parentSha: DB_PARENT_SHA })).resolves.toEqual(
+      EXPECTED_DB_COMMIT_FILE,
+    );
     expect(updateDb).toHaveBeenCalledWith(null);
   });
 
@@ -33,8 +37,12 @@ describe('buildProtocolDbCommitFile', () => {
     const rejectingUpdate = vi.fn(() => Promise.reject(new Error(WASM_ERROR_MESSAGE)));
     const okDownload = routeFetch({ [DB_CONTENTS_KEY]: () => new Response(CURRENT_DB_BYTES) });
 
-    await expect(buildProtocolDbCommitFile(DB_TOKEN, neverCalled, failingDownload, DB_PARENT_SHA)).rejects.toThrow();
-    await expect(buildProtocolDbCommitFile(DB_TOKEN, rejectingUpdate, okDownload, DB_PARENT_SHA)).rejects.toThrow(WASM_ERROR_MESSAGE);
+    await expect(
+      buildProtocolDbCommitFile({ token: DB_TOKEN, fetchFn: failingDownload }, { updateDb: neverCalled, parentSha: DB_PARENT_SHA }),
+    ).rejects.toThrow();
+    await expect(
+      buildProtocolDbCommitFile({ token: DB_TOKEN, fetchFn: okDownload }, { updateDb: rejectingUpdate, parentSha: DB_PARENT_SHA }),
+    ).rejects.toThrow(WASM_ERROR_MESSAGE);
     expect(neverCalled).not.toHaveBeenCalled();
   });
 });

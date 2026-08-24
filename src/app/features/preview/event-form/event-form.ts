@@ -3,7 +3,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { eventNumberForDate } from '../../../core/github/archive-index';
-import { RaceEvent } from '../../../core/models/race-event.interface';
+import { type RaceEvent } from '../../../core/models/race-event.interface';
 import { RACE_EVENT_DEFAULTS } from '../../../core/protocol/race-event-defaults.constant';
 import { ProtocolStateService } from '../../../state/protocol-state.service';
 import { EMPTY_DATE_ISO, MIN_EVENT_NUMBER } from './event-form.constant';

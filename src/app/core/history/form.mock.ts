@@ -1,5 +1,5 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { AthleteForm } from './form.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteForm } from './form.interface';
 
 const MINUTE_MS = 60_000;
 const FORM_SLUG = '2025-form';

@@ -1,6 +1,6 @@
 import { BASE64_CHUNK_JOINER, BASE64_CHUNK_SIZE } from './base64.constant';
 
-/** Chunked bytes → base64 conversion; works in both browsers and jsdom (no FileReader). */
+/** Chunked bytes → base64 conversion; no FileReader, so it runs the same in the browser, in the prerender worker and in specs. */
 export function bytesToBase64(bytes: Uint8Array): string {
   const chunks: string[] = [];
 

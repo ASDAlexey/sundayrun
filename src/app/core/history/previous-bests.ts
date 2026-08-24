@@ -1,6 +1,6 @@
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { ParticipantRun } from './notables.interface';
-import { PreviousBest } from './previous-bests.interface';
+import { type ParticipantRun } from './notables.interface';
+import { type PreviousBest } from './previous-bests.interface';
 
 /**
  * The all-time 5 km best per athlete strictly before `dateIso` — the run the stored «ЛР (было X)»
@@ -12,7 +12,10 @@ import { PreviousBest } from './previous-bests.interface';
  * same scan answers «лучшее в этом году до забега» instead, which is what the «Δ ЛР» hint compares
  * the all-time record against. Empty — the default — reaches back over the whole archive.
  */
-export function buildPreviousBests(participantRuns: ParticipantRun[], dateIso: string, sinceIso = ''): Record<string, PreviousBest> {
+export function buildPreviousBests(
+  participantRuns: ParticipantRun[],
+  { dateIso, sinceIso = '' }: { dateIso: string; sinceIso?: string },
+): Record<string, PreviousBest> {
   const bests: Record<string, PreviousBest> = {};
 
   for (const run of participantRuns) {

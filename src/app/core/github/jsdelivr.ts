@@ -1,5 +1,5 @@
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubFetchFn } from './github-fetch.type';
 import { JSDELIVR_CDN_BASE_URL, JSDELIVR_PURGE_BASE_URL, JSDELIVR_REF_SEPARATOR } from './jsdelivr.constant';
 import { PROTOCOLS_REPO_BRANCH, PROTOCOLS_REPO_NAME, PROTOCOLS_REPO_OWNER } from './protocols-repo.constant';
 

@@ -1,4 +1,4 @@
-import { EventFilePaths } from './event-paths.interface';
+import { type EventFilePaths } from './event-paths.interface';
 import { EVENTS_DIRECTORY, RESULTS_JSON_FILE, SOURCE_XLSX_FILE } from './protocols-repo.constant';
 
 /** Repository paths of the per-event files, all under `events/<dateIso>/`. */

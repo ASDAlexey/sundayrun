@@ -1,34 +1,34 @@
-import { YearBadgeRarity } from '../../core/history/badge-rarity.type';
+import { type YearBadgeRarity } from '../../core/history/badge-rarity.type';
 import { EXPECTED_ROLLUP_HISTORY, REPEAT_RUNNER_KEY } from '../../core/history/athletes-rollup.mock';
-import { CourseRecordHistory } from '../../core/history/course-records.type';
-import { AthleteFirstLap } from '../../core/history/first-lap.interface';
-import { EventGenderFinishers } from '../../core/history/gender-finishers.interface';
-import { LegendFinish } from '../../core/history/legend.interface';
+import { type CourseRecordHistory } from '../../core/history/course-records.type';
+import { type AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { type EventGenderFinishers } from '../../core/history/gender-finishers.interface';
+import { type LegendFinish } from '../../core/history/legend.interface';
 import { MEME_THRESHOLDS } from '../../core/history/meme-thresholds.constant';
-import { MemeThreshold } from '../../core/history/meme-thresholds.interface';
-import { RivalRun } from '../../core/history/rivals.interface';
-import { SeasonBestRow } from '../../core/history/season-ranks.interface';
-import { RaceDay } from '../../state/track-sync.interface';
+import { type MemeThreshold } from '../../core/history/meme-thresholds.interface';
+import { type RivalRun } from '../../core/history/rivals.interface';
+import { type SeasonBestRow } from '../../core/history/season-ranks.interface';
+import { type RaceDay } from '../../state/track-sync.interface';
 import { Season } from '../../core/history/seasons.enum';
-import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
-import { AthleteYearBadges } from '../../core/history/year-badges';
+import { type EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { type AthleteYearBadges } from '../../core/history/year-badges';
 import { YearBadge } from '../../core/history/year-badges.enum';
-import { YearBestRow } from '../../core/history/year-ranks.interface';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
+import { type YearBestRow } from '../../core/history/year-ranks.interface';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
 import { Gender } from '../../core/models/gender.enum';
 import { formatRaceTime } from '../../core/time/duration';
 import { VERSUS_PAGE_LINK } from '../../app.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { SELF_MEME_KEY } from './athlete-page.constant';
 import {
-  AthleteRunView,
-  FirstLapView,
-  LegendView,
-  MemeRowView,
-  PlacementsView,
-  RivalView,
-  StreaksView,
-  YearBestView,
+  type AthleteRunView,
+  type FirstLapView,
+  type LegendView,
+  type MemeRowView,
+  type PlacementsView,
+  type RivalView,
+  type StreaksView,
+  type YearBestView,
 } from './athlete-page.interface';
 
 /** Denormalized on purpose: resolves to `REPEAT_RUNNER_KEY` only after key normalization. */
@@ -293,7 +293,7 @@ export const EMPTY_LEGEND_VIEW: LegendView = {
   progressPercent: 0,
 };
 
-const memeRow = (threshold: MemeThreshold, isBeaten: boolean, gapText: string | null): MemeRowView => ({
+const memeRow = (threshold: MemeThreshold, { isBeaten, gapText }: { isBeaten: boolean; gapText: string | null }): MemeRowView => ({
   key: threshold.key,
   name: threshold.name,
   note: threshold.note,
@@ -307,23 +307,26 @@ const [HIPPO, CHEPTEGEI, TSEGAY, KIPTUM, RAMSAY, BUSH, FERRELL, OPRAH, ANDERSON]
 
 /** Иванов's 24:00 on the ladder: Киптум's 14:17 pace is the next target, every celebrity below is beaten. */
 export const EXPECTED_MEME_ROWS: MemeRowView[] = [
-  memeRow(HIPPO, false, null),
-  memeRow(CHEPTEGEI, false, null),
-  memeRow(TSEGAY, false, null),
-  memeRow(KIPTUM, false, '9:43,00'),
+  memeRow(HIPPO, { isBeaten: false, gapText: null }),
+  memeRow(CHEPTEGEI, { isBeaten: false, gapText: null }),
+  memeRow(TSEGAY, { isBeaten: false, gapText: null }),
+  memeRow(KIPTUM, { isBeaten: false, gapText: '9:43,00' }),
   { key: SELF_MEME_KEY, name: 'Иванов Иван', note: null, timeText: '24:00,00', isBeaten: false, isSelf: true, gapText: null },
-  memeRow(RAMSAY, true, null),
-  memeRow(BUSH, true, null),
-  memeRow(FERRELL, true, null),
-  memeRow(OPRAH, true, null),
-  memeRow(ANDERSON, true, null),
+  memeRow(RAMSAY, { isBeaten: true, gapText: null }),
+  memeRow(BUSH, { isBeaten: true, gapText: null }),
+  memeRow(FERRELL, { isBeaten: true, gapText: null }),
+  memeRow(OPRAH, { isBeaten: true, gapText: null }),
+  memeRow(ANDERSON, { isBeaten: true, gapText: null }),
 ];
 
 const RIVAL_KEY = 'петров пётр';
 
 const SECOND_RIVAL_KEY = 'новиков олег';
 
-const rivalRun = (key: string, displayName: string, dateIso: string, slug: string, timeMs: number): RivalRun => ({
+const rivalRun = (
+  key: string,
+  { displayName, dateIso, slug, timeMs }: { displayName: string; dateIso: string; slug: string; timeMs: number },
+): RivalRun => ({
   key,
   displayName,
   dateIso,
@@ -337,15 +340,15 @@ const rivalRun = (key: string, displayName: string, dateIso: string, slug: strin
  * Сидоров's single close finish stays a coincidence.
  */
 export const ATHLETE_RIVAL_RUNS: RivalRun[] = [
-  rivalRun(REPEAT_RUNNER_KEY, 'Иванов Иван', '2025-12-27', 'kuzminki-1', 1500000),
-  rivalRun(RIVAL_KEY, 'Петров Пётр', '2025-12-27', 'kuzminki-1', 1506000),
-  rivalRun('сидоров семён', 'Сидоров Семён', '2025-12-27', 'kuzminki-1', 1502000),
-  rivalRun(REPEAT_RUNNER_KEY, 'Иванов Иван', '2026-01-03', 'kuzminki-2', 1440000),
-  rivalRun(SECOND_RIVAL_KEY, 'Новиков Олег', '2026-01-03', 'kuzminki-2', 1434000),
-  rivalRun(RIVAL_KEY, 'Петров Пётр', '2026-01-03', 'kuzminki-2', 1448000),
-  rivalRun(REPEAT_RUNNER_KEY, 'Иванов Иван', '2026-01-10', 'kuzminki-3', 1500000),
-  rivalRun(SECOND_RIVAL_KEY, 'Новиков Олег', '2026-01-10', 'kuzminki-3', 1509000),
-  rivalRun(RIVAL_KEY, 'Петров Пётр', '2026-01-10', 'kuzminki-3', 1500000),
+  rivalRun(REPEAT_RUNNER_KEY, { displayName: 'Иванов Иван', dateIso: '2025-12-27', slug: 'kuzminki-1', timeMs: 1500000 }),
+  rivalRun(RIVAL_KEY, { displayName: 'Петров Пётр', dateIso: '2025-12-27', slug: 'kuzminki-1', timeMs: 1506000 }),
+  rivalRun('сидоров семён', { displayName: 'Сидоров Семён', dateIso: '2025-12-27', slug: 'kuzminki-1', timeMs: 1502000 }),
+  rivalRun(REPEAT_RUNNER_KEY, { displayName: 'Иванов Иван', dateIso: '2026-01-03', slug: 'kuzminki-2', timeMs: 1440000 }),
+  rivalRun(SECOND_RIVAL_KEY, { displayName: 'Новиков Олег', dateIso: '2026-01-03', slug: 'kuzminki-2', timeMs: 1434000 }),
+  rivalRun(RIVAL_KEY, { displayName: 'Петров Пётр', dateIso: '2026-01-03', slug: 'kuzminki-2', timeMs: 1448000 }),
+  rivalRun(REPEAT_RUNNER_KEY, { displayName: 'Иванов Иван', dateIso: '2026-01-10', slug: 'kuzminki-3', timeMs: 1500000 }),
+  rivalRun(SECOND_RIVAL_KEY, { displayName: 'Новиков Олег', dateIso: '2026-01-10', slug: 'kuzminki-3', timeMs: 1509000 }),
+  rivalRun(RIVAL_KEY, { displayName: 'Петров Пётр', dateIso: '2026-01-10', slug: 'kuzminki-3', timeMs: 1500000 }),
 ];
 
 /** The card over the whole history: Петров by the count, Новиков next; draws stay out of the score. */

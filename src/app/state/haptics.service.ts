@@ -13,9 +13,9 @@ import {
   TIMER_VIBRATION,
   VIBRATE_METHOD,
 } from './haptics.constant';
-import { TimerFeedback, TimerFeedbackType } from './haptics.enum';
-import { TimerClickVoice } from './haptics.interface';
-import { TimerStorage } from './timer-storage.type';
+import { TimerFeedback, type TimerFeedbackType } from './haptics.enum';
+import { type TimerClickVoice } from './haptics.interface';
+import { type TimerStorage } from './timer-storage.type';
 
 /**
  * What the instrument answers a finger with (docs/TIMER.md §10). Android gets the whole vibration

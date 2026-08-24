@@ -17,7 +17,6 @@ import { TIMER_CONFIRM_TITLE_ID } from './confirm-dialog.constant';
  * back to whatever opened the question, and turns Escape into a `cancel` event.
  */
 @Component({
-  // eslint-disable-next-line @angular-eslint/component-selector -- the host must be the <dialog> itself (see above)
   selector: 'dialog[appTimerConfirm]',
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',

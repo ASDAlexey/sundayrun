@@ -1,14 +1,14 @@
 import { DOCUMENT, Service, inject, signal } from '@angular/core';
 
-import { GenderType } from '../core/models/gender.enum';
-import { AthleteRecord } from '../core/models/athlete-history.interface';
+import { type GenderType } from '../core/models/gender.enum';
+import { type AthleteRecord } from '../core/models/athlete-history.interface';
 import { buildLapStats } from '../core/timer/lap-stats';
 import { AthletesService } from '../github/athletes.service';
 import { TIMER_ROSTER_SSR_NOOP_STORAGE, TIMER_ROSTER_SSR_NOW_MS, TIMER_ROSTER_STORAGE_KEY } from './timer-roster.constant';
-import { TimerRosterStatus, TimerRosterStatusType } from './timer-roster.enum';
-import { TimerRosterSnapshot } from './timer-roster.interface';
+import { TimerRosterStatus, type TimerRosterStatusType } from './timer-roster.enum';
+import { type TimerRosterSnapshot } from './timer-roster.interface';
 import { readTimerRosterCache, serializeTimerRosterCache, toMinimalRecord } from './timer-roster.storage';
-import { TimerStorage } from './timer-storage.type';
+import { type TimerStorage } from './timer-storage.type';
 
 /**
  * The athlete directory behind the «Атлеты» sheet, kept warm for a park with no signal. The

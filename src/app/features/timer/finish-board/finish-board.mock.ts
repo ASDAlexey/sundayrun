@@ -1,4 +1,4 @@
-import { TimerFinishRow } from './finish-board.interface';
+import { type TimerFinishRow } from './finish-board.interface';
 
 /**
  * The protocol the fixture session produces: three 5 km finishers by time (the third one has no gender

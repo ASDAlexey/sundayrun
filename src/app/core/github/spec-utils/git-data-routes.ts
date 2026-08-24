@@ -1,5 +1,5 @@
 import { GIT_BLOBS_URL, GIT_COMMITS_URL, GIT_REF_UPDATE_URL, GIT_REF_URL, GIT_TREES_URL } from '../github-api.constant';
-import { RouteHandler, jsonResponse } from './github-fetch-router';
+import { type RouteHandler, jsonResponse } from './github-fetch-router';
 
 export interface GitDataShas {
   headSha: string;

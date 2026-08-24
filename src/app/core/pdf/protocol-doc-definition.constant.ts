@@ -1,6 +1,6 @@
 import type { Alignment, Margins, PageOrientation, PageSize, Size } from 'pdfmake/interfaces';
 import { CANONICAL_SITE_BASE_URL } from '../../shared/seo/canonical-link.constant';
-import { Gender, GenderType } from '../models/gender.enum';
+import { Gender, type GenderType } from '../models/gender.enum';
 
 export const PDF_PAGE_SIZE: PageSize = 'A4';
 

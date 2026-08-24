@@ -9,27 +9,27 @@ import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { NAME_COLLATION_LOCALE } from '../../core/history/athletes-list.constant';
 import { attendanceBoard, seasonAttendance } from '../../core/history/attendance';
 import { bestResults, bestResultYears, bestSeasonResults } from '../../core/history/best-results';
-import { BestResult } from '../../core/history/best-results.interface';
+import { type BestResult } from '../../core/history/best-results.interface';
 import { EMPTY_COURSE_RECORD_HISTORY } from '../../core/history/course-records.constant';
-import { CourseRecordEntry } from '../../core/history/course-records.interface';
-import { CourseRecordHistory } from '../../core/history/course-records.type';
+import { type CourseRecordEntry } from '../../core/history/course-records.interface';
+import { type CourseRecordHistory } from '../../core/history/course-records.type';
 import { EMPTY_FIRST_LAP_RECORDS } from '../../core/history/first-lap.constant';
-import { FirstLapRun } from '../../core/history/first-lap.interface';
-import { FirstLapRecords } from '../../core/history/first-lap.type';
+import { type FirstLapRun } from '../../core/history/first-lap.interface';
+import { type FirstLapRecords } from '../../core/history/first-lap.type';
 import { pacingBoards } from '../../core/history/pacing';
-import { EvenestRunner, PacingBoards, PacingRow, SecondHalfFinisher } from '../../core/history/pacing.interface';
+import { type EvenestRunner, type PacingBoards, type PacingRow, type SecondHalfFinisher } from '../../core/history/pacing.interface';
 import { ratingBoard } from '../../core/history/rating-board';
 import { newestEventIso, winnerTimesBySlug } from '../../core/history/runner-scores';
-import { EventWinnerTimes, RatingRow } from '../../core/history/runner-scores.interface';
+import { type EventWinnerTimes, type RatingRow } from '../../core/history/runner-scores.interface';
 import { scoreText } from '../../core/history/score-text';
 import { buildSeasonPositions } from '../../core/history/season-positions';
-import { SeasonPositionLine, SeasonRun } from '../../core/history/season-positions.interface';
-import { SeasonType } from '../../core/history/seasons.enum';
+import { type SeasonPositionLine, type SeasonRun } from '../../core/history/season-positions.interface';
+import { type SeasonType } from '../../core/history/seasons.enum';
 import { weatherExtremes } from '../../core/history/weather-records';
-import { EventWeatherRow, WeatherExtreme, WeatherExtremes } from '../../core/history/weather-records.interface';
+import { type EventWeatherRow, type WeatherExtreme, type WeatherExtremes } from '../../core/history/weather-records.interface';
 import { pluralText } from '../../core/i18n/plural-text';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { Gender, GenderType } from '../../core/models/gender.enum';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
+import { Gender, type GenderType } from '../../core/models/gender.enum';
 import { lapTimeTextOf } from '../../core/protocol/race-time-cells';
 import { formatRaceTime } from '../../core/time/duration';
 import { formatRussianDateShort } from '../../core/time/russian-date';
@@ -74,17 +74,24 @@ import {
   WEATHER_WINDIEST_LABEL,
   WINDIEST_VALUE_ICON,
 } from './records-page.constant';
-import { RecordsStatus, RecordsStatusType, RecordsView, RecordsViewType, SeasonMetric, SeasonMetricType } from './records-page.enum';
+import {
+  RecordsStatus,
+  type RecordsStatusType,
+  RecordsView,
+  type RecordsViewType,
+  SeasonMetric,
+  type SeasonMetricType,
+} from './records-page.enum';
 import { RaceTime } from '../../shared/race-time/race-time';
 import {
-  BestResultView,
-  ChartPick,
-  CourseRecordView,
-  FirstLapRecordView,
-  PacingNomineeView,
-  RatingRowView,
-  RecordsData,
-  WeatherExtremeView,
+  type BestResultView,
+  type ChartPick,
+  type CourseRecordView,
+  type FirstLapRecordView,
+  type PacingNomineeView,
+  type RatingRowView,
+  type RecordsData,
+  type WeatherExtremeView,
 } from './records-page.interface';
 
 /**
@@ -115,17 +122,21 @@ export class RecordsPage {
   readonly #winnerEvents = signal<EventWinnerTimes[]>([]);
   readonly #pacingRows = signal<PacingRow[]>([]);
   // The lambdas run lazily, so referencing the filter signals declared below is safe.
-  readonly #menBoard = computed(() => toBoard(this.#records(), Gender.male, this.year(), this.season()));
-  readonly #womenBoard = computed(() => toBoard(this.#records(), Gender.female, this.year(), this.season()));
+  readonly #menBoard = computed(() => toBoard(this.#records(), { gender: Gender.male, year: this.year(), season: this.season() }));
+  readonly #womenBoard = computed(() => toBoard(this.#records(), { gender: Gender.female, year: this.year(), season: this.season() }));
   /** The combined М+Ж rating board; places are fixed before the search and gender filters cut it. */
   readonly #ratingBoard = computed(() =>
-    ratingBoard(this.#records(), winnerTimesBySlug(this.#winnerEvents()), this.#courseRecords(), newestEventIso(this.#winnerEvents())).map(
-      toRatingRowView,
-    ),
+    ratingBoard(this.#records(), {
+      winners: winnerTimesBySlug(this.#winnerEvents()),
+      courseRecords: this.#courseRecords(),
+      todayIso: newestEventIso(this.#winnerEvents()),
+    }).map(toRatingRowView),
   );
 
   /** The «Кто чаще всех» board of the chosen scope; ties share a place, so a medal can be shared. */
-  readonly #attendanceBoard = computed(() => toAttendanceViews(attendanceBoard(this.#records(), this.year(), this.season())));
+  readonly #attendanceBoard = computed(() =>
+    toAttendanceViews(attendanceBoard(this.#records(), { year: this.year(), season: this.season() })),
+  );
 
   readonly #seasonRuns = signal<ReadonlyMap<string, SeasonRun[]>>(new Map());
   readonly #chartRuns = computed(() => {
@@ -156,14 +167,14 @@ export class RecordsPage {
   readonly menPositions = computed(() => buildSeasonPositions(this.#chartRuns(), Gender.male));
   readonly womenPositions = computed(() => buildSeasonPositions(this.#chartRuns(), Gender.female));
   /** Season athletes matching the chart search, minus the already picked ones. */
-  readonly chartSuggestions = computed(() => suggestChartPicks(this.#chartLines(), this.chartQuery(), this.chartPicks()));
+  readonly chartSuggestions = computed(() => suggestChartPicks(this.#chartLines(), { query: this.chartQuery(), picks: this.chartPicks() }));
   readonly highlightedKeys = computed(() => this.chartPicks().map((pick) => pick.key));
   readonly men = computed(() => searchRows(this.#menBoard(), this.query()));
   readonly women = computed(() => searchRows(this.#womenBoard(), this.query()));
   /** The visible rating rows: the search and the gender filter never move the fixed places. */
-  readonly ratingRows = computed(() => filterRows(this.#ratingBoard(), this.query(), this.gender()));
+  readonly ratingRows = computed(() => filterRows(this.#ratingBoard(), { query: this.query(), gender: this.gender() }));
   /** The visible «Кто чаще всех» rows; like the rating, the cuts keep every row's real place. */
-  readonly attendanceRows = computed(() => filterRows(this.#attendanceBoard(), this.query(), this.gender()));
+  readonly attendanceRows = computed(() => filterRows(this.#attendanceBoard(), { query: this.query(), gender: this.gender() }));
   /** The season medal podiums of the chosen year, or of the whole archive under «Все годы». */
   readonly attendancePodiums = computed(() => toSeasonAttendanceViews(seasonAttendance(this.#records(), this.year()), this.year()));
   /** How many athletes each full board ranks, ignoring the search and the filters. */
@@ -175,8 +186,14 @@ export class RecordsPage {
   readonly showMen = computed(() => this.gender() !== Gender.female);
   readonly showWomen = computed(() => this.gender() !== Gender.male);
   readonly noMatches = computed(() => (!this.showMen() || this.men().length === 0) && (!this.showWomen() || this.women().length === 0));
-  readonly kingText = computed(() => crownText(KING_ALL_TIME_TEXT, KING_YEAR_PREFIX, this.year(), this.season()));
-  readonly queenText = computed(() => crownText(QUEEN_ALL_TIME_TEXT, QUEEN_YEAR_PREFIX, this.year(), this.season()));
+  readonly kingText = computed(() =>
+    crownText(KING_ALL_TIME_TEXT, { yearPrefix: KING_YEAR_PREFIX, year: this.year(), season: this.season() }),
+  );
+
+  readonly queenText = computed(() =>
+    crownText(QUEEN_ALL_TIME_TEXT, { yearPrefix: QUEEN_YEAR_PREFIX, year: this.year(), season: this.season() }),
+  );
+
   readonly menRecordTimeline = computed(() => toTimeline(this.#courseRecords()[Gender.male]));
   readonly womenRecordTimeline = computed(() => toTimeline(this.#courseRecords()[Gender.female]));
   readonly menFirstLap = computed(() => toFirstLapView(this.#firstLapRecords()[Gender.male]));
@@ -344,11 +361,15 @@ function seasonCacheKey(year: string, metric: SeasonMetricType): string {
 }
 
 /** The ranked board for one gender and season, prepared for the template. */
-function toBoard(records: AthleteRecord[], gender: GenderType, year: string | null, season: SeasonType | null): BestResultView[] {
-  const board = year !== null && season !== null ? bestSeasonResults(records, gender, year, season) : bestResults(records, gender, year);
+function toBoard(
+  records: AthleteRecord[],
+  { gender, year, season }: { gender: GenderType; year: string | null; season: SeasonType | null },
+): BestResultView[] {
+  const board =
+    year !== null && season !== null ? bestSeasonResults(records, { gender, year, season }) : bestResults(records, { gender, year });
   const crowned = crownedKey(board);
 
-  return board.map((result, index) => toView(result, index, crowned));
+  return board.map((result, index) => toView(result, { index, crowned }));
 }
 
 /**
@@ -366,7 +387,7 @@ function crownedKey(board: BestResult[]): string | null {
 }
 
 /** Chart search matches season lines of both genders, sorted by name, capped for the dropdown. */
-function suggestChartPicks(lines: SeasonPositionLine[], query: string, picks: ChartPick[]): ChartPick[] {
+function suggestChartPicks(lines: SeasonPositionLine[], { query, picks }: { query: string; picks: ChartPick[] }): ChartPick[] {
   const normalizedQuery = normalizeAthleteKey(query);
 
   if (normalizedQuery === '') {
@@ -383,7 +404,10 @@ function suggestChartPicks(lines: SeasonPositionLine[], query: string, picks: Ch
 }
 
 /** The search box and the gender toggle applied to a fixed-place board; the places never move. */
-function filterRows<T extends { gender: GenderType | null; key: string }>(rows: T[], query: string, gender: GenderType | null): T[] {
+function filterRows<T extends { gender: GenderType | null; key: string }>(
+  rows: T[],
+  { query, gender }: { query: string; gender: GenderType | null },
+): T[] {
   const found = searchRows(rows, query);
 
   return gender === null ? found : found.filter((row) => row.gender === gender);
@@ -415,7 +439,7 @@ function toRatingRowView(row: RatingRow, index: number): RatingRowView {
   };
 }
 
-function toView(result: BestResult, index: number, crowned: string | null): BestResultView {
+function toView(result: BestResult, { index, crowned }: { index: number; crowned: string | null }): BestResultView {
   return {
     place: index + 1,
     key: result.key,
@@ -550,7 +574,10 @@ function splitRunsText(count: number): string {
 }
 
 /** The all-time crown label, or the prefix with the chosen cut: «Король 2024», «Король лета 2026». */
-function crownText(allTime: string, yearPrefix: string, year: string | null, season: SeasonType | null): string {
+function crownText(
+  allTime: string,
+  { yearPrefix, year, season }: { yearPrefix: string; year: string | null; season: SeasonType | null },
+): string {
   if (year === null) {
     return allTime;
   }

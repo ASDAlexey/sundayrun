@@ -1,3 +1,5 @@
+import { type CorosRegionType } from './coros-region.enum';
+
 /** One Coros activity, reduced to what matching a race needs. */
 export interface CorosActivity {
   labelId: string;
@@ -38,4 +40,26 @@ export interface CorosQueryData {
 export interface CorosDownloadData {
   /** Unsigned CDN link — anyone holding it can fetch the file, so it is never stored or logged. */
   fileUrl?: string;
+}
+
+/** Учётные данные и площадка, на которой заведён аккаунт. */
+export interface CorosLoginRequest {
+  email: string;
+  password: string;
+  region: CorosRegionType;
+}
+
+/** Окно дат, за которое спрашиваются пробежки, и сессия, от чьего имени спрашиваем. */
+export interface CorosQueryRunsRequest {
+  token: string;
+  startDateIso: string;
+  endDateIso: string;
+  region: CorosRegionType;
+}
+
+/** Какую именно тренировку выгружаем. */
+export interface CorosDownloadGpxRequest {
+  token: string;
+  labelId: string;
+  region: CorosRegionType;
 }

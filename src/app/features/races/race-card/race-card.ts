@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 
 import { ProtocolPdfService } from '../../../pdf/protocol-pdf.service';
 import { RaceTime } from '../../../shared/race-time/race-time';
-import { RaceListItem } from '../races-page.interface';
+import { type RaceListItem } from '../races-page.interface';
 
 /** One published race as a card: number, date, the dynamics-chart hero, the М/Ж times and protocol links. */
 @Component({

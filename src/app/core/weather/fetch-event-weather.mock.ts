@@ -1,4 +1,4 @@
-import { EventWeather } from './event-weather.interface';
+import { type EventWeather } from './event-weather.interface';
 import { RACE_START_HOUR, WET_WINDOW_START_HOUR } from './weather-api.constant';
 
 /** An archive-aged event date and a today far enough past it to route to the archive endpoint. */

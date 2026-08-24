@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, type PipeTransform } from '@angular/core';
 
 import { formatDuration } from '../../core/time/duration';
 import { EMPTY_DURATION_TEXT } from './format-duration.pipe.constant';

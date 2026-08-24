@@ -1,6 +1,6 @@
 import { ISO_DATE_LENGTH } from '../../../core/history/notables.constant';
 import { formatRussianDateCompact } from '../../../core/time/russian-date';
-import { TimerInstallPromptEvent } from './install-prompt.interface';
+import { type TimerInstallPromptEvent } from './install-prompt.interface';
 
 /**
  * `beforeinstallprompt` is not typed by the DOM lib and only Chromium fires it, so the event is

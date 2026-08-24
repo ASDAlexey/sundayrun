@@ -33,7 +33,7 @@ export function md5Hex(text: string): string {
     let d = stateD;
 
     for (let step = 0; step < MD5_SINE_TABLE.length; step += 1) {
-      const [mixed, wordIndex] = roundOf(step, b, c, d);
+      const [mixed, wordIndex] = roundOf(step, { b, c, d });
       const sum = (mixed + a + MD5_SINE_TABLE[step] + blocks[offset + wordIndex]) | 0;
 
       a = d;
@@ -52,7 +52,7 @@ export function md5Hex(text: string): string {
 }
 
 /** The four MD5 rounds: which nonlinear mix applies at this step, and which message word it eats. */
-function roundOf(step: number, b: number, c: number, d: number): [mixed: number, wordIndex: number] {
+function roundOf(step: number, { b, c, d }: { b: number; c: number; d: number }): [mixed: number, wordIndex: number] {
   const quarter = MD5_SINE_TABLE.length / 4;
 
   if (step < quarter) {

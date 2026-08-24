@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
 
 import {
   COURSE_ALLEY_PATH,
@@ -49,7 +49,6 @@ import {
   selector: 'app-course-track',
   templateUrl: './course-track.html',
   styleUrl: './course-track.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CourseTrack {
   readonly #host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -71,7 +70,12 @@ export class CourseTrack {
   protected readonly finishPoint = COURSE_FINISH_POINT;
   protected readonly runnerRadius = COURSE_RUNNER_RADIUS;
   protected readonly pinRadius = COURSE_PIN_RADIUS;
-  protected readonly arrows = COURSE_ARROWS;
+  /** Стрелки направления вместе с готовым SVG-трансформом: собирать его в шаблоне — выражение
+   * из пяти конкатенаций, которое шаблон читать не обязан. */
+  protected readonly arrows = COURSE_ARROWS.map((arrow): { transform: string; x: number } => ({
+    x: arrow.x,
+    transform: `translate(${arrow.x} ${arrow.y}) rotate(${arrow.angle})`,
+  }));
 
   /**
    * The marks, with the balloon's own position alongside the point it stands for: the kilometres
@@ -243,7 +247,7 @@ export class CourseTrack {
   }
 }
 
-/** Guarded because `matchMedia` is missing in jsdom and in any non-browser DOM shim. */
+/** Guarded because `matchMedia` is missing in the prerender worker and in any non-browser runtime. */
 function prefersReducedMotion(): boolean {
   return typeof matchMedia === 'function' && matchMedia(COURSE_REDUCED_MOTION_QUERY).matches;
 }

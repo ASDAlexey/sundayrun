@@ -1,9 +1,15 @@
-import { AthleteRecord, AthleteRun } from '../models/athlete-history.interface';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthleteRecord, type AthleteRun } from '../models/athlete-history.interface';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { normalizeAthleteKey } from './athlete-key';
-import { EventRef, EventResult } from './athletes-rollup.interface';
+import { type EventRef, type EventResult } from './athletes-rollup.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { isoYear } from './iso-year';
+
+/** One event's contribution to the history: which event it was, and how everyone ran it. */
+export interface EventOutcome {
+  readonly event: EventRef;
+  readonly results: EventResult[];
+}
 
 /**
  * Applies one event's results to the athletes history and returns a NEW history object
@@ -12,12 +18,13 @@ import { isoYear } from './iso-year';
  * (DNF included), appends runs where `timeMs` is not null, keeps an already known gender,
  * and recomputes `bestMs`/`bestMsByYear` over 5 km runs only.
  */
-export function applyEventToHistory(history: AthletesHistory, event: EventRef, results: EventResult[]): AthletesHistory {
+export function applyEventToHistory(history: AthletesHistory, outcome: EventOutcome): AthletesHistory {
+  const { event, results } = outcome;
   const nextHistory: AthletesHistory = { ...history };
 
   for (const result of results) {
     const key = normalizeAthleteKey(result.fullName);
-    const record = copyOrCreateRecord(nextHistory[key], key, result);
+    const record = copyOrCreateRecord(nextHistory[key], { key, result });
 
     if (!record.participationSlugs.includes(event.slug)) {
       record.participationSlugs.push(event.slug);
@@ -46,11 +53,7 @@ export function applyEventToHistory(history: AthletesHistory, event: EventRef, r
  * left without any participation are dropped from the history.
  */
 export function removeEventFromHistory(history: AthletesHistory, slug: string): AthletesHistory {
-  return filterHistory(
-    history,
-    (participation) => participation !== slug,
-    (run) => run.slug !== slug,
-  );
+  return filterHistory(history, { keepParticipation: (participation) => participation !== slug, keepRun: (run) => run.slug !== slug });
 }
 
 /**
@@ -62,22 +65,21 @@ export function removeEventFromHistory(history: AthletesHistory, slug: string): 
  * the event's own previous publication and any later results are excluded.
  */
 export function historyBeforeDate(history: AthletesHistory, dateIso: string): AthletesHistory {
-  return filterHistory(
-    history,
-    (participation) => participation < dateIso,
-    (run) => run.dateIso < dateIso,
-  );
+  return filterHistory(history, { keepParticipation: (participation) => participation < dateIso, keepRun: (run) => run.dateIso < dateIso });
+}
+
+/** The two predicates the filtering core runs: one over participation slugs, one over runs. */
+interface HistoryFilter {
+  readonly keepParticipation: (slug: string) => boolean;
+  readonly keepRun: (run: AthleteRun) => boolean;
 }
 
 /**
  * Shared filtering core: keeps participations/runs matching the predicates, shares untouched
  * records, recomputes bests on touched ones and drops athletes left without participations.
  */
-function filterHistory(
-  history: AthletesHistory,
-  keepParticipation: (slug: string) => boolean,
-  keepRun: (run: AthleteRun) => boolean,
-): AthletesHistory {
+function filterHistory(history: AthletesHistory, keep: HistoryFilter): AthletesHistory {
+  const { keepParticipation, keepRun } = keep;
   const nextHistory: AthletesHistory = {};
 
   for (const record of Object.values(history)) {
@@ -101,7 +103,9 @@ function filterHistory(
   return nextHistory;
 }
 
-function copyOrCreateRecord(existing: AthleteRecord | undefined, key: string, result: EventResult): AthleteRecord {
+function copyOrCreateRecord(existing: AthleteRecord | undefined, seen: { key: string; result: EventResult }): AthleteRecord {
+  const { key, result } = seen;
+
   if (existing === undefined) {
     return {
       key,

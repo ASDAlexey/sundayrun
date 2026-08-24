@@ -1,4 +1,4 @@
-import { SessionShareTextLabels } from './session-share-text.interface';
+import { type SessionShareTextLabels } from './session-share-text.interface';
 
 /** The four headings the builder is handed; kept blunt so the assertions read as the message does. */
 export const SHARE_LABELS: SessionShareTextLabels = {

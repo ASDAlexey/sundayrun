@@ -7,7 +7,7 @@ import {
   NOTABLE_WINDOW_MONTHS,
 } from './notables.constant';
 import { NotableKind } from './notables.enum';
-import { Notable, ParticipantRun } from './notables.interface';
+import { type Notable, type ParticipantRun } from './notables.interface';
 
 /**
  * Smashrun-style notables for one event, keyed by athlete: «2-й результат за всё время»,
@@ -16,7 +16,10 @@ import { Notable, ParticipantRun } from './notables.interface';
  * stored «ЛР» auto note already marks it — and so do short histories and thin windows, where
  * every run would trivially be a top result.
  */
-export function buildEventNotables(participantRuns: ParticipantRun[], slug: string, dateIso: string): Record<string, Notable> {
+export function buildEventNotables(
+  participantRuns: ParticipantRun[],
+  { slug, dateIso }: { slug: string; dateIso: string },
+): Record<string, Notable> {
   const runsByAthlete = new Map<string, ParticipantRun[]>();
 
   for (const run of participantRuns) {
@@ -34,7 +37,7 @@ export function buildEventNotables(participantRuns: ParticipantRun[], slug: stri
   const notables: Record<string, Notable> = {};
 
   for (const [athleteKey, athleteRuns] of runsByAthlete) {
-    const notable = athleteNotable(athleteRuns, slug, dateIso);
+    const notable = athleteNotable(athleteRuns, { slug, dateIso });
 
     if (notable !== null) {
       notables[athleteKey] = notable;
@@ -44,7 +47,7 @@ export function buildEventNotables(participantRuns: ParticipantRun[], slug: stri
   return notables;
 }
 
-function athleteNotable(athleteRuns: ParticipantRun[], slug: string, dateIso: string): Notable | null {
+function athleteNotable(athleteRuns: ParticipantRun[], { slug, dateIso }: { slug: string; dateIso: string }): Notable | null {
   const current = athleteRuns.find((run) => run.slug === slug);
 
   // The athlete ran the short course at this event (DNF rows never reach `runs` at all).

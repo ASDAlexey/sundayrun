@@ -1,10 +1,10 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
 import { NEWER_ENTRY } from '../core/github/archive-index.mock';
-import { PublishEventInput } from '../core/github/publish-event.interface';
+import { type PublishEventInput } from '../core/github/publish-event.interface';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../core/github/spec-utils/race-fixtures';
-import { PendingDeletion, PendingUpload } from './pending-archive.interface';
+import { type PendingDeletion, type PendingUpload } from './pending-archive.interface';
 
 /** The shape the `pendingArchiveMock` factory returns; signals the spec drives, spies it asserts on. */
 export interface PendingArchiveMock {

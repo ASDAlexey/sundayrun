@@ -1,5 +1,5 @@
-import { CorosActivity } from '../core/coros/coros-api.interface';
-import { RaceDay } from './track-sync.interface';
+import { type CorosActivity } from '../core/coros/coros-api.interface';
+import { type RaceDay } from './track-sync.interface';
 
 export const SYNC_RACE_MOCK: RaceDay = { slug: '2026-07-26', dateIso: '2026-07-26' };
 

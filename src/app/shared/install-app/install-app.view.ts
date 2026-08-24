@@ -1,4 +1,4 @@
-import { InstallPromptEvent } from './install-app.interface';
+import { type InstallPromptEvent } from './install-app.interface';
 
 /**
  * `beforeinstallprompt` is not typed by the DOM lib and only Chromium fires it, so the event is

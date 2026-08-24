@@ -1,10 +1,10 @@
-import { CourseRecordHistory } from '../../core/history/course-records.type';
-import { FirstLapRecords } from '../../core/history/first-lap.type';
-import { PacingRow } from '../../core/history/pacing.interface';
-import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
-import { EventWeatherRow } from '../../core/history/weather-records.interface';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { GenderType } from '../../core/models/gender.enum';
+import { type CourseRecordHistory } from '../../core/history/course-records.type';
+import { type FirstLapRecords } from '../../core/history/first-lap.type';
+import { type PacingRow } from '../../core/history/pacing.interface';
+import { type EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { type EventWeatherRow } from '../../core/history/weather-records.interface';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
+import { type GenderType } from '../../core/models/gender.enum';
 
 /**
  * The five boards' source data, loaded together and baked into TransferState so the browser trusts

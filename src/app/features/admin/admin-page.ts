@@ -5,10 +5,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { TIMER_PAGE_LINK } from '../../app.constant';
-import { ArchiveIndexEntry } from '../../core/github/archive-index.interface';
+import { type ArchiveIndexEntry } from '../../core/github/archive-index.interface';
 import { buildSiteMeta } from '../../core/github/site-meta';
 import { EMPTY_SITE_META } from '../../core/github/site-meta.constant';
-import { SiteMetaFile } from '../../core/github/site-meta.interface';
+import { type SiteMetaFile } from '../../core/github/site-meta.interface';
 import { TokenCheck } from '../../core/github/token-check.enum';
 import { formatDuration } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
@@ -20,7 +20,7 @@ import { DeleteDurationService } from '../../github/delete-duration.service';
 import { EventDeleteService } from '../../github/event-delete.service';
 import { PublishState } from '../../github/github-storage.enum';
 import { PendingArchiveService } from '../../github/pending-archive.service';
-import { PendingUpload } from '../../github/pending-archive.interface';
+import { type PendingUpload } from '../../github/pending-archive.interface';
 import { PublishDurationService } from '../../github/publish-duration.service';
 import { SiteMetaService } from '../../github/site-meta.service';
 import { InstallApp } from '../../shared/install-app/install-app';
@@ -36,8 +36,8 @@ import {
   RACE_PAGE_PREFIX,
   TOKEN_HELP_URL,
 } from './admin-page.constant';
-import { RaceListStatus, RaceListStatusType, TokenSaveStatus, TokenSaveStatusType } from './admin-page.enum';
-import { AdminRaceItem } from './admin-page.interface';
+import { RaceListStatus, type RaceListStatusType, TokenSaveStatus, type TokenSaveStatusType } from './admin-page.enum';
+import { type AdminRaceItem } from './admin-page.interface';
 import { resolveAdminReturnUrl } from './admin-return';
 
 /**
@@ -340,8 +340,7 @@ export class AdminPage {
 
       // A reloaded archive that reflects a pending change lets it retire; the rest keep correcting the view.
       this.#pendingArchive.reconcile(
-        index.events.map((entry) => entry.slug),
-        index.events.map((entry) => entry.number),
+        { slugs: index.events.map((entry) => entry.slug), numbers: index.events.map((entry) => entry.number) },
         Date.now(),
       );
       this.#applyRaces(index.events.map(toAdminRaceItem));

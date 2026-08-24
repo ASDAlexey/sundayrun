@@ -1,9 +1,9 @@
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
-import { PreviousBest } from '../../../core/history/previous-bests.interface';
+import { type PreviousBest } from '../../../core/history/previous-bests.interface';
 import { Gender, GenderConfidence, GenderSource } from '../../../core/models/gender.enum';
-import { Participant } from '../../../core/models/participant.interface';
+import { type Participant } from '../../../core/models/participant.interface';
 import { NoteBadgeKind } from '../../../core/protocol/note-badge-kind.enum';
-import { ParticipantRowView } from './participants-table.interface';
+import { type ParticipantRowView } from './participants-table.interface';
 
 export const FULL_DISTANCE_ID = 1;
 

@@ -4,7 +4,7 @@ import { formatRaceTime } from '../../../core/time/duration';
 import { unassignedSplits } from '../../../core/timer/session-splits';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TIMER_FINISH_NOTHING_UNASSIGNED } from './finish-board.constant';
-import { TimerFinishRow } from './finish-board.interface';
+import { type TimerFinishRow } from './finish-board.interface';
 import { unassignedTimesText } from './finish-board.text';
 import { buildFinishRows } from './finish-rows';
 import { RaceTime } from '../../../shared/race-time/race-time';

@@ -1,8 +1,8 @@
 import { bytesToBase64 } from '../core/encoding/base64';
 import { PDF_FONT_FAMILY } from '../core/pdf/protocol-doc-definition.constant';
 import { FONT_FETCH_ERROR_PREFIX, FONTS_DIRECTORY, PT_SERIF_BOLD_FILE, PT_SERIF_REGULAR_FILE } from './pdf-fonts.constant';
-import { PtSerifFonts } from './pdf-fonts.interface';
-import { FetchFontFn } from './pdf-fonts.type';
+import { type PtSerifFonts } from './pdf-fonts.interface';
+import { type FetchFontFn } from './pdf-fonts.type';
 
 /**
  * Fetches both PT Serif faces (relative urls, resolved against <base href>) and

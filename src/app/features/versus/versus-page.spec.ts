@@ -66,7 +66,7 @@ describe('VersusPage', () => {
         { provide: SelfAthleteService, useValue: { self: selfSignal } },
         { provide: PageMetaService, useValue: pageMeta },
         { provide: ActivatedRoute, useValue: routeStub },
-        { provide: PLATFORM_ID, useFactory: () => platformId },
+        { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
       ],
     });
   });

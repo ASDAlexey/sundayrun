@@ -1,9 +1,9 @@
-import { TrackSample } from '../../../core/track/track-point.interface';
-import { TrackRun } from '../../../core/track/track-run.interface';
+import { type TrackSample } from '../../../core/track/track-point.interface';
+import { type TrackRun } from '../../../core/track/track-run.interface';
 import { COURSE_GEO_FRAME } from '../../home/course-track/course-geometry.constant';
 import { COORD_TENTHS_BASE, PACE_TONE_BANDS, TRACE_MIN_STEP_UNITS } from './my-track.constant';
-import { TrackFrame, TrackTrace } from './my-track.interface';
-import { PaceTone, PaceToneType } from './pace-tone.enum';
+import { type TrackFrame, type TrackTrace } from './my-track.interface';
+import { PaceTone, type PaceToneType } from './pace-tone.enum';
 
 /**
  * Where a point of a personal recording lands on the course map.

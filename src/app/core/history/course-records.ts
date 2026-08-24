@@ -1,6 +1,6 @@
 import { Gender } from '../models/gender.enum';
-import { CourseRecordEntry, CourseRecordRun } from './course-records.interface';
-import { CourseRecordHistory } from './course-records.type';
+import { type CourseRecordEntry, type CourseRecordRun } from './course-records.interface';
+import { type CourseRecordHistory } from './course-records.type';
 
 /**
  * The course record progression per gender: runs are scanned in date order (ties within one event

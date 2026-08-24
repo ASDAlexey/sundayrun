@@ -1,6 +1,6 @@
-import { AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { type AthleteFirstLap } from '../../core/history/first-lap.interface';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
-import { PacingCardView } from './pacing-card.interface';
+import { type PacingCardView } from './pacing-card.interface';
 
 /**
  * `athletePacing(PACING_RUNS, PACING_LAPS)` viewed: the median sits 1% under even, two of the

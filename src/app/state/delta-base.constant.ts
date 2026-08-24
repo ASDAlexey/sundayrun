@@ -1,5 +1,5 @@
-import { DeltaBase, DeltaBaseType } from './delta-base.enum';
-import { DeltaBaseStorage } from './delta-base.type';
+import { DeltaBase, type DeltaBaseType } from './delta-base.enum';
+import { type DeltaBaseStorage } from './delta-base.type';
 
 /** localStorage key of the device-local «с чем сравнивать» pick (шестерёнка в шапке). */
 export const DELTA_BASE_STORAGE_KEY = 'parkrun.deltaBase';

@@ -3,11 +3,11 @@ import { Component, computed, inject, output, signal } from '@angular/core';
 import { formatRaceTime } from '../../../core/time/duration';
 import { reassignSplit, removeSplit, setRunnerOutcome, unassignSplit } from '../../../core/timer/session-actions';
 import { FIRST_POSITION } from '../../../core/timer/timer-session.constant';
-import { TimerRunnerOutcome, TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
+import { TimerRunnerOutcome, type TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
 import { TimerSessionService } from '../../../state/timer-session.service';
 import { TimerConfirm } from '../confirm-dialog/confirm-dialog';
 import { TimerSheet } from '../handout-sheet/handout-sheet';
-import { TimerHistoryEntry, TimerHistoryRemove, TimerHistoryRunner } from './session-history.interface';
+import { type TimerHistoryEntry, type TimerHistoryRemove, type TimerHistoryRunner } from './session-history.interface';
 import { historyCardLabelText, historyRemoveNoteText } from './session-history.text';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
@@ -107,7 +107,7 @@ export class TimerHistory {
   onReassign(splitId: string, runnerId: string): void {
     this.expandedId.set(null);
     this.#markEdited(splitId);
-    this.#sessions.updateActive((session) => reassignSplit(session, splitId, runnerId));
+    this.#sessions.updateActive((session) => reassignSplit(session, { splitId, runnerId }));
   }
 
   onUnassign(splitId: string): void {
@@ -125,12 +125,15 @@ export class TimerHistory {
   }
 
   onOutcome(runnerId: string, outcome: TimerRunnerOutcomeType): void {
-    this.#sessions.updateActive((session) => setRunnerOutcome(session, runnerId, outcome));
+    this.#sessions.updateActive((session) => setRunnerOutcome(session, { runnerId, outcome }));
   }
 
   /** Dropping an entry is asked about first: a stray tap must not shorten the journal. */
   onRemoveAsk(entry: TimerHistoryEntry): void {
-    this.removeAsk.set({ id: entry.id, note: historyRemoveNoteText(entry.index, entry.timeText, entry.ownerName) });
+    this.removeAsk.set({
+      id: entry.id,
+      note: historyRemoveNoteText(entry.index, { timeText: entry.timeText, ownerName: entry.ownerName }),
+    });
   }
 
   onRemove(splitId: string): void {

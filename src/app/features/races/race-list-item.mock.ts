@@ -1,6 +1,6 @@
-import { ArchiveIndexEntry } from '../../core/github/archive-index.interface';
+import { type ArchiveIndexEntry } from '../../core/github/archive-index.interface';
 import { EXPECTED_NO_FINISHER_ENTRY, NEWER_ENTRY } from '../../core/github/archive-index.mock';
-import { RaceCardGenderBlock, RaceCardHero, RaceCardTrend } from './races-page.interface';
+import { type RaceCardGenderBlock, type RaceCardHero, type RaceCardTrend } from './races-page.interface';
 
 /** A frozen «today» well past the fixture month, so its finality never depends on the calendar. */
 export const EDGE_CASES_TODAY_ISO = '2026-09-01';

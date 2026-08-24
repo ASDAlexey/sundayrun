@@ -114,13 +114,13 @@ describe('PendingArchiveService', () => {
     expect(service.uploads()).toEqual([PENDING_UPLOAD_MOCK, EXPIRED_UPLOAD_MOCK]);
 
     // The archive now serves the upload's slug (it lands) but still serves the deletion's slug (stays hidden).
-    service.reconcile([PENDING_UPLOAD_MOCK.slug, PENDING_DELETION_MOCK.slug], [], PENDING_NOW_MS);
+    service.reconcile({ slugs: [PENDING_UPLOAD_MOCK.slug, PENDING_DELETION_MOCK.slug], numbers: [] }, PENDING_NOW_MS);
 
     expect(service.uploads(), 'the served upload and the aged one both drop').toEqual([]);
     expect(service.deletions(), 'the still-served deletion stays, the aged one drops').toEqual([PENDING_DELETION_MOCK]);
 
     // Reconciling against an archive that has dropped the slug lands the deletion and empties the store.
-    service.reconcile([OLDER_ENTRY.slug], [], PENDING_NOW_MS);
+    service.reconcile({ slugs: [OLDER_ENTRY.slug], numbers: [] }, PENDING_NOW_MS);
 
     expect(service.deletions()).toEqual([]);
     expect(removeItem).toHaveBeenCalledWith(PENDING_ARCHIVE_STORAGE_KEY);
@@ -133,7 +133,7 @@ describe('PendingArchiveService', () => {
 
     // A date-corrected re-publish lands under a new slug but keeps the number; matching the slug alone
     // would strand this placeholder next to the real row, so the number retires it.
-    service.reconcile([OLDER_ENTRY.slug], [PENDING_UPLOAD_MOCK.number], PENDING_NOW_MS);
+    service.reconcile({ slugs: [OLDER_ENTRY.slug], numbers: [PENDING_UPLOAD_MOCK.number] }, PENDING_NOW_MS);
 
     expect(service.uploads(), 'the upload lands by number despite its slug being absent').toEqual([]);
   });

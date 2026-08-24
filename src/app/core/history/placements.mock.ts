@@ -1,4 +1,4 @@
-import { AthletePlacements } from './placements.interface';
+import { type AthletePlacements } from './placements.interface';
 
 const FINAL_SLUGS = ['2026-01-25', '2026-02-22'];
 

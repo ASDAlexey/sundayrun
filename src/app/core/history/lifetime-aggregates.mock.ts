@@ -1,5 +1,5 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { LifetimeAggregates } from './lifetime-aggregates.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { type LifetimeAggregates } from './lifetime-aggregates.interface';
 
 const LIFETIME_SLUG = 'lifetime-race';
 

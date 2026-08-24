@@ -9,7 +9,6 @@ import { ATHLETES_PAGE_LINK, VERSUS_PAGE_LINK } from '../../app.constant';
 import { ALL_YEARS_VALUE } from '../races/races-page.constant';
 import { SELF_ATHLETE_STORAGE_KEY } from '../../state/self-athlete.constant';
 import { ActivatedRouteStub, activatedRouteStub } from '../spec-utils/activated-route-stub';
-import { polyfillDialogModal } from '../spec-utils/dialog-polyfill';
 import { settle } from '../spec-utils/settle';
 import { AthletePage } from './athlete-page';
 import { KEY_ROUTE_PARAM, NO_BEST_TIME_TEXT } from './athlete-page.constant';
@@ -62,13 +61,11 @@ import {
   UNKNOWN_KEY_PARAM,
 } from './athlete-page.mock';
 
-// jsdom has no canvas context, so the embedded progress chart's lazy chart.js import mocks away.
+// The test DOM shim has no canvas context, so the embedded progress chart's lazy chart.js import mocks away.
 // Shares one Chart object with every chart-rendering spec — see `chart-js.mock.ts`.
 vi.mock('chart.js', async () => (await import('./chart-js.mock')).chartJsMock);
 
 vi.mock('chartjs-plugin-zoom', () => ({ default: {} }));
-
-polyfillDialogModal();
 
 describe('AthletePage', () => {
   const loadRecord = vi.fn();

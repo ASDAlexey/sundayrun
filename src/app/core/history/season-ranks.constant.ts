@@ -1,5 +1,5 @@
-import { YearBadge, YearBadgeType } from './year-badges.enum';
-import { Season, SeasonType } from './seasons.enum';
+import { YearBadge, type YearBadgeType } from './year-badges.enum';
+import { Season, type SeasonType } from './seasons.enum';
 
 /** The rank that crowns the season's king — the best 5 km time of the season. */
 export const SEASON_KING_RANK = 1;

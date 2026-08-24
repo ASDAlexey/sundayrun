@@ -50,7 +50,7 @@ import { EXPECTED_VERSION_COMMIT_MESSAGE, EXPECTED_VERSION_PURGE_URL, POINTER_CO
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
   const fake = await import('../sqlite/spec-utils/fake-sqlite3');
 
-  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+  return { default: (): Promise<typeof fake.FAKE_SQLITE3> => Promise.resolve(fake.FAKE_SQLITE3) };
 });
 
 function createDeleteFetch(overrides: Record<string, RouteHandler> = {}): Mock<GithubFetchFn> {
@@ -67,7 +67,7 @@ function createDeleteFetch(overrides: Record<string, RouteHandler> = {}): Mock<G
 
 /** Base64 blob contents in upload order: sundayrun.db, then the version pointer's version.json — the deletion uploads nothing. */
 function blobContents(fetchFn: Mock<GithubFetchFn>): string[] {
-  const bodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, POST_METHOD, GIT_BLOBS_URL);
+  const bodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_BLOBS_URL });
 
   return bodies.map((body) => body.content);
 }
@@ -88,14 +88,17 @@ describe('deleteEvent', () => {
         jsonResponse({ sha: commitCalls++ === 0 ? DELETE_SHAS.newCommitSha : POINTER_COMMIT_SHA_MOCK, tree: { sha: DELETE_SHAS.treeSha } }),
     });
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn), 'the data commit sha, not the pointer commit sha').resolves.toEqual({
+    await expect(
+      deleteEvent({ token: DELETE_TOKEN, slug: DELETE_SLUG, fetchFn }),
+      'the data commit sha, not the pointer commit sha',
+    ).resolves.toEqual({
       commitSha: DELETE_SHAS.newCommitSha,
       pointerPublished: true,
     });
 
     const contents = blobContents(fetchFn);
-    const treeBodies = requestBodiesOf<{ tree: GitTreeEntry[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
-    const commitBodies = requestBodiesOf(fetchFn.mock.calls, POST_METHOD, GIT_COMMITS_URL);
+    const treeBodies = requestBodiesOf<{ tree: GitTreeEntry[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
+    const commitBodies = requestBodiesOf(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_COMMITS_URL });
     const calledUrls = fetchFn.mock.calls.map(([url]) => url);
 
     expect(decodeBase64Bytes(contents[0]), 'the derived db is rewritten, not deleted').toEqual(FAKE_EXPORTED_BYTES);
@@ -116,12 +119,12 @@ describe('deleteEvent', () => {
   it('commits the rewritten db alone when the event has no published workbook to delete', async () => {
     const fetchFn = createDeleteFetch({ [SOURCE_XLSX_HEAD_KEY]: () => statusResponse(HTTP_NOT_FOUND) });
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn)).resolves.toEqual({
+    await expect(deleteEvent({ token: DELETE_TOKEN, slug: DELETE_SLUG, fetchFn })).resolves.toEqual({
       commitSha: DELETE_SHAS.newCommitSha,
       pointerPublished: true,
     });
 
-    const treeBodies = requestBodiesOf<{ tree: GitTreeEntry[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
+    const treeBodies = requestBodiesOf<{ tree: GitTreeEntry[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
 
     expect(treeBodies[0].tree, 'deleting a path that is not there would fail the commit').toEqual(EXPECTED_DB_ONLY_DELETE_TREE_ENTRIES);
   });
@@ -129,7 +132,7 @@ describe('deleteEvent', () => {
   it('still succeeds when no db is published yet, rewriting it from scratch', async () => {
     const fetchFn = createDeleteFetch({ [dbContentsKey(DELETE_SHAS.headSha)]: () => statusResponse(HTTP_NOT_FOUND) });
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn)).resolves.toEqual({
+    await expect(deleteEvent({ token: DELETE_TOKEN, slug: DELETE_SLUG, fetchFn })).resolves.toEqual({
       commitSha: DELETE_SHAS.newCommitSha,
       pointerPublished: true,
     });
@@ -148,7 +151,7 @@ describe('deleteEvent', () => {
         refCalls++ === 0 ? jsonResponse({ object: { sha: DELETE_SHAS.newCommitSha } }) : statusResponse(HTTP_UNPROCESSABLE),
     });
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn, () => Promise.resolve())).resolves.toEqual({
+    await expect(deleteEvent({ token: DELETE_TOKEN, slug: DELETE_SLUG, fetchFn, sleep: () => Promise.resolve() })).resolves.toEqual({
       commitSha: DELETE_SHAS.newCommitSha,
       pointerPublished: false,
     });
@@ -157,7 +160,9 @@ describe('deleteEvent', () => {
   it('fails the deletion when the db cannot be rebuilt, since it is now the source of truth', async () => {
     FAKE_SQLITE3_STATE.deserializeRc = SQLITE_ERROR_RC;
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, createDeleteFetch())).rejects.toThrow(String(SQLITE_ERROR_RC));
+    await expect(deleteEvent({ token: DELETE_TOKEN, slug: DELETE_SLUG, fetchFn: createDeleteFetch() })).rejects.toThrow(
+      String(SQLITE_ERROR_RC),
+    );
   });
 
   it('rejects with an auth error when the pointer commit is unauthorized — the token is the problem', async () => {
@@ -168,7 +173,9 @@ describe('deleteEvent', () => {
         refCalls++ === 0 ? jsonResponse({ object: { sha: DELETE_SHAS.newCommitSha } }) : statusResponse(HTTP_UNAUTHORIZED),
     });
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG, fetchFn, () => Promise.resolve())).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(deleteEvent({ token: DELETE_TOKEN, slug: DELETE_SLUG, fetchFn, sleep: () => Promise.resolve() })).rejects.toBeInstanceOf(
+      GithubAuthError,
+    );
   });
 
   it('falls back to the global fetch by default', async () => {
@@ -177,6 +184,6 @@ describe('deleteEvent', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED))),
     );
 
-    await expect(deleteEvent(DELETE_TOKEN, DELETE_SLUG)).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(deleteEvent({ token: DELETE_TOKEN, slug: DELETE_SLUG })).rejects.toBeInstanceOf(GithubAuthError);
   });
 });

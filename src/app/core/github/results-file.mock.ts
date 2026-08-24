@@ -1,4 +1,4 @@
-import { EventResult } from '../history/athletes-rollup.interface';
+import { type EventResult } from '../history/athletes-rollup.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { Gender } from '../models/gender.enum';
 import { DNF_DISTANCE_KM } from './results-file.constant';

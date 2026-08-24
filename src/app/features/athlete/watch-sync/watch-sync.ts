@@ -1,11 +1,11 @@
 import { Component, DOCUMENT, computed, effect, inject, input, signal } from '@angular/core';
 
-import { CorosRegion, CorosRegionType } from '../../../core/coros/coros-region.enum';
+import { CorosRegion, type CorosRegionType } from '../../../core/coros/coros-region.enum';
 import { triggerBlobDownload } from '../../../pdf/blob-download';
 import { saveTrack } from '../../../state/athlete-track.storage';
 import { buildTrackArchive, readTrackArchive } from '../../../state/track-archive';
 import { TrackSyncStatus } from '../../../state/track-sync.enum';
-import { RaceDay } from '../../../state/track-sync.interface';
+import { type RaceDay } from '../../../state/track-sync.interface';
 import { TrackSyncService } from '../../../state/track-sync.service';
 import { WatchAccountService } from '../../../state/watch-account.service';
 import { TRACK_ARCHIVE_MIME_TYPE, TRACK_EXPORT_FILE_NAME, WATCH_REGION_OPTIONS } from './watch-sync.constant';
@@ -90,7 +90,7 @@ export class WatchSync {
     this.linkFailed.set(false);
 
     try {
-      await this.#accounts.link(this.email(), this.password(), this.region());
+      await this.#accounts.link({ email: this.email(), password: this.password(), region: this.region() });
       this.password.set('');
       this.formOpen.set(false);
       await this.#sync.sync(this.races());
@@ -113,7 +113,7 @@ export class WatchSync {
     // accepts one backed by a plain `ArrayBuffer`.
     const archive = new Uint8Array(buildTrackArchive(this.tracks()));
 
-    triggerBlobDownload(this.#document, new Blob([archive], { type: TRACK_ARCHIVE_MIME_TYPE }), TRACK_EXPORT_FILE_NAME);
+    triggerBlobDownload(this.#document, { blob: new Blob([archive], { type: TRACK_ARCHIVE_MIME_TYPE }), fileName: TRACK_EXPORT_FILE_NAME });
   }
 
   async importTracks(file: File | null): Promise<void> {

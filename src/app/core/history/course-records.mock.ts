@@ -1,6 +1,6 @@
 import { Gender } from '../models/gender.enum';
-import { CourseRecordEntry, CourseRecordRun } from './course-records.interface';
-import { CourseRecordHistory } from './course-records.type';
+import { type CourseRecordEntry, type CourseRecordRun } from './course-records.interface';
+import { type CourseRecordHistory } from './course-records.type';
 
 /**
  * Unsorted runs covering every branch of the progression scan: the opening record, a slower run

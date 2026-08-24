@@ -1,8 +1,8 @@
-import { Component, ElementRef, computed, input, viewChild } from '@angular/core';
+import { Component, type ElementRef, computed, input, viewChild } from '@angular/core';
 
-import { YearBadgeRarity } from '../../../core/history/badge-rarity.type';
-import { AthleteYearBadges, YearActivity } from '../../../core/history/year-badges';
-import { GenderType } from '../../../core/models/gender.enum';
+import { type YearBadgeRarity } from '../../../core/history/badge-rarity.type';
+import { type AthleteYearBadges, type YearActivity } from '../../../core/history/year-badges';
+import { type GenderType } from '../../../core/models/gender.enum';
 import { YearBadgeChip } from '../../../shared/year-badge/year-badge';
 import { badgeCatalogRows } from './badge-catalog-rows';
 
@@ -28,7 +28,7 @@ export class BadgeCatalog {
   /** The athlete's gender — the crown chips read as «Королева …» on a woman's page. */
   readonly gender = input<GenderType | null>(null);
 
-  protected readonly rows = computed(() => badgeCatalogRows(this.yearBadges(), this.activity(), this.year()));
+  protected readonly rows = computed(() => badgeCatalogRows(this.yearBadges(), { activity: this.activity(), currentYear: this.year() }));
 
   // Signal queries may not sit on an ES-private (#) member — Angular needs the runtime name.
   protected readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');

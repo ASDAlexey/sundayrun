@@ -3,7 +3,7 @@ import type { ChartConfiguration, ChartDataset, ChartOptions } from 'chart.js';
 import type {} from 'chartjs-plugin-zoom';
 import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
 
-import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
 import { formatDuration, formatRaceTime, withoutHundredths } from '../../core/time/duration';
 import { formatRussianDateLong } from '../../core/time/russian-date';
 import {
@@ -26,12 +26,12 @@ import {
   TICK_YEAR_TAIL,
 } from './progress-chart.constant';
 import {
-  ProgressAreaContext,
-  ProgressChartPalette,
-  ProgressDay,
-  ProgressTooltipCallbacks,
-  ProgressViewportChange,
-  ProgressViewportContext,
+  type ProgressAreaContext,
+  type ProgressChartPalette,
+  type ProgressDay,
+  type ProgressTooltipCallbacks,
+  type ProgressViewportChange,
+  type ProgressViewportContext,
 } from './progress-chart.interface';
 
 /** The chart makes sense only once there are two distinct race dates to connect. */
@@ -44,6 +44,22 @@ export function personalBestMs(runs: AthleteRun[]): number {
   return Math.min(...runs.map((run) => run.timeMs));
 }
 
+/** How the chart is drawn: the all-time best it marks green, the theme, zoom reporting and the fraction. */
+export interface ProgressChartInputs {
+  readonly bestMs: number;
+  readonly palette: ProgressChartPalette;
+  readonly onViewportChange: ProgressViewportChange;
+  readonly hundredthsShown: boolean;
+}
+
+/** The same drawing inputs once the runs are reduced to days and their personal-best flags. */
+interface ProgressOptionsInputs {
+  readonly isBest: boolean[];
+  readonly palette: ProgressChartPalette;
+  readonly onViewportChange: ProgressViewportChange;
+  readonly hundredthsShown: boolean;
+}
+
 /**
  * Full chart.js configuration for the best-time-per-date line: same-day runs collapse
  * to the fastest one, x is a real time scale (gaps between races stay visible), y is
@@ -51,13 +67,8 @@ export function personalBestMs(runs: AthleteRun[]): number {
  * personal-best dots. `bestMs` comes from the unfiltered history, so a year view marks
  * only the true all-time record. Zoom/pan is x-only and reports back through `onViewportChange`.
  */
-export function buildProgressChartConfig(
-  runs: AthleteRun[],
-  bestMs: number,
-  palette: ProgressChartPalette,
-  onViewportChange: ProgressViewportChange,
-  hundredthsShown: boolean,
-): ChartConfiguration<'line'> | null {
+export function buildProgressChartConfig(runs: AthleteRun[], chart: ProgressChartInputs): ChartConfiguration<'line'> | null {
+  const { bestMs, palette, onViewportChange, hundredthsShown } = chart;
   const days = bestPerDate(runs);
 
   if (days.length < PROGRESS_MIN_POINTS) {
@@ -68,13 +79,16 @@ export function buildProgressChartConfig(
 
   return {
     type: 'line',
-    data: { datasets: [buildDataset(days, isBest, palette)] },
-    options: buildOptions(days, isBest, palette, onViewportChange, hundredthsShown),
+    data: { datasets: [buildDataset(days, { isBest, palette })] },
+    options: buildOptions(days, { isBest, palette, onViewportChange, hundredthsShown }),
   };
 }
 
 /** Per-point arrays instead of scriptables: cheaper for chart.js and directly assertable in specs. */
-function buildDataset(days: ProgressDay[], isBest: boolean[], palette: ProgressChartPalette): ChartDataset<'line'> {
+function buildDataset(
+  days: ProgressDay[],
+  { isBest, palette }: { isBest: boolean[]; palette: ProgressChartPalette },
+): ChartDataset<'line'> {
   return {
     data: days.map((day) => ({ x: Date.parse(day.dateIso), y: day.timeMs })),
     borderColor: palette.accent,
@@ -89,13 +103,8 @@ function buildDataset(days: ProgressDay[], isBest: boolean[], palette: ProgressC
   };
 }
 
-function buildOptions(
-  days: ProgressDay[],
-  isBest: boolean[],
-  palette: ProgressChartPalette,
-  onViewportChange: ProgressViewportChange,
-  hundredthsShown: boolean,
-): ChartOptions<'line'> {
+function buildOptions(days: ProgressDay[], chart: ProgressOptionsInputs): ChartOptions<'line'> {
+  const { isBest, palette, onViewportChange, hundredthsShown } = chart;
   const tickFont = { family: palette.fontMono, size: PROGRESS_TICK_FONT_SIZE };
 
   return {
@@ -135,7 +144,7 @@ function buildOptions(
         bodyColor: palette.text,
         titleFont: tickFont,
         bodyFont: tickFont,
-        callbacks: tooltipCallbacks(days, isBest, hundredthsShown),
+        callbacks: tooltipCallbacks(days, { isBest, hundredthsShown }),
       },
       zoom: zoomOptions(viewportNotifier(onViewportChange)),
     },
@@ -162,7 +171,10 @@ function bestPerDate(runs: AthleteRun[]): ProgressDay[] {
  * applies. The tooltip is painted on canvas, where the reader's «без сотых» cannot reach it with a
  * class, so the fraction is cut out of the text itself (see `withoutHundredths`).
  */
-export function tooltipCallbacks(days: ProgressDay[], isBest: boolean[], hundredthsShown: boolean): ProgressTooltipCallbacks {
+export function tooltipCallbacks(
+  days: ProgressDay[],
+  { isBest, hundredthsShown }: { isBest: boolean[]; hundredthsShown: boolean },
+): ProgressTooltipCallbacks {
   return {
     title: (items) => formatRussianDateLong(days[items[0].dataIndex].dateIso),
     label: (item) => $localize`:@@athlete.chartTooltipTime:Время: ${timeText(days[item.dataIndex].timeMs, hundredthsShown)}:time:`,

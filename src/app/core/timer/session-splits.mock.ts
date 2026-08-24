@@ -1,5 +1,5 @@
-import { TimerRunnerOutcome, TimerRunnerStage, TimerRunnerStageType } from './timer-session.enum';
-import { TimerRunner, TimerSession, TimerSplit } from './timer-session.interface';
+import { TimerRunnerOutcome, TimerRunnerStage, type TimerRunnerStageType } from './timer-session.enum';
+import { type TimerRunner, type TimerSession, type TimerSplit } from './timer-session.interface';
 import {
   FIRST_UNNAMED_SPLIT_ID,
   IVANOV_RUNNER_ID,

@@ -1,4 +1,4 @@
-import { Signal } from '@angular/core';
+import { type Signal } from '@angular/core';
 
 /** The surface a duration-measuring service re-exposes; publish and delete differ only in the key. */
 export interface DurationHistory {

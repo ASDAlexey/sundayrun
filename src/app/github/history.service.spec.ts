@@ -13,7 +13,7 @@ import { EXPECTED_DB_URL, EXPECTED_HISTORY, EXPECTED_HISTORY_INIT, HISTORY_DB_SE
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
   const real = await import('../core/sqlite/spec-utils/real-sqlite3');
 
-  return { default: () => real.realSqlite3Init() };
+  return { default: (): ReturnType<typeof real.realSqlite3Init> => real.realSqlite3Init() };
 });
 
 describe('HistoryService', () => {

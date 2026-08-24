@@ -1,4 +1,4 @@
-import { GenderType } from '../../../core/models/gender.enum';
+import { type GenderType } from '../../../core/models/gender.enum';
 
 /** One name the sheet offers — a search hit or a regular. `checked` only ever moves on a regular. */
 export interface TimerPickerOption {

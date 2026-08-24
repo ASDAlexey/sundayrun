@@ -1,7 +1,7 @@
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../../history/distance.constant';
 import { Gender } from '../../models/gender.enum';
-import { ProtocolRow } from '../../models/protocol-row.interface';
-import { RaceEvent } from '../../models/race-event.interface';
+import { type ProtocolRow } from '../../models/protocol-row.interface';
+import { type RaceEvent } from '../../models/race-event.interface';
 
 export const RACE_EVENT: RaceEvent = {
   number: 12,

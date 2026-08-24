@@ -23,10 +23,10 @@ describe('distinctRunYears', () => {
 
 describe('filterRuns', () => {
   it('filters by year and distance independently and combined; null filters keep everything', () => {
-    expect(filterRuns(ATHLETE_RUNS, null, null)).toEqual(ATHLETE_RUNS);
-    expect(filterRuns(ATHLETE_RUNS, FILTER_YEAR, null)).toEqual(EXPECTED_YEAR_FILTERED);
-    expect(filterRuns(ATHLETE_RUNS, null, FIVE_KM_DISTANCE_KM)).toEqual(EXPECTED_DISTANCE_FILTERED);
-    expect(filterRuns(ATHLETE_RUNS, FILTER_YEAR, TWO_THREE_KM_DISTANCE_KM)).toEqual(EXPECTED_BOTH_FILTERED);
+    expect(filterRuns(ATHLETE_RUNS, { year: null, distanceKm: null })).toEqual(ATHLETE_RUNS);
+    expect(filterRuns(ATHLETE_RUNS, { year: FILTER_YEAR, distanceKm: null })).toEqual(EXPECTED_YEAR_FILTERED);
+    expect(filterRuns(ATHLETE_RUNS, { year: null, distanceKm: FIVE_KM_DISTANCE_KM })).toEqual(EXPECTED_DISTANCE_FILTERED);
+    expect(filterRuns(ATHLETE_RUNS, { year: FILTER_YEAR, distanceKm: TWO_THREE_KM_DISTANCE_KM })).toEqual(EXPECTED_BOTH_FILTERED);
   });
 });
 

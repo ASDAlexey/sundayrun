@@ -1,5 +1,5 @@
-import { Gender, GenderConfidence, GenderSource, GenderType } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { Gender, GenderConfidence, GenderSource, type GenderType } from '../models/gender.enum';
+import { type Participant } from '../models/participant.interface';
 import {
   POPOV_ALEKSEY_FINISH_MS,
   POPOV_ALEKSEY_LAP_MS,
@@ -10,7 +10,10 @@ import {
   TROILIN_LAP_MS,
 } from './timer-session.mock';
 
-function buildParticipant(id: number, fullName: string, totalMs: number | null, lapsMs: number[], gender: GenderType | null): Participant {
+function buildParticipant(
+  id: number,
+  { fullName, totalMs, lapsMs, gender }: { fullName: string; totalMs: number | null; lapsMs: number[]; gender: GenderType | null },
+): Participant {
   return {
     id,
     fullName,
@@ -30,19 +33,28 @@ function buildParticipant(id: number, fullName: string, totalMs: number | null, 
  * explicit DNF or no tap at all all end up as a DNF with empty times.
  */
 export const EXPECTED_TIMER_PARTICIPANTS: Participant[] = [
-  buildParticipant(1, 'Троилин Антон', TROILIN_FINISH_MS, [TROILIN_LAP_MS, TROILIN_FINISH_MS - TROILIN_LAP_MS], Gender.male),
-  buildParticipant(
-    2,
-    'Попов Алексей',
-    POPOV_ALEKSEY_FINISH_MS,
-    [POPOV_ALEKSEY_LAP_MS, POPOV_ALEKSEY_FINISH_MS - POPOV_ALEKSEY_LAP_MS],
-    Gender.male,
-  ),
-  buildParticipant(3, 'Попов Игорь', null, [], Gender.male),
-  buildParticipant(4, 'Романенко Елена', ROMANENKO_LAP_MS, [ROMANENKO_LAP_MS], Gender.female),
-  buildParticipant(5, 'Соколова Анна', SOKOLOVA_FINISH_MS, [SOKOLOVA_LAP_MS, SOKOLOVA_FINISH_MS - SOKOLOVA_LAP_MS], null),
-  buildParticipant(6, 'Иванов Дмитрий', null, [], Gender.male),
-  buildParticipant(7, 'Кузнецов Пётр', null, [], Gender.male),
+  buildParticipant(1, {
+    fullName: 'Троилин Антон',
+    totalMs: TROILIN_FINISH_MS,
+    lapsMs: [TROILIN_LAP_MS, TROILIN_FINISH_MS - TROILIN_LAP_MS],
+    gender: Gender.male,
+  }),
+  buildParticipant(2, {
+    fullName: 'Попов Алексей',
+    totalMs: POPOV_ALEKSEY_FINISH_MS,
+    lapsMs: [POPOV_ALEKSEY_LAP_MS, POPOV_ALEKSEY_FINISH_MS - POPOV_ALEKSEY_LAP_MS],
+    gender: Gender.male,
+  }),
+  buildParticipant(3, { fullName: 'Попов Игорь', totalMs: null, lapsMs: [], gender: Gender.male }),
+  buildParticipant(4, { fullName: 'Романенко Елена', totalMs: ROMANENKO_LAP_MS, lapsMs: [ROMANENKO_LAP_MS], gender: Gender.female }),
+  buildParticipant(5, {
+    fullName: 'Соколова Анна',
+    totalMs: SOKOLOVA_FINISH_MS,
+    lapsMs: [SOKOLOVA_LAP_MS, SOKOLOVA_FINISH_MS - SOKOLOVA_LAP_MS],
+    gender: null,
+  }),
+  buildParticipant(6, { fullName: 'Иванов Дмитрий', totalMs: null, lapsMs: [], gender: Gender.male }),
+  buildParticipant(7, { fullName: 'Кузнецов Пётр', totalMs: null, lapsMs: [], gender: Gender.male }),
 ];
 
 /** The whole roster before the first tap: everybody is a DNF, nobody has a time. */

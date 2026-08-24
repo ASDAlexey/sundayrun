@@ -1,4 +1,4 @@
-import { AthleteRecord } from '../models/athlete-history.interface';
+import { type AthleteRecord } from '../models/athlete-history.interface';
 
 const record = (key: string, displayName: string): AthleteRecord => ({
   key,

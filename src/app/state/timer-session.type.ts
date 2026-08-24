@@ -1,4 +1,4 @@
-import { TimerSession } from '../core/timer/timer-session.interface';
+import { type TimerSession } from '../core/timer/timer-session.interface';
 
 /**
  * A pure core transition as the service takes it: session in, session out. Returning the very same

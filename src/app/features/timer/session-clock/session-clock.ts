@@ -10,7 +10,7 @@ import { WakeLockService } from '../../../state/wake-lock.service';
 import { TimerFarewellService } from '../timer-farewell.service';
 import { formatTimerFigure, formatTimerFraction } from './clock-figure';
 import { TIMER_PROGRESS_EMPTY } from './session-clock.constant';
-import { TimerSummaryView } from './session-clock.interface';
+import { type TimerSummaryView } from './session-clock.interface';
 import { bestFinishText, finishedCountText } from './session-clock.text';
 
 /**

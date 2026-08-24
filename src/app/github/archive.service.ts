@@ -2,7 +2,7 @@ import { Service, inject } from '@angular/core';
 
 import { createQueryCache } from '../core/cache/query-cache';
 import { ARCHIVE_INDEX_SCHEMA_VERSION } from '../core/github/archive-index.constant';
-import { ArchiveIndexEntry, ArchiveIndexFile } from '../core/github/archive-index.interface';
+import { type ArchiveIndexEntry, type ArchiveIndexFile } from '../core/github/archive-index.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectArchiveEvents } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';

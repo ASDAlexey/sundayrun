@@ -1,4 +1,4 @@
-import { RouterEvent } from '@angular/router';
+import { type RouterEvent } from '@angular/router';
 import { Subject } from 'rxjs';
 
 /** The Router stripped to the one thing the rail listens to — its event stream. */
@@ -19,10 +19,13 @@ export const NAV_RAIL_GEOMETRY = {
 export const NAV_RAIL_CENTRED_LEFT = 270;
 
 /**
- * jsdom lays nothing out, so the rail and its active section are handed the sizes above.
+ * The DOM shim lays nothing out, so the rail and its active section are handed the sizes above.
  * `overflows: false` makes the rail as wide as its content — the case where it must stand down.
  */
-export function stubNavRailGeometry(rail: HTMLElement, active: HTMLElement | null, overflows = true): void {
+export function stubNavRailGeometry(
+  rail: HTMLElement,
+  { active, overflows = true }: { active: HTMLElement | null; overflows?: unknown },
+): void {
   const { railWidth, railHeight, scrollWidth, activeLeft, activeWidth } = NAV_RAIL_GEOMETRY;
 
   Object.defineProperty(rail, 'clientWidth', { configurable: true, value: railWidth });

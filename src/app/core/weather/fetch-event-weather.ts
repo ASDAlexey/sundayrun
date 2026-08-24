@@ -1,5 +1,5 @@
 import { ISO_DATE_LENGTH } from '../history/notables.constant';
-import { EventWeather } from './event-weather.interface';
+import { type EventWeather } from './event-weather.interface';
 import {
   MM_ROUNDING_FACTOR,
   MS_PER_DAY,
@@ -15,7 +15,7 @@ import {
   WET_WINDOW_LEAD_DAYS,
   WET_WINDOW_START_HOUR,
 } from './weather-api.constant';
-import { WeatherFetchFn } from './weather-fetch.type';
+import { type WeatherFetchFn } from './weather-fetch.type';
 
 /** Default fetch for production use; wraps the global fetch to keep its `this` binding intact. */
 const DEFAULT_WEATHER_FETCH: WeatherFetchFn = (url) => fetch(url);
@@ -34,18 +34,20 @@ interface OpenMeteoResponse {
   hourly?: OpenMeteoHourly;
 }
 
+/** What a weather lookup needs besides the dates: the "today" it ages them against, and the transport. */
+export interface EventWeatherRequest {
+  readonly todayIso: string;
+  readonly fetchFn?: WeatherFetchFn;
+}
+
 /**
  * The 9:00 course weather of one event date from Open-Meteo (free, keyless). Dates older than the
  * reanalysis lag come from the archive endpoint, fresher ones — publication day included — from the
  * forecast endpoint's past hours. Weather is garnish: any network, HTTP or shape failure resolves
  * to null so the caller can proceed without it.
  */
-export async function fetchEventWeather(
-  dateIso: string,
-  todayIso: string,
-  fetchFn: WeatherFetchFn = DEFAULT_WEATHER_FETCH,
-): Promise<EventWeather | null> {
-  const [weather] = await fetchEventsWeather([dateIso], todayIso, fetchFn);
+export async function fetchEventWeather(dateIso: string, request: EventWeatherRequest): Promise<EventWeather | null> {
+  const [weather] = await fetchEventsWeather([dateIso], request);
 
   return weather;
 }
@@ -57,11 +59,12 @@ export async function fetchEventWeather(
  * whose hourly rows every event then reads its 9:00 from — so a batch of any size costs at most two
  * requests, sent one after the other.
  */
-export async function fetchEventsWeather(dateIsos: string[], todayIso: string, fetchFn: WeatherFetchFn): Promise<(EventWeather | null)[]> {
+export async function fetchEventsWeather(dateIsos: string[], request: EventWeatherRequest): Promise<(EventWeather | null)[]> {
+  const { todayIso, fetchFn = DEFAULT_WEATHER_FETCH } = request;
   const weatherByDate = new Map<string, EventWeather | null>();
 
   for (const [baseUrl, dates] of groupDatesByEndpoint(dateIsos, todayIso)) {
-    const hourly = await fetchHourly(baseUrl, dates, fetchFn);
+    const hourly = await fetchHourly(baseUrl, { dates, fetchFn });
 
     for (const dateIso of dates) {
       weatherByDate.set(dateIso, extractStartHour(hourly, dateIso));
@@ -73,7 +76,7 @@ export async function fetchEventsWeather(dateIsos: string[], todayIso: string, f
 
 /** The hourly request for one event date — the eve included — against the endpoint that has the date. */
 export function weatherRequestUrl(dateIso: string, todayIso: string): string {
-  return hourlyRangeUrl(endpointForDate(dateIso, todayIso), eveOf(dateIso), dateIso);
+  return hourlyRangeUrl(endpointForDate(dateIso, todayIso), { startDateIso: eveOf(dateIso), endDateIso: dateIso });
 }
 
 /** The day before an ISO date, in the same 'YYYY-MM-DD' shape; the wet-course window starts there. */
@@ -107,12 +110,14 @@ function endpointForDate(dateIso: string, todayIso: string): string {
 }
 
 /** The hourly rows spanning the group's dates; a network, HTTP or JSON failure is simply no weather. */
-async function fetchHourly(baseUrl: string, dates: string[], fetchFn: WeatherFetchFn): Promise<OpenMeteoHourly | undefined> {
-  const sorted = [...dates].sort();
+async function fetchHourly(baseUrl: string, group: { dates: string[]; fetchFn: WeatherFetchFn }): Promise<OpenMeteoHourly | undefined> {
+  const sorted = [...group.dates].sort();
 
   try {
     // The range opens on the eve of the earliest date: the wet-course window starts the evening before.
-    const response = await fetchFn(hourlyRangeUrl(baseUrl, eveOf(sorted[0]), sorted[sorted.length - 1]));
+    const response = await group.fetchFn(
+      hourlyRangeUrl(baseUrl, { startDateIso: eveOf(sorted[0]), endDateIso: sorted[sorted.length - 1] }),
+    );
 
     if (!response.ok) {
       return undefined;
@@ -126,12 +131,12 @@ async function fetchHourly(baseUrl: string, dates: string[], fetchFn: WeatherFet
   }
 }
 
-function hourlyRangeUrl(baseUrl: string, startDateIso: string, endDateIso: string): string {
+function hourlyRangeUrl(baseUrl: string, range: { startDateIso: string; endDateIso: string }): string {
   const params = new URLSearchParams({
     latitude: String(WEATHER_LATITUDE),
     longitude: String(WEATHER_LONGITUDE),
-    start_date: startDateIso,
-    end_date: endDateIso,
+    start_date: range.startDateIso,
+    end_date: range.endDateIso,
     hourly: WEATHER_HOURLY_PARAMS,
     timezone: WEATHER_TIMEZONE,
   });

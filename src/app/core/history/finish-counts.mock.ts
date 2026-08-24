@@ -1,6 +1,6 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { ParticipantRun } from './notables.interface';
+import { type ParticipantRun } from './notables.interface';
 
 /**
  * Participant runs and protocol rows covering both counters: a veteran whose future and
@@ -14,7 +14,10 @@ export const VETERAN_KEY = 'ветеран трассы';
 
 export const NEWCOMER_KEY = 'новичок забега';
 
-const run = (athleteKey: string, dateIso: string, distanceKm: number = FIVE_KM_DISTANCE_KM): ParticipantRun => ({
+const run = (
+  athleteKey: string,
+  { dateIso, distanceKm = FIVE_KM_DISTANCE_KM }: { dateIso: string; distanceKm?: number },
+): ParticipantRun => ({
   athleteKey,
   dateIso,
   slug: dateIso,
@@ -24,14 +27,14 @@ const run = (athleteKey: string, dateIso: string, distanceKm: number = FIVE_KM_D
 
 export const FINISH_COUNT_RUNS: ParticipantRun[] = [
   // Three earlier finishes plus the event one; the future and short-course runs never count.
-  run(VETERAN_KEY, '2025-05-04'),
-  run(VETERAN_KEY, '2025-06-01'),
-  run(VETERAN_KEY, '2026-02-01'),
-  run(VETERAN_KEY, FINISH_COUNT_EVENT_DATE),
-  run(VETERAN_KEY, '2026-07-05'),
-  run(VETERAN_KEY, '2026-03-01', TWO_THREE_KM_DISTANCE_KM),
+  run(VETERAN_KEY, { dateIso: '2025-05-04' }),
+  run(VETERAN_KEY, { dateIso: '2025-06-01' }),
+  run(VETERAN_KEY, { dateIso: '2026-02-01' }),
+  run(VETERAN_KEY, { dateIso: FINISH_COUNT_EVENT_DATE }),
+  run(VETERAN_KEY, { dateIso: '2026-07-05' }),
+  run(VETERAN_KEY, { dateIso: '2026-03-01', distanceKm: TWO_THREE_KM_DISTANCE_KM }),
   // The event is the first finish.
-  run(NEWCOMER_KEY, FINISH_COUNT_EVENT_DATE),
+  run(NEWCOMER_KEY, { dateIso: FINISH_COUNT_EVENT_DATE }),
 ];
 
 export const EXPECTED_FINISH_COUNTS_AT: Record<string, number> = {
@@ -39,7 +42,10 @@ export const EXPECTED_FINISH_COUNTS_AT: Record<string, number> = {
   [NEWCOMER_KEY]: 1,
 };
 
-const row = (index: number, fullName: string, totalMs: number | null, distanceKm: number | null): ProtocolRow => ({
+const row = (
+  index: number,
+  { fullName, totalMs, distanceKm }: { fullName: string; totalMs: number | null; distanceKm: number | null },
+): ProtocolRow => ({
   index,
   fullName,
   time23: '',
@@ -55,10 +61,10 @@ const row = (index: number, fullName: string, totalMs: number | null, distanceKm
 
 /** The organisers' spelling differs from the key ('Ё', double space) — the lookup must normalize. */
 export const FINISH_COUNT_ROWS: ProtocolRow[] = [
-  row(1, 'Ветеран  Трассы', 1500000, FIVE_KM_DISTANCE_KM),
-  row(2, 'Новичок Забега', 1600000, FIVE_KM_DISTANCE_KM),
-  row(3, 'На Круге', 800000, TWO_THREE_KM_DISTANCE_KM),
-  row(4, 'Сошёл Сдистанции', null, null),
+  row(1, { fullName: 'Ветеран  Трассы', totalMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  row(2, { fullName: 'Новичок Забега', totalMs: 1600000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  row(3, { fullName: 'На Круге', totalMs: 800000, distanceKm: TWO_THREE_KM_DISTANCE_KM }),
+  row(4, { fullName: 'Сошёл Сдистанции', totalMs: null, distanceKm: null }),
 ];
 
 export const PRIOR_FINISH_COUNTS: Record<string, number> = {

@@ -1,11 +1,11 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 import { splitNote } from './note-tokens';
 import {
   FIRST_PARTICIPATION_TOKEN_PATTERN,
   LEGACY_PERSONAL_RECORD_TOKEN_PATTERN,
   PERSONAL_RECORD_TOKEN_PATTERN,
 } from './notes-builder.constant';
-import { RaceSummary } from './race-summary.interface';
+import { type RaceSummary } from './race-summary.interface';
 
 /**
  * Aggregates the summary counters over the protocol rows. The newcomer and record counts come

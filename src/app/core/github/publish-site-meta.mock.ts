@@ -1,4 +1,4 @@
-import { GitDataShas } from './spec-utils/git-data-routes';
+import { type GitDataShas } from './spec-utils/git-data-routes';
 
 export const SITE_META_TOKEN = 'site-meta-token';
 

@@ -1,4 +1,4 @@
-import { PrDeltaKindType } from './pr-delta.enum';
+import { type PrDeltaKindType } from './pr-delta.enum';
 
 /** One result measured against the personal record it was chasing: the signed text and its side. */
 export interface PrDelta {

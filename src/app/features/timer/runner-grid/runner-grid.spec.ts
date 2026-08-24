@@ -296,7 +296,7 @@ describe('TimerGrid', () => {
     const list = container.injector.get(CdkDropList);
     const item = container.children[GRID_DROP_FROM].injector.get(CdkDrag);
 
-    list.dropped.emit(gridDropEvent(list, item, GRID_DROP_FROM, GRID_DROP_TO));
+    list.dropped.emit(gridDropEvent(list, { item, previousIndex: GRID_DROP_FROM, currentIndex: GRID_DROP_TO }));
 
     const arranged: TimerSession = sessions.updateActive.mock.calls[0][0](GRID_PLAIN_SESSION);
 

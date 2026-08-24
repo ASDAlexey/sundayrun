@@ -1,5 +1,5 @@
 import { Gender } from '../../../core/models/gender.enum';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { TIMER_SESSION_FINISHED } from '../../../core/timer/timer-session.mock';
 
 /** A measurement ready to go: every gender confirmed, no time left waiting for a name. */

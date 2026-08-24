@@ -1,5 +1,5 @@
 import { PLURAL_RULES_LOCALE } from './plural-text.constant';
-import { RuPluralForms } from './plural-text.interface';
+import { type RuPluralForms } from './plural-text.interface';
 
 /**
  * Picks the plural form of a prebuilt `$localize` message by the ru rules. Integer counts only

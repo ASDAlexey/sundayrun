@@ -1,5 +1,5 @@
-import { AthleteRecord } from '../models/athlete-history.interface';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthleteRecord } from '../models/athlete-history.interface';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { formatDuration } from '../time/duration';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { isoYear } from './iso-year';
@@ -12,7 +12,13 @@ import {
   YEAR_BEST_NOTE_TEMPLATE,
   YEAR_PLACEHOLDER,
 } from './notes-builder.constant';
-import { AutoNoteInput } from './notes-builder.interface';
+import { type AutoNoteInput } from './notes-builder.interface';
+
+/** What one result is judged against: the history before the event, and the year's best to beat. */
+export interface AutoNoteContext {
+  readonly history: AthletesHistory;
+  readonly courseYearBestMs: number | null;
+}
 
 /**
  * Builds the automatic note for one result against the history accumulated BEFORE the result:
@@ -25,7 +31,9 @@ import { AutoNoteInput } from './notes-builder.interface';
  *   `buildEventAutoNotes`) — → 'Лучший результат YYYY г.'; nothing to beat yet → no note;
  * - both notes combine with '; ', matching the historical protocols.
  */
-export function buildAutoNote(input: AutoNoteInput, history: AthletesHistory, courseYearBestMs: number | null): string {
+export function buildAutoNote(input: AutoNoteInput, context: AutoNoteContext): string {
+  const { history, courseYearBestMs } = context;
+
   if (input.timeMs === null) {
     return EMPTY_NOTE;
   }

@@ -1,11 +1,10 @@
 import { Gender } from '../../../core/models/gender.enum';
 import { TimerRunnerOutcome } from '../../../core/timer/timer-session.enum';
-import { TimerRunner } from '../../../core/timer/timer-session.interface';
+import { type TimerRunner } from '../../../core/timer/timer-session.interface';
 
 /**
- * Where the finger is and when. jsdom ships no `PointerEvent`, and `MouseEventInit` carries neither
- * `offsetX` nor `timeStamp`, so both are defined on the instance — the tile reads exactly these five
- * numbers and nothing else off the event.
+ * Where the finger is and when. `MouseEventInit` carries neither `offsetX` nor `timeStamp`, so both
+ * are defined on the instance — the tile reads exactly these five numbers and nothing else off the event.
  */
 export interface TilePointerInit {
   clientX: number;

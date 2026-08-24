@@ -12,10 +12,19 @@ import {
   COROS_TOKEN_HEADER,
 } from './coros-api.constant';
 import { CorosApiError } from './coros-api.error';
-import { CorosActivity, CorosActivityRow, CorosDownloadData, CorosLoginData, CorosQueryData, CorosResponse } from './coros-api.interface';
-import { CorosFetchFn } from './coros-fetch.type';
+import {
+  type CorosActivity,
+  type CorosActivityRow,
+  type CorosDownloadData,
+  type CorosLoginData,
+  type CorosQueryData,
+  type CorosResponse,
+  type CorosDownloadGpxRequest,
+  type CorosLoginRequest,
+  type CorosQueryRunsRequest,
+} from './coros-api.interface';
+import { type CorosFetchFn } from './coros-fetch.type';
 import { md5Hex } from './coros-md5';
-import { CorosRegionType } from './coros-region.enum';
 
 /** Default fetch for production use; wraps the global fetch to keep its `this` binding intact. */
 const DEFAULT_COROS_FETCH: CorosFetchFn = (url, init) => fetch(url, init);
@@ -27,9 +36,7 @@ const DEFAULT_COROS_FETCH: CorosFetchFn = (url, init) => fetch(url, init);
  * anywhere either: only the returned token is worth keeping.
  */
 export async function corosLogin(
-  email: string,
-  password: string,
-  region: CorosRegionType,
+  { email, password, region }: CorosLoginRequest,
   fetchFn: CorosFetchFn = DEFAULT_COROS_FETCH,
 ): Promise<string> {
   const body = JSON.stringify({ accountType: COROS_ACCOUNT_TYPE, account: email, pwd: md5Hex(password) });
@@ -55,10 +62,7 @@ export async function corosLogin(
  * names: with `from`/`to` the filter is silently ignored and the first page comes back instead.
  */
 export async function corosQueryRuns(
-  token: string,
-  startDateIso: string,
-  endDateIso: string,
-  region: CorosRegionType,
+  { token, startDateIso, endDateIso, region }: CorosQueryRunsRequest,
   fetchFn: CorosFetchFn = DEFAULT_COROS_FETCH,
 ): Promise<CorosActivity[]> {
   const query = new URLSearchParams({
@@ -89,9 +93,7 @@ export async function corosQueryRuns(
  * failure. The link itself is unsigned, hence used once and never kept.
  */
 export async function corosDownloadGpx(
-  token: string,
-  labelId: string,
-  region: CorosRegionType,
+  { token, labelId, region }: CorosDownloadGpxRequest,
   fetchFn: CorosFetchFn = DEFAULT_COROS_FETCH,
 ): Promise<string> {
   const query = new URLSearchParams({

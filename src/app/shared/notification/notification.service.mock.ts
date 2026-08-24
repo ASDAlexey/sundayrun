@@ -1,4 +1,4 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 /** The stubbed NotificationService shape: spies the spec asserts the surfaced toasts against. */
 export interface NotificationMock {

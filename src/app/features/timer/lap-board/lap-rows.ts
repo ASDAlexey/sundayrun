@@ -1,10 +1,10 @@
 import { formatRaceTime } from '../../../core/time/duration';
-import { LapBoardRow } from '../../../core/timer/session-lap-board.interface';
+import { type LapBoardRow } from '../../../core/timer/session-lap-board.interface';
 import { FIRST_POSITION, NO_GAP_MS } from '../../../core/timer/timer-session.constant';
-import { TimerRunner } from '../../../core/timer/timer-session.interface';
+import { type TimerRunner } from '../../../core/timer/timer-session.interface';
 import { TIMER_LAP_GAP_PREFIX, TIMER_LAP_NO_GAP_TEXT, TIMER_LAP_NO_STEPS, TIMER_LAP_ONE_STEP } from './lap-board.constant';
-import { TimerLapMark, TimerLapMarkType } from './lap-board.enum';
-import { MarkedLapRow, TimerLapRow, TimerLapRowsInput } from './lap-board.interface';
+import { TimerLapMark, type TimerLapMarkType } from './lap-board.enum';
+import { type MarkedLapRow, type TimerLapRow, type TimerLapRowsInput } from './lap-board.interface';
 import { unnamedLapText } from './lap-board.text';
 
 /**
@@ -25,7 +25,7 @@ export function buildLapRows(input: TimerLapRowsInput): TimerLapRow[] {
   const named = input.runners.reduce<MarkedLapRow[]>((rows, runner) => {
     const row = byRunner.get(runner.id);
 
-    return row === undefined ? rows : [...rows, { mark: markOf(row, runner, input), row }];
+    return row === undefined ? rows : [...rows, { mark: markOf(row, { runner, input }), row }];
   }, []);
 
   // The queued times have no place in the roster, so they close the DOM order and travel to their
@@ -40,7 +40,7 @@ export function buildLapRows(input: TimerLapRowsInput): TimerLapRow[] {
   return flow.map((entry, index) => {
     const placeIndex = entry.row.position - FIRST_POSITION;
 
-    return toLapRow(entry, placeIndex - index, placeNotes[placeIndex] - flowNotes[index]);
+    return toLapRow(entry, { rowSteps: placeIndex - index, noteSteps: placeNotes[placeIndex] - flowNotes[index] });
   });
 }
 
@@ -50,7 +50,7 @@ export function buildLapRows(input: TimerLapRowsInput): TimerLapRow[] {
  * archive holds no first lap for get no mark at all — the split is missing for roughly a third of the
  * archived finishes, and silence is honest.
  */
-function markOf(row: LapBoardRow, runner: TimerRunner, input: TimerLapRowsInput): TimerLapMarkType | null {
+function markOf(row: LapBoardRow, { runner, input }: { runner: TimerRunner; input: TimerLapRowsInput }): TimerLapMarkType | null {
   const { athleteKey, gender } = runner;
 
   if (athleteKey === null) {
@@ -81,7 +81,7 @@ function cumulativeNotes(entries: readonly MarkedLapRow[]): number[] {
   return notes;
 }
 
-function toLapRow(entry: MarkedLapRow, rowSteps: number, noteSteps: number): TimerLapRow {
+function toLapRow(entry: MarkedLapRow, { rowSteps, noteSteps }: { rowSteps: number; noteSteps: number }): TimerLapRow {
   const { row } = entry;
 
   return {

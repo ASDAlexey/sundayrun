@@ -1,5 +1,5 @@
-import { Gender, GenderType } from '../models/gender.enum';
-import { EventGenderFinishers } from './gender-finishers.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
+import { type EventGenderFinishers } from './gender-finishers.interface';
 
 /**
  * The event's finisher count in the athlete's own gender — the denominator of the «3/22» place cell.

@@ -1,5 +1,5 @@
-import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { ProgressChartPalette, ProgressDay } from './progress-chart.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
+import { type ProgressChartPalette, type ProgressDay } from './progress-chart.interface';
 
 const FIVE_KM = 5;
 

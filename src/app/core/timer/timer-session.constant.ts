@@ -1,5 +1,5 @@
 import { TimerPublishState } from './timer-session.enum';
-import { TimerPublishStatus } from './timer-session.interface';
+import { type TimerPublishStatus } from './timer-session.interface';
 
 /** Every runner is tapped twice: the 2.3 km lap and the 5 km finish. */
 export const MAX_SPLITS_PER_RUNNER = 2;

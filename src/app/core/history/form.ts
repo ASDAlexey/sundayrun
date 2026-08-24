@@ -1,7 +1,7 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { MS_IN_DAY } from './badge-signals.constant';
 import { FORM_WINDOW_SIZE, PEAK_PERCENT } from './form.constant';
-import { AthleteForm, FormPoint } from './form.interface';
+import { type AthleteForm, type FormPoint } from './form.interface';
 import { medianMs } from './median';
 import { FORM_STALE_DAYS } from './runner-scores.constant';
 

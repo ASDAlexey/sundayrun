@@ -1,5 +1,5 @@
 import { SITE_META_SCHEMA_VERSION } from './site-meta.constant';
-import { SiteMetaFile } from './site-meta.interface';
+import { type SiteMetaFile } from './site-meta.interface';
 
 export const EXISTING_SITE_META: SiteMetaFile = {
   schemaVersion: SITE_META_SCHEMA_VERSION,

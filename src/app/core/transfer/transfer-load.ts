@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID, PendingTasks, TransferState, inject, makeStateKey } from '@angular/core';
 
-import { TransferLoadOptions } from './transfer-load.interface';
+import { type TransferLoadOptions } from './transfer-load.interface';
 
 /** A captured transfer loader: call it as often as needed (e.g. per route param) after construction. */
 export type TransferLoad = <T>(options: TransferLoadOptions<T>) => void;
@@ -18,7 +18,7 @@ export function createTransferLoader(): TransferLoad {
   const transferState = inject(TransferState);
   const pendingTasks = inject(PendingTasks);
 
-  return (options) => runTransferLoad(options, isBrowser, transferState, pendingTasks);
+  return (options) => runTransferLoad(options, { isBrowser, transferState, pendingTasks });
 }
 
 /**
@@ -36,9 +36,7 @@ export function loadWithTransfer<T>(options: TransferLoadOptions<T>): void {
 
 function runTransferLoad<T>(
   options: TransferLoadOptions<T>,
-  isBrowser: boolean,
-  transferState: TransferState,
-  pendingTasks: PendingTasks,
+  { isBrowser, transferState, pendingTasks }: { isBrowser: boolean; transferState: TransferState; pendingTasks: PendingTasks },
 ): void {
   const stateKey = makeStateKey<{ data: T } | null>(options.key);
 

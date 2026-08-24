@@ -8,20 +8,20 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { isValidEventSlug } from '../../core/github/event-slug';
 import { formatRaceNumber } from '../../core/github/race-number';
-import { EventResultsFile } from '../../core/github/results-file.interface';
+import { type EventResultsFile } from '../../core/github/results-file.interface';
 import { normalizeAthleteKey } from '../../core/history/athlete-key';
 import { createTransferLoader } from '../../core/transfer/transfer-load';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
 import { finishCountsAt } from '../../core/history/finish-counts';
 import { buildFormBaselines, formDelta } from '../../core/history/form-delta';
 import { formDeltaHint, formDeltaText } from '../../core/history/form-delta-text';
-import { FormBaseline } from '../../core/history/form-delta.interface';
+import { type FormBaseline } from '../../core/history/form-delta.interface';
 import { medianMsOrNull } from '../../core/history/median';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { buildEventNotables } from '../../core/history/notables';
 import { placeGapsMs } from '../../core/history/place-gaps';
 import { NotableKind } from '../../core/history/notables.enum';
-import { Notable } from '../../core/history/notables.interface';
+import { type Notable } from '../../core/history/notables.interface';
 import { splitNote } from '../../core/history/note-tokens';
 import { isNegativeSplit, lapPlaceDeltas, pacingIndex } from '../../core/history/pacing';
 import { isoYearStart } from '../../core/history/iso-year';
@@ -32,18 +32,18 @@ import { noteBadgeKindOf } from '../../core/protocol/note-badge-kind';
 import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
 import { paceTextOf } from '../../core/protocol/pace-text';
 import { buildPreviousBests } from '../../core/history/previous-bests';
-import { PreviousBest } from '../../core/history/previous-bests.interface';
+import { type PreviousBest } from '../../core/history/previous-bests.interface';
 import { summarizeRace } from '../../core/history/race-summary';
 import { pluralText } from '../../core/i18n/plural-text';
-import { Gender, GenderType } from '../../core/models/gender.enum';
-import { ProtocolRow } from '../../core/models/protocol-row.interface';
+import { Gender, type GenderType } from '../../core/models/gender.enum';
+import { type ProtocolRow } from '../../core/models/protocol-row.interface';
 import { formatRaceTime, parseDuration } from '../../core/time/duration';
 import { isoToday } from '../../core/time/iso-today';
 import { formatRussianDateLong } from '../../core/time/russian-date';
-import { EventWeather } from '../../core/weather/event-weather.interface';
+import { type EventWeather } from '../../core/weather/event-weather.interface';
 import { weatherLineText } from '../../core/weather/weather-line';
 import { AthletesService } from '../../github/athletes.service';
-import { EventPhoto } from '../../core/models/event-photo.interface';
+import { type EventPhoto } from '../../core/models/event-photo.interface';
 import { ResultsService } from '../../github/results.service';
 import { ProtocolPdfService } from '../../pdf/protocol-pdf.service';
 import { SelfAthleteService } from '../../state/self-athlete.service';
@@ -75,8 +75,15 @@ import {
 } from './race-page.constant';
 import { MyTrack } from './my-track/my-track';
 import { PhotoStrip } from './photo-strip/photo-strip';
-import { RaceStatus, RaceStatusType } from './race-page.enum';
-import { RaceDeltaView, RaceNoteBadgeView, RacePageState, RacePrNoteView, RaceRowView, RaceView } from './race-page.interface';
+import { RaceStatus, type RaceStatusType } from './race-page.enum';
+import {
+  type RaceDeltaView,
+  type RaceNoteBadgeView,
+  type RacePageState,
+  type RacePrNoteView,
+  type RaceRowView,
+  type RaceView,
+} from './race-page.interface';
 
 /** The online protocol of one published race, mirroring the PDF table; rows link to athlete pages. */
 @Component({
@@ -212,18 +219,17 @@ export class RacePage {
 
     return {
       status: RaceStatus.ready,
-      race: toRaceView(
-        file,
-        buildEventNotables(participantRuns, slug, file.event.dateIso),
-        finishCountsAt(participantRuns, file.event.dateIso),
-        buildPreviousBests(participantRuns, file.event.dateIso),
-        buildPreviousBests(participantRuns, file.event.dateIso, isoYearStart(file.event.dateIso)),
-        buildFormBaselines(participantRuns, file.event.dateIso),
-        monthFinalSlugs(eventSlugs, isoToday()).has(slug),
+      race: toRaceView(file, {
+        notables: buildEventNotables(participantRuns, { slug, dateIso: file.event.dateIso }),
+        finishCounts: finishCountsAt(participantRuns, file.event.dateIso),
+        previousBests: buildPreviousBests(participantRuns, { dateIso: file.event.dateIso }),
+        previousYearBests: buildPreviousBests(participantRuns, { dateIso: file.event.dateIso, sinceIso: isoYearStart(file.event.dateIso) }),
+        formBaselines: buildFormBaselines(participantRuns, file.event.dateIso),
+        isMonthFinal: monthFinalSlugs(eventSlugs, isoToday()).has(slug),
         weather,
         vkPostUrl,
         photos,
-      ),
+      }),
     };
   }
 }
@@ -247,15 +253,27 @@ function raceDescriptionOf(race: RaceView | null): string {
 
 function toRaceView(
   file: EventResultsFile,
-  notables: Record<string, Notable>,
-  finishCounts: Record<string, number>,
-  previousBests: Record<string, PreviousBest>,
-  previousYearBests: Record<string, PreviousBest>,
-  formBaselines: Record<string, FormBaseline>,
-  isMonthFinal: boolean,
-  weather: EventWeather | null,
-  vkPostUrl: string | null,
-  photos: EventPhoto[],
+  {
+    notables,
+    finishCounts,
+    previousBests,
+    previousYearBests,
+    formBaselines,
+    isMonthFinal,
+    weather,
+    vkPostUrl,
+    photos,
+  }: {
+    notables: Record<string, Notable>;
+    finishCounts: Record<string, number>;
+    previousBests: Record<string, PreviousBest>;
+    previousYearBests: Record<string, PreviousBest>;
+    formBaselines: Record<string, FormBaseline>;
+    isMonthFinal: boolean;
+    weather: EventWeather | null;
+    vkPostUrl: string | null;
+    photos: EventPhoto[];
+  },
 ): RaceView {
   return {
     number: formatRaceNumber(file.event.number, file.event.legacyNumber),
@@ -272,39 +290,36 @@ function toRaceView(
     photos,
     // i18n attributes with interpolation are dropped by the compiler, so the label is localized here.
     pdfAriaLabel: $localize`:@@race.pdfAriaLabel:Протокол пробега № ${file.event.number}:number: (PDF)`,
-    rows: toRowViews(file.rows, notables, finishCounts, previousBests, previousYearBests, formBaselines, file.event.dateIso),
+    rows: toRowViews(file.rows, { notables, finishCounts, previousBests, previousYearBests, formBaselines, dateIso: file.event.dateIso }),
   };
 }
 
+/** What the whole protocol is rendered against — the same context every one of its rows reads. */
+interface RaceRowContext {
+  readonly notables: Record<string, Notable>;
+  readonly finishCounts: Record<string, number>;
+  readonly previousBests: Record<string, PreviousBest>;
+  readonly previousYearBests: Record<string, PreviousBest>;
+  readonly formBaselines: Record<string, FormBaseline>;
+  readonly dateIso: string;
+}
+
+/** The shared context plus the two values scanned over the protocol for this row alone. */
+interface RaceRowInputs extends RaceRowContext {
+  readonly gapMs: number | null;
+  readonly lapGain: number | null;
+}
+
 /** The Smashrun-style gaps and the lap-2 ranks are scanned over the whole protocol before the per-row mapping. */
-function toRowViews(
-  rows: ProtocolRow[],
-  notables: Record<string, Notable>,
-  finishCounts: Record<string, number>,
-  previousBests: Record<string, PreviousBest>,
-  previousYearBests: Record<string, PreviousBest>,
-  formBaselines: Record<string, FormBaseline>,
-  dateIso: string,
-): RaceRowView[] {
+function toRowViews(rows: ProtocolRow[], context: RaceRowContext): RaceRowView[] {
   const gapsMs = placeGapsMs(rows);
   const lapGains = lapPlaceDeltas(rows);
 
-  return rows.map((row, index) =>
-    toRowView(row, notables, finishCounts, previousBests, previousYearBests, formBaselines, dateIso, gapsMs[index], lapGains[index]),
-  );
+  return rows.map((row, index) => toRowView(row, { ...context, gapMs: gapsMs[index], lapGain: lapGains[index] }));
 }
 
-function toRowView(
-  row: ProtocolRow,
-  notables: Record<string, Notable>,
-  finishCounts: Record<string, number>,
-  previousBests: Record<string, PreviousBest>,
-  previousYearBests: Record<string, PreviousBest>,
-  formBaselines: Record<string, FormBaseline>,
-  dateIso: string,
-  gapMs: number | null,
-  lapGain: number | null,
-): RaceRowView {
+function toRowView(row: ProtocolRow, inputs: RaceRowInputs): RaceRowView {
+  const { notables, finishCounts, previousBests, previousYearBests, formBaselines, dateIso, gapMs, lapGain } = inputs;
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];
   const gapText = gapMs === null ? EMPTY_CELL_TEXT : GAP_TEXT_PREFIX + formatRaceTime(gapMs);
@@ -337,9 +352,9 @@ function toRowView(
     // Only a gain gets the hint — the protocol celebrates the strong second lap, never shames a fade.
     lapGainText: lapGain !== null && lapGain > 0 ? LAP_GAIN_PREFIX + lapGain : EMPTY_CELL_TEXT,
     isNegativeSplit: isNegativeSplitRow(row),
-    formDelta: toFormDeltaView(timeMs, formBaselines[athleteKey], dateIso),
-    yearDelta: toBestDeltaView(timeMs, previousYearBest, yearBestHint(previousYearBest)),
-    recordDelta: toBestDeltaView(timeMs, previousBest, prDeltaHint(previousBest, previousYearBest)),
+    formDelta: toFormDeltaView(timeMs, { baseline: formBaselines[athleteKey], dateIso }),
+    yearDelta: toBestDeltaView(timeMs, { best: previousYearBest, hint: yearBestHint(previousYearBest) }),
+    recordDelta: toBestDeltaView(timeMs, { best: previousBest, hint: prDeltaHint(previousBest, previousYearBest) }),
     noteBadges: toNoteBadges(row.note, previousBest),
     notableText: toNotableText(notables[athleteKey]),
   };
@@ -349,12 +364,15 @@ function toRowView(
  * The «Δ форма» reading: how the run sat against this runner's own ordinary day. A debut has no
  * ordinary day yet and a row without a 5 km time has nothing to place against one — both blank.
  */
-function toFormDeltaView(timeMs: number | null, baseline: FormBaseline | undefined, dateIso: string): RaceDeltaView {
+function toFormDeltaView(
+  timeMs: number | null,
+  { baseline, dateIso }: { baseline: FormBaseline | undefined; dateIso: string },
+): RaceDeltaView {
   if (baseline === undefined) {
     return NO_DELTA;
   }
 
-  const delta = formDelta(timeMs, baseline, dateIso);
+  const delta = formDelta(timeMs, { baseline, dateIso });
 
   if (delta === null) {
     return NO_DELTA;
@@ -364,7 +382,7 @@ function toFormDeltaView(timeMs: number | null, baseline: FormBaseline | undefin
 }
 
 /** The same cell measured against a standing best — this season's or the career's; the hint names which. */
-function toBestDeltaView(timeMs: number | null, best: PreviousBest | undefined, hint: string): RaceDeltaView {
+function toBestDeltaView(timeMs: number | null, { best, hint }: { best: PreviousBest | undefined; hint: string }): RaceDeltaView {
   const delta = prDelta(timeMs, best?.timeMs);
 
   if (delta === null) {

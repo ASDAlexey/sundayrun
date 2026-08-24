@@ -1,4 +1,4 @@
-import { SourceFile } from '../../state/source-file.interface';
+import { type SourceFile } from '../../state/source-file.interface';
 
 /** A one-file upload — the pager renders nothing. */
 export const SINGLE_DRAFT_COUNT = 1;

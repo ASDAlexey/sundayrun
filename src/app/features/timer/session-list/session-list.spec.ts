@@ -22,11 +22,12 @@ import {
   TIMER_ROW_STATUS_TEXTS,
   TIMER_SESSION_LIST,
 } from './session-list.mock';
+import { type ShareCaption } from '../../../share/share-caption.interface';
 
 describe('TimerSessions', () => {
   const isAdmin = signal(true);
   const canShareFile = vi.fn<(file: File) => boolean>();
-  const shareFile = vi.fn<(file: File, title: string, text: string) => Promise<boolean>>();
+  const shareFile = vi.fn<(file: File, caption: ShareCaption) => Promise<boolean>>();
 
   let sessions: TimerSessionServiceMock;
   let publish: ReturnType<typeof timerPublishServiceMock>;
@@ -156,7 +157,7 @@ describe('TimerSessions', () => {
     element.querySelector<HTMLElement>('.timer-share__action')?.click();
     await fixture.whenStable();
 
-    expect(shareFile.mock.calls[0][1], 'the system sheet carries the file itself where it can').toBe(TIMER_ROW_DATE_TEXT);
+    expect(shareFile.mock.calls[0][1].title, 'the system sheet carries the file itself where it can').toBe(TIMER_ROW_DATE_TEXT);
 
     element.querySelector<HTMLElement>('.timer-share')?.click();
     await fixture.whenStable();

@@ -1,11 +1,11 @@
 import { paceTextOf } from '../../../core/protocol/pace-text';
 import { buildProtocolRows } from '../../../core/protocol/protocol-builder';
 import { EMPTY_TIME } from '../../../core/protocol/protocol-builder.constant';
-import { ProtocolRow } from '../../../core/models/protocol-row.interface';
+import { type ProtocolRow } from '../../../core/models/protocol-row.interface';
 import { sessionToParticipants } from '../../../core/timer/session-to-participants';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { TIMER_FINISH_NO_PLACE_TEXT } from './finish-board.constant';
-import { TimerFinishRow } from './finish-board.interface';
+import { type TimerFinishRow } from './finish-board.interface';
 
 /**
  * The protocol exactly as it will leave for the site. Nothing is recomputed here: the session becomes

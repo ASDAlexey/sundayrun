@@ -1,11 +1,11 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 import { DELETE_SHAS, SOURCE_XLSX_HEAD_KEY } from '../core/github/delete-event.mock';
 import { OK_STATUS } from '../core/github/github-commit.mock';
-import { GithubFetchFn } from '../core/github/github-fetch.type';
+import { type GithubFetchFn } from '../core/github/github-fetch.type';
 import { CURRENT_DB_BYTES, dbContentsKey } from '../core/github/protocol-db-file.mock';
 import { createGitDataRoutes } from '../core/github/spec-utils/git-data-routes';
-import { RouteHandler, routeFetch, statusResponse } from '../core/github/spec-utils/github-fetch-router';
+import { type RouteHandler, routeFetch, statusResponse } from '../core/github/spec-utils/github-fetch-router';
 import { EXPECTED_VERSION_PURGE_URL } from '../core/github/version-pointer.mock';
 
 export const EVENT_DELETE_STORED_TOKEN = 'stored-delete-token';

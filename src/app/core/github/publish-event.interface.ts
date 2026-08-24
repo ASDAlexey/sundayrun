@@ -1,5 +1,5 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
 
 /**
  * Everything needed to publish one event: metadata, formatted rows and the source workbook.

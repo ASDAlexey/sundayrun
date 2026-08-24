@@ -1,7 +1,7 @@
-import { GenderType } from '../../../core/models/gender.enum';
-import { LapBoardRow } from '../../../core/timer/session-lap-board.interface';
-import { TimerRunner } from '../../../core/timer/timer-session.interface';
-import { TimerLapMarkType } from './lap-board.enum';
+import { type GenderType } from '../../../core/models/gender.enum';
+import { type LapBoardRow } from '../../../core/timer/session-lap-board.interface';
+import { type TimerRunner } from '../../../core/timer/timer-session.interface';
+import { type TimerLapMarkType } from './lap-board.enum';
 
 /** One line of the live «Первый круг» table, ready for the template. */
 export interface TimerLapRow {

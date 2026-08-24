@@ -1,8 +1,8 @@
 import { Gender } from '../models/gender.enum';
-import { HistoryRunRow } from './badge-signals.interface';
+import { type HistoryRunRow } from './badge-signals.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 import { YearBadge } from './year-badges.enum';
-import { YearReview, YearReviewSource, YearRunRow } from './year-review.interface';
+import { type YearReview, type YearReviewSource, type YearRunRow } from './year-review.interface';
 
 const IVAN = { key: 'иванов иван', displayName: 'Иванов Иван', gender: Gender.male } as const;
 
@@ -16,9 +16,7 @@ const VERA = { key: 'кузнецова вера', displayName: 'Кузнецо�
 
 const runRow = (
   athlete: typeof ANNA | typeof IVAN | typeof OLEG | typeof VERA | typeof ZOYA,
-  dateIso: string,
-  timeMs: number,
-  distanceKm: number,
+  { dateIso, timeMs, distanceKm }: { dateIso: string; timeMs: number; distanceKm: number },
 ): YearRunRow => ({
   ...athlete,
   dateIso,
@@ -29,15 +27,15 @@ const runRow = (
 
 const YEAR_RUN_ROWS: YearRunRow[] = [
   // Иванов's runs arrive newest-first: the slower January opener must not displace his 24:00 best.
-  runRow(IVAN, '2026-01-18', 1470000, FIVE_KM_DISTANCE_KM),
-  runRow(IVAN, '2026-01-11', 1440000, FIVE_KM_DISTANCE_KM),
-  runRow(IVAN, '2026-01-04', 1500000, FIVE_KM_DISTANCE_KM),
+  runRow(IVAN, { dateIso: '2026-01-18', timeMs: 1470000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  runRow(IVAN, { dateIso: '2026-01-11', timeMs: 1440000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  runRow(IVAN, { dateIso: '2026-01-04', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM }),
   // Петрова's equal 27:00s arrive newest-first, so the best-of-year tie-break must keep the earlier run.
-  runRow(ANNA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
-  runRow(ANNA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
-  runRow(ZOYA, '2026-01-04', 1620000, FIVE_KM_DISTANCE_KM),
-  runRow(VERA, '2026-01-11', 1620000, FIVE_KM_DISTANCE_KM),
-  runRow(OLEG, '2026-01-11', 900000, TWO_THREE_KM_DISTANCE_KM),
+  runRow(ANNA, { dateIso: '2026-01-11', timeMs: 1620000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  runRow(ANNA, { dateIso: '2026-01-04', timeMs: 1620000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  runRow(ZOYA, { dateIso: '2026-01-04', timeMs: 1620000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  runRow(VERA, { dateIso: '2026-01-11', timeMs: 1620000, distanceKm: FIVE_KM_DISTANCE_KM }),
+  runRow(OLEG, { dateIso: '2026-01-11', timeMs: 900000, distanceKm: TWO_THREE_KM_DISTANCE_KM }),
 ];
 
 const historyRow = (row: YearRunRow): HistoryRunRow => ({

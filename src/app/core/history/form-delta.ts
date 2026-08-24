@@ -2,10 +2,10 @@ import { COMEBACK_MIN_BREAK_DAYS, MS_IN_DAY } from './badge-signals.constant';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { FORM_DELTA_CORRIDOR_RATIO, FORM_DELTA_USUAL_PREFIX } from './form-delta.constant';
 import { FormDeltaKind } from './form-delta.enum';
-import { FormBaseline, FormDelta } from './form-delta.interface';
+import { type FormBaseline, type FormDelta } from './form-delta.interface';
 import { FORM_WINDOW_SIZE } from './form.constant';
 import { medianMs } from './median';
-import { ParticipantRun } from './notables.interface';
+import { type ParticipantRun } from './notables.interface';
 import { signedRaceTime } from './signed-delta';
 
 /**
@@ -60,7 +60,10 @@ export function buildFormBaselines(participantRuns: ParticipantRun[], dateIso: s
  * shape someone was in three months ago answers a question nobody asked, and answers it cruelly.
  * Null — a blank cell — for a debut and for every row without a 5 km time of its own.
  */
-export function formDelta(timeMs: number | null, baseline: FormBaseline | undefined, dateIso: string): FormDelta | null {
+export function formDelta(
+  timeMs: number | null,
+  { baseline, dateIso }: { baseline: FormBaseline | undefined; dateIso: string },
+): FormDelta | null {
   if (timeMs === null || baseline === undefined) {
     return null;
   }

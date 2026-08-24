@@ -1,8 +1,8 @@
-import { CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, computed, inject, input, signal } from '@angular/core';
 
-import { EventPhoto } from '../../../core/models/event-photo.interface';
+import { type EventPhoto } from '../../../core/models/event-photo.interface';
 import { PHOTO_STRIP_VISIBLE_COUNT, PHOTO_VIEWER_CLOSE_KEY } from './photo-strip.constant';
-import { PhotoTileView, SwiperSlideChangeEvent } from './photo-strip.interface';
+import { type PhotoTileView, type SwiperSlideChangeEvent } from './photo-strip.interface';
 import { SWIPER_LOADER } from './swiper-loader.token';
 
 /**
@@ -33,7 +33,6 @@ function isSlideChangeEvent(event: Event): event is SwiperSlideChangeEvent {
   selector: 'app-photo-strip',
   templateUrl: './photo-strip.html',
   styleUrl: './photo-strip.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown)': 'onKeydown($event)' },
   // `swiper-container` / `swiper-slide` are custom elements; their styles live in shadow DOM.
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -50,6 +49,16 @@ export class PhotoStrip {
   /** Thumbnails the browser has actually painted — until then the tile shows its sheen. */
   readonly #loaded = signal<ReadonlySet<number>>(new Set());
 
+  /**
+   * The photos still worth showing, each keeping the index it had in the input — the strip, the
+   * viewer and the slides all page through exactly this list, so they can never disagree.
+   */
+  readonly #liveEntries = computed(() =>
+    this.photos()
+      .map((photo, index) => ({ photo, index }))
+      .filter((entry) => !this.#broken().has(entry.index)),
+  );
+
   readonly photos = input.required<EventPhoto[]>();
 
   /** The wall post itself — the viewer links out to it, so the visitor can see the full album. */
@@ -62,17 +71,11 @@ export class PhotoStrip {
   readonly swiperReady = signal(false);
 
   /** Every photo whose thumbnail still resolves — the viewer pages through exactly these. */
-  readonly livePhotos = computed(() =>
-    this.photos().reduce<EventPhoto[]>((kept, photo, index) => (this.#broken().has(index) ? kept : [...kept, photo]), []),
-  );
+  readonly livePhotos = computed(() => this.#liveEntries().map((entry) => entry.photo));
 
   readonly tiles = computed((): PhotoTileView[] => {
-    const broken = this.#broken();
     const loaded = this.#loaded();
-    const live = this.photos().reduce<{ photo: EventPhoto; index: number }[]>(
-      (kept, photo, index) => (broken.has(index) ? kept : [...kept, { photo, index }]),
-      [],
-    );
+    const live = this.#liveEntries();
     const visible = live.slice(0, PHOTO_STRIP_VISIBLE_COUNT);
 
     return visible.map((tile, position) => ({
@@ -86,12 +89,7 @@ export class PhotoStrip {
   });
 
   /** The slides Swiper renders: every live photo, each knowing whether its full size resolved. */
-  readonly slides = computed(() =>
-    this.photos().reduce<{ photo: EventPhoto; index: number; failed: boolean }[]>(
-      (kept, photo, index) => (this.#broken().has(index) ? kept : [...kept, { photo, index, failed: this.#brokenLarge().has(index) }]),
-      [],
-    ),
-  );
+  readonly slides = computed(() => this.#liveEntries().map((entry) => ({ ...entry, failed: this.#brokenLarge().has(entry.index) })));
 
   readonly isOpen = computed(() => this.openPosition() !== null);
 

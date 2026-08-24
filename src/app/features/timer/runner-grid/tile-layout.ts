@@ -1,7 +1,7 @@
 import { normalizeAthleteKey } from '../../../core/history/athlete-key';
 import { NAME_PART_SEPARATOR } from '../../../core/timer/timer-session.constant';
-import { TimerDensity, TimerDensityType } from './runner-grid.enum';
-import { TimerTileName } from './runner-grid.interface';
+import { TimerDensity, type TimerDensityType } from './runner-grid.enum';
+import { type TimerTileName } from './runner-grid.interface';
 import {
   TIMER_DENSITY_LARGE_MAX,
   TIMER_DENSITY_MEDIUM_MAX,

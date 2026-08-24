@@ -1,6 +1,6 @@
 import { medianMs } from '../history/median';
-import { ExpectedLapSample } from './runner-order.interface';
-import { TimerRunner } from './timer-session.interface';
+import { type ExpectedLapSample } from './runner-order.interface';
+import { type TimerRunner } from './timer-session.interface';
 
 /** Median first-lap time per athlete key. */
 export function expectedLapMsByAthlete(samples: readonly ExpectedLapSample[]): Map<string, number> {

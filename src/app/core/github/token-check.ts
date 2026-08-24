@@ -1,9 +1,9 @@
 import { GITHUB_JSON_ACCEPT, HTTP_FORBIDDEN, HTTP_UNAUTHORIZED, PROTOCOLS_REPO_API_URL } from './github-api.constant';
-import { RepoResponse } from './github-api.interface';
+import { type RepoResponse } from './github-api.interface';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubFetchFn } from './github-fetch.type';
 import { githubHeaders } from './github-request';
-import { TokenCheck, TokenCheckType } from './token-check.enum';
+import { TokenCheck, type TokenCheckType } from './token-check.enum';
 
 /**
  * Probes the protocols repository with the given token. The repository is public, so a bare

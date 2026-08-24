@@ -78,7 +78,7 @@ describe('HomePage', () => {
         { provide: SiteMetaService, useValue: { load: loadMeta } },
         { provide: AthletesService, useValue: { loadOverallStats, loadRecord, loadEventSlugs } },
         { provide: SelfAthleteService, useValue: { self: selfSignal } },
-        { provide: PLATFORM_ID, useFactory: () => platformId },
+        { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
       ],
     });
   });

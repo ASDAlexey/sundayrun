@@ -36,8 +36,8 @@ function createFetch(overrides: Record<string, RouteHandler> = {}): Mock<GithubF
   return vi.fn(routeFetch({ ...createGitDataRoutes(GIT_DATA_SHAS), ...overrides }));
 }
 
-function bodiesOf(fetchFn: Mock<GithubFetchFn>, method: string, url: string): unknown[] {
-  return requestBodiesOf(fetchFn.mock.calls, method, url);
+function bodiesOf(fetchFn: Mock<GithubFetchFn>, request: { method: string; url: string }): unknown[] {
+  return requestBodiesOf(fetchFn.mock.calls, request);
 }
 
 function refReads(fetchFn: Mock<GithubFetchFn>): number {
@@ -48,7 +48,7 @@ describe('commitFilesAtomically', () => {
   const buildFiles = vi.fn(() => Promise.resolve(COMMIT_FILES));
 
   function commit(fetchFn: GithubFetchFn): Promise<string> {
-    return commitFilesAtomically(COMMIT_TOKEN, buildFiles, COMMIT_MESSAGE, fetchFn);
+    return commitFilesAtomically({ token: COMMIT_TOKEN, buildFiles, message: COMMIT_MESSAGE, fetchFn });
   }
 
   beforeEach(() => {
@@ -64,10 +64,10 @@ describe('commitFilesAtomically', () => {
 
     await expect(commit(fetchFn)).resolves.toBe(GIT_DATA_SHAS.newCommitSha);
     expect(buildFiles).toHaveBeenCalledTimes(1);
-    expect(bodiesOf(fetchFn, POST_METHOD, GIT_BLOBS_URL)).toEqual(EXPECTED_BLOB_BODIES);
-    expect(bodiesOf(fetchFn, POST_METHOD, GIT_TREES_URL)).toEqual([EXPECTED_TREE_BODY]);
-    expect(bodiesOf(fetchFn, POST_METHOD, GIT_COMMITS_URL)).toEqual([EXPECTED_COMMIT_BODY]);
-    expect(bodiesOf(fetchFn, PATCH_METHOD, GIT_REF_UPDATE_URL)).toEqual([EXPECTED_REF_UPDATE_BODY]);
+    expect(bodiesOf(fetchFn, { method: POST_METHOD, url: GIT_BLOBS_URL })).toEqual(EXPECTED_BLOB_BODIES);
+    expect(bodiesOf(fetchFn, { method: POST_METHOD, url: GIT_TREES_URL })).toEqual([EXPECTED_TREE_BODY]);
+    expect(bodiesOf(fetchFn, { method: POST_METHOD, url: GIT_COMMITS_URL })).toEqual([EXPECTED_COMMIT_BODY]);
+    expect(bodiesOf(fetchFn, { method: PATCH_METHOD, url: GIT_REF_UPDATE_URL })).toEqual([EXPECTED_REF_UPDATE_BODY]);
   });
 
   it('reads the head ref before building the files and hands them the sha they will hang off', async () => {
@@ -133,6 +133,8 @@ describe('commitFilesAtomically', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED))),
     );
 
-    await expect(commitFilesAtomically(COMMIT_TOKEN, buildFiles, COMMIT_MESSAGE)).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(commitFilesAtomically({ token: COMMIT_TOKEN, buildFiles, message: COMMIT_MESSAGE })).rejects.toBeInstanceOf(
+      GithubAuthError,
+    );
   });
 });

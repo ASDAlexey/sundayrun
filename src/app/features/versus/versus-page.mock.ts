@@ -1,12 +1,12 @@
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
-import { AthleteFirstLap } from '../../core/history/first-lap.interface';
-import { AthleteRecord, AthleteRun } from '../../core/models/athlete-history.interface';
-import { SelfAthlete } from '../../state/self-athlete.interface';
+import { type AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { type AthleteRecord, type AthleteRun } from '../../core/models/athlete-history.interface';
+import { type SelfAthlete } from '../../state/self-athlete.interface';
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { DRAW_GAP_TEXT } from './versus-page.constant';
-import { DuelSideView, AthleteOptionView, MeetingView } from './versus-page.interface';
+import { type DuelSideView, type AthleteOptionView, type MeetingView } from './versus-page.interface';
 
 /** Denormalized on purpose: resolves to `LEFT_KEY` only after key normalization. */
 export const LEFT_KEY_PARAM = ' ПЕТРОВ ПЁТР ';
@@ -31,9 +31,17 @@ export const SUGGESTION_QUERY = ' ПЕТРОВА ';
 /** Normalizes to `петр`: matches all three namesakes, but the picked one must not suggest itself. */
 export const SHARED_PREFIX_QUERY = 'Пётр';
 
-const run = (slug: string, dateIso: string, timeMs: number): AthleteRun => ({ dateIso, slug, timeMs, distanceKm: FIVE_KM_DISTANCE_KM });
+const run = (slug: string, { dateIso, timeMs }: { dateIso: string; timeMs: number }): AthleteRun => ({
+  dateIso,
+  slug,
+  timeMs,
+  distanceKm: FIVE_KM_DISTANCE_KM,
+});
 
-const record = (key: string, displayName: string, bestMs: number | null, runs: AthleteRun[]): AthleteRecord => ({
+const record = (
+  key: string,
+  { displayName, bestMs, runs }: { displayName: string; bestMs: number | null; runs: AthleteRun[] },
+): AthleteRecord => ({
   key,
   displayName,
   gender: null,
@@ -45,17 +53,25 @@ const record = (key: string, displayName: string, bestMs: number | null, runs: A
 
 /** Пётр and Анна met on kuzminki-2 (he was ahead), kuzminki-3 (she was) and kuzminki-4 (a draw); kuzminki-1 he ran alone. */
 export const VERSUS_RECORDS: Record<string, AthleteRecord> = {
-  [LEFT_KEY]: record(LEFT_KEY, 'Петров Пётр', 1440000, [
-    run('kuzminki-1', '2025-12-27', 1500000),
-    run('kuzminki-2', '2026-01-03', 1440000),
-    run('kuzminki-3', '2026-01-10', 1500000),
-    run('kuzminki-4', '2026-01-17', 1500000),
-  ]),
-  [RIGHT_KEY]: record(RIGHT_KEY, 'Сидорова Анна', 1440000, [
-    run('kuzminki-2', '2026-01-03', 1500000),
-    run('kuzminki-3', '2026-01-10', 1440000),
-    run('kuzminki-4', '2026-01-17', 1500000),
-  ]),
+  [LEFT_KEY]: record(LEFT_KEY, {
+    displayName: 'Петров Пётр',
+    bestMs: 1440000,
+    runs: [
+      run('kuzminki-1', { dateIso: '2025-12-27', timeMs: 1500000 }),
+      run('kuzminki-2', { dateIso: '2026-01-03', timeMs: 1440000 }),
+      run('kuzminki-3', { dateIso: '2026-01-10', timeMs: 1500000 }),
+      run('kuzminki-4', { dateIso: '2026-01-17', timeMs: 1500000 }),
+    ],
+  }),
+  [RIGHT_KEY]: record(RIGHT_KEY, {
+    displayName: 'Сидорова Анна',
+    bestMs: 1440000,
+    runs: [
+      run('kuzminki-2', { dateIso: '2026-01-03', timeMs: 1500000 }),
+      run('kuzminki-3', { dateIso: '2026-01-10', timeMs: 1440000 }),
+      run('kuzminki-4', { dateIso: '2026-01-17', timeMs: 1500000 }),
+    ],
+  }),
 };
 
 const lap = (slug: string, lapMs: number): AthleteFirstLap => ({ dateIso: slug, slug, lapMs });
@@ -72,9 +88,9 @@ export const VERSUS_FIRST_LAPS: Record<string, AthleteFirstLap[]> = {
 /** One split lead each across the two split-bearing meetings. */
 export const EXPECTED_SPLIT_LEAD_TEXT = 'После первого круга впереди: 1 : 1';
 
-const SUGGESTED_RECORD: AthleteRecord = record(SUGGESTED_KEY, 'Петрова Мария', 1620000, []);
+const SUGGESTED_RECORD: AthleteRecord = record(SUGGESTED_KEY, { displayName: 'Петрова Мария', bestMs: 1620000, runs: [] });
 
-const TIMELESS_RECORD: AthleteRecord = record(TIMELESS_KEY, 'Петренко Ольга', null, []);
+const TIMELESS_RECORD: AthleteRecord = record(TIMELESS_KEY, { displayName: 'Петренко Ольга', bestMs: null, runs: [] });
 
 /** The picker directory: both duelists plus the suggestion-only namesakes. */
 export const DIRECTORY_RECORDS: AthleteRecord[] = [VERSUS_RECORDS[LEFT_KEY], VERSUS_RECORDS[RIGHT_KEY], SUGGESTED_RECORD, TIMELESS_RECORD];

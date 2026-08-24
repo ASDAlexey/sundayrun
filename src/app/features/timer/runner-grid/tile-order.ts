@@ -1,5 +1,5 @@
 import { orderRunnersByExpectedLap } from '../../../core/timer/runner-order';
-import { TimerTileOrderSource } from './runner-grid.interface';
+import { type TimerTileOrderSource } from './runner-grid.interface';
 
 /**
  * Tile ids in the order the grid draws them. While the order is still open it is recomputed from the

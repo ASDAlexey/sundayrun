@@ -1,4 +1,4 @@
-import { AthleteYearBadges, YearActivity } from '../../../core/history/year-badges';
+import { type AthleteYearBadges, type YearActivity } from '../../../core/history/year-badges';
 import {
   CAME_ANYWAY_SLOW_FINISH_COUNT,
   MONTHS_IN_YEAR,
@@ -6,9 +6,9 @@ import {
   OBSESSIVE_GOLD_RUN_COUNT,
   OBSESSIVE_SILVER_RUN_COUNT,
 } from '../../../core/history/year-badges.constant';
-import { YearBadge, YearBadgeType } from '../../../core/history/year-badges.enum';
+import { YearBadge, type YearBadgeType } from '../../../core/history/year-badges.enum';
 import { BADGE_CATALOG, FULL_PROGRESS_PERCENT } from './badge-catalog.constant';
-import { BadgeCatalogRow } from './badge-catalog.interface';
+import { type BadgeCatalogRow } from './badge-catalog.interface';
 
 /** Finished runs the obsessive tiers ask for within one calendar year. */
 const TIER_RUN_TARGETS: Partial<Record<YearBadgeType, number>> = {
@@ -22,10 +22,13 @@ const TIER_RUN_TARGETS: Partial<Record<YearBadgeType, number>> = {
  * the athlete's earned years and the live progress of the current season. The progress
  * line disappears once the criteria is met — the earned years speak for themselves then.
  */
-export function badgeCatalogRows(earned: AthleteYearBadges[], activity: YearActivity, currentYear: string): BadgeCatalogRow[] {
+export function badgeCatalogRows(
+  earned: AthleteYearBadges[],
+  { activity, currentYear }: { activity: YearActivity; currentYear: string },
+): BadgeCatalogRow[] {
   return BADGE_CATALOG.map(({ badge, description }) => {
     const years = earned.flatMap((entry) => (entry.badges.includes(badge) ? [entry.year] : []));
-    const progress = toProgress(badge, activity, currentYear);
+    const progress = toProgress(badge, { activity, year: currentYear });
 
     return {
       badge,
@@ -39,7 +42,10 @@ export function badgeCatalogRows(earned: AthleteYearBadges[], activity: YearActi
 }
 
 /** The current-season progress line; null once the criteria is met or the badge shows none. */
-function toProgress(badge: YearBadgeType, activity: YearActivity, year: string): { text: string; percent: number } | null {
+function toProgress(
+  badge: YearBadgeType,
+  { activity, year }: { activity: YearActivity; year: string },
+): { text: string; percent: number } | null {
   const runTarget = TIER_RUN_TARGETS[badge];
 
   if (runTarget !== undefined && activity.runCount < runTarget) {

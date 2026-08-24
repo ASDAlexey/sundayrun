@@ -1,12 +1,12 @@
 import type { Content, ContextPageSize, TableCell } from 'pdfmake/interfaces';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { PreviousBest } from '../history/previous-bests.interface';
-import { Gender, GenderType } from '../models/gender.enum';
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type PreviousBest } from '../history/previous-bests.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 import { WEATHER_MOCK } from '../weather/fetch-event-weather.mock';
-import { ProtocolDocInput } from './protocol-doc-definition.interface';
+import { type ProtocolDocInput } from './protocol-doc-definition.interface';
 import {
   ABBREVIATION_DNF,
   ABBREVIATION_DSQ,

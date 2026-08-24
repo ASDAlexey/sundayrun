@@ -1,4 +1,4 @@
-import { SiteMetaFile } from './site-meta.interface';
+import { type SiteMetaFile } from './site-meta.interface';
 
 export const SITE_META_SCHEMA_VERSION = 1;
 

@@ -1,5 +1,5 @@
-import { TimerTabType } from './timer-page.enum';
-import { TimerHeaderView } from './timer-page.interface';
+import { type TimerTabType } from './timer-page.enum';
+import { type TimerHeaderView } from './timer-page.interface';
 
 /** Nothing is open, so there is nothing to mark, count or undo. */
 export const TIMER_HEADER_EMPTY: TimerHeaderView = {

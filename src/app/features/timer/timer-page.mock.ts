@@ -1,7 +1,7 @@
 import { TimerStatus } from '../../core/timer/timer-session.enum';
-import { TimerSession, TimerSplit } from '../../core/timer/timer-session.interface';
+import { type TimerSession, type TimerSplit } from '../../core/timer/timer-session.interface';
 import { GRID_PLAIN_LAP_SPLIT, GRID_PLAIN_RUNNING } from './runner-grid/runner-grid.mock';
-import { TimerHeaderView } from './timer-page.interface';
+import { type TimerHeaderView } from './timer-page.interface';
 
 /** The header of the running fixture: six through the lap, three home, seven on the roster. */
 export const TIMER_HEADER_RUNNING: TimerHeaderView = {

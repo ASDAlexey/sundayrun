@@ -1,8 +1,8 @@
-import { CourseRecordHistory } from '../../core/history/course-records.type';
-import { EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { type CourseRecordHistory } from '../../core/history/course-records.type';
+import { type EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { ANCHOR_EVENT, MALE_COURSE_RECORD_MS, WINNER_EVENTS } from '../../core/history/runner-scores.mock';
 import { Gender } from '../../core/models/gender.enum';
-import { RatingCardView } from './rating-card.interface';
+import { type RatingCardView } from './rating-card.interface';
 
 /** The male course record behind `MALE_COURSE_RECORD_MS`; the women's board stays vacant. */
 export const CARD_COURSE_RECORDS: CourseRecordHistory = {

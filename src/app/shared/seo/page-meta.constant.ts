@@ -1,4 +1,4 @@
-import { PageMetaTag } from './page-meta.interface';
+import { type PageMetaTag } from './page-meta.interface';
 
 /**
  * The headline every page falls back to: the site title `index.html` ships with. A route always

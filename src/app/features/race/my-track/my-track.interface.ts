@@ -1,4 +1,4 @@
-import { PaceToneType } from './pace-tone.enum';
+import { type PaceToneType } from './pace-tone.enum';
 
 /** One drawn point of the recording: where it is on the map, and when the runner was there. */
 export interface TrackFrame {

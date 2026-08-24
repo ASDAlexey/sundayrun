@@ -1,4 +1,4 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 /** The stand-in the page and the route guard get: one spy that answers «можно уходить». */
 export interface RaceGuardServiceMock {

@@ -4,7 +4,7 @@ import type { PdfDocument } from 'pdfmake/build/pdfmake';
 
 import { PDF_FONT_FAMILY } from '../core/pdf/protocol-doc-definition.constant';
 import { PT_SERIF_BOLD_FILE, PT_SERIF_REGULAR_FILE } from './pdf-fonts.constant';
-import { PtSerifFonts } from './pdf-fonts.interface';
+import { type PtSerifFonts } from './pdf-fonts.interface';
 
 export const CREATE_PDF_MOCK = vi.fn();
 

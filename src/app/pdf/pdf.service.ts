@@ -2,9 +2,9 @@ import { Service, inject } from '@angular/core';
 
 import type { PdfMakeStatic } from 'pdfmake/build/pdfmake';
 
-import { RaceEvent } from '../core/models/race-event.interface';
+import { type RaceEvent } from '../core/models/race-event.interface';
 import { buildProtocolDocDefinition } from '../core/pdf/protocol-doc-definition';
-import { ProtocolDocInput } from '../core/pdf/protocol-doc-definition.interface';
+import { type ProtocolDocInput } from '../core/pdf/protocol-doc-definition.interface';
 import { PdfFontsService } from './pdf-fonts.service';
 import { PDF_FILE_EXTENSION, PROTOCOL_FILE_PREFIX } from './pdf.service.constant';
 

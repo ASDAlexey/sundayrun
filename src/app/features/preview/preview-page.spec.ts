@@ -80,7 +80,7 @@ describe('PreviewPage', () => {
             activeIndex,
             sourceFile,
             protocolRows: computed(() => buildProtocolRows(participants())),
-            draftRowsBefore: () => [],
+            draftRowsBefore: (): [] => [],
             setEvent,
             setGender,
             selectDraft,

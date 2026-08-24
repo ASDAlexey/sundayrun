@@ -1,4 +1,4 @@
-import { TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
+import { type TimerRunnerOutcomeType } from '../../../core/timer/timer-session.enum';
 
 /** One journal entry as the history shows it. */
 export interface TimerHistoryEntry {

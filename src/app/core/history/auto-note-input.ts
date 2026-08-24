@@ -1,8 +1,8 @@
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { FIVE_KM_LAP_COUNT } from '../protocol/protocol-builder.constant';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 import { normalizeAthleteKey } from './athlete-key';
-import { AutoNoteInput } from './notes-builder.interface';
+import { type AutoNoteInput } from './notes-builder.interface';
 
 /**
  * Maps a participant to the `buildAutoNote` input: 2 recorded laps mean the full 5 km,

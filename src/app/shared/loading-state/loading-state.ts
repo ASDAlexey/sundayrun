@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
  * What a data page shows while its load runs: a chronometer sweep over a thin lane and one mono
@@ -11,7 +11,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   selector: 'app-loading-state',
   templateUrl: './loading-state.html',
   styleUrl: './loading-state.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingState {
   /** The caption under the lane; each page names exactly what it is loading. */

@@ -61,7 +61,7 @@ describe('ParticipantsTable', () => {
             event,
             suggestedDateIso,
             protocolRows: computed(() => buildProtocolRows(participants())),
-            draftRowsBefore: () => [],
+            draftRowsBefore: (): [] => [],
             setGender,
           },
         },
@@ -131,7 +131,7 @@ describe('ParticipantsTable', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // jsdom reports a zero-sized scroll container, so the virtual viewport never
+    // The DOM shim reports a zero-sized scroll container, so the virtual viewport never
     // renders its first batch on its own; a manual size check forces the autosize
     // strategy to fill the buffer with the visible rows the assertions inspect.
     fixture.debugElement.query(By.directive(CdkVirtualScrollViewport)).componentInstance.checkViewportSize();

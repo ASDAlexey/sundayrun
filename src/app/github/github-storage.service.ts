@@ -2,11 +2,11 @@ import { Service, inject, signal } from '@angular/core';
 
 import { GithubAuthError } from '../core/github/github-errors';
 import { publishEvents } from '../core/github/publish-event';
-import { PublishEventInput } from '../core/github/publish-event.interface';
+import { type PublishEventInput } from '../core/github/publish-event.interface';
 import { AdminTokenService } from './admin-token.service';
 import { CdnRefService } from './cdn-ref.service';
 import { DbFreshnessService } from './db-freshness.service';
-import { PublishState, PublishStateType } from './github-storage.enum';
+import { PublishState, type PublishStateType } from './github-storage.enum';
 
 /** Publishes an upload batch (one event or many, always one commit) into the protocols repository, exposing the flow state. */
 @Service()
@@ -39,7 +39,7 @@ export class GithubStorageService {
     this.#state.set(PublishState.publishing);
 
     try {
-      const result = await publishEvents(token, inputs);
+      const result = await publishEvents({ token, inputs });
 
       this.#cdnRef.pin(result.commitSha);
       this.#state.set(PublishState.success);

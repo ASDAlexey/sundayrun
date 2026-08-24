@@ -27,7 +27,7 @@ export function parseDuration(raw: string): number | null {
   if (fullMatch) {
     const [, hours, minutes, seconds, fraction] = fullMatch;
 
-    return toMs(Number(hours) * MINUTES_IN_HOUR + Number(minutes), seconds, fraction);
+    return toMs(Number(hours) * MINUTES_IN_HOUR + Number(minutes), { seconds, fraction });
   }
 
   const shortMatch = DURATION_SHORT_PATTERN.exec(value);
@@ -35,7 +35,7 @@ export function parseDuration(raw: string): number | null {
   if (shortMatch) {
     const [, minutes, seconds, fraction] = shortMatch;
 
-    return toMs(Number(minutes), seconds, fraction);
+    return toMs(Number(minutes), { seconds, fraction });
   }
 
   return null;
@@ -123,7 +123,7 @@ function nonNegative(ms: number): number {
   return Math.max(NO_ELAPSED_MS, ms);
 }
 
-function toMs(totalMinutes: number, seconds: string, fraction: string | undefined): number {
+function toMs(totalMinutes: number, { seconds, fraction }: { seconds: string; fraction: string | undefined }): number {
   const totalSeconds = totalMinutes * SECONDS_IN_MINUTE + Number(seconds);
 
   return totalSeconds * MS_IN_SECOND + parseFraction(fraction);

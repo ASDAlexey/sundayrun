@@ -1,8 +1,8 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
 import { pinnedProtocolDbPath } from '../core/github/protocol-db-path';
-import { DbFreshness, DbFreshnessType } from './db-freshness.enum';
+import { DbFreshness, type DbFreshnessType } from './db-freshness.enum';
 import { DB_BASE_URI_MOCK } from './protocol-db.service.mock';
 
 /** A plausible pinned data commit — the probe only runs for full 40-char hex shas. */

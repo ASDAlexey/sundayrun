@@ -1,10 +1,10 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { Gender } from '../models/gender.enum';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { AthleteFirstLap } from './first-lap.interface';
+import { type AthleteFirstLap } from './first-lap.interface';
 import { SECOND_LAP_DISTANCE_KM } from './pacing.constant';
 import { PacingProfile } from './pacing.enum';
-import { AthletePacing, LapDeltaRow, PacingBoards, PacingRow, SplitLeadMeeting } from './pacing.interface';
+import { type AthletePacing, type LapDeltaRow, type PacingBoards, type PacingRow, type SplitLeadMeeting } from './pacing.interface';
 
 /** The very computation of `pacingIndex`, so float expectations match to the last ulp. */
 export function indexOf(lapMs: number, totalMs: number): number {
@@ -28,7 +28,7 @@ export const FADE_LAP_MS = 600_000;
 export const NOISE_LAP_MS = 899_000;
 export const NOISE_TOTAL_MS = 1_431_000;
 
-function toRun(slug: string, timeMs: number, distanceKm = FIVE_KM_DISTANCE_KM): AthleteRun {
+function toRun(slug: string, { timeMs, distanceKm = FIVE_KM_DISTANCE_KM }: { timeMs: number; distanceKm?: number }): AthleteRun {
   return { dateIso: slug, slug, timeMs, distanceKm };
 }
 
@@ -42,13 +42,13 @@ function toLap(slug: string, lapMs: number): AthleteFirstLap {
  * A second copy of the best index on a later date checks the earlier-run tie rule.
  */
 export const PACING_RUNS: AthleteRun[] = [
-  toRun('2025-01-12', EVEN_TOTAL_MS),
-  toRun('2025-02-16', EVEN_TOTAL_MS),
-  toRun('2025-01-05', EVEN_TOTAL_MS),
-  toRun('2025-01-19', EVEN_TOTAL_MS),
-  toRun('2025-01-26', NOISE_TOTAL_MS),
-  toRun('2025-02-02', NEGATIVE_LAP_MS, TWO_THREE_KM_DISTANCE_KM),
-  toRun('2025-02-09', EVEN_TOTAL_MS),
+  toRun('2025-01-12', { timeMs: EVEN_TOTAL_MS }),
+  toRun('2025-02-16', { timeMs: EVEN_TOTAL_MS }),
+  toRun('2025-01-05', { timeMs: EVEN_TOTAL_MS }),
+  toRun('2025-01-19', { timeMs: EVEN_TOTAL_MS }),
+  toRun('2025-01-26', { timeMs: NOISE_TOTAL_MS }),
+  toRun('2025-02-02', { timeMs: NEGATIVE_LAP_MS, distanceKm: TWO_THREE_KM_DISTANCE_KM }),
+  toRun('2025-02-09', { timeMs: EVEN_TOTAL_MS }),
 ];
 
 export const PACING_LAPS: AthleteFirstLap[] = [
@@ -70,9 +70,9 @@ export const EXPECTED_ATHLETE_PACING: AthletePacing = {
 };
 
 export const NEGATIVE_PROFILE_RUNS: AthleteRun[] = [
-  toRun('2025-04-06', EVEN_TOTAL_MS),
-  toRun('2025-04-13', EVEN_TOTAL_MS),
-  toRun('2025-04-20', EVEN_TOTAL_MS),
+  toRun('2025-04-06', { timeMs: EVEN_TOTAL_MS }),
+  toRun('2025-04-13', { timeMs: EVEN_TOTAL_MS }),
+  toRun('2025-04-20', { timeMs: EVEN_TOTAL_MS }),
 ];
 
 export const NEGATIVE_PROFILE_LAPS: AthleteFirstLap[] = [
@@ -106,13 +106,16 @@ export const LAP_DELTA_ROWS: LapDeltaRow[] = [
 /** The fast starter loses one place on lap 2, the strong closer gains it back; dead heats stay 0. */
 export const EXPECTED_LAP_DELTAS: (number | null)[] = [1, -1, 0, 0, 0, null, null, null, null];
 
-function toPacingRow(key: string, gender: PacingRow['gender'], slug: string, lapMs: number, totalMs: number): PacingRow {
+function toPacingRow(
+  key: string,
+  { gender, slug, lapMs, totalMs }: { gender: PacingRow['gender']; slug: string; lapMs: number; totalMs: number },
+): PacingRow {
   return { key, displayName: key, gender, slug, lapMs, totalMs };
 }
 
 /** One athlete's same-lap run replicated over three single-runner events. */
-function soloSeason(key: string, gender: PacingRow['gender'], slugs: string[], lapMs: number): PacingRow[] {
-  return slugs.map((slug) => toPacingRow(key, gender, slug, lapMs, EVEN_TOTAL_MS));
+function soloSeason(key: string, { gender, slugs, lapMs }: { gender: PacingRow['gender']; slugs: string[]; lapMs: number }): PacingRow[] {
+  return slugs.map((slug) => toPacingRow(key, { gender, slug, lapMs, totalMs: EVEN_TOTAL_MS }));
 }
 
 const JANUARY_SLUGS = ['2025-01-05', '2025-01-12', '2025-01-19'];
@@ -121,11 +124,11 @@ const MAY_SLUGS = ['2025-05-04', '2025-05-11', '2025-05-18'];
 /** One shared five-runner race: the two late chargers gain places, the fast starters bleed them. */
 function chargersRace(slug: string): PacingRow[] {
   return [
-    toPacingRow('petr', Gender.male, slug, 720_000, 1_450_000),
-    toPacingRow('timur', Gender.male, slug, 725_000, 1_455_000),
-    toPacingRow('oleg', Gender.male, slug, 650_000, 1_500_000),
-    toPacingRow('dina', Gender.female, slug, 700_000, 1_550_000),
-    toPacingRow('zoya', Gender.female, slug, 730_000, 1_540_000),
+    toPacingRow('petr', { gender: Gender.male, slug, lapMs: 720_000, totalMs: 1_450_000 }),
+    toPacingRow('timur', { gender: Gender.male, slug, lapMs: 725_000, totalMs: 1_455_000 }),
+    toPacingRow('oleg', { gender: Gender.male, slug, lapMs: 650_000, totalMs: 1_500_000 }),
+    toPacingRow('dina', { gender: Gender.female, slug, lapMs: 700_000, totalMs: 1_550_000 }),
+    toPacingRow('zoya', { gender: Gender.female, slug, lapMs: 730_000, totalMs: 1_540_000 }),
   ];
 }
 
@@ -136,18 +139,18 @@ function chargersRace(slug: string): PacingRow[] {
  * stay negative, and the lone 2024 pair never reaches three scoped races.
  */
 export const PACING_BOARD_ROWS: PacingRow[] = [
-  toPacingRow('boris', Gender.male, '2025-01-05', EVEN_LAP_MS, EVEN_TOTAL_MS),
-  toPacingRow('boris', Gender.male, '2025-01-12', NEGATIVE_LAP_MS, EVEN_TOTAL_MS),
-  toPacingRow('boris', Gender.male, '2025-01-19', 680_000, EVEN_TOTAL_MS),
-  toPacingRow('boris', Gender.male, '2025-01-26', NOISE_LAP_MS, NOISE_TOTAL_MS),
-  ...soloSeason('anton', Gender.male, ['2025-02-02', '2025-02-09', '2025-02-16'], FADE_LAP_MS),
-  ...soloSeason('anna', Gender.female, JANUARY_SLUGS, EVEN_LAP_MS),
-  ...soloSeason('vera', Gender.female, JANUARY_SLUGS, EVEN_LAP_MS),
-  ...soloSeason('semen', Gender.male, ['2025-03-02', '2025-03-09'], EVEN_LAP_MS),
-  ...soloSeason('nikita', null, JANUARY_SLUGS, EVEN_LAP_MS),
+  toPacingRow('boris', { gender: Gender.male, slug: '2025-01-05', lapMs: EVEN_LAP_MS, totalMs: EVEN_TOTAL_MS }),
+  toPacingRow('boris', { gender: Gender.male, slug: '2025-01-12', lapMs: NEGATIVE_LAP_MS, totalMs: EVEN_TOTAL_MS }),
+  toPacingRow('boris', { gender: Gender.male, slug: '2025-01-19', lapMs: 680_000, totalMs: EVEN_TOTAL_MS }),
+  toPacingRow('boris', { gender: Gender.male, slug: '2025-01-26', lapMs: NOISE_LAP_MS, totalMs: NOISE_TOTAL_MS }),
+  ...soloSeason('anton', { gender: Gender.male, slugs: ['2025-02-02', '2025-02-09', '2025-02-16'], lapMs: FADE_LAP_MS }),
+  ...soloSeason('anna', { gender: Gender.female, slugs: JANUARY_SLUGS, lapMs: EVEN_LAP_MS }),
+  ...soloSeason('vera', { gender: Gender.female, slugs: JANUARY_SLUGS, lapMs: EVEN_LAP_MS }),
+  ...soloSeason('semen', { gender: Gender.male, slugs: ['2025-03-02', '2025-03-09'], lapMs: EVEN_LAP_MS }),
+  ...soloSeason('nikita', { gender: null, slugs: JANUARY_SLUGS, lapMs: EVEN_LAP_MS }),
   ...MAY_SLUGS.flatMap(chargersRace),
-  toPacingRow('petr', Gender.male, '2024-06-02', 720_000, 1_450_000),
-  toPacingRow('oleg', Gender.male, '2024-06-02', 650_000, 1_500_000),
+  toPacingRow('petr', { gender: Gender.male, slug: '2024-06-02', lapMs: 720_000, totalMs: 1_450_000 }),
+  toPacingRow('oleg', { gender: Gender.male, slug: '2024-06-02', lapMs: 650_000, totalMs: 1_500_000 }),
 ];
 
 export const EXPECTED_2025_BOARDS: PacingBoards = {

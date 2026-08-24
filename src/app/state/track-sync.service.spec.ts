@@ -51,7 +51,11 @@ describe('TrackSyncService', () => {
 
     const [track] = service.tracks();
 
-    expect(downloadGpx).toHaveBeenCalledWith(STORED_WATCH_ACCOUNT.token, SYNC_ACTIVITY_MOCK.labelId, STORED_WATCH_ACCOUNT.region);
+    expect(downloadGpx).toHaveBeenCalledWith({
+      token: STORED_WATCH_ACCOUNT.token,
+      labelId: SYNC_ACTIVITY_MOCK.labelId,
+      region: STORED_WATCH_ACCOUNT.region,
+    });
     expect(track.slug).toBe(SYNC_RACE_MOCK.slug);
     expect(track.distanceM).toBe(SYNC_ACTIVITY_MOCK.distanceM);
     expect(strFromU8(gunzipSync(track.gpxGzip))).toBe(SYNC_GPX_MOCK);

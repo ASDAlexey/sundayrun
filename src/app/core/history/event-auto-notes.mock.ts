@@ -1,7 +1,7 @@
 import { Gender } from '../models/gender.enum';
-import { EventRef, EventResult } from './athletes-rollup.interface';
+import { type EventRef, type EventResult } from './athletes-rollup.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
-import { AutoNoteInput } from './notes-builder.interface';
+import { type AutoNoteInput } from './notes-builder.interface';
 
 export const SEASON_OPENER_EVENT: EventRef = { slug: 'kuzminki-1', dateIso: '2026-01-03' };
 

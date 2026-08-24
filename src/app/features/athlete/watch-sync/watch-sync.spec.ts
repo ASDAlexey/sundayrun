@@ -37,7 +37,7 @@ describe('WatchSync', () => {
       providers: [
         {
           provide: WatchAccountService,
-          useValue: { account, linked: () => account() !== null, link, unlink },
+          useValue: { account, linked: (): boolean => account() !== null, link, unlink },
         },
         { provide: TrackSyncService, useValue: { tracks, status, load, sync } },
       ],
@@ -82,7 +82,7 @@ describe('WatchSync', () => {
 
     await component.link();
 
-    expect(link).toHaveBeenCalledWith(WATCH_FORM_EMAIL_MOCK, WATCH_FORM_PASSWORD_MOCK, CorosRegion.Cn);
+    expect(link).toHaveBeenCalledWith({ email: WATCH_FORM_EMAIL_MOCK, password: WATCH_FORM_PASSWORD_MOCK, region: CorosRegion.Cn });
     expect(component.password()).toBe('');
     expect(component.formOpen()).toBe(false);
     expect(component.linkFailed()).toBe(false);

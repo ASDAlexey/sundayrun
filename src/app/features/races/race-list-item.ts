@@ -1,4 +1,4 @@
-import { ArchiveIndexEntry } from '../../core/github/archive-index.interface';
+import { type ArchiveIndexEntry } from '../../core/github/archive-index.interface';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { pluralText } from '../../core/i18n/plural-text';
 import { formatRaceTime } from '../../core/time/duration';
@@ -7,7 +7,13 @@ import { formatRussianDateChip } from '../../core/time/russian-date';
 import { weatherLineText } from '../../core/weather/weather-line';
 import { RACE_PAGE_BASE_LINK } from '../race/race-page.constant';
 import { TREND_WINDOW_SIZE } from './races-page.constant';
-import { RaceCardGenderBlock, RaceCardHero, RaceCardSideStat, RaceCardTrend, RaceListItem } from './races-page.interface';
+import {
+  type RaceCardGenderBlock,
+  type RaceCardHero,
+  type RaceCardSideStat,
+  type RaceCardTrend,
+  type RaceListItem,
+} from './races-page.interface';
 
 /** Full percent of the tallest trend bar; shorter races scale against the window's busiest one. */
 const FULL_BAR_PERCENT = 100;
@@ -26,11 +32,14 @@ export function toRaceListItems(entries: ArchiveIndexEntry[], todayIso: string =
     todayIso,
   );
 
-  return entries.map((entry, index) => toRaceListItem(entry, finals.has(entry.slug), toCardTrend(entries, index)));
+  return entries.map((entry, index) => toRaceListItem(entry, { isMonthFinal: finals.has(entry.slug), trend: toCardTrend(entries, index) }));
 }
 
 /** The index arrives already sorted newest-first; entries are only reshaped, never re-sorted. */
-export function toRaceListItem(entry: ArchiveIndexEntry, isMonthFinal: boolean, trend: RaceCardTrend | null): RaceListItem {
+export function toRaceListItem(
+  entry: ArchiveIndexEntry,
+  { isMonthFinal, trend }: { isMonthFinal: boolean; trend: RaceCardTrend | null },
+): RaceListItem {
   return {
     slug: entry.slug,
     protocolLink: [RACE_PAGE_BASE_LINK, entry.slug],

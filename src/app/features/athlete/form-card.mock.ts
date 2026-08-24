@@ -1,6 +1,6 @@
 import { IMPROVING_FORM_RUNS } from '../../core/history/form.mock';
-import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { FormView } from './form-card.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
+import { type FormView } from './form-card.interface';
 
 /** Exactly one full window: five equal runs ending in May — the athlete is at the peak by definition. */
 export const SINGLE_WINDOW_RUNS: readonly AthleteRun[] = IMPROVING_FORM_RUNS.slice(0, 5);

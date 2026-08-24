@@ -14,8 +14,8 @@ import { provideServiceWorker } from '@angular/service-worker';
 
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
-import { NotifyingErrorHandler } from './core/error/notifying-error-handler';
-import { RouteErrorNotifier } from './core/error/route-error-notifier';
+import { NotifyingErrorHandler } from './core/error/notifying-error-handler.service';
+import { RouteErrorNotifier } from './core/error/route-error-notifier.service';
 import { InstallPromptService } from './shared/install-app/install-prompt.service';
 import { CanonicalLinkService } from './shared/seo/canonical-link.service';
 import { PageMetaService } from './shared/seo/page-meta.service';

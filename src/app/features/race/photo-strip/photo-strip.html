@@ -70,7 +70,7 @@
       <div class="photo-viewer__bar">
         <span class="photo-viewer__position">{{ positionLabel() }}</span>
 
-        <a class="photo-viewer__source" href="{{ sourceUrl() }}" rel="noopener noreferrer" target="_blank">
+        <a class="photo-viewer__source" rel="noopener noreferrer" target="_blank" [href]="sourceUrl()">
           <span i18n="@@race.photoSource">Открыть во ВКонтакте</span>
         </a>
       </div>

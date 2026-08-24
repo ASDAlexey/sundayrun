@@ -14,12 +14,31 @@ import {
   PATCH_METHOD,
   POST_METHOD,
 } from './github-api.constant';
-import { CommitFile, GitBlobResponse, GitCommitResponse, GitRefResponse, GitTreeEntry, GitTreeResponse } from './github-api.interface';
+import {
+  type CommitFile,
+  type GitBlobResponse,
+  type GitCommitResponse,
+  type GitRefResponse,
+  type GitTreeEntry,
+  type GitTreeResponse,
+} from './github-api.interface';
 import { COMMIT_RETRIES_EXHAUSTED_MESSAGE } from './github-commit.constant';
 import { GithubRequestError } from './github-errors';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubAccess, type GithubFetchFn } from './github-fetch.type';
 import { assertAuthorized, assertOk, githubBodyHeaders, githubJson } from './github-request';
+
+/** The files one commit carries, rebuilt from scratch on every attempt against the fresh head sha. */
+interface CommitContent {
+  readonly buildFiles: (parentSha: string) => Promise<CommitFile[]>;
+  readonly message: string;
+}
+
+/** One atomic commit: what to write, who writes it, and the transport it goes out on. */
+export interface AtomicCommitRequest extends CommitContent {
+  readonly token: string;
+  readonly fetchFn?: GithubFetchFn;
+}
 
 /**
  * Creates ONE commit containing all files produced by `buildFiles` via the Git Data API and
@@ -37,16 +56,12 @@ import { assertAuthorized, assertOk, githubBodyHeaders, githubJson } from './git
  * publication landing during the download fast-forwarded without conflict while the tree carried a
  * db assembled from the older bytes — the other event then disappeared with no error at all.
  */
-export async function commitFilesAtomically(
-  token: string,
-  buildFiles: (parentSha: string) => Promise<CommitFile[]>,
-  message: string,
-  fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
-): Promise<string> {
+export async function commitFilesAtomically(request: AtomicCommitRequest): Promise<string> {
+  const { token, buildFiles, message, fetchFn = DEFAULT_GITHUB_FETCH } = request;
   let lastRefStatus: number = HTTP_CONFLICT;
 
   for (let attempt = 0; attempt < MAX_COMMIT_ATTEMPTS; attempt += 1) {
-    const outcome = await attemptCommit(fetchFn, token, buildFiles, message);
+    const outcome = await attemptCommit({ token, fetchFn }, { buildFiles, message });
 
     if (typeof outcome === 'string') {
       return outcome;
@@ -59,49 +74,44 @@ export async function commitFilesAtomically(
 }
 
 /** One full commit cycle; returns the new commit sha or the 409/422 status when the ref update was rejected. */
-async function attemptCommit(
-  fetchFn: GithubFetchFn,
-  token: string,
-  buildFiles: (parentSha: string) => Promise<CommitFile[]>,
-  message: string,
-): Promise<number | string> {
-  const headSha = (await githubJson<GitRefResponse>(fetchFn, token, GIT_REF_URL)).object.sha;
+async function attemptCommit(access: GithubAccess, commit: CommitContent): Promise<number | string> {
+  const { buildFiles, message } = commit;
+  const headSha = (await githubJson<GitRefResponse>(GIT_REF_URL, access)).object.sha;
   const files = await buildFiles(headSha);
-  const baseCommit = await githubJson<GitCommitResponse>(fetchFn, token, `${GIT_COMMITS_URL}/${headSha}`);
-  const treeEntries = await Promise.all(files.map((file) => createTreeEntry(fetchFn, token, file)));
-  const tree = await githubJson<GitTreeResponse>(
-    fetchFn,
-    token,
-    GIT_TREES_URL,
-    postInit({ base_tree: baseCommit.tree.sha, tree: treeEntries }),
-  );
-  const commit = await githubJson<GitCommitResponse>(
-    fetchFn,
-    token,
-    GIT_COMMITS_URL,
-    postInit({ message, tree: tree.sha, parents: [headSha] }),
-  );
-  const refStatus = await updateRef(fetchFn, token, commit.sha);
+  const baseCommit = await githubJson<GitCommitResponse>(`${GIT_COMMITS_URL}/${headSha}`, access);
+  const treeEntries = await Promise.all(files.map((file) => createTreeEntry(access, file)));
+  const tree = await githubJson<GitTreeResponse>(GIT_TREES_URL, {
+    ...access,
+    init: postInit({ base_tree: baseCommit.tree.sha, tree: treeEntries }),
+  });
+  const created = await githubJson<GitCommitResponse>(GIT_COMMITS_URL, {
+    ...access,
+    init: postInit({ message, tree: tree.sha, parents: [headSha] }),
+  });
+  const refStatus = await updateRef(access, created.sha);
 
-  return refStatus ?? commit.sha;
+  return refStatus ?? created.sha;
 }
 
 /** Uploads the file as a blob, or emits a `sha: null` entry — the Git tree API deletes that path. */
-async function createTreeEntry(fetchFn: GithubFetchFn, token: string, file: CommitFile): Promise<GitTreeEntry> {
-  const sha = file.base64Content === null ? null : (await createBlob(fetchFn, token, file.base64Content)).sha;
+async function createTreeEntry(access: GithubAccess, file: CommitFile): Promise<GitTreeEntry> {
+  const sha = file.base64Content === null ? null : (await createBlob(access, file.base64Content)).sha;
 
   return { path: file.path, mode: GIT_TREE_FILE_MODE, type: GIT_TREE_BLOB_TYPE, sha };
 }
 
-function createBlob(fetchFn: GithubFetchFn, token: string, base64Content: string): Promise<GitBlobResponse> {
-  return githubJson<GitBlobResponse>(fetchFn, token, GIT_BLOBS_URL, postInit({ content: base64Content, encoding: GIT_BLOB_ENCODING }));
+function createBlob(access: GithubAccess, base64Content: string): Promise<GitBlobResponse> {
+  return githubJson<GitBlobResponse>(GIT_BLOBS_URL, {
+    ...access,
+    init: postInit({ content: base64Content, encoding: GIT_BLOB_ENCODING }),
+  });
 }
 
 /** Fast-forwards the branch ref; returns null on success or the 409/422 status when the update was rejected. */
-async function updateRef(fetchFn: GithubFetchFn, token: string, commitSha: string): Promise<number | null> {
-  const response = await fetchFn(GIT_REF_UPDATE_URL, {
+async function updateRef(access: GithubAccess, commitSha: string): Promise<number | null> {
+  const response = await access.fetchFn(GIT_REF_UPDATE_URL, {
     method: PATCH_METHOD,
-    headers: githubBodyHeaders(token, GITHUB_JSON_ACCEPT),
+    headers: githubBodyHeaders(access.token, GITHUB_JSON_ACCEPT),
     body: JSON.stringify({ sha: commitSha }),
   });
 

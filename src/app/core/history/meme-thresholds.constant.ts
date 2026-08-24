@@ -1,4 +1,4 @@
-import { MemeThreshold } from './meme-thresholds.interface';
+import { type MemeThreshold } from './meme-thresholds.interface';
 
 /**
  * The meme ladder, fastest first. Track benchmarks are real 5000 m results; marathon benchmarks

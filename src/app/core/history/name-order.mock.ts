@@ -1,16 +1,16 @@
-import { AthleteRecord } from '../models/athlete-history.interface';
-import { AthletesHistory } from '../models/athletes-history.type';
-import { Gender, GenderConfidence, GenderSource, GenderType } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { type AthleteRecord } from '../models/athlete-history.interface';
+import { type AthletesHistory } from '../models/athletes-history.type';
+import { Gender, GenderConfidence, GenderSource, type GenderType } from '../models/gender.enum';
+import { type Participant } from '../models/participant.interface';
 
-function toArchivedRecord(key: string, displayName: string, gender: GenderType | null): AthleteRecord {
+function toArchivedRecord(key: string, { displayName, gender }: { displayName: string; gender: GenderType | null }): AthleteRecord {
   return { key, displayName, gender, participationSlugs: [], runs: [], bestMs: null, bestMsByYear: {} };
 }
 
 export const NAME_ORDER_HISTORY: AthletesHistory = {
-  'иванов иван': toArchivedRecord('иванов иван', 'Иванов Иван', Gender.male),
-  'елкина алена': toArchivedRecord('елкина алена', 'Ёлкина Алёна', Gender.female),
-  'цопкало людмила': toArchivedRecord('цопкало людмила', 'Цопкало Людмила', null),
+  'иванов иван': toArchivedRecord('иванов иван', { displayName: 'Иванов Иван', gender: Gender.male }),
+  'елкина алена': toArchivedRecord('елкина алена', { displayName: 'Ёлкина Алёна', gender: Gender.female }),
+  'цопкало людмила': toArchivedRecord('цопкало людмила', { displayName: 'Цопкало Людмила', gender: null }),
 };
 
 export const REVERSED_PARTICIPANT: Participant = {

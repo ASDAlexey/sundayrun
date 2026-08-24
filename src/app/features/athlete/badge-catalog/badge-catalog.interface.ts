@@ -1,4 +1,4 @@
-import { YearBadgeType } from '../../../core/history/year-badges.enum';
+import { type YearBadgeType } from '../../../core/history/year-badges.enum';
 
 /** One catalog entry: how a badge is earned and where this athlete stands with it. */
 export interface BadgeCatalogRow {

@@ -10,8 +10,8 @@ import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { toRaceListItems } from './race-list-item';
 import { RaceCard } from './race-card/race-card';
 import { ALL_YEARS_VALUE, RACES_TRANSFER_KEY } from './races-page.constant';
-import { RacesStatus, RacesStatusType } from './races-page.enum';
-import { RaceListItem, RaceYearGroup } from './races-page.interface';
+import { RacesStatus, type RacesStatusType } from './races-page.enum';
+import { type RaceListItem, type RaceYearGroup } from './races-page.interface';
 
 /** The full race list (newest first — `parseArchiveIndex` guarantees the order), filtered by year chips and grouped under year dividers. */
 @Component({

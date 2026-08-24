@@ -1,4 +1,4 @@
-import { CorosRegion, CorosRegionType } from './coros-region.enum';
+import { CorosRegion, type CorosRegionType } from './coros-region.enum';
 
 /**
  * Training Hub hosts per region. Verified live on 27.07.2026: they answer CORS with the calling

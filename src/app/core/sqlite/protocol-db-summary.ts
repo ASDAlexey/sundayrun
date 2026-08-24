@@ -2,12 +2,12 @@ import { eq } from 'drizzle-orm';
 
 import { selectPacingRows } from '../../github/protocol-db-pacing';
 import { isNewcomerNote, isPersonalRecordNote } from '../history/race-summary';
-import { AthletesHistory } from '../models/athletes-history.type';
-import { GenderType } from '../models/gender.enum';
+import { type AthletesHistory } from '../models/athletes-history.type';
+import { type GenderType } from '../models/gender.enum';
 import { buildLapStats } from '../timer/lap-stats';
-import { LapStats } from '../timer/lap-stats.interface';
+import { type LapStats } from '../timer/lap-stats.interface';
 import { events, meta, results } from './protocol-db.schema';
-import { ProtocolDrizzle } from './protocol-drizzle';
+import { type ProtocolDrizzle } from './protocol-drizzle';
 
 /** The two note-derived counters of one event, mirroring the `ArchiveIndexEntry` fields. */
 interface EventSummaryCounts {

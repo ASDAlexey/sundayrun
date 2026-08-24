@@ -1,7 +1,7 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { RAGE_IMPROVEMENT_COUNT } from './streaks.constant';
-import { AthleteStreaks } from './streaks.interface';
+import { type AthleteStreaks } from './streaks.interface';
 
 /**
  * The weekly loyalty streaks over the event chronology plus the «Раж» counter. `eventSlugs` is
@@ -13,8 +13,7 @@ import { AthleteStreaks } from './streaks.interface';
  */
 export function athleteStreaks(
   participationSlugs: readonly string[],
-  runs: readonly AthleteRun[],
-  eventSlugs: readonly string[],
+  { runs, eventSlugs }: { runs: readonly AthleteRun[]; eventSlugs: readonly string[] },
 ): AthleteStreaks {
   const participated = new Set(participationSlugs);
   let trailing = 0;

@@ -1,8 +1,8 @@
 import { DOCUMENT, DestroyRef, Service, computed, inject, signal } from '@angular/core';
 
 import { APP_INSTALLED_EVENT, INSTALL_PROMPT_EVENT, INSTALL_SETTLE_MS, STANDALONE_MEDIA_QUERY } from './install-app.constant';
-import { InstallOffer, InstallOfferType } from './install-app.enum';
-import { InstallPromptEvent } from './install-app.interface';
+import { InstallOffer, type InstallOfferType } from './install-app.enum';
+import { type InstallPromptEvent } from './install-app.interface';
 import { isInstallPromptEvent } from './install-app.view';
 
 /**

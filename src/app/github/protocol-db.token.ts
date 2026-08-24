@@ -1,6 +1,6 @@
 import { InjectionToken, inject } from '@angular/core';
 
-import { ProtocolDb } from '../core/sqlite/protocol-db.interface';
+import { type ProtocolDb } from '../core/sqlite/protocol-db.interface';
 import { ProtocolDbService } from './protocol-db.service';
 
 /**
@@ -12,5 +12,5 @@ import { ProtocolDbService } from './protocol-db.service';
  */
 export const PROTOCOL_DB = new InjectionToken<ProtocolDb>('PROTOCOL_DB', {
   providedIn: 'root',
-  factory: () => inject(ProtocolDbService),
+  factory: (): ProtocolDbService => inject(ProtocolDbService),
 });

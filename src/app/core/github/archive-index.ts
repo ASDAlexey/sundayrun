@@ -1,11 +1,11 @@
 import { FIVE_KM_DISTANCE_KM } from '../history/distance.constant';
 import { medianMsOrNull } from '../history/median';
 import { summarizeRace } from '../history/race-summary';
-import { Gender, GenderType } from '../models/gender.enum';
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
 import { FIRST_ARCHIVE_EVENT_NUMBER } from './archive-index.constant';
-import { ArchiveIndexEntry, ArchiveIndexFile } from './archive-index.interface';
+import { type ArchiveIndexEntry, type ArchiveIndexFile } from './archive-index.interface';
 import { eventFilePaths } from './event-paths';
 
 /**

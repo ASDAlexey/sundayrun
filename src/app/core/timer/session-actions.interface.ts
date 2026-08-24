@@ -1,5 +1,5 @@
-import { GenderType } from '../models/gender.enum';
-import { TimerRoleType } from './timer-session.enum';
+import { type GenderType } from '../models/gender.enum';
+import { type TimerRoleType } from './timer-session.enum';
 
 /** Everything a new session needs from the outside — ids and clocks are never invented here. */
 export interface CreateSessionInput {

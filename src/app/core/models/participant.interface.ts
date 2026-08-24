@@ -1,4 +1,4 @@
-import { GenderConfidenceType, GenderSourceType, GenderType } from './gender.enum';
+import { type GenderConfidenceType, type GenderSourceType, type GenderType } from './gender.enum';
 
 /**
  * A single race participant.

@@ -1,5 +1,5 @@
-import { LapBoardRow } from './session-lap-board.interface';
-import { SplitsByRunner, indexSplitsByRunner, runnerSplits, unassignedSplits } from './session-splits';
+import { type LapBoardRow } from './session-lap-board.interface';
+import { type SplitsByRunner, indexSplitsByRunner, runnerSplits, unassignedSplits } from './session-splits';
 import {
   FINISH_SPLIT_INDEX,
   FIRST_POSITION,
@@ -11,7 +11,7 @@ import {
   NO_GAP_MS,
 } from './timer-session.constant';
 import { TimerRunnerOutcome } from './timer-session.enum';
-import { TimerSession, TimerSplit } from './timer-session.interface';
+import { type TimerSession, type TimerSplit } from './timer-session.interface';
 
 /**
  * The live «Первый круг» table (docs/TIMER.md §4): everyone whose 2.3 km is already timed, fastest
@@ -29,15 +29,15 @@ export function buildLapBoard(session: TimerSession): LapBoardRow[] {
   const timed: LapBoardRow[] = [];
 
   for (const runner of session.runners) {
-    const splits = runnerSplits(session, runner.id, index);
+    const splits = runnerSplits(session, { runnerId: runner.id, index });
 
     if (splits.length >= LAP_DONE_MIN_SPLITS) {
-      timed.push(buildRow(splits[LAP_SPLIT_INDEX], runner.id, runner.fullName));
+      timed.push(buildRow(splits[LAP_SPLIT_INDEX], { runnerId: runner.id, fullName: runner.fullName }));
     }
   }
 
   for (const split of lapCandidates(session, index)) {
-    timed.push(buildRow(split, null, null));
+    timed.push(buildRow(split, { runnerId: null, fullName: null }));
   }
 
   const ordered = timed.sort((left, right) => left.lapMs - right.lapMs);
@@ -62,7 +62,8 @@ export function buildLapBoard(session: TimerSession): LapBoardRow[] {
  */
 function lapCandidates(session: TimerSession, index: SplitsByRunner): TimerSplit[] {
   const waiting = session.runners.filter(
-    (runner) => runner.outcome === TimerRunnerOutcome.active && runnerSplits(session, runner.id, index).length === NOTHING_RECORDED,
+    (runner) =>
+      runner.outcome === TimerRunnerOutcome.active && runnerSplits(session, { runnerId: runner.id, index }).length === NOTHING_RECORDED,
   ).length;
 
   if (waiting === NOTHING_RECORDED) {
@@ -79,7 +80,7 @@ function lapCandidates(session: TimerSession, index: SplitsByRunner): TimerSplit
 /** When the first 5 km of the race was recorded, or null while everybody is still out there. */
 function earliestFinishMs(session: TimerSession, index: SplitsByRunner): number | null {
   const finishes = session.runners.reduce<number[]>((times, runner) => {
-    const splits = runnerSplits(session, runner.id, index);
+    const splits = runnerSplits(session, { runnerId: runner.id, index });
 
     return splits.length < MAX_SPLITS_PER_RUNNER ? times : [...times, splits[FINISH_SPLIT_INDEX].atMs];
   }, []);
@@ -87,7 +88,7 @@ function earliestFinishMs(session: TimerSession, index: SplitsByRunner): number 
   return finishes.length === NOTHING_RECORDED ? null : Math.min(...finishes);
 }
 
-function buildRow(split: TimerSplit, runnerId: string | null, fullName: string | null): LapBoardRow {
+function buildRow(split: TimerSplit, { runnerId, fullName }: { runnerId: string | null; fullName: string | null }): LapBoardRow {
   return {
     position: FIRST_POSITION,
     splitId: split.id,

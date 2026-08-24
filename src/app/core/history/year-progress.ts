@@ -1,10 +1,10 @@
 import { NAME_COLLATION_LOCALE } from './athletes-list.constant';
-import { HistoryRunRow } from './badge-signals.interface';
+import { type HistoryRunRow } from './badge-signals.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { isoYear } from './iso-year';
 import { medianMs } from './median';
 import { PROGRESS_MIN_SEASON_FINISHES, YEAR_PROGRESS_LIMIT } from './year-progress.constant';
-import { YearProgressRow } from './year-progress.interface';
+import { type YearProgressRow } from './year-progress.interface';
 
 /**
  * The «Прогресс года» board: athletes whose 5 km season median improved on the previous season,
@@ -15,8 +15,7 @@ import { YearProgressRow } from './year-progress.interface';
  */
 export function yearProgressBoard(
   year: string,
-  displayNames: ReadonlyMap<string, string>,
-  historyRows: readonly HistoryRunRow[],
+  { displayNames, historyRows }: { displayNames: ReadonlyMap<string, string>; historyRows: readonly HistoryRunRow[] },
 ): YearProgressRow[] {
   const previousYear = String(Number(year) - 1);
   const currentTimes = seasonTimesOf(historyRows, year);

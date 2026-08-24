@@ -1,4 +1,4 @@
-import { NoteBadgeKind, NoteBadgeKindType } from './note-badge-kind.enum';
+import { NoteBadgeKind, type NoteBadgeKindType } from './note-badge-kind.enum';
 
 /** [note token, expected badge kind]. */
 export const NOTE_BADGE_KIND_CASES: readonly (readonly [string, NoteBadgeKindType])[] = [

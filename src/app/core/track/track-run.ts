@@ -1,9 +1,9 @@
 import { MS_IN_SECOND } from '../time/duration.constant';
 import { metersBetween } from './track-distance';
 import { METERS_IN_KM } from './track-distance.constant';
-import { TrackPoint, TrackSample } from './track-point.interface';
+import { type TrackPoint, type TrackSample } from './track-point.interface';
 import { DECLARED_RACE_METERS, PACE_WINDOW_M, TRACK_MIN_METERS, TRACK_MIN_SAMPLES } from './track-run.constant';
-import { TrackRun, TrackSplit } from './track-run.interface';
+import { type TrackRun, type TrackSplit } from './track-run.interface';
 
 /** A sample placed along the line, before it is told what pace it was run at. */
 type PlacedPoint = TrackPoint & { metersIn: number };

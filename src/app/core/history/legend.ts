@@ -1,5 +1,5 @@
 import { LEGEND_WINDOW_DAYS } from './legend.constant';
-import { LegendBoard, LegendFinish, LegendProgress, LegendStanding } from './legend.interface';
+import { type LegendBoard, type LegendFinish, type LegendProgress, type LegendStanding } from './legend.interface';
 
 /**
  * The «Легенда трассы» standings — a transferable Strava-Local-Legends-style title for the most

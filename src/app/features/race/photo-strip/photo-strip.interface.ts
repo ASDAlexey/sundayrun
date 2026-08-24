@@ -1,4 +1,4 @@
-import { EventPhoto } from '../../../core/models/event-photo.interface';
+import { type EventPhoto } from '../../../core/models/event-photo.interface';
 
 /** One thumbnail prepared for the template: the photo plus what the last tile has to say. */
 export interface PhotoTileView {

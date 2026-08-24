@@ -1,5 +1,5 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { YearBestEntry } from './athlete-runs.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { type YearBestEntry } from './athlete-runs.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 
 export const RUN_2025_FIVE_KM: AthleteRun = { dateIso: '2025-12-27', slug: '2025-12-27', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM };

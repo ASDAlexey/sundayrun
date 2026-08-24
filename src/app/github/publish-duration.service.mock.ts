@@ -1,5 +1,5 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
 import { DURATION_HISTORY_AVERAGE_MOCK } from './duration-history.mock';
 

@@ -1,8 +1,8 @@
 import { SEASON_KING_BADGES, SEASON_KING_RANK, SEASON_PODIUM_BADGES, SEASON_PODIUM_MAX_RANK } from './season-ranks.constant';
-import { SeasonBestRow } from './season-ranks.interface';
-import { SeasonType } from './seasons.enum';
-import { YearBadgeType } from './year-badges.enum';
-import { YearRankedBadge } from './year-ranks.interface';
+import { type SeasonBestRow } from './season-ranks.interface';
+import { type SeasonType } from './seasons.enum';
+import { type YearBadgeType } from './year-badges.enum';
+import { type YearRankedBadge } from './year-ranks.interface';
 
 /** The badge a season rank earns: 1st is the season's crown, 2–3 the podium; deeper cuts earn nothing. */
 export function seasonRankBadge(rank: number, season: SeasonType): YearBadgeType | null {

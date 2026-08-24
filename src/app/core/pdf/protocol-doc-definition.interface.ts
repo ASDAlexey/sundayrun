@@ -1,7 +1,7 @@
-import { PreviousBest } from '../history/previous-bests.interface';
-import { ProtocolRow } from '../models/protocol-row.interface';
-import { RaceEvent } from '../models/race-event.interface';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type PreviousBest } from '../history/previous-bests.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
+import { type RaceEvent } from '../models/race-event.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 
 /** Everything the protocol PDF draws; every field but the event and the rows is garnish that degrades to a blank. */
 export interface ProtocolDocInput {

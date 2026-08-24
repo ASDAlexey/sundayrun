@@ -23,7 +23,7 @@ describe('fetchRepoFileText', () => {
   it('requests the raw file pinned to the branch and returns its text', async () => {
     const fetchFn = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(new Response(FILE_TEXT)));
 
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, fetchFn)).resolves.toBe(FILE_TEXT);
+    await expect(fetchRepoFileText(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn })).resolves.toBe(FILE_TEXT);
     expect(fetchFn).toHaveBeenCalledWith(EXPECTED_CONTENTS_URL, EXPECTED_RAW_INIT);
   });
 
@@ -32,10 +32,16 @@ describe('fetchRepoFileText', () => {
     const forbidden = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(HTTP_FORBIDDEN)));
     const failing = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(SERVER_ERROR_STATUS)));
 
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, missing)).resolves.toBeNull();
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, forbidden)).rejects.toBeInstanceOf(GithubAuthError);
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, failing)).rejects.toBeInstanceOf(GithubRequestError);
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH, failing)).rejects.toMatchObject({ status: SERVER_ERROR_STATUS });
+    await expect(fetchRepoFileText(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: missing })).resolves.toBeNull();
+    await expect(fetchRepoFileText(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: forbidden })).rejects.toBeInstanceOf(
+      GithubAuthError,
+    );
+    await expect(fetchRepoFileText(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: failing })).rejects.toBeInstanceOf(
+      GithubRequestError,
+    );
+    await expect(fetchRepoFileText(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: failing })).rejects.toMatchObject({
+      status: SERVER_ERROR_STATUS,
+    });
   });
 
   it('falls back to the global fetch by default', async () => {
@@ -44,7 +50,7 @@ describe('fetchRepoFileText', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_NOT_FOUND))),
     );
 
-    await expect(fetchRepoFileText(CONTENTS_TOKEN, VERSION_JSON_PATH)).resolves.toBeNull();
+    await expect(fetchRepoFileText(VERSION_JSON_PATH, { token: CONTENTS_TOKEN })).resolves.toBeNull();
   });
 });
 
@@ -59,14 +65,16 @@ describe('repoFileExists', () => {
     const unauthorized = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED)));
     const failing = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(SERVER_ERROR_STATUS)));
 
-    await expect(repoFileExists(CONTENTS_TOKEN, VERSION_JSON_PATH, present)).resolves.toBe(true);
+    await expect(repoFileExists(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: present })).resolves.toBe(true);
     expect(present, 'the same contents url as a read, but nothing is downloaded').toHaveBeenCalledWith(
       EXPECTED_CONTENTS_URL,
       EXPECTED_HEAD_INIT,
     );
-    await expect(repoFileExists(CONTENTS_TOKEN, VERSION_JSON_PATH, missing)).resolves.toBe(false);
-    await expect(repoFileExists(CONTENTS_TOKEN, VERSION_JSON_PATH, unauthorized)).rejects.toBeInstanceOf(GithubAuthError);
-    await expect(repoFileExists(CONTENTS_TOKEN, VERSION_JSON_PATH, failing)).rejects.toBeInstanceOf(GithubRequestError);
+    await expect(repoFileExists(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: missing })).resolves.toBe(false);
+    await expect(repoFileExists(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: unauthorized })).rejects.toBeInstanceOf(
+      GithubAuthError,
+    );
+    await expect(repoFileExists(VERSION_JSON_PATH, { token: CONTENTS_TOKEN, fetchFn: failing })).rejects.toBeInstanceOf(GithubRequestError);
   });
 
   it('falls back to the global fetch by default', async () => {
@@ -75,7 +83,7 @@ describe('repoFileExists', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_NOT_FOUND))),
     );
 
-    await expect(repoFileExists(CONTENTS_TOKEN, VERSION_JSON_PATH)).resolves.toBe(false);
+    await expect(repoFileExists(VERSION_JSON_PATH, { token: CONTENTS_TOKEN })).resolves.toBe(false);
   });
 });
 
@@ -88,9 +96,9 @@ describe('fetchRepoFileBytes', () => {
     const fetchFn = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(new Response(FILE_BYTES)));
     const missing = vi.fn((_url: string, _init?: RequestInit) => Promise.resolve(statusResponse(HTTP_NOT_FOUND)));
 
-    await expect(fetchRepoFileBytes(CONTENTS_TOKEN, PROTOCOL_DB_PATH, fetchFn)).resolves.toEqual(FILE_BYTES);
+    await expect(fetchRepoFileBytes(PROTOCOL_DB_PATH, { token: CONTENTS_TOKEN, fetchFn })).resolves.toEqual(FILE_BYTES);
     expect(fetchFn).toHaveBeenCalledWith(EXPECTED_DB_CONTENTS_URL, EXPECTED_RAW_INIT);
-    await expect(fetchRepoFileBytes(CONTENTS_TOKEN, PROTOCOL_DB_PATH, missing)).resolves.toBeNull();
+    await expect(fetchRepoFileBytes(PROTOCOL_DB_PATH, { token: CONTENTS_TOKEN, fetchFn: missing })).resolves.toBeNull();
   });
 
   it('falls back to the global fetch by default', async () => {
@@ -99,6 +107,6 @@ describe('fetchRepoFileBytes', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_NOT_FOUND))),
     );
 
-    await expect(fetchRepoFileBytes(CONTENTS_TOKEN, PROTOCOL_DB_PATH)).resolves.toBeNull();
+    await expect(fetchRepoFileBytes(PROTOCOL_DB_PATH, { token: CONTENTS_TOKEN })).resolves.toBeNull();
   });
 });

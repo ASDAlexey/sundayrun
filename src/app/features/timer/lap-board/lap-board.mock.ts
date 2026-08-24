@@ -1,8 +1,8 @@
-import { Gender, GenderType } from '../../../core/models/gender.enum';
+import { Gender, type GenderType } from '../../../core/models/gender.enum';
 import { INITIAL_PUBLISH_STATUS } from '../../../core/timer/timer-session.constant';
 import { TimerRole, TimerRunnerOutcome, TimerStatus } from '../../../core/timer/timer-session.enum';
-import { TimerRunner, TimerSession, TimerSplit } from '../../../core/timer/timer-session.interface';
-import { TimerLapMark, TimerLapMarkType } from './lap-board.enum';
+import { type TimerRunner, type TimerSession, type TimerSplit } from '../../../core/timer/timer-session.interface';
+import { TimerLapMark, type TimerLapMarkType } from './lap-board.enum';
 
 const ROOKIE_ID = 'lap-rookie';
 const RECORD_ID = 'lap-record';
@@ -16,7 +16,10 @@ const BEST_KEY = 'улучшил себя';
 const STEADY_KEY = 'ровный бегун';
 const NO_GENDER_KEY = 'без пола';
 
-const runner = (id: string, fullName: string, athleteKey: string | null, gender: GenderType | null): TimerRunner => ({
+const runner = (
+  id: string,
+  { fullName, athleteKey, gender }: { fullName: string; athleteKey: string | null; gender: GenderType | null },
+): TimerRunner => ({
   id,
   fullName,
   athleteKey,
@@ -24,7 +27,7 @@ const runner = (id: string, fullName: string, athleteKey: string | null, gender:
   outcome: TimerRunnerOutcome.active,
 });
 
-const split = (id: string, atMs: number, runnerId: string): TimerSplit => ({ id, atMs, runnerId });
+const split = (id: string, { atMs, runnerId }: { atMs: number; runnerId: string }): TimerSplit => ({ id, atMs, runnerId });
 
 /**
  * A roster written so that every branch of the archive marks has an owner: a newcomer with no key, a
@@ -32,20 +35,20 @@ const split = (id: string, atMs: number, runnerId: string): TimerSplit => ({ id,
  * whose gender is still unknown and one runner nobody has tapped yet.
  */
 const LAP_RUNNERS: TimerRunner[] = [
-  runner(ROOKIE_ID, 'Новиков Илья', null, Gender.male),
-  runner(RECORD_ID, 'Троилин Антон', RECORD_KEY, Gender.male),
-  runner(BEST_ID, 'Романенко Елена', BEST_KEY, Gender.female),
-  runner(STEADY_ID, 'Кузнецов Игорь', STEADY_KEY, Gender.male),
-  runner(NO_GENDER_ID, 'Соколова Анна', NO_GENDER_KEY, null),
-  runner(WAITING_ID, 'Зайцев Роман', null, Gender.male),
+  runner(ROOKIE_ID, { fullName: 'Новиков Илья', athleteKey: null, gender: Gender.male }),
+  runner(RECORD_ID, { fullName: 'Троилин Антон', athleteKey: RECORD_KEY, gender: Gender.male }),
+  runner(BEST_ID, { fullName: 'Романенко Елена', athleteKey: BEST_KEY, gender: Gender.female }),
+  runner(STEADY_ID, { fullName: 'Кузнецов Игорь', athleteKey: STEADY_KEY, gender: Gender.male }),
+  runner(NO_GENDER_ID, { fullName: 'Соколова Анна', athleteKey: NO_GENDER_KEY, gender: null }),
+  runner(WAITING_ID, { fullName: 'Зайцев Роман', athleteKey: null, gender: Gender.male }),
 ];
 
 const LAP_SPLITS: TimerSplit[] = [
-  split('lap-split-record', 500_000, RECORD_ID),
-  split('lap-split-best', 600_000, BEST_ID),
-  split('lap-split-rookie', 700_000, ROOKIE_ID),
-  split('lap-split-steady', 900_000, STEADY_ID),
-  split('lap-split-no-gender', 1_000_000, NO_GENDER_ID),
+  split('lap-split-record', { atMs: 500_000, runnerId: RECORD_ID }),
+  split('lap-split-best', { atMs: 600_000, runnerId: BEST_ID }),
+  split('lap-split-rookie', { atMs: 700_000, runnerId: ROOKIE_ID }),
+  split('lap-split-steady', { atMs: 900_000, runnerId: STEADY_ID }),
+  split('lap-split-no-gender', { atMs: 1_000_000, runnerId: NO_GENDER_ID }),
 ];
 
 /** Five runners through the lap, one still out on the course. */

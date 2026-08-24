@@ -1,8 +1,8 @@
 import { asc, eq } from 'drizzle-orm';
 
-import { EventPhoto } from '../core/models/event-photo.interface';
+import { type EventPhoto } from '../core/models/event-photo.interface';
 import { eventPhoto, eventVkPost } from '../core/sqlite/protocol-db.schema';
-import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { type ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 
 /** The `event_vk_post` / `event_photo` reads, split out of `protocol-db-queries.ts` the way the weather selects are. */
 

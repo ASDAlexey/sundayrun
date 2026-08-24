@@ -1,7 +1,7 @@
 import { isoYear } from './iso-year';
 import { PrDeltaKind } from './pr-delta.enum';
-import { PrDelta } from './pr-delta.interface';
-import { PreviousBest } from './previous-bests.interface';
+import { type PrDelta } from './pr-delta.interface';
+import { type PreviousBest } from './previous-bests.interface';
 import { signedRaceTime } from './signed-delta';
 
 /**

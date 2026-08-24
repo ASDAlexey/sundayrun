@@ -40,10 +40,10 @@ describe('session splits selectors', () => {
   it('reads a runner`s own taps in time order, keeps the unnamed queue apart and never touches the journal', () => {
     const journal = structuredClone(TIMER_SESSION.splits);
 
-    expect(runnerSplits(TIMER_SESSION, TROILIN_RUNNER_ID).map((split) => split.id)).toEqual(EXPECTED_TROILIN_SPLIT_IDS);
-    expect(runnerSplitTimesMs(TIMER_SESSION, TROILIN_RUNNER_ID)).toEqual(EXPECTED_TROILIN_SPLIT_TIMES_MS);
-    expect(runnerSplitTimesMs(TIMER_SESSION, KUZNETSOV_RUNNER_ID), 'a runner nobody tapped has no times').toEqual([]);
-    expect(runnerSplitTimesMs(TIMER_SESSION, UNKNOWN_RUNNER_ID), 'an unknown id has no times either').toEqual([]);
+    expect(runnerSplits(TIMER_SESSION, { runnerId: TROILIN_RUNNER_ID }).map((split) => split.id)).toEqual(EXPECTED_TROILIN_SPLIT_IDS);
+    expect(runnerSplitTimesMs(TIMER_SESSION, { runnerId: TROILIN_RUNNER_ID })).toEqual(EXPECTED_TROILIN_SPLIT_TIMES_MS);
+    expect(runnerSplitTimesMs(TIMER_SESSION, { runnerId: KUZNETSOV_RUNNER_ID }), 'a runner nobody tapped has no times').toEqual([]);
+    expect(runnerSplitTimesMs(TIMER_SESSION, { runnerId: UNKNOWN_RUNNER_ID }), 'an unknown id has no times either').toEqual([]);
     expect(unassignedSplits(TIMER_SESSION).map((split) => split.id)).toEqual(EXPECTED_UNASSIGNED_SPLIT_IDS);
     expect(
       unassignedSplits(TIED_SPLITS_SESSION).map((split) => split.id),
@@ -69,13 +69,16 @@ describe('session splits selectors', () => {
       (indexSplitsByRunner(TIED_SPLITS_SESSION).get(null) ?? []).map((split) => split.id),
       'equal times keep the tap order in the index too',
     ).toEqual(EXPECTED_TIED_SPLIT_IDS);
-    expect(runnerSplits(TIMER_SESSION, TROILIN_RUNNER_ID, index)).toEqual(runnerSplits(TIMER_SESSION, TROILIN_RUNNER_ID));
-    expect(runnerSplits(TIMER_SESSION, UNKNOWN_RUNNER_ID, index), 'an id with no group holds no taps').toEqual([]);
-    expect(unassignedSplits(TIMER_SESSION, index)).toEqual(unassignedSplits(TIMER_SESSION));
-    expect(runnerSplitTimesMs(TIMER_SESSION, TROILIN_RUNNER_ID, index)).toEqual(EXPECTED_TROILIN_SPLIT_TIMES_MS);
-    expect(runnerStage(TIMER_SESSION, KUZNETSOV_RUNNER_ID, index), 'the stage of a man with no group is still read off the roster').toBe(
-      runnerStage(TIMER_SESSION, KUZNETSOV_RUNNER_ID),
+    expect(runnerSplits(TIMER_SESSION, { runnerId: TROILIN_RUNNER_ID, index })).toEqual(
+      runnerSplits(TIMER_SESSION, { runnerId: TROILIN_RUNNER_ID }),
     );
+    expect(runnerSplits(TIMER_SESSION, { runnerId: UNKNOWN_RUNNER_ID, index }), 'an id with no group holds no taps').toEqual([]);
+    expect(unassignedSplits(TIMER_SESSION, index)).toEqual(unassignedSplits(TIMER_SESSION));
+    expect(runnerSplitTimesMs(TIMER_SESSION, { runnerId: TROILIN_RUNNER_ID, index })).toEqual(EXPECTED_TROILIN_SPLIT_TIMES_MS);
+    expect(
+      runnerStage(TIMER_SESSION, { runnerId: KUZNETSOV_RUNNER_ID, index }),
+      'the stage of a man with no group is still read off the roster',
+    ).toBe(runnerStage(TIMER_SESSION, { runnerId: KUZNETSOV_RUNNER_ID }));
     expect(TIMER_SESSION.splits, 'grouping only ever reads the journal').toEqual(journal);
   });
 
@@ -83,7 +86,7 @@ describe('session splits selectors', () => {
     const stages = Object.fromEntries(
       [...TIMER_SESSION_RUNNERS.map((runner) => runner.id), UNKNOWN_RUNNER_ID].map((runnerId) => [
         runnerId,
-        runnerStage(TIMER_SESSION, runnerId),
+        runnerStage(TIMER_SESSION, { runnerId }),
       ]),
     );
 

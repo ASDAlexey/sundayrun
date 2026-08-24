@@ -1,4 +1,4 @@
-import { SelfAthleteStorage } from './self-athlete.type';
+import { type SelfAthleteStorage } from './self-athlete.type';
 
 /** localStorage key of the visitor's own athlete pick («Выбери себя»). */
 export const SELF_ATHLETE_STORAGE_KEY = 'parkrun.self-athlete';

@@ -1,4 +1,4 @@
-import { SelfAthleteStorage } from './self-athlete.type';
+import { type SelfAthleteStorage } from './self-athlete.type';
 
 /** localStorage key of the linked watch account — token and region, never a password. */
 export const WATCH_ACCOUNT_STORAGE_KEY = 'parkrun.watch-account';

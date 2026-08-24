@@ -5,7 +5,7 @@ import { GithubAuthError } from '../core/github/github-errors';
 import { AdminTokenService } from './admin-token.service';
 import { CdnRefService } from './cdn-ref.service';
 import { DbFreshnessService } from './db-freshness.service';
-import { PublishState, PublishStateType } from './github-storage.enum';
+import { PublishState, type PublishStateType } from './github-storage.enum';
 
 /** Deletes one published event from the protocols repository, exposing the flow state. */
 @Service()
@@ -33,7 +33,7 @@ export class EventDeleteService {
     this.#state.set(PublishState.publishing);
 
     try {
-      const { commitSha, pointerPublished } = await deleteEvent(token, slug);
+      const { commitSha, pointerPublished } = await deleteEvent({ token, slug });
 
       // Pin either way: the deletion db is live for this session; a lagging pointer only delays others.
       this.#cdnRef.pin(commitSha);

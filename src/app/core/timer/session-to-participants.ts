@@ -1,9 +1,9 @@
 import { GenderConfidence, GenderSource } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 import { runnerSplitTimesMs } from './session-splits';
 import { EMPTY_TEXT, FINISH_SPLIT_INDEX, FIRST_POSITION, LAP_SPLIT_INDEX, MAX_SPLITS_PER_RUNNER } from './timer-session.constant';
 import { TimerRunnerOutcome } from './timer-session.enum';
-import { TimerRunner, TimerSession } from './timer-session.interface';
+import { type TimerRunner, type TimerSession } from './timer-session.interface';
 
 /**
  * Turns a finished session into the protocol input `buildProtocolRows` already knows how to lay out
@@ -14,15 +14,15 @@ import { TimerRunner, TimerSession } from './timer-session.interface';
  * sheet normalizes names, `/preview` fills the rest.
  */
 export function sessionToParticipants(session: TimerSession): Participant[] {
-  return session.runners.map((runner, index) => toParticipant(session, runner, index + FIRST_POSITION));
+  return session.runners.map((runner, index) => toParticipant(session, { runner, id: index + FIRST_POSITION }));
 }
 
-function toParticipant(session: TimerSession, runner: TimerRunner, id: number): Participant {
-  const timesMs = runnerSplitTimesMs(session, runner.id);
+function toParticipant(session: TimerSession, { runner, id }: { runner: TimerRunner; id: number }): Participant {
+  const timesMs = runnerSplitTimesMs(session, { runnerId: runner.id });
   const lapMs = timesMs[LAP_SPLIT_INDEX];
 
   if (runner.outcome === TimerRunnerOutcome.dnf || timesMs.length === 0) {
-    return buildParticipant(runner, id, null, []);
+    return buildParticipant(runner, { id, totalMs: null, lapsMs: [] });
   }
 
   // Read before the tap count on purpose: the organiser's word outranks the journal here exactly as
@@ -30,19 +30,22 @@ function toParticipant(session: TimerSession, runner: TimerRunner, id: number): 
   // second tap is a 2.3 km row — publishing him as a 5 km finisher with a place in the gender
   // standings is the one outcome the screen has already told the organiser will not happen.
   if (runner.outcome === TimerRunnerOutcome.lapOnly) {
-    return buildParticipant(runner, id, lapMs, [lapMs]);
+    return buildParticipant(runner, { id, totalMs: lapMs, lapsMs: [lapMs] });
   }
 
   if (timesMs.length >= MAX_SPLITS_PER_RUNNER) {
     const finishMs = timesMs[FINISH_SPLIT_INDEX];
 
-    return buildParticipant(runner, id, finishMs, [lapMs, finishMs - lapMs]);
+    return buildParticipant(runner, { id, totalMs: finishMs, lapsMs: [lapMs, finishMs - lapMs] });
   }
 
-  return buildParticipant(runner, id, null, []);
+  return buildParticipant(runner, { id, totalMs: null, lapsMs: [] });
 }
 
-function buildParticipant(runner: TimerRunner, id: number, totalMs: number | null, lapsMs: number[]): Participant {
+function buildParticipant(
+  runner: TimerRunner,
+  { id, totalMs, lapsMs }: { id: number; totalMs: number | null; lapsMs: number[] },
+): Participant {
   const known = runner.gender !== null;
 
   return {

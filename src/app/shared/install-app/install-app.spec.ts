@@ -10,8 +10,8 @@ import { InstallPromptService } from './install-prompt.service';
 
 describe('InstallPromptService', () => {
   beforeEach(() => {
-    // jsdom's own `matchMedia` answers «false» to everything; stubbing it keeps the browser-tab case
-    // explicit and lets the installed-app case below swap the answer.
+    // Stubbing `matchMedia` keeps the browser-tab case explicit and lets the installed-app case
+    // below swap the answer, instead of leaning on whatever the DOM shim reports.
     stubStandalone(false);
     TestBed.configureTestingModule({});
   });

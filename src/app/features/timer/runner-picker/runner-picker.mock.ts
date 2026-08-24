@@ -1,10 +1,10 @@
-import { AthleteRecord } from '../../../core/models/athlete-history.interface';
-import { Gender, GenderType } from '../../../core/models/gender.enum';
+import { type AthleteRecord } from '../../../core/models/athlete-history.interface';
+import { Gender, type GenderType } from '../../../core/models/gender.enum';
 import { INITIAL_PUBLISH_STATUS } from '../../../core/timer/timer-session.constant';
 import { TimerRole, TimerRunnerOutcome, TimerStatus } from '../../../core/timer/timer-session.enum';
-import { TimerRunner, TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerRunner, type TimerSession } from '../../../core/timer/timer-session.interface';
 
-const record = (key: string, displayName: string, gender: GenderType | null): AthleteRecord => ({
+const record = (key: string, { displayName, gender }: { displayName: string; gender: GenderType | null }): AthleteRecord => ({
   key,
   displayName,
   gender,
@@ -14,7 +14,10 @@ const record = (key: string, displayName: string, gender: GenderType | null): At
   bestMsByYear: {},
 });
 
-const runner = (id: string, fullName: string, athleteKey: string | null, gender: GenderType | null): TimerRunner => ({
+const runner = (
+  id: string,
+  { fullName, athleteKey, gender }: { fullName: string; athleteKey: string | null; gender: GenderType | null },
+): TimerRunner => ({
   id,
   fullName,
   athleteKey,
@@ -35,13 +38,13 @@ export const SIDOROVA_KEY = 'сидорова мария';
  * the alphabet tie-break shows, and somebody the archive has neither a gender nor a single lap for.
  */
 export const PICKER_RECORDS: AthleteRecord[] = [
-  record(POPOV_KEY, 'Попов Алексей', Gender.male),
-  record(TROILIN_KEY, 'Троилин Антон', Gender.male),
-  record(SIDOROVA_KEY, 'Сидорова Мария', null),
-  record(ZAYTSEV_KEY, 'Зайцев Роман', Gender.male),
-  record(ROMANENKO_KEY, 'Романенко Елена', Gender.female),
-  record(KUZNETSOV_KEY, 'Кузнецов Пётр', Gender.male),
-  record(HAHUTSKIY_KEY, 'Хахуцкий Виктор', Gender.male),
+  record(POPOV_KEY, { displayName: 'Попов Алексей', gender: Gender.male }),
+  record(TROILIN_KEY, { displayName: 'Троилин Антон', gender: Gender.male }),
+  record(SIDOROVA_KEY, { displayName: 'Сидорова Мария', gender: null }),
+  record(ZAYTSEV_KEY, { displayName: 'Зайцев Роман', gender: Gender.male }),
+  record(ROMANENKO_KEY, { displayName: 'Романенко Елена', gender: Gender.female }),
+  record(KUZNETSOV_KEY, { displayName: 'Кузнецов Пётр', gender: Gender.male }),
+  record(HAHUTSKIY_KEY, { displayName: 'Хахуцкий Виктор', gender: Gender.male }),
 ];
 
 /** Timed first laps in the archive. Сидорова is absent on purpose — she has never been timed. */
@@ -82,8 +85,8 @@ export const SOKOLOVA_RUNNER_ID = 'runner-sokolova';
 
 /** Соколова came in as a newcomer, so nobody ever told the sheet her gender. */
 export const PICKER_SESSION_RUNNERS: TimerRunner[] = [
-  runner(POPOV_RUNNER_ID, 'Попов Алексей', POPOV_KEY, Gender.male),
-  runner(SOKOLOVA_RUNNER_ID, 'Соколова Анна', null, null),
+  runner(POPOV_RUNNER_ID, { fullName: 'Попов Алексей', athleteKey: POPOV_KEY, gender: Gender.male }),
+  runner(SOKOLOVA_RUNNER_ID, { fullName: 'Соколова Анна', athleteKey: null, gender: null }),
 ];
 
 const session = (id: string, runners: TimerRunner[]): TimerSession => ({
@@ -104,9 +107,9 @@ export const PICKER_SESSION: TimerSession = session(PICKER_SESSION_ID, PICKER_SE
 
 /** Last Sunday: two of these three are already standing in the active line-up. */
 export const PICKER_PREVIOUS_SESSION: TimerSession = session(PICKER_PREVIOUS_SESSION_ID, [
-  runner('runner-previous-popov', 'Попов Алексей', POPOV_KEY, Gender.male),
-  runner('runner-previous-sokolova', 'Соколова Анна', null, null),
-  runner('runner-previous-hahutskiy', 'Хахуцкий Виктор', HAHUTSKIY_KEY, Gender.male),
+  runner('runner-previous-popov', { fullName: 'Попов Алексей', athleteKey: POPOV_KEY, gender: Gender.male }),
+  runner('runner-previous-sokolova', { fullName: 'Соколова Анна', athleteKey: null, gender: null }),
+  runner('runner-previous-hahutskiy', { fullName: 'Хахуцкий Виктор', athleteKey: HAHUTSKIY_KEY, gender: Gender.male }),
 ]);
 
 /** A measurement whose roster was never collected — «как в прошлый раз» must skip right over it. */

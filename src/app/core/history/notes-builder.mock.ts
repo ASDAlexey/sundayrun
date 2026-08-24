@@ -1,8 +1,8 @@
 import { Gender } from '../models/gender.enum';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 import { FIRST_PARTICIPATION_NOTE } from './notes-builder.constant';
-import { AutoNoteInput } from './notes-builder.interface';
+import { type AutoNoteInput } from './notes-builder.interface';
 
 /** Hand-built history: an athlete with 5 km bests, a DNF-only record without runs, an athlete with 2.3 km runs only. */
 export const NOTES_HISTORY: AthletesHistory = {

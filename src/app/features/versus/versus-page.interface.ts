@@ -1,6 +1,6 @@
-import { AthleteFirstLap } from '../../core/history/first-lap.interface';
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { DuelStatusType } from './versus-page.enum';
+import { type AthleteFirstLap } from '../../core/history/first-lap.interface';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
+import { type DuelStatusType } from './versus-page.enum';
 
 /** The resolved duel state for one pair of route keys, applied atomically after the load settles. */
 export interface VersusDuelState {

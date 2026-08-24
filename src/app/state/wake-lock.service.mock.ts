@@ -1,5 +1,5 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
 import { DOCUMENT_VISIBLE } from './wake-lock.constant';
 

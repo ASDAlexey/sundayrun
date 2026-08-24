@@ -9,7 +9,7 @@ import {
   JSON_CONTENT_TYPE,
 } from './github-api.constant';
 import { GithubAuthError, GithubRequestError } from './github-errors';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubAccess } from './github-fetch.type';
 import { GITHUB_AUTH_ERROR_PREFIX, GITHUB_REQUEST_ERROR_PREFIX } from './github-request.constant';
 
 /** Standard GitHub REST headers for the given accept type. */
@@ -42,8 +42,14 @@ export function assertOk(response: Response, url: string): void {
   }
 }
 
+/** A JSON call: the authorized transport plus the optional request init of this particular call. */
+export interface GithubJsonRequest extends GithubAccess {
+  readonly init?: RequestInit;
+}
+
 /** Performs a JSON request against the GitHub API (auth checked) and returns the parsed body. */
-export async function githubJson<T>(fetchFn: GithubFetchFn, token: string, url: string, init?: RequestInit): Promise<T> {
+export async function githubJson<T>(url: string, request: GithubJsonRequest): Promise<T> {
+  const { token, fetchFn, init } = request;
   const headers = init?.body === undefined ? githubHeaders(token, GITHUB_JSON_ACCEPT) : githubBodyHeaders(token, GITHUB_JSON_ACCEPT);
   const response = await fetchFn(url, { ...init, headers });
 

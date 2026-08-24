@@ -1,5 +1,5 @@
 import { COMEBACK_MIN_BREAK_DAYS, MS_IN_DAY } from './badge-signals.constant';
-import { AthleteBadgeSignals, BadgeSignalRun, HistoryRunRow } from './badge-signals.interface';
+import { type AthleteBadgeSignals, type BadgeSignalRun, type HistoryRunRow } from './badge-signals.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { isoYear } from './iso-year';
 import { medianMsOrNull } from './median';

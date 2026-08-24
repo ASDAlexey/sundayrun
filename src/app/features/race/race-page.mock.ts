@@ -1,15 +1,15 @@
 import { ATHLETES_PAGE_LINK } from '../../app.constant';
 import { PROTOCOL_ROWS, RACE_EVENT } from '../../core/github/spec-utils/race-fixtures';
 import { FIVE_KM_DISTANCE_KM } from '../../core/history/distance.constant';
-import { ParticipantRun } from '../../core/history/notables.interface';
-import { EventPhoto } from '../../core/models/event-photo.interface';
+import { type ParticipantRun } from '../../core/history/notables.interface';
+import { type EventPhoto } from '../../core/models/event-photo.interface';
 import { Gender } from '../../core/models/gender.enum';
-import { ProtocolRow } from '../../core/models/protocol-row.interface';
-import { EventWeather } from '../../core/weather/event-weather.interface';
-import { SelfAthlete } from '../../state/self-athlete.interface';
+import { type ProtocolRow } from '../../core/models/protocol-row.interface';
+import { type EventWeather } from '../../core/weather/event-weather.interface';
+import { type SelfAthlete } from '../../state/self-athlete.interface';
 import { NO_DELTA, RACE_PAGE_BASE_LINK } from './race-page.constant';
 import { NoteBadgeKind } from '../../core/protocol/note-badge-kind.enum';
-import { RacePrNoteView, RaceView } from './race-page.interface';
+import { type RacePrNoteView, type RaceView } from './race-page.interface';
 
 /** The published slug equals the event `dateIso`. */
 export const RACE_PAGE_SLUG = RACE_EVENT.dateIso;
@@ -184,7 +184,10 @@ export const EXPECTED_RACE_VIEW: RaceView = {
 /** The header pick («Выбери себя») matching the first fixture row — exactly one row highlights. */
 export const RACE_SELF_PICK: SelfAthlete = { key: 'мария иванова', displayName: 'Мария Иванова' };
 
-const gapRow = (index: number, fullName: string, gender: ProtocolRow['gender'], place: number, totalMs: number): ProtocolRow => ({
+const gapRow = (
+  index: number,
+  { fullName, gender, place, totalMs }: { fullName: string; gender: ProtocolRow['gender']; place: number; totalMs: number },
+): ProtocolRow => ({
   index,
   fullName,
   time23: '',
@@ -200,10 +203,10 @@ const gapRow = (index: number, fullName: string, gender: ProtocolRow['gender'], 
 
 /** Two finishers per gender: each runner-up learns the gap to the place above, the winners stay clean. */
 export const GAP_PROTOCOL_ROWS: ProtocolRow[] = [
-  gapRow(1, 'Первый Пётр', Gender.male, 1, 1200000),
-  gapRow(2, 'Второв Василий', Gender.male, 2, 1212000),
-  gapRow(3, 'Анина Анна', Gender.female, 1, 1500000),
-  gapRow(4, 'Близкова Белла', Gender.female, 2, 1530000),
+  gapRow(1, { fullName: 'Первый Пётр', gender: Gender.male, place: 1, totalMs: 1200000 }),
+  gapRow(2, { fullName: 'Второв Василий', gender: Gender.male, place: 2, totalMs: 1212000 }),
+  gapRow(3, { fullName: 'Анина Анна', gender: Gender.female, place: 1, totalMs: 1500000 }),
+  gapRow(4, { fullName: 'Близкова Белла', gender: Gender.female, place: 2, totalMs: 1530000 }),
 ];
 
 /** Row-by-row `gapMText`/`gapFText` behind GAP_PROTOCOL_ROWS. */
@@ -211,7 +214,7 @@ export const EXPECTED_GAP_M_TEXTS = ['', '+0:12,00', '', ''];
 
 export const EXPECTED_GAP_F_TEXTS = ['', '', '', '+0:30,00'];
 
-const splitRow = (index: number, fullName: string, time23: string, totalMs: number): ProtocolRow => ({
+const splitRow = (index: number, { fullName, time23, totalMs }: { fullName: string; time23: string; totalMs: number }): ProtocolRow => ({
   index,
   fullName,
   time23,
@@ -230,9 +233,9 @@ const splitRow = (index: number, fullName: string, time23: string, totalMs: numb
  * (a 12:00 opening lap of a 24:10 finish paces lap 2 faster), the others gain nothing.
  */
 export const SPLIT_PROTOCOL_ROWS: ProtocolRow[] = [
-  splitRow(1, 'Закрыватель Захар', '12:00', 1450000),
-  splitRow(2, 'Стартер Степан', '10:00', 1470000),
-  splitRow(3, 'Ровный Роман', '11:30', 1500000),
+  splitRow(1, { fullName: 'Закрыватель Захар', time23: '12:00', totalMs: 1450000 }),
+  splitRow(2, { fullName: 'Стартер Степан', time23: '10:00', totalMs: 1470000 }),
+  splitRow(3, { fullName: 'Ровный Роман', time23: '11:30', totalMs: 1500000 }),
 ];
 
 /** Only the charger's gain shows — losses and dead-even laps stay blank. */
@@ -241,7 +244,7 @@ export const EXPECTED_LAP_GAIN_TEXTS = ['+2', '', ''];
 export const EXPECTED_NEGATIVE_SPLIT_FLAGS = [true, false, false];
 
 /** Мария's run at `RACE_PAGE_SLUG` (25:00 per the fixture rows), by builder-friendly key. */
-const mariaRun = (dateIso: string, timeMs: number, slug: string = dateIso): ParticipantRun => ({
+const mariaRun = (dateIso: string, { timeMs, slug = dateIso }: { timeMs: number; slug?: string }): ParticipantRun => ({
   athleteKey: 'мария иванова',
   dateIso,
   slug,
@@ -257,12 +260,12 @@ const mariaRun = (dateIso: string, timeMs: number, slug: string = dateIso): Part
  * his three figures stays blank.
  */
 export const RANK_PARTICIPANT_RUNS: ParticipantRun[] = [
-  mariaRun('2025-08-03', 1440000),
-  mariaRun('2025-09-07', 1560000),
-  mariaRun('2025-10-05', 1560000),
-  mariaRun('2025-11-02', 1560000),
-  mariaRun('2026-05-03', 1560000),
-  mariaRun(RACE_EVENT.dateIso, 1500000, RACE_PAGE_SLUG),
+  mariaRun('2025-08-03', { timeMs: 1440000 }),
+  mariaRun('2025-09-07', { timeMs: 1560000 }),
+  mariaRun('2025-10-05', { timeMs: 1560000 }),
+  mariaRun('2025-11-02', { timeMs: 1560000 }),
+  mariaRun('2026-05-03', { timeMs: 1560000 }),
+  mariaRun(RACE_EVENT.dateIso, { timeMs: 1500000, slug: RACE_PAGE_SLUG }),
   { athleteKey: 'олег петров', dateIso: '2026-05-03', slug: '2026-05-03', timeMs: 1500000, distanceKm: FIVE_KM_DISTANCE_KM },
 ];
 
@@ -309,9 +312,9 @@ export const CLUB_PARTICIPANT_RUNS: ParticipantRun[] = [
     const month = String((Math.floor(i / 4) % 12) + 1).padStart(2, '0');
     const day = String((i % 4) * 7 + 1).padStart(2, '0');
 
-    return mariaRun(`${year}-${month}-${day}`, 1560000);
+    return mariaRun(`${year}-${month}-${day}`, { timeMs: 1560000 });
   }),
-  mariaRun(RACE_EVENT.dateIso, 1500000, RACE_PAGE_SLUG),
+  mariaRun(RACE_EVENT.dateIso, { timeMs: 1500000, slug: RACE_PAGE_SLUG }),
 ];
 
 export const EXPECTED_CLUB_FINISH_COUNT_TEXT = '100';
@@ -321,13 +324,13 @@ export const EXPECTED_CLUB_BADGE_CLASS = 'race__finishes_100';
 
 /** Three faster runs sit before the 6-month window; the three inside it are all slower. */
 export const WINDOW_PARTICIPANT_RUNS: ParticipantRun[] = [
-  mariaRun('2025-01-05', 1380000),
-  mariaRun('2025-02-02', 1410000),
-  mariaRun('2025-03-02', 1440000),
-  mariaRun('2026-01-04', 1560000),
-  mariaRun('2026-02-01', 1580000),
-  mariaRun('2026-03-01', 1600000),
-  mariaRun(RACE_EVENT.dateIso, 1500000, RACE_PAGE_SLUG),
+  mariaRun('2025-01-05', { timeMs: 1380000 }),
+  mariaRun('2025-02-02', { timeMs: 1410000 }),
+  mariaRun('2025-03-02', { timeMs: 1440000 }),
+  mariaRun('2026-01-04', { timeMs: 1560000 }),
+  mariaRun('2026-02-01', { timeMs: 1580000 }),
+  mariaRun('2026-03-01', { timeMs: 1600000 }),
+  mariaRun(RACE_EVENT.dateIso, { timeMs: 1500000, slug: RACE_PAGE_SLUG }),
 ];
 
 export const EXPECTED_WINDOW_NOTABLE_TEXT = 'Лучший результат за 6 месяцев';

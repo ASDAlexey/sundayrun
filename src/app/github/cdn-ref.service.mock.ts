@@ -1,6 +1,6 @@
-import { Mock, vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
-import { CdnRefService } from './cdn-ref.service';
+import { type CdnRefService } from './cdn-ref.service';
 
 /** Stands in for the pointer sha the real service reads from the CDN. */
 export const CDN_REF_SHA_MOCK = 'cdn-ref-head-sha';
@@ -39,7 +39,7 @@ export function cdnRefServiceMock(initialRef: string = CDN_REF_SHA_MOCK): CdnRef
 
   return {
     resolve: () => Promise.resolve(ref),
-    pin: (commitSha: string) => {
+    pin: (commitSha: string): void => {
       ref = commitSha;
     },
     noteFreshSha: vi.fn(),

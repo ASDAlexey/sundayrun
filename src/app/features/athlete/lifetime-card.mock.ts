@@ -1,4 +1,4 @@
-import { LifetimeView } from './lifetime-card.interface';
+import { type LifetimeView } from './lifetime-card.interface';
 
 /** LIFETIME_RUNS prepared for the template: the skipped 25th minute keeps its zero bar. */
 export const EXPECTED_LIFETIME_VIEW: LifetimeView = {

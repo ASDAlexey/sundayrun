@@ -10,16 +10,16 @@ import {
 
 describe('previous-bests', () => {
   it('keeps the earliest all-time 5 km best strictly before the event and drops everything else', () => {
-    expect(buildPreviousBests(PREVIOUS_BESTS_RUNS, PREVIOUS_BESTS_EVENT_DATE)).toEqual(EXPECTED_PREVIOUS_BESTS);
-    expect(buildPreviousBests([], PREVIOUS_BESTS_EVENT_DATE), 'no runs — no previous bests').toEqual({});
+    expect(buildPreviousBests(PREVIOUS_BESTS_RUNS, { dateIso: PREVIOUS_BESTS_EVENT_DATE })).toEqual(EXPECTED_PREVIOUS_BESTS);
+    expect(buildPreviousBests([], { dateIso: PREVIOUS_BESTS_EVENT_DATE }), 'no runs — no previous bests').toEqual({});
   });
 
   it('bounds the scan to the year when asked, so last season’s record cannot answer for this one', () => {
-    expect(buildPreviousBests(PREVIOUS_BESTS_LAST_YEAR_RUNS, PREVIOUS_BESTS_EVENT_DATE, PREVIOUS_BESTS_YEAR_START)).toEqual(
-      EXPECTED_YEAR_PREVIOUS_BESTS,
-    );
     expect(
-      buildPreviousBests(PREVIOUS_BESTS_LAST_YEAR_RUNS, PREVIOUS_BESTS_EVENT_DATE)['попов алексей'],
+      buildPreviousBests(PREVIOUS_BESTS_LAST_YEAR_RUNS, { dateIso: PREVIOUS_BESTS_EVENT_DATE, sinceIso: PREVIOUS_BESTS_YEAR_START }),
+    ).toEqual(EXPECTED_YEAR_PREVIOUS_BESTS);
+    expect(
+      buildPreviousBests(PREVIOUS_BESTS_LAST_YEAR_RUNS, { dateIso: PREVIOUS_BESTS_EVENT_DATE })['попов алексей'],
       'unbounded, the 2024 record wins',
     ).toEqual({ slug: '2024-11-10', dateIso: '2024-11-10', timeMs: 1100000 });
   });

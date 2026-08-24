@@ -1,18 +1,33 @@
 import { removeEventFromDb } from '../sqlite/protocol-db-write';
-import { DeleteEventResult } from './delete-event.interface';
+import { type DeleteEventResult } from './delete-event.interface';
 import { eventFilePaths } from './event-paths';
-import { EventFilePaths } from './event-paths.interface';
+import { type EventFilePaths } from './event-paths.interface';
 import { DELETE_COMMIT_MESSAGE_PREFIX } from './github-api.constant';
-import { CommitFile } from './github-api.interface';
+import { type CommitFile } from './github-api.interface';
 import { commitFilesAtomically } from './github-commit';
 import { GithubAuthError } from './github-errors';
 import { DEFAULT_GITHUB_FETCH } from './github-fetch.constant';
-import { GithubFetchFn } from './github-fetch.type';
+import { type GithubAccess, type GithubFetchFn } from './github-fetch.type';
 import { buildProtocolDbCommitFile } from './protocol-db-file';
 import { repoFileExists } from './repo-contents';
 import { publishVersionPointer } from './version-pointer';
 import { DEFAULT_SLEEP } from './version-pointer.constant';
-import { SleepFn } from './version-pointer.type';
+import { type SleepFn } from './version-pointer.type';
+
+/** Which event to unpublish, plus the transport and the backoff the pointer retry uses. */
+export interface DeleteEventRequest {
+  readonly token: string;
+  readonly slug: string;
+  readonly fetchFn?: GithubFetchFn;
+  readonly sleep?: SleepFn;
+}
+
+/** What one commit attempt of a deletion works on; `parentSha` moves when the branch does. */
+interface DeleteAttempt {
+  readonly slug: string;
+  readonly paths: EventFilePaths;
+  readonly parentSha: string;
+}
 
 /**
  * The mirror of `publishEvent`: removes one published event from the protocols repository as a
@@ -24,23 +39,20 @@ import { SleepFn } from './version-pointer.type';
  * `pointerPublished: false` — the deletion is done, the pointer just lags — rather than throwing.
  * Only an auth failure or a failed data commit rejects. Returns the deletion commit sha to pin.
  */
-export async function deleteEvent(
-  token: string,
-  slug: string,
-  fetchFn: GithubFetchFn = DEFAULT_GITHUB_FETCH,
-  sleep: SleepFn = DEFAULT_SLEEP,
-): Promise<DeleteEventResult> {
+export async function deleteEvent(request: DeleteEventRequest): Promise<DeleteEventResult> {
+  const { token, slug, fetchFn = DEFAULT_GITHUB_FETCH, sleep = DEFAULT_SLEEP } = request;
+  const access: GithubAccess = { token, fetchFn };
   const paths = eventFilePaths(slug);
 
-  const commitSha = await commitFilesAtomically(
+  const commitSha = await commitFilesAtomically({
     token,
-    (parentSha) => buildCommitFiles(fetchFn, token, slug, paths, parentSha),
-    `${DELETE_COMMIT_MESSAGE_PREFIX}${slug}`,
     fetchFn,
-  );
+    buildFiles: (parentSha) => buildCommitFiles(access, { slug, paths, parentSha }),
+    message: `${DELETE_COMMIT_MESSAGE_PREFIX}${slug}`,
+  });
 
   try {
-    await publishVersionPointer(token, slug, commitSha, fetchFn, sleep);
+    await publishVersionPointer({ token, slug, dataCommitSha: commitSha, fetchFn, sleep });
 
     return { commitSha, pointerPublished: true };
   } catch (error) {
@@ -59,16 +71,11 @@ export async function deleteEvent(
  * rejects a deletion of a path that is not there, so the workbook is probed (per attempt too — the
  * repository can move between attempts) and only an existing one joins the commit.
  */
-async function buildCommitFiles(
-  fetchFn: GithubFetchFn,
-  token: string,
-  slug: string,
-  paths: EventFilePaths,
-  parentSha: string,
-): Promise<CommitFile[]> {
+async function buildCommitFiles(access: GithubAccess, attempt: DeleteAttempt): Promise<CommitFile[]> {
+  const { slug, paths, parentSha } = attempt;
   const [dbFile, sourceXlsxExists] = await Promise.all([
-    buildProtocolDbCommitFile(token, (dbBytes) => removeEventFromDb(dbBytes, { slug }), fetchFn, parentSha),
-    repoFileExists(token, paths.sourceXlsx, fetchFn),
+    buildProtocolDbCommitFile(access, { updateDb: (dbBytes) => removeEventFromDb(dbBytes, { slug }), parentSha }),
+    repoFileExists(paths.sourceXlsx, access),
   ]);
 
   return sourceXlsxExists ? [{ path: paths.sourceXlsx, base64Content: null }, dbFile] : [dbFile];

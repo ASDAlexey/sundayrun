@@ -22,22 +22,25 @@ describe('buildFormBaselines', () => {
 
 describe('formDelta', () => {
   it('holds a result inside the corridor at arm’s length and states the rest plainly', () => {
-    expect(formDelta(FORM_DELTA_USUAL_MS, МАРИЯ_BASELINE, FORM_DELTA_RACE_ISO)).toEqual({
+    expect(formDelta(FORM_DELTA_USUAL_MS, { baseline: МАРИЯ_BASELINE, dateIso: FORM_DELTA_RACE_ISO })).toEqual({
       kind: FormDeltaKind.usual,
       text: '≈ +0:20,00',
       restDays: 14,
     });
-    expect(formDelta(FORM_DELTA_CORRIDOR_EDGE_MS, МАРИЯ_BASELINE, FORM_DELTA_RACE_ISO), 'the corridor holds its own edge').toEqual({
+    expect(
+      formDelta(FORM_DELTA_CORRIDOR_EDGE_MS, { baseline: МАРИЯ_BASELINE, dateIso: FORM_DELTA_RACE_ISO }),
+      'the corridor holds its own edge',
+    ).toEqual({
       kind: FormDeltaKind.usual,
       text: '≈ +0:36,90',
       restDays: 14,
     });
-    expect(formDelta(FORM_DELTA_SLOWER_MS, МАРИЯ_BASELINE, FORM_DELTA_RACE_ISO)).toEqual({
+    expect(formDelta(FORM_DELTA_SLOWER_MS, { baseline: МАРИЯ_BASELINE, dateIso: FORM_DELTA_RACE_ISO })).toEqual({
       kind: FormDeltaKind.slower,
       text: '+1:10,00',
       restDays: 14,
     });
-    expect(formDelta(FORM_DELTA_FASTER_MS, МАРИЯ_BASELINE, FORM_DELTA_RACE_ISO)).toEqual({
+    expect(formDelta(FORM_DELTA_FASTER_MS, { baseline: МАРИЯ_BASELINE, dateIso: FORM_DELTA_RACE_ISO })).toEqual({
       kind: FormDeltaKind.faster,
       text: '−0:50,00',
       restDays: 14,
@@ -45,7 +48,7 @@ describe('formDelta', () => {
   });
 
   it('refuses to measure a comeback against the form it left behind', () => {
-    expect(formDelta(FORM_DELTA_SLOWER_MS, АННА_BASELINE, FORM_DELTA_RACE_ISO)).toEqual({
+    expect(formDelta(FORM_DELTA_SLOWER_MS, { baseline: АННА_BASELINE, dateIso: FORM_DELTA_RACE_ISO })).toEqual({
       kind: FormDeltaKind.afterBreak,
       text: '',
       restDays: EXPECTED_BREAK_REST_DAYS,
@@ -53,7 +56,7 @@ describe('formDelta', () => {
   });
 
   it('stays blank without a time of its own or a form to place it against', () => {
-    expect(formDelta(null, МАРИЯ_BASELINE, FORM_DELTA_RACE_ISO), 'a DNF or one-lap row').toBeNull();
-    expect(formDelta(FORM_DELTA_SLOWER_MS, undefined, FORM_DELTA_RACE_ISO), 'a debut').toBeNull();
+    expect(formDelta(null, { baseline: МАРИЯ_BASELINE, dateIso: FORM_DELTA_RACE_ISO }), 'a DNF or one-lap row').toBeNull();
+    expect(formDelta(FORM_DELTA_SLOWER_MS, { baseline: undefined, dateIso: FORM_DELTA_RACE_ISO }), 'a debut').toBeNull();
   });
 });

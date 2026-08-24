@@ -12,7 +12,7 @@ import { TimerSheet } from '../handout-sheet/handout-sheet';
 import { TIMER_ADMIN_RETURN_PARAMS } from '../session-publish/session-publish.constant';
 import { TimerShare } from '../session-share/session-share';
 import { TIMER_SESSIONS_NONE, TIMER_SESSIONS_TITLE_ID } from './session-list.constant';
-import { TimerSessionRemove, TimerSessionRow } from './session-list.interface';
+import { type TimerSessionRemove, type TimerSessionRow } from './session-list.interface';
 import { removeSessionNoteText } from './session-list.text';
 import { buildTimerSessionRows } from './session-list.view';
 

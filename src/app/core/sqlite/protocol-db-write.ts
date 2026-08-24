@@ -3,13 +3,13 @@ import { eq } from 'drizzle-orm';
 import type { Database } from '@sqlite.org/sqlite-wasm';
 
 import { buildIndexEntry, removeIndexEntry, renumberIndexEvents, upsertIndexEntry } from '../github/archive-index';
-import { ArchiveIndexFile } from '../github/archive-index.interface';
+import { type ArchiveIndexFile } from '../github/archive-index.interface';
 import { buildEventResultsFile, toEventResults } from '../github/results-file';
-import { EventResultsFile } from '../github/results-file.interface';
+import { type EventResultsFile } from '../github/results-file.interface';
 import { applyEventToHistory, removeEventFromHistory } from '../history/athletes-rollup';
-import { AthletesHistory } from '../models/athletes-history.type';
-import { RaceEvent } from '../models/race-event.interface';
-import { EventWeather } from '../weather/event-weather.interface';
+import { type AthletesHistory } from '../models/athletes-history.type';
+import { type RaceEvent } from '../models/race-event.interface';
+import { type EventWeather } from '../weather/event-weather.interface';
 import { deserializeDbInto } from './deserialize-db';
 import { narrowValues } from './protocol-db-narrow';
 import { recomputeStoredNotes } from './protocol-db-notes';
@@ -39,8 +39,8 @@ import {
   PROTOCOL_DB_V8_MIGRATION_STATEMENTS,
 } from './protocol-db-schema.constant';
 import { BEGIN_TRANSACTION_SQL, COMMIT_TRANSACTION_SQL, PROTOCOL_DB_PAGE_SIZE_PRAGMA, VACUUM_SQL } from './protocol-db-write.constant';
-import { ProtocolDbEventMeta, ProtocolDbEventRemoval, ProtocolDbEventUpdate } from './protocol-db-write.interface';
-import { createProtocolDrizzle, ProtocolDrizzle } from './protocol-drizzle';
+import { type ProtocolDbEventMeta, type ProtocolDbEventRemoval, type ProtocolDbEventUpdate } from './protocol-db-write.interface';
+import { createProtocolDrizzle, type ProtocolDrizzle } from './protocol-drizzle';
 import { loadSqlite3 } from './sqlite-loader';
 
 /** The previous archive and athletes rollup, read back out of the db the write is updating. */
@@ -115,11 +115,10 @@ function rollupPublications(previous: PreviousState, updates: ProtocolDbEventUpd
   for (const update of ordered) {
     const slug = update.event.dateIso;
 
-    history = applyEventToHistory(
-      removeEventFromHistory(history, slug),
-      { slug, dateIso: update.event.dateIso },
-      toEventResults(update.rows),
-    );
+    history = applyEventToHistory(removeEventFromHistory(history, slug), {
+      event: { slug, dateIso: update.event.dateIso },
+      results: toEventResults(update.rows),
+    });
 
     // The organisers' legacy number belongs to the archive, not the form: a re-publication keeps it.
     const legacyNumber = index.events.find((entry) => entry.slug === slug)?.legacyNumber ?? update.event.legacyNumber;
@@ -156,7 +155,7 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     if (dbBytes === null) {
       createSchema(db);
     } else {
-      deserializeDbInto(sqlite3, db, dbBytes);
+      deserializeDbInto(sqlite3, { db, dbBytes });
 
       migrateDb(db);
     }
@@ -168,9 +167,9 @@ async function syncDbToState(dbBytes: Uint8Array | null, rollup: (previous: Prev
     const eventMeta = await readEventMeta(ddb, target.resultsFiles);
 
     db.exec(BEGIN_TRANSACTION_SQL);
-    await rewriteEvents(ddb, target.index, eventMeta);
-    await rewriteResults(ddb, target.resultsFiles, target.removedSlug);
-    await rewriteEventWeather(ddb, target.weathers, target.removedSlug);
+    await rewriteEvents(ddb, { index: target.index, eventMeta });
+    await rewriteResults(ddb, { resultsFiles: target.resultsFiles, removedSlug: target.removedSlug });
+    await rewriteEventWeather(ddb, { weathers: target.weathers, removedSlug: target.removedSlug });
     await dropEventVkPost(ddb, target.removedSlug);
     await rewriteAthletes(ddb, target.history);
     // Every add or removal can shift later events' notes (first participation, records, year
@@ -256,7 +255,10 @@ async function readEventMeta(db: ProtocolDrizzle, resultsFiles: EventResultsFile
 }
 
 /** `index` is the full updated truth (a few hundred rows), so a rewrite is simpler and safer than an upsert. */
-async function rewriteEvents(db: ProtocolDrizzle, index: ArchiveIndexFile, eventMeta: Record<string, ProtocolDbEventMeta>): Promise<void> {
+async function rewriteEvents(
+  db: ProtocolDrizzle,
+  { index, eventMeta }: { index: ArchiveIndexFile; eventMeta: Record<string, ProtocolDbEventMeta> },
+): Promise<void> {
   await db.delete(eventsTable);
 
   if (index.events.length === 0) {
@@ -291,7 +293,10 @@ async function rewriteEvents(db: ProtocolDrizzle, index: ArchiveIndexFile, event
 }
 
 /** Replaces only the published slugs' rows and/or drops the removed slug's; other events' results stay. */
-async function rewriteResults(db: ProtocolDrizzle, resultsFiles: EventResultsFile[], removedSlug: string | null): Promise<void> {
+async function rewriteResults(
+  db: ProtocolDrizzle,
+  { resultsFiles, removedSlug }: { resultsFiles: EventResultsFile[]; removedSlug: string | null },
+): Promise<void> {
   if (removedSlug !== null) {
     await db.delete(resultsTable).where(eq(resultsTable.slug, removedSlug));
   }
@@ -329,7 +334,10 @@ async function rewriteResults(db: ProtocolDrizzle, resultsFiles: EventResultsFil
  * publication untouched — unlike `events`, this table is never rebuilt from the index, because the
  * readings are only fetchable around publish time.
  */
-async function rewriteEventWeather(db: ProtocolDrizzle, weathers: PublishedWeather[], removedSlug: string | null): Promise<void> {
+async function rewriteEventWeather(
+  db: ProtocolDrizzle,
+  { weathers, removedSlug }: { weathers: PublishedWeather[]; removedSlug: string | null },
+): Promise<void> {
   if (removedSlug !== null) {
     await db.delete(eventWeather).where(eq(eventWeather.slug, removedSlug));
   }

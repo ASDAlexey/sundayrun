@@ -1,11 +1,11 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
-import { PublishEventInput } from '../core/github/publish-event.interface';
-import { TimerPublishState, TimerPublishStateType } from '../core/timer/timer-session.enum';
+import { type PublishEventInput } from '../core/github/publish-event.interface';
+import { TimerPublishState, type TimerPublishStateType } from '../core/timer/timer-session.enum';
 import { TIMER_SESSION_DATE_ISO } from '../core/timer/timer-session.mock';
 import { RACE_EVENT } from './protocol-state.service.mock';
-import { TimerPublishStep, TimerPublishStepType } from './timer-publish.enum';
+import { TimerPublishStep, type TimerPublishStepType } from './timer-publish.enum';
 
 /** The mocked surface: every signal stays writable, so a card spec can be put into any state. */
 export interface TimerPublishServiceMock {

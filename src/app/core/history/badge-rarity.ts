@@ -1,8 +1,15 @@
 import { MIN_OWNED_PERCENT, PERCENT_TOTAL } from './badge-rarity.constant';
-import { YearBadgeActivityRow } from './badge-rarity.interface';
-import { YearBadgeRarity } from './badge-rarity.type';
+import { type YearBadgeActivityRow } from './badge-rarity.interface';
+import { type YearBadgeRarity } from './badge-rarity.type';
 import { yearBadgesOf } from './year-badges';
-import { YearBadgeType } from './year-badges.enum';
+import { type YearBadgeType } from './year-badges.enum';
+
+/** What the rarity share is measured against: the new-year dates, the denominator, and ranking holders. */
+export interface YearBadgeRarityContext {
+  readonly firstEventDateByYear: Record<string, string>;
+  readonly participantCount: number;
+  readonly extraHolders?: ReadonlyMap<YearBadgeType, ReadonlySet<string>>;
+}
 
 /**
  * How rare each badge is — «есть у 12% участников» on a badge chip. An athlete owns a badge once
@@ -10,12 +17,9 @@ import { YearBadgeType } from './year-badges.enum';
  * ever started, badge or not. `extraHolders` brings the ranking badges (computed off their own
  * sources) into the same map.
  */
-export function yearBadgeRarity(
-  rows: YearBadgeActivityRow[],
-  firstEventDateByYear: Record<string, string>,
-  participantCount: number,
-  extraHolders: ReadonlyMap<YearBadgeType, ReadonlySet<string>> = new Map(),
-): YearBadgeRarity {
+export function yearBadgeRarity(rows: YearBadgeActivityRow[], context: YearBadgeRarityContext): YearBadgeRarity {
+  const { firstEventDateByYear, participantCount, extraHolders = new Map() } = context;
+
   if (participantCount <= 0) {
     return {};
   }

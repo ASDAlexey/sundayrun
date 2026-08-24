@@ -1,9 +1,9 @@
 import { asc, eq } from 'drizzle-orm';
 
-import { EventWeatherRow } from '../core/history/weather-records.interface';
+import { type EventWeatherRow } from '../core/history/weather-records.interface';
 import { eventWeather } from '../core/sqlite/protocol-db.schema';
-import { ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { EventWeather } from '../core/weather/event-weather.interface';
+import { type ProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
+import { type EventWeather } from '../core/weather/event-weather.interface';
 
 /** The `event_weather` reads, split out of `protocol-db-queries.ts` the way the season selects are. */
 

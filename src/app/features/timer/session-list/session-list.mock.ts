@@ -1,5 +1,5 @@
 import { TimerPublishState } from '../../../core/timer/timer-session.enum';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { TIMER_SESSION_FINISHED } from '../../../core/timer/timer-session.mock';
 
 /** The same race a week earlier, already in the archive. */

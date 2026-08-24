@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 
 import { TimerStatus } from '../../../core/timer/timer-session.enum';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { TimerRaceService } from '../../../state/timer-race.service';
 import { TimerSessionService } from '../../../state/timer-session.service';
 

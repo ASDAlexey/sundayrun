@@ -1,7 +1,7 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
-import { DraftRows } from './draft-priors.interface';
-import { PreviousBest } from './previous-bests.interface';
+import { type DraftRows } from './draft-priors.interface';
+import { type PreviousBest } from './previous-bests.interface';
 
 /**
  * Two earlier drafts on top of stored priors covering every branch: the veteran's stored count and
@@ -34,7 +34,10 @@ export const NEWCOMER_DRAFT_MS = 1600000;
 
 const SHORT_COURSE_MS = 800000;
 
-const row = (index: number, fullName: string, totalMs: number | null, distanceKm: number | null): ProtocolRow => ({
+const row = (
+  index: number,
+  { fullName, totalMs, distanceKm }: { fullName: string; totalMs: number | null; distanceKm: number | null },
+): ProtocolRow => ({
   index,
   fullName,
   time23: '',
@@ -53,13 +56,13 @@ export const EARLIER_DRAFTS: DraftRows[] = [
   {
     dateIso: FIRST_DRAFT_DATE,
     rows: [
-      row(1, 'Ветеран  Трассы', SLOWER_DRAFT_MS, FIVE_KM_DISTANCE_KM),
-      row(2, 'Новичок Забега', NEWCOMER_DRAFT_MS, FIVE_KM_DISTANCE_KM),
-      row(3, 'На Круге', SHORT_COURSE_MS, TWO_THREE_KM_DISTANCE_KM),
-      row(4, 'Сошёл Сдистанции', null, null),
+      row(1, { fullName: 'Ветеран  Трассы', totalMs: SLOWER_DRAFT_MS, distanceKm: FIVE_KM_DISTANCE_KM }),
+      row(2, { fullName: 'Новичок Забега', totalMs: NEWCOMER_DRAFT_MS, distanceKm: FIVE_KM_DISTANCE_KM }),
+      row(3, { fullName: 'На Круге', totalMs: SHORT_COURSE_MS, distanceKm: TWO_THREE_KM_DISTANCE_KM }),
+      row(4, { fullName: 'Сошёл Сдистанции', totalMs: null, distanceKm: null }),
     ],
   },
-  { dateIso: SECOND_DRAFT_DATE, rows: [row(1, 'Ветеран Трассы', FASTER_DRAFT_MS, FIVE_KM_DISTANCE_KM)] },
+  { dateIso: SECOND_DRAFT_DATE, rows: [row(1, { fullName: 'Ветеран Трассы', totalMs: FASTER_DRAFT_MS, distanceKm: FIVE_KM_DISTANCE_KM })] },
 ];
 
 export const PRIOR_DRAFT_FINISH_COUNTS: Record<string, number> = {

@@ -1,10 +1,10 @@
-import { WritableSignal, signal } from '@angular/core';
-import { Mock, vi } from 'vitest';
+import { type WritableSignal, signal } from '@angular/core';
+import { type Mock, vi } from 'vitest';
 
-import { GenderType } from '../core/models/gender.enum';
-import { AthleteRecord } from '../core/models/athlete-history.interface';
+import { type GenderType } from '../core/models/gender.enum';
+import { type AthleteRecord } from '../core/models/athlete-history.interface';
 import { EMPTY_COURSE_RECORD_LAP_MS } from './timer-roster.constant';
-import { TimerRosterStatus, TimerRosterStatusType } from './timer-roster.enum';
+import { TimerRosterStatus, type TimerRosterStatusType } from './timer-roster.enum';
 
 /** The shape the `timerRosterServiceMock` factory returns: signals the spec drives, one spy it asserts on. */
 export interface TimerRosterServiceMock {

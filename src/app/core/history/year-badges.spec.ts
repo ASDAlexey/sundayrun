@@ -20,10 +20,10 @@ describe('yearBadgesOf', () => {
 
 describe('athleteYearBadges', () => {
   it('groups the runs by year, awards per-year badges newest first and omits badge-less years', () => {
-    expect(athleteYearBadges(MULTI_YEAR_RUNS, FIRST_EVENT_DATE_BY_YEAR)).toEqual(EXPECTED_MULTI_YEAR_BADGES);
-    expect(athleteYearBadges([], FIRST_EVENT_DATE_BY_YEAR), 'no runs — no badges').toEqual([]);
+    expect(athleteYearBadges(MULTI_YEAR_RUNS, { firstEventDateByYear: FIRST_EVENT_DATE_BY_YEAR })).toEqual(EXPECTED_MULTI_YEAR_BADGES);
+    expect(athleteYearBadges([], { firstEventDateByYear: FIRST_EVENT_DATE_BY_YEAR }), 'no runs — no badges').toEqual([]);
     expect(
-      athleteYearBadges(MULTI_YEAR_RUNS, FIRST_EVENT_DATE_BY_YEAR, RANK_BADGES_BY_YEAR),
+      athleteYearBadges(MULTI_YEAR_RUNS, { firstEventDateByYear: FIRST_EVENT_DATE_BY_YEAR, rankBadgesByYear: RANK_BADGES_BY_YEAR }),
       'rank badges lead their years and revive a badge-less one',
     ).toEqual(EXPECTED_RANKED_MULTI_YEAR_BADGES);
   });
@@ -31,9 +31,12 @@ describe('athleteYearBadges', () => {
 
 describe('athleteYearActivity', () => {
   it('slices one year of the runs into the badge activity', () => {
-    expect(athleteYearActivity(MULTI_YEAR_RUNS, '2025', FIRST_EVENT_DATE_BY_YEAR['2025'])).toEqual(EXPECTED_2025_ACTIVITY);
-    expect(athleteYearActivity(MULTI_YEAR_RUNS, '2020', FIRST_EVENT_DATE_BY_YEAR['2020']), 'a year never ran is all zeroes').toEqual(
-      EMPTY_YEAR_ACTIVITY,
+    expect(athleteYearActivity(MULTI_YEAR_RUNS, { year: '2025', firstEventDate: FIRST_EVENT_DATE_BY_YEAR['2025'] })).toEqual(
+      EXPECTED_2025_ACTIVITY,
     );
+    expect(
+      athleteYearActivity(MULTI_YEAR_RUNS, { year: '2020', firstEventDate: FIRST_EVENT_DATE_BY_YEAR['2020'] }),
+      'a year never ran is all zeroes',
+    ).toEqual(EMPTY_YEAR_ACTIVITY);
   });
 });

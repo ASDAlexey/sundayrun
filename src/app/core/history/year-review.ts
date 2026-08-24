@@ -1,15 +1,22 @@
-import { Gender, GenderType } from '../models/gender.enum';
+import { Gender, type GenderType } from '../models/gender.enum';
 import { NAME_COLLATION_LOCALE } from './athletes-list.constant';
 import { athleteSignalsOf, badgeSignalsByAthlete } from './badge-signals';
-import { AthleteBadgeSignals } from './badge-signals.interface';
+import { type AthleteBadgeSignals } from './badge-signals.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import { ISO_MONTH_END, ISO_MONTH_START } from './year-badges.constant';
 import { medianMsOrNull } from './median';
 import { yearBadgesOf } from './year-badges';
-import { YearBadge, YearBadgeType } from './year-badges.enum';
+import { YearBadge, type YearBadgeType } from './year-badges.enum';
 import { yearProgressBoard } from './year-progress';
 import { MOST_ACTIVE_LIMIT, YEAR_BESTS_LIMIT } from './year-review.constant';
-import { YearActiveAthlete, YearBadgeHolders, YearBestResult, YearReview, YearReviewSource, YearRunRow } from './year-review.interface';
+import {
+  type YearActiveAthlete,
+  type YearBadgeHolders,
+  type YearBestResult,
+  type YearReview,
+  type YearReviewSource,
+  type YearRunRow,
+} from './year-review.interface';
 
 /** Display order of the badge holder lists on the year review page. */
 const BADGE_DISPLAY_ORDER: readonly YearBadgeType[] = [
@@ -43,8 +50,12 @@ export function buildYearReview(source: YearReviewSource): YearReview {
     bestMen: bestsOf(fiveKm, Gender.male),
     bestWomen: bestsOf(fiveKm, Gender.female),
     mostActive: mostActiveOf(byAthlete),
-    progress: yearProgressBoard(source.year, displayNamesOf(byAthlete), source.historyRows),
-    badgeHolders: badgeHoldersOf(byAthlete, source.eventDates[0] ?? null, badgeSignalsByAthlete(source.historyRows), source.year),
+    progress: yearProgressBoard(source.year, { displayNames: displayNamesOf(byAthlete), historyRows: source.historyRows }),
+    badgeHolders: badgeHoldersOf(byAthlete, {
+      firstEventDate: source.eventDates[0] ?? null,
+      signalsByAthlete: badgeSignalsByAthlete(source.historyRows),
+      year: source.year,
+    }),
     firstEventSlug: source.eventDates[0] ?? null,
   };
 }
@@ -116,9 +127,11 @@ function mostActiveOf(byAthlete: Map<string, YearRunRow[]>): YearActiveAthlete[]
 
 function badgeHoldersOf(
   byAthlete: Map<string, YearRunRow[]>,
-  firstEventDate: string | null,
-  signalsByAthlete: Map<string, AthleteBadgeSignals>,
-  year: string,
+  {
+    firstEventDate,
+    signalsByAthlete,
+    year,
+  }: { firstEventDate: string | null; signalsByAthlete: Map<string, AthleteBadgeSignals>; year: string },
 ): YearBadgeHolders[] {
   const holdersByBadge = new Map<YearBadgeType, YearBadgeHolders['holders']>();
 

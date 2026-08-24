@@ -10,10 +10,10 @@ import { splitNote } from '../../../core/history/note-tokens';
 import { placeGapsMs } from '../../../core/history/place-gaps';
 import { prDelta } from '../../../core/history/pr-delta';
 import { prDeltaHint } from '../../../core/history/pr-delta-text';
-import { PreviousBest } from '../../../core/history/previous-bests.interface';
+import { type PreviousBest } from '../../../core/history/previous-bests.interface';
 import { Gender, GenderConfidence } from '../../../core/models/gender.enum';
-import { Participant } from '../../../core/models/participant.interface';
-import { ProtocolRow } from '../../../core/models/protocol-row.interface';
+import { type Participant } from '../../../core/models/participant.interface';
+import { type ProtocolRow } from '../../../core/models/protocol-row.interface';
 import { noteBadgeKindOf } from '../../../core/protocol/note-badge-kind';
 import { NoteBadgeKind } from '../../../core/protocol/note-badge-kind.enum';
 import { paceTextOf } from '../../../core/protocol/pace-text';
@@ -29,7 +29,7 @@ import {
   PLACE_MEDAL_CLASSES,
   PR_DELTA_CLASSES,
 } from './participants-table.constant';
-import { ParticipantRowView, PreviewNoteBadgeView } from './participants-table.interface';
+import { type ParticipantRowView, type PreviewNoteBadgeView } from './participants-table.interface';
 import { RaceTime } from '../../../shared/race-time/race-time';
 
 /**
@@ -94,7 +94,7 @@ export class ParticipantsTable {
     const finishCounts = this.#finishCounts();
     const previousBests = this.#previousBests();
 
-    return rows.map((row, index) => toRowView(row, ordered[index], gapsMs[index], finishCounts, previousBests));
+    return rows.map((row, index) => toRowView(row, { participant: ordered[index], gapMs: gapsMs[index], finishCounts, previousBests }));
   });
 
   protected readonly noteKinds = NoteBadgeKind;
@@ -154,10 +154,12 @@ export class ParticipantsTable {
 
 function toRowView(
   row: ProtocolRow,
-  participant: Participant,
-  gapMs: number | null,
-  finishCounts: Record<string, number>,
-  previousBests: Record<string, PreviousBest>,
+  {
+    participant,
+    gapMs,
+    finishCounts,
+    previousBests,
+  }: { participant: Participant; gapMs: number | null; finishCounts: Record<string, number>; previousBests: Record<string, PreviousBest> },
 ): ParticipantRowView {
   const athleteKey = normalizeAthleteKey(row.fullName);
   const finishCount = finishCounts[athleteKey];

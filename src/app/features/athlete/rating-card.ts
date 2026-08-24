@@ -1,13 +1,13 @@
 import { Component, computed, input } from '@angular/core';
 
-import { CourseRecordHistory } from '../../core/history/course-records.type';
+import { type CourseRecordHistory } from '../../core/history/course-records.type';
 import { athleteRating, newestEventIso, winnerTimesBySlug } from '../../core/history/runner-scores';
-import { AthleteRating, EventWinnerTimes } from '../../core/history/runner-scores.interface';
+import { type AthleteRating, type EventWinnerTimes } from '../../core/history/runner-scores.interface';
 import { scoreText } from '../../core/history/score-text';
 import { pluralText } from '../../core/i18n/plural-text';
-import { AthleteRun } from '../../core/models/athlete-history.interface';
-import { GenderType } from '../../core/models/gender.enum';
-import { RatingCardView } from './rating-card.interface';
+import { type AthleteRun } from '../../core/models/athlete-history.interface';
+import { type GenderType } from '../../core/models/gender.enum';
+import { type RatingCardView } from './rating-card.interface';
 
 /**
  * The «Рейтинг» card: three percent scores of one athlete. The UltraSignup-style Runner Rank
@@ -42,7 +42,12 @@ export class RatingCard {
 
   readonly view = computed(() =>
     toRatingCardView(
-      athleteRating(this.runs(), this.gender(), winnerTimesBySlug(this.winnerEvents()), this.#courseRecordMs(), this.#anchorIso()),
+      athleteRating(this.runs(), {
+        gender: this.gender(),
+        winners: winnerTimesBySlug(this.winnerEvents()),
+        courseRecordMs: this.#courseRecordMs(),
+        todayIso: this.#anchorIso(),
+      }),
     ),
   );
 }

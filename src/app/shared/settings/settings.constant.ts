@@ -1,5 +1,5 @@
 import { DeltaBase } from '../../state/delta-base.enum';
-import { DeltaBaseOption } from './settings.interface';
+import { type DeltaBaseOption } from './settings.interface';
 
 /**
  * The time shown inside the card next to the switch. A real result rather than a round one: the

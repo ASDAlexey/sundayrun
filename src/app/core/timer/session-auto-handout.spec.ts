@@ -13,7 +13,7 @@ describe('handOutSoleLapSplit', () => {
   it('gives the earliest queued time to the one man still out on the lap', () => {
     const settled = handOutSoleLapSplit(TIMER_SESSION);
 
-    expect(runnerSplitTimesMs(settled, KUZNETSOV_RUNNER_ID)).toEqual([FIRST_UNNAMED_SPLIT_MS]);
+    expect(runnerSplitTimesMs(settled, { runnerId: KUZNETSOV_RUNNER_ID })).toEqual([FIRST_UNNAMED_SPLIT_MS]);
   });
 
   it('keeps its hands off a queue that could belong to more than one runner', () => {

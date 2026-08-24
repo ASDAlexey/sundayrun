@@ -1,9 +1,9 @@
-import { PublishEventInput } from '../../core/github/publish-event.interface';
-import { RaceEvent } from '../../core/models/race-event.interface';
+import { type PublishEventInput } from '../../core/github/publish-event.interface';
+import { type RaceEvent } from '../../core/models/race-event.interface';
 import { PDF_EVENT_MOCK, PDF_ROWS_MOCK } from '../../core/pdf/protocol-doc-definition.mock';
 import { WEATHER_MOCK } from '../../core/weather/fetch-event-weather.mock';
 import { RACE_START_HOUR } from '../../core/weather/weather-api.constant';
-import { SourceFile } from '../../state/source-file.interface';
+import { type SourceFile } from '../../state/source-file.interface';
 
 export const RESULT_BLOB_MOCK = new Blob(['%PDF-1.7']);
 
@@ -43,7 +43,7 @@ export const PUBLISH_INPUTS_BATCH_MOCK: PublishEventInput[] = [
   { event: SECOND_EVENT_MOCK, rows: PDF_ROWS_MOCK, sourceXlsxBytes: SECOND_SOURCE_FILE_MOCK.bytes },
 ];
 
-/** An http url instead of a real blob: one — jsdom cannot create iframe windows for opaque origins. */
+/** An http url instead of a real blob: one — `createObjectURL` is stubbed and the specs only ever compare this string. */
 export const OBJECT_URL_MOCK = 'https://parkrun.example/protokol.pdf';
 
 /** The second draft's preview url — destroy must revoke every cached one. */

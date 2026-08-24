@@ -1,4 +1,4 @@
-import { DbSourceType } from '../app/core/sqlite/db-source.enum';
+import { type DbSourceType } from '../app/core/sqlite/db-source.enum';
 
 /** Build-time configuration; swapped per build configuration via `fileReplacements`. */
 export interface Environment {

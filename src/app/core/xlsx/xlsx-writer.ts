@@ -1,4 +1,4 @@
-import { Zippable, strToU8, zipSync } from 'fflate';
+import { type Zippable, strToU8, zipSync } from 'fflate';
 
 import { COLUMN_ALPHABET, COLUMN_RADIX, EMPTY_CELL, WORKBOOK_PATH, WORKBOOK_RELS_PATH } from './xlsx-reader.constant';
 import {
@@ -46,12 +46,12 @@ function sheetXmlOf(rows: string[][]): string {
 }
 
 function rowXmlOf(row: string[], rowNumber: number): string {
-  const cells = row.map((value, index) => cellXmlOf(value, index, rowNumber)).join(EMPTY_CELL);
+  const cells = row.map((value, index) => cellXmlOf(value, { columnIndex: index, rowNumber })).join(EMPTY_CELL);
 
   return `${ROW_XML_PREFIX}${rowNumber}${ROW_XML_MIDDLE}${cells}${ROW_XML_SUFFIX}`;
 }
 
-function cellXmlOf(value: string, columnIndex: number, rowNumber: number): string {
+function cellXmlOf(value: string, { columnIndex, rowNumber }: { columnIndex: number; rowNumber: number }): string {
   if (value === EMPTY_CELL) {
     return EMPTY_CELL;
   }

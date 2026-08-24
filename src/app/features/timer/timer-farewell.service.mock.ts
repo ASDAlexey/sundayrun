@@ -1,7 +1,7 @@
-import { WritableSignal, signal } from '@angular/core';
+import { type WritableSignal, signal } from '@angular/core';
 
 import { COMPLETE_SESSION } from '../../core/timer/session-splits.mock';
-import { TimerSession } from '../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../core/timer/timer-session.interface';
 
 /** The stand-in the page and the clock get: two flags the spec raises by hand. */
 export interface TimerFarewellServiceMock {

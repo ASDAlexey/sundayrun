@@ -1,5 +1,5 @@
-import { PrDeltaKind, PrDeltaKindType } from '../../../core/history/pr-delta.enum';
-import { NoteBadgeKind, NoteBadgeKindType } from '../../../core/protocol/note-badge-kind.enum';
+import { PrDeltaKind, type PrDeltaKindType } from '../../../core/history/pr-delta.enum';
+import { NoteBadgeKind, type NoteBadgeKindType } from '../../../core/protocol/note-badge-kind.enum';
 
 /** Absent time, place, count or note cells stay blank, matching the published protocol. */
 export const EMPTY_CELL_TEXT = '';

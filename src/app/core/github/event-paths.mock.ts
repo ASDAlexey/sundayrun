@@ -1,4 +1,4 @@
-import { EventFilePaths } from './event-paths.interface';
+import { type EventFilePaths } from './event-paths.interface';
 
 export const EVENT_DATE_ISO = '2026-06-28';
 

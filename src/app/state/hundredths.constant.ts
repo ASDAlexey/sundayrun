@@ -1,4 +1,4 @@
-import { HundredthsStorage } from './hundredths.type';
+import { type HundredthsStorage } from './hundredths.type';
 
 /** localStorage key of the device-local «показывать сотые» pick (шестерёнка в шапке). */
 export const HUNDREDTHS_STORAGE_KEY = 'parkrun.hundredths';

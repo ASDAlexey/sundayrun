@@ -1,6 +1,6 @@
-import { Participant } from '../core/models/participant.interface';
-import { RaceEvent } from '../core/models/race-event.interface';
-import { SourceFile } from './source-file.interface';
+import { type Participant } from '../core/models/participant.interface';
+import { type RaceEvent } from '../core/models/race-event.interface';
+import { type SourceFile } from './source-file.interface';
 
 /**
  * One protocol of a (possibly multi-file) upload: its participants, the race requisites once

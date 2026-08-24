@@ -1,4 +1,4 @@
-import { CountdownParts } from './next-start.interface';
+import { type CountdownParts } from './next-start.interface';
 import {
   COUNTDOWN_PAD_CHAR,
   COUNTDOWN_PAD_LENGTH,

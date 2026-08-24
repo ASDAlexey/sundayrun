@@ -128,8 +128,8 @@ describe('RecordsPage', () => {
             loadPacingRows,
           },
         },
-        { provide: PLATFORM_ID, useFactory: () => platformId },
-        { provide: ActivatedRoute, useFactory: () => activatedRouteQueryStub(queryParams) },
+        { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
+        { provide: ActivatedRoute, useFactory: (): ReturnType<typeof activatedRouteQueryStub> => activatedRouteQueryStub(queryParams) },
       ],
     });
   });

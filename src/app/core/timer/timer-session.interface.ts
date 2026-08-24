@@ -1,5 +1,5 @@
-import { GenderType } from '../models/gender.enum';
-import { TimerPublishStateType, TimerRoleType, TimerRunnerOutcomeType, TimerStatusType } from './timer-session.enum';
+import { type GenderType } from '../models/gender.enum';
+import { type TimerPublishStateType, type TimerRoleType, type TimerRunnerOutcomeType, type TimerStatusType } from './timer-session.enum';
 
 /** One recorded tap. `runnerId` is null while the time waits in the unnamed queue (docs/TIMER.md §4). */
 export interface TimerSplit {

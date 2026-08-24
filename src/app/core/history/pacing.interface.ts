@@ -1,5 +1,5 @@
-import { GenderType } from '../models/gender.enum';
-import { PacingProfileType } from './pacing.enum';
+import { type GenderType } from '../models/gender.enum';
+import { type PacingProfileType } from './pacing.enum';
 
 /** The split-bearing cells of one protocol row — the lap-delta scan needs nothing else. */
 export interface LapDeltaRow {

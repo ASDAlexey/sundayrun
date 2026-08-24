@@ -1,4 +1,4 @@
-import { AthleteTrack, TrackDayCheck } from './athlete-track.interface';
+import { type AthleteTrack, type TrackDayCheck } from './athlete-track.interface';
 import { TrackSource } from './track-source.enum';
 
 export const TRACK_SLUG_MOCK = '2026-07-26';

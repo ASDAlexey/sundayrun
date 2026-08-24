@@ -1,4 +1,4 @@
-import { SelfAthlete } from './self-athlete.interface';
+import { type SelfAthlete } from './self-athlete.interface';
 
 export const STORED_SELF_ATHLETE: SelfAthlete = { key: 'иванова мария', displayName: 'Иванова Мария' };
 

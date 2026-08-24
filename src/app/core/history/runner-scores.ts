@@ -1,5 +1,5 @@
-import { AthleteRun } from '../models/athlete-history.interface';
-import { Gender, GenderType } from '../models/gender.enum';
+import { type AthleteRun } from '../models/athlete-history.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
 import { MS_IN_DAY } from './badge-signals.constant';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 import {
@@ -10,7 +10,7 @@ import {
   SCORE_ROUND_FACTOR,
   WINNER_SCORE_PERCENT,
 } from './runner-scores.constant';
-import { AthleteRating, EventWinnerTimes, ScoredRun } from './runner-scores.interface';
+import { type AthleteRating, type EventWinnerTimes, type ScoredRun } from './runner-scores.interface';
 
 /** slug → the event's per-gender winning 5 km times, ready for the score scans. */
 export function winnerTimesBySlug(events: readonly EventWinnerTimes[]): ReadonlyMap<string, EventWinnerTimes> {
@@ -30,7 +30,10 @@ export function newestEventIso(events: readonly EventWinnerTimes[]): string {
  * Every 5 km finish scored against the event winner of the athlete's gender, oldest first.
  * A run at an event with no known winner of the gender contributes no score.
  */
-export function scoredRuns(runs: readonly AthleteRun[], gender: GenderType, winners: ReadonlyMap<string, EventWinnerTimes>): ScoredRun[] {
+export function scoredRuns(
+  runs: readonly AthleteRun[],
+  { gender, winners }: { gender: GenderType; winners: ReadonlyMap<string, EventWinnerTimes> },
+): ScoredRun[] {
   return runs
     .filter((run) => run.distanceKm === FIVE_KM_DISTANCE_KM)
     .flatMap<ScoredRun>((run) => {
@@ -95,16 +98,18 @@ export function localGrade(bestMs: number | null, courseRecordMs: number | null)
 /** The whole «Рейтинг» card of one athlete; a genderless athlete gets the empty rating. */
 export function athleteRating(
   runs: readonly AthleteRun[],
-  gender: GenderType | null,
-  winners: ReadonlyMap<string, EventWinnerTimes>,
-  courseRecordMs: number | null,
-  todayIso: string,
+  {
+    gender,
+    winners,
+    courseRecordMs,
+    todayIso,
+  }: { gender: GenderType | null; winners: ReadonlyMap<string, EventWinnerTimes>; courseRecordMs: number | null; todayIso: string },
 ): AthleteRating {
   if (gender === null) {
     return { runnerRank: null, formIndex: null, localGrade: null, scoredCount: 0, formRunCount: 0 };
   }
 
-  const scored = scoredRuns(runs, gender, winners);
+  const scored = scoredRuns(runs, { gender, winners });
   const bestMs = runs.reduce<number | null>((best, run) => {
     if (run.distanceKm !== FIVE_KM_DISTANCE_KM) {
       return best;

@@ -1,4 +1,4 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 
 /** One 5 km finisher's first-lap (2.3 km) split with athlete identity — the record scan input. */
 export interface FirstLapRun {

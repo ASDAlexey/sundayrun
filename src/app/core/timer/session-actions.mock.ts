@@ -1,8 +1,8 @@
 import { Gender } from '../models/gender.enum';
-import { CreateSessionInput, NewTimerRunner } from './session-actions.interface';
+import { type CreateSessionInput, type NewTimerRunner } from './session-actions.interface';
 import { INITIAL_PUBLISH_STATUS } from './timer-session.constant';
 import { TimerPublishState, TimerRole, TimerRunnerOutcome, TimerStatus } from './timer-session.enum';
-import { TimerPublishStatus, TimerRunner, TimerSession } from './timer-session.interface';
+import { type TimerPublishStatus, type TimerRunner, type TimerSession } from './timer-session.interface';
 import { KUZNETSOV_ATHLETE_KEY, KUZNETSOV_RUNNER_ID, TIMER_SESSION_IDLE, TROILIN_LAP_MS, TROILIN_RUNNER_ID } from './timer-session.mock';
 
 export const CREATE_SESSION_INPUT: CreateSessionInput = {

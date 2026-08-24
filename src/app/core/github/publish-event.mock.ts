@@ -1,9 +1,9 @@
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { AthletesHistory } from '../models/athletes-history.type';
+import { type AthletesHistory } from '../models/athletes-history.type';
 import { Gender } from '../models/gender.enum';
 import { PROTOCOL_DB_PATH } from './protocols-repo.constant';
-import { PublishEventInput } from './publish-event.interface';
-import { GitDataShas } from './spec-utils/git-data-routes';
+import { type PublishEventInput } from './publish-event.interface';
+import { type GitDataShas } from './spec-utils/git-data-routes';
 import { PROTOCOL_ROWS, RACE_EVENT } from './spec-utils/race-fixtures';
 import { VERSION_COMMIT_MESSAGE_PREFIX } from './version-pointer.constant';
 

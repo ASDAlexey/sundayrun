@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Chart } from 'chart.js';
 
 import { AthleteRun } from '../../core/models/athlete-history.interface';
+import { chartJsMock } from './chart-js.mock';
 import { settle } from '../spec-utils/settle';
 import { ProgressChart } from './progress-chart';
 import {
@@ -20,7 +20,7 @@ vi.mock('chart.js', async () => (await import('./chart-js.mock')).chartJsMock);
 vi.mock('chartjs-plugin-zoom', () => ({ default: {} }));
 
 describe('ProgressChart', () => {
-  const chartConstructorMock = vi.mocked(Chart);
+  const chartConstructorMock = chartJsMock.Chart;
 
   let fixture: ComponentFixture<ProgressChart>;
 

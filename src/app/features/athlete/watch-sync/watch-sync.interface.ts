@@ -1,5 +1,5 @@
-import { CorosRegionType } from '../../../core/coros/coros-region.enum';
-import { TrackSourceType } from '../../../state/track-source.enum';
+import { type CorosRegionType } from '../../../core/coros/coros-region.enum';
+import { type TrackSourceType } from '../../../state/track-source.enum';
 
 /** One entry of the region select on the link form. */
 export interface WatchRegionOption {

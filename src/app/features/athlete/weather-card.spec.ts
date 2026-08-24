@@ -24,7 +24,10 @@ describe('WeatherCard', () => {
     fixture.destroy();
   });
 
-  function createCard(runs: readonly AthleteRun[], weather: readonly EventWeatherRow[], year: string | null): WeatherCard {
+  function createCard(
+    runs: readonly AthleteRun[],
+    { weather, year }: { weather: readonly EventWeatherRow[]; year: string | null },
+  ): WeatherCard {
     fixture = TestBed.createComponent(WeatherCard);
     fixture.componentRef.setInput('runs', [...runs]);
     fixture.componentRef.setInput('weather', [...weather]);
@@ -34,7 +37,7 @@ describe('WeatherCard', () => {
   }
 
   it('renders a row per weather bucket with the time, the temperature chip and the race link', () => {
-    const card = createCard(WEATHER_RUNS_MOCK, WEATHER_ROWS_MOCK, null);
+    const card = createCard(WEATHER_RUNS_MOCK, { weather: WEATHER_ROWS_MOCK, year: null });
 
     expect(card.rows()).toEqual(EXPECTED_WEATHER_BEST_VIEWS);
 
@@ -49,7 +52,7 @@ describe('WeatherCard', () => {
   });
 
   it('narrows to one season through the year input and hides the card when nothing qualifies', () => {
-    const card = createCard(WEATHER_RUNS_MOCK, WEATHER_ROWS_MOCK, '2025');
+    const card = createCard(WEATHER_RUNS_MOCK, { weather: WEATHER_ROWS_MOCK, year: '2025' });
 
     expect(card.rows()).toEqual(EXPECTED_2025_BEST_VIEWS);
 

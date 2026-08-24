@@ -1,4 +1,4 @@
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 import { buildProtocolRows } from '../protocol/protocol-builder';
 import {
   SHARE_EMPTY_GROUP,
@@ -9,7 +9,7 @@ import {
   SHARE_NAME_TIME_SEPARATOR,
   SHARE_PLACE_SUFFIX,
 } from './session-share-text.constant';
-import { SessionShareTextInput, SessionShareTextLabels } from './session-share-text.interface';
+import { type SessionShareTextInput, type SessionShareTextLabels } from './session-share-text.interface';
 import { sessionToParticipants } from './session-to-participants';
 
 /**
@@ -28,16 +28,19 @@ import { sessionToParticipants } from './session-to-participants';
 export function buildSessionShareText(input: SessionShareTextInput, labels: SessionShareTextLabels): string {
   const rows = buildProtocolRows(sessionToParticipants(input.session));
   const groups = [
-    groupText(labels.fiveKm, rows.filter(isFiveKm), placedLine),
-    groupText(labels.twoThreeKm, rows.filter(isTwoThreeKm), lapLine),
-    groupText(labels.didNotFinish, rows.filter(isUnfinished), nameLine),
+    groupText(labels.fiveKm, { rows: rows.filter(isFiveKm), lineOf: placedLine }),
+    groupText(labels.twoThreeKm, { rows: rows.filter(isTwoThreeKm), lineOf: lapLine }),
+    groupText(labels.didNotFinish, { rows: rows.filter(isUnfinished), lineOf: nameLine }),
   ];
 
   return [labels.title, ...groups, input.url].filter(isPresent).join(SHARE_GROUP_SEPARATOR);
 }
 
 /** A heading with its lines under it, or nothing at all when the group has nobody in it. */
-function groupText(heading: string, rows: readonly ProtocolRow[], lineOf: (row: ProtocolRow, index: number) => string): string | null {
+function groupText(
+  heading: string,
+  { rows, lineOf }: { rows: readonly ProtocolRow[]; lineOf: (row: ProtocolRow, index: number) => string },
+): string | null {
   if (rows.length === SHARE_EMPTY_GROUP) {
     return null;
   }

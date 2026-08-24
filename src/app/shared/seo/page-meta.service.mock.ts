@@ -1,5 +1,5 @@
-import { Routes } from '@angular/router';
-import { Mock, vi } from 'vitest';
+import { type Routes } from '@angular/router';
+import { type Mock, vi } from 'vitest';
 
 /** The title the `/races/…` branch resolves, mirroring `@@title.race` in `app.routes.ts`. */
 export const PAGE_META_ROUTE_TITLE = 'Протокол пробега — Воскресный парковый пробег';

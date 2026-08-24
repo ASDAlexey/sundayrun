@@ -1,7 +1,7 @@
 import { formatRaceTime } from '../time/duration';
 import { pluralText } from '../i18n/plural-text';
 import { FormDeltaKind } from './form-delta.enum';
-import { FormBaseline, FormDelta } from './form-delta.interface';
+import { type FormBaseline, type FormDelta } from './form-delta.interface';
 
 /**
  * What the «Δ форма» cell reads: the signed figure, or the words that replace it after a break.

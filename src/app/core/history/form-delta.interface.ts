@@ -1,4 +1,4 @@
-import { FormDeltaKindType } from './form-delta.enum';
+import { type FormDeltaKindType } from './form-delta.enum';
 
 /** What one athlete's ordinary 5 km looked like on the morning of a race — the delta's yardstick. */
 export interface FormBaseline {

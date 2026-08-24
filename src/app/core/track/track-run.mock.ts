@@ -1,5 +1,5 @@
 import { DEGREES_IN_HALF_TURN, EARTH_RADIUS_M } from './track-distance.constant';
-import { TrackPoint } from './track-point.interface';
+import { type TrackPoint } from './track-point.interface';
 
 /** The start line of the course, so the synthetic run reads as this race rather than as maths. */
 const START_LAT = 47.2205832;

@@ -26,7 +26,7 @@ describe('fetchEventWeather', () => {
   it('routes old dates to the archive endpoint, fresh ones to the forecast endpoint, and parses the 9:00 readings', async () => {
     const fetchFn = jsonFetch(OPEN_METEO_BODY_MOCK);
 
-    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, fetchFn)).resolves.toEqual(WEATHER_MOCK);
+    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO, fetchFn })).resolves.toEqual(WEATHER_MOCK);
     expect(fetchFn.mock.calls[0][0]).toContain(`${WEATHER_ARCHIVE_API_URL}?`);
     expect(fetchFn.mock.calls[0][0], 'the range opens on the eve, where the wet-course window does').toContain(
       `start_date=${ARCHIVE_EVE_DATE_ISO}&end_date=${ARCHIVE_DATE_ISO}`,
@@ -35,21 +35,27 @@ describe('fetchEventWeather', () => {
   });
 
   it('sums the rain of the eve and the morning, so a dry start hour still reports a wet course', async () => {
-    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, jsonFetch(OPEN_METEO_WET_EVE_BODY_MOCK))).resolves.toEqual({
+    await expect(
+      fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO, fetchFn: jsonFetch(OPEN_METEO_WET_EVE_BODY_MOCK) }),
+    ).resolves.toEqual({
       ...WEATHER_MOCK,
       recentPrecipitationMm: WET_EVE_PRECIPITATION_MM,
     });
   });
 
   it('degrades to null on a network failure, a non-ok status or a response without the start hour', async () => {
-    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, () => Promise.reject(new Error('offline')))).resolves.toBeNull();
     await expect(
-      fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, () => Promise.resolve(new Response(null, { status: 429 }))),
+      fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO, fetchFn: () => Promise.reject(new Error('offline')) }),
     ).resolves.toBeNull();
-    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, jsonFetch(OPEN_METEO_MISSING_HOUR_BODY_MOCK))).resolves.toBeNull();
-    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, jsonFetch({}))).resolves.toBeNull();
     await expect(
-      fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO, jsonFetch(OPEN_METEO_BARE_HOUR_BODY_MOCK)),
+      fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO, fetchFn: () => Promise.resolve(new Response(null, { status: 429 })) }),
+    ).resolves.toBeNull();
+    await expect(
+      fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO, fetchFn: jsonFetch(OPEN_METEO_MISSING_HOUR_BODY_MOCK) }),
+    ).resolves.toBeNull();
+    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO, fetchFn: jsonFetch({}) })).resolves.toBeNull();
+    await expect(
+      fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO, fetchFn: jsonFetch(OPEN_METEO_BARE_HOUR_BODY_MOCK) }),
       'a 9:00 row without readings is no weather at all',
     ).resolves.toBeNull();
   });
@@ -59,11 +65,9 @@ describe('fetchEventWeather', () => {
       Promise.resolve(new Response(JSON.stringify(url.startsWith(WEATHER_ARCHIVE_API_URL) ? OPEN_METEO_RANGE_BODY_MOCK : {}))),
     );
 
-    await expect(fetchEventsWeather([SECOND_ARCHIVE_DATE_ISO, FRESH_DATE_ISO, ARCHIVE_DATE_ISO], TODAY_ISO, fetchFn)).resolves.toEqual([
-      SECOND_WEATHER_MOCK,
-      null,
-      WEATHER_MOCK,
-    ]);
+    await expect(
+      fetchEventsWeather([SECOND_ARCHIVE_DATE_ISO, FRESH_DATE_ISO, ARCHIVE_DATE_ISO], { todayIso: TODAY_ISO, fetchFn }),
+    ).resolves.toEqual([SECOND_WEATHER_MOCK, null, WEATHER_MOCK]);
     expect(fetchFn).toHaveBeenCalledTimes(2);
     expect(fetchFn.mock.calls[0][0]).toContain(`start_date=${ARCHIVE_EVE_DATE_ISO}&end_date=${SECOND_ARCHIVE_DATE_ISO}`);
     expect(fetchFn.mock.calls[1][0]).toContain(`${WEATHER_FORECAST_API_URL}?`);
@@ -74,7 +78,7 @@ describe('fetchEventWeather', () => {
 
     vi.stubGlobal('fetch', globalFetch);
 
-    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, TODAY_ISO)).resolves.toEqual(WEATHER_MOCK);
+    await expect(fetchEventWeather(ARCHIVE_DATE_ISO, { todayIso: TODAY_ISO })).resolves.toEqual(WEATHER_MOCK);
     expect(globalFetch).toHaveBeenCalledOnce();
 
     vi.unstubAllGlobals();

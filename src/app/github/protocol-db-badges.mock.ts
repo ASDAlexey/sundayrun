@@ -1,8 +1,8 @@
-import { YearBadgeRarity } from '../core/history/badge-rarity.type';
-import { SeasonBestRow } from '../core/history/season-ranks.interface';
+import { type YearBadgeRarity } from '../core/history/badge-rarity.type';
+import { type SeasonBestRow } from '../core/history/season-ranks.interface';
 import { Season } from '../core/history/seasons.enum';
 import { YearBadge } from '../core/history/year-badges.enum';
-import { YearBestRow } from '../core/history/year-ranks.interface';
+import { type YearBestRow } from '../core/history/year-ranks.interface';
 import { Gender } from '../core/models/gender.enum';
 import { ATHLETE_KEY, RUNLESS_ATHLETE_KEY } from './protocol-db-queries.mock';
 

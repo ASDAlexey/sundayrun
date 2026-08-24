@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
+import { Component, booleanAttribute, computed, input } from '@angular/core';
 
 import { RACE_TIME_FRACTION_PATTERN } from '../../core/time/duration.constant';
 import { RACE_TIME_START_INDEX } from './race-time.constant';
-import { RaceTimeSegment } from './race-time.interface';
+import { type RaceTimeSegment } from './race-time.interface';
 
 /**
  * A race time — '23:04,18' — with its hundredths set a step smaller and quieter than the seconds.
@@ -22,7 +22,6 @@ import { RaceTimeSegment } from './race-time.interface';
   selector: 'app-race-time',
   templateUrl: './race-time.html',
   styleUrl: './race-time.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RaceTime {
   /** Already formatted text: 'm:ss,cc', 'h:mm:ss,cc', a sentence carrying one, or no time at all. */

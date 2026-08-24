@@ -55,7 +55,7 @@ for (const [slug, eventRows] of bySlug) {
       distanceKm: row.distance_km ?? DNF_DISTANCE_KM,
       dateIso: slug,
     }));
-    const autoNotes = buildEventAutoNotes(inputs, history, slug);
+    const autoNotes = buildEventAutoNotes(inputs, { history, dateIso: slug });
 
     eventRows.forEach((row, index) => {
       const note = mergeAutoNote(autoNotes[index], row.note);
@@ -68,16 +68,15 @@ for (const [slug, eventRows] of bySlug) {
     });
   }
 
-  history = applyEventToHistory(
-    history,
-    { slug, dateIso: slug },
-    eventRows.map((row) => ({
+  history = applyEventToHistory(history, {
+    event: { slug, dateIso: slug },
+    results: eventRows.map((row) => ({
       fullName: row.full_name,
       gender: asGender(row.gender),
       timeMs: row.total_ms,
       distanceKm: row.distance_km ?? DNF_DISTANCE_KM,
     })),
-  );
+  });
 }
 
 db.exec('VACUUM');

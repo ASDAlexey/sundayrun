@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { type CanActivateFn, Router } from '@angular/router';
 
 import { ProtocolStateService } from '../../state/protocol-state.service';
 import { PREVIEW_ROUTE_COMMANDS } from './result.guard.constant';

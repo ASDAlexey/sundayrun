@@ -1,4 +1,4 @@
-import { LegendBoard, LegendFinish, LegendProgress } from './legend.interface';
+import { type LegendBoard, type LegendFinish, type LegendProgress } from './legend.interface';
 
 const ANTONOV_KEY = 'антонов андрей';
 

@@ -44,16 +44,16 @@ describe('ShareService', () => {
 
     vi.stubGlobal('navigator', { share });
 
-    await expect(service.shareFile(SHARE_FILE_MOCK, SHARE_TITLE_MOCK, SHARE_TEXT_MOCK)).resolves.toBe(true);
+    await expect(service.shareFile(SHARE_FILE_MOCK, { title: SHARE_TITLE_MOCK, text: SHARE_TEXT_MOCK })).resolves.toBe(true);
     expect(share).toHaveBeenCalledWith({ files: [SHARE_FILE_MOCK], title: SHARE_TITLE_MOCK, text: SHARE_TEXT_MOCK });
 
     share.mockRejectedValueOnce(new Error(SHARE_ERROR_MESSAGE));
 
-    await expect(service.shareFile(SHARE_FILE_MOCK, SHARE_TITLE_MOCK, SHARE_TEXT_MOCK)).resolves.toBe(false);
+    await expect(service.shareFile(SHARE_FILE_MOCK, { title: SHARE_TITLE_MOCK, text: SHARE_TEXT_MOCK })).resolves.toBe(false);
 
     vi.stubGlobal('navigator', {});
 
-    await expect(service.shareFile(SHARE_FILE_MOCK, SHARE_TITLE_MOCK, SHARE_TEXT_MOCK)).resolves.toBe(false);
+    await expect(service.shareFile(SHARE_FILE_MOCK, { title: SHARE_TITLE_MOCK, text: SHARE_TEXT_MOCK })).resolves.toBe(false);
   });
 
   it('copyToClipboard resolves true on success and false when denied or unavailable', async () => {

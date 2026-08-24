@@ -1,4 +1,4 @@
-import { RaceDay } from '../../../state/track-sync.interface';
+import { type RaceDay } from '../../../state/track-sync.interface';
 
 export const WATCH_RACES_MOCK: RaceDay[] = [{ slug: '2026-07-26', dateIso: '2026-07-26' }];
 

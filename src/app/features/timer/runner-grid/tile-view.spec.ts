@@ -6,7 +6,7 @@ import { buildTimerTileViews, tileTimeText } from './tile-view';
 
 describe('buildTimerTileViews', () => {
   it('draws the frozen order, prints the newest time and skips an id nobody answers to', () => {
-    const views = buildTimerTileViews(TIMER_SESSION, VIEW_ORDER, true);
+    const views = buildTimerTileViews(TIMER_SESSION, { orderedIds: VIEW_ORDER, spellGiven: true });
 
     expect(views.map((view) => view.runner.id)).toEqual([TROILIN_RUNNER_ID, KUZNETSOV_RUNNER_ID]);
     expect(views[0].surname).toBe(VIEW_TROILIN_SURNAME);
@@ -20,7 +20,7 @@ describe('buildTimerTileViews', () => {
 
 describe('tileTimeText', () => {
   it('shows the last time recorded, and nothing at all before the first one', () => {
-    expect(tileTimeText(TIMER_SESSION, TROILIN_RUNNER_ID)).toBe(VIEW_TROILIN_TIME_TEXT);
-    expect(tileTimeText(TIMER_SESSION, KUZNETSOV_RUNNER_ID)).toBe(TIMER_TILE_EMPTY_TIME);
+    expect(tileTimeText(TIMER_SESSION, { runnerId: TROILIN_RUNNER_ID })).toBe(VIEW_TROILIN_TIME_TEXT);
+    expect(tileTimeText(TIMER_SESSION, { runnerId: KUZNETSOV_RUNNER_ID })).toBe(TIMER_TILE_EMPTY_TIME);
   });
 });

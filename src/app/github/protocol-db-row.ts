@@ -1,5 +1,5 @@
-import { Gender, GenderType } from '../core/models/gender.enum';
-import { ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
+import { Gender, type GenderType } from '../core/models/gender.enum';
+import { type ProtocolDbValue } from '../core/sqlite/protocol-db-value.type';
 
 /**
  * Field readers for a `ProtocolDbRow`: each column of a statement is aliased to the camelCase name

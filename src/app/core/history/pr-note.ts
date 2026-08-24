@@ -2,8 +2,8 @@ import { formatRaceTime, parseDuration } from '../time/duration';
 import { MS_IN_SECOND } from '../time/duration.constant';
 import { formatRussianDateCompact } from '../time/russian-date';
 import { PR_NOTE_DATE_SEPARATOR, PR_NOTE_SPLIT_PATTERN } from './pr-note.constant';
-import { PrNoteParts } from './pr-note.interface';
-import { PreviousBest } from './previous-bests.interface';
+import { type PrNoteParts } from './pr-note.interface';
+import { type PreviousBest } from './previous-bests.interface';
 
 /**
  * Splits a stored note around its «ЛР (было X)» token, so the previous time can carry the date of

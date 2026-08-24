@@ -1,5 +1,5 @@
 import { Gender, GenderConfidence, GenderSource } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
+import { type Participant } from '../models/participant.interface';
 
 export const TROILIN_FULL_NAME = 'Троилин Антон';
 

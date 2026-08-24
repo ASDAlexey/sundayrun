@@ -1,4 +1,4 @@
-import { MemeStanding, MemeThreshold } from './meme-thresholds.interface';
+import { type MemeStanding, type MemeThreshold } from './meme-thresholds.interface';
 
 /**
  * «Мем-пороги»: the athlete's 5 km best laddered among famous 5 km-equivalent times. A benchmark
@@ -8,7 +8,8 @@ import { MemeStanding, MemeThreshold } from './meme-thresholds.interface';
  */
 export function memeStandings(thresholds: readonly MemeThreshold[], bestMs: number): MemeStanding[] {
   const ladder = [...thresholds].sort((left, right) => left.timeMs - right.timeMs);
-  const nextIndex = ladder.reduce((next, threshold, index) => (threshold.timeMs <= bestMs ? index : next), -1);
+  // The ladder runs fastest first, so the last already-reached benchmark is the one before the target.
+  const nextIndex = ladder.filter((threshold) => threshold.timeMs <= bestMs).length - 1;
 
   return ladder.map((threshold, index) => ({
     ...threshold,

@@ -1,4 +1,4 @@
-import { ProtocolDbValue } from './protocol-db-value.type';
+import { type ProtocolDbValue } from './protocol-db-value.type';
 
 /**
  * The wasm boundary hands back positional `SQLValue[]` rows — a wider union than the number/string/null

@@ -1,6 +1,6 @@
 import { NEWER_ENTRY, OLDER_ENTRY } from '../../core/github/archive-index.mock';
 import { ADMIN_TOKEN_MOCK } from '../../github/admin-token.service.mock';
-import { AdminRaceItem } from './admin-page.interface';
+import { type AdminRaceItem } from './admin-page.interface';
 
 /** Whitespace around a pasted token must be trimmed away before validation. */
 export const PADDED_TOKEN_INPUT = `  ${ADMIN_TOKEN_MOCK}  `;

@@ -1,6 +1,6 @@
 import { GIT_TREE_BLOB_TYPE, GIT_TREE_FILE_MODE } from './github-api.constant';
-import { CommitFile } from './github-api.interface';
-import { GitDataShas } from './spec-utils/git-data-routes';
+import { type CommitFile } from './github-api.interface';
+import { type GitDataShas } from './spec-utils/git-data-routes';
 
 export const COMMIT_TOKEN = 'commit-token';
 

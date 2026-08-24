@@ -5,7 +5,7 @@ import { FAKE_SQLITE3_STATE, resetFakeSqlite3, SQLITE_ERROR_RC } from './spec-ut
 vi.mock('@sqlite.org/sqlite-wasm', async () => {
   const fake = await import('./spec-utils/fake-sqlite3');
 
-  return { default: () => Promise.resolve(fake.FAKE_SQLITE3) };
+  return { default: (): Promise<typeof fake.FAKE_SQLITE3> => Promise.resolve(fake.FAKE_SQLITE3) };
 });
 
 describe('protocol-db-write deserialize failure', () => {

@@ -1,4 +1,4 @@
-import { Unzipped, unzipSync } from 'fflate';
+import { type Unzipped, unzipSync } from 'fflate';
 
 import {
   CELL_REFERENCE_ATTRIBUTE,

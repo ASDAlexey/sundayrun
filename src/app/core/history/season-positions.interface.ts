@@ -1,4 +1,4 @@
-import { GenderType } from '../models/gender.enum';
+import { type GenderType } from '../models/gender.enum';
 
 /** One 5 km season finish feeding the standings scan: who ran, when and how fast. */
 export interface SeasonRun {

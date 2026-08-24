@@ -1,5 +1,5 @@
 import { formatRaceTime } from '../../../core/time/duration';
-import { TimerTapeMode, TimerTapeModeType } from './tape-controls.enum';
+import { TimerTapeMode, type TimerTapeModeType } from './tape-controls.enum';
 
 /** What the open sheet is about, said in its own heading — the keys behind it are covered up. */
 export function tapeHeadingText(mode: TimerTapeModeType): string {

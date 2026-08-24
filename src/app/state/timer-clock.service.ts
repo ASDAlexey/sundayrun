@@ -1,6 +1,6 @@
-import { DOCUMENT, OnDestroy, Service, inject, signal } from '@angular/core';
+import { DOCUMENT, type OnDestroy, Service, inject, signal } from '@angular/core';
 
-import { TimerSession } from '../core/timer/timer-session.interface';
+import { type TimerSession } from '../core/timer/timer-session.interface';
 import { TIMER_CLOCK_IDLE_MS, TIMER_TICK_INTERVAL_MS } from './timer-clock.constant';
 
 /**
@@ -40,7 +40,7 @@ export class TimerClockService implements OnDestroy {
 
     const tickId = view.setInterval(() => this.#tick(), TIMER_TICK_INTERVAL_MS);
 
-    this.#stopTick = () => view.clearInterval(tickId);
+    this.#stopTick = (): void => view.clearInterval(tickId);
   }
 
   /** Stops the repaint; the base survives, so a split recorded right after a stop still lands right. */

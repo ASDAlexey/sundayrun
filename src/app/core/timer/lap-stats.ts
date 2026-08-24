@@ -1,5 +1,5 @@
-import { Gender, GenderType } from '../models/gender.enum';
-import { LapStats, LapStatsSample } from './lap-stats.interface';
+import { Gender, type GenderType } from '../models/gender.enum';
+import { type LapStats, type LapStatsSample } from './lap-stats.interface';
 import { expectedLapMsByAthlete } from './runner-order';
 
 /**

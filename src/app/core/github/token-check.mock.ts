@@ -1,5 +1,5 @@
 import { BEARER_PREFIX, GITHUB_API_VERSION, GITHUB_API_VERSION_HEADER, GITHUB_JSON_ACCEPT } from './github-api.constant';
-import { RepoResponse } from './github-api.interface';
+import { type RepoResponse } from './github-api.interface';
 import { GITHUB_FETCH_CACHE_MODE } from './github-fetch.constant';
 
 export const CHECKED_TOKEN = 'checked-token';

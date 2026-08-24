@@ -1,4 +1,4 @@
-import { NoteBadgeKindType } from '../../../core/protocol/note-badge-kind.enum';
+import { type NoteBadgeKindType } from '../../../core/protocol/note-badge-kind.enum';
 
 /** One recognized note token as an icon chip; `plain` renders as running text. */
 export interface PreviewNoteBadgeView {

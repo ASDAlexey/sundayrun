@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 
 import { createQueryCache } from '../core/cache/query-cache';
-import { YearReview } from '../core/history/year-review.interface';
+import { type YearReview } from '../core/history/year-review.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
 import { selectFirstEventDateByYear, selectYearReview } from './protocol-db-queries';
 import { PROTOCOL_DB } from './protocol-db.token';

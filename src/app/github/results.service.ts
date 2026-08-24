@@ -1,11 +1,11 @@
 import { Service, inject } from '@angular/core';
 
-import { EventPhoto } from '../core/models/event-photo.interface';
-import { EventResultsFile } from '../core/github/results-file.interface';
-import { ParticipantRun } from '../core/history/notables.interface';
-import { PreviousBest } from '../core/history/previous-bests.interface';
+import { type EventPhoto } from '../core/models/event-photo.interface';
+import { type EventResultsFile } from '../core/github/results-file.interface';
+import { type ParticipantRun } from '../core/history/notables.interface';
+import { type PreviousBest } from '../core/history/previous-bests.interface';
 import { createProtocolDrizzle } from '../core/sqlite/protocol-drizzle';
-import { EventWeather } from '../core/weather/event-weather.interface';
+import { type EventWeather } from '../core/weather/event-weather.interface';
 import {
   selectEventParticipantRuns,
   selectEventResults,

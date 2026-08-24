@@ -1,9 +1,9 @@
-import { AthleteRun } from '../models/athlete-history.interface';
+import { type AthleteRun } from '../models/athlete-history.interface';
 import { FIVE_KM_DISTANCE_KM } from './distance.constant';
 
 const TWO_LAP_DISTANCE_KM = 2.3;
 
-const run = (dateIso: string, timeMs: number, distanceKm: number = FIVE_KM_DISTANCE_KM): AthleteRun => ({
+const run = (dateIso: string, { timeMs, distanceKm = FIVE_KM_DISTANCE_KM }: { timeMs: number; distanceKm?: number }): AthleteRun => ({
   dateIso,
   slug: dateIso,
   timeMs,
@@ -38,34 +38,34 @@ export const PARTICIPATION_STREAK_CASES: readonly (readonly [string, readonly st
 
 /** Four finishes, each beating the standing best — the baseline plus exactly one completed triple. */
 export const RAGE_TRIPLE_RUNS: readonly AthleteRun[] = [
-  run('2026-05-03', 1600000),
-  run('2026-05-10', 1580000),
-  run('2026-05-17', 1560000),
-  run('2026-05-24', 1540000),
+  run('2026-05-03', { timeMs: 1600000 }),
+  run('2026-05-10', { timeMs: 1580000 }),
+  run('2026-05-17', { timeMs: 1560000 }),
+  run('2026-05-24', { timeMs: 1540000 }),
 ];
 
 /** Seven straight records after the baseline: two completed triples, the seventh left hanging. */
 export const RAGE_DOUBLE_RUNS: readonly AthleteRun[] = [
-  run('2026-05-03', 1600000),
-  ...Array.from({ length: 7 }, (_, index) => run(`2026-06-${String(index + 1).padStart(2, '0')}`, 1590000 - index * 10000)),
+  run('2026-05-03', { timeMs: 1600000 }),
+  ...Array.from({ length: 7 }, (_, index) => run(`2026-06-${String(index + 1).padStart(2, '0')}`, { timeMs: 1590000 - index * 10000 })),
 ];
 
 /** A slower third finish resets the chain right before it would complete. */
 export const RAGE_RESET_RUNS: readonly AthleteRun[] = [
-  run('2026-05-03', 1600000),
-  run('2026-05-10', 1580000),
-  run('2026-05-17', 1560000),
-  run('2026-05-24', 1560000),
-  run('2026-05-31', 1550000),
+  run('2026-05-03', { timeMs: 1600000 }),
+  run('2026-05-10', { timeMs: 1580000 }),
+  run('2026-05-17', { timeMs: 1560000 }),
+  run('2026-05-24', { timeMs: 1560000 }),
+  run('2026-05-31', { timeMs: 1550000 }),
 ];
 
 /** A 2.3 km run sits inside the chain without counting or breaking it; the input is shuffled on purpose. */
 export const RAGE_SHORT_COURSE_RUNS: readonly AthleteRun[] = [
-  run('2026-05-24', 1540000),
-  run('2026-05-03', 1600000),
-  run('2026-05-17', 1560000),
-  run('2026-05-10', 1580000),
-  run('2026-05-20', 700000, TWO_LAP_DISTANCE_KM),
+  run('2026-05-24', { timeMs: 1540000 }),
+  run('2026-05-03', { timeMs: 1600000 }),
+  run('2026-05-17', { timeMs: 1560000 }),
+  run('2026-05-10', { timeMs: 1580000 }),
+  run('2026-05-20', { timeMs: 700000, distanceKm: TWO_LAP_DISTANCE_KM }),
 ];
 
 /** [label, runs, expected rageCount]. */

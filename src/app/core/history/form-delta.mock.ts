@@ -1,7 +1,7 @@
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from './distance.constant';
 import { FormDeltaKind } from './form-delta.enum';
-import { FormBaseline, FormDelta } from './form-delta.interface';
-import { ParticipantRun } from './notables.interface';
+import { type FormBaseline, type FormDelta } from './form-delta.interface';
+import { type ParticipantRun } from './notables.interface';
 
 /** The race every baseline below is taken as of — the morning the protocol describes. */
 export const FORM_DELTA_RACE_ISO = '2026-06-28';
@@ -12,7 +12,10 @@ const ОЛЕГ = 'олег петров';
 
 const АННА = 'анна сидорова';
 
-function run(athleteKey: string, dateIso: string, timeMs: number, distanceKm = FIVE_KM_DISTANCE_KM): ParticipantRun {
+function run(
+  athleteKey: string,
+  { dateIso, timeMs, distanceKm = FIVE_KM_DISTANCE_KM }: { dateIso: string; timeMs: number; distanceKm?: number },
+): ParticipantRun {
   return { athleteKey, dateIso, slug: dateIso, timeMs, distanceKm };
 }
 
@@ -25,17 +28,17 @@ function run(athleteKey: string, dateIso: string, timeMs: number, distanceKm = F
  * Олег brings a single finish (a median of one), Анна a finish from January and nothing since.
  */
 export const FORM_DELTA_RUNS: ParticipantRun[] = [
-  run(МАРИЯ, '2026-01-11', 1020000),
-  run(МАРИЯ, '2026-02-08', 1290000),
-  run(МАРИЯ, '2026-03-08', 1260000),
-  run(МАРИЯ, '2026-04-12', 1230000),
-  run(МАРИЯ, '2026-05-10', 1200000),
-  run(МАРИЯ, '2026-06-14', 1170000),
-  run(МАРИЯ, '2026-06-21', 540000, TWO_THREE_KM_DISTANCE_KM),
-  run(МАРИЯ, FORM_DELTA_RACE_ISO, 1250000),
-  run(МАРИЯ, '2026-07-05', 1100000),
-  run(ОЛЕГ, '2026-06-07', 1200000),
-  run(АННА, '2026-01-04', 1200000),
+  run(МАРИЯ, { dateIso: '2026-01-11', timeMs: 1020000 }),
+  run(МАРИЯ, { dateIso: '2026-02-08', timeMs: 1290000 }),
+  run(МАРИЯ, { dateIso: '2026-03-08', timeMs: 1260000 }),
+  run(МАРИЯ, { dateIso: '2026-04-12', timeMs: 1230000 }),
+  run(МАРИЯ, { dateIso: '2026-05-10', timeMs: 1200000 }),
+  run(МАРИЯ, { dateIso: '2026-06-14', timeMs: 1170000 }),
+  run(МАРИЯ, { dateIso: '2026-06-21', timeMs: 540000, distanceKm: TWO_THREE_KM_DISTANCE_KM }),
+  run(МАРИЯ, { dateIso: FORM_DELTA_RACE_ISO, timeMs: 1250000 }),
+  run(МАРИЯ, { dateIso: '2026-07-05', timeMs: 1100000 }),
+  run(ОЛЕГ, { dateIso: '2026-06-07', timeMs: 1200000 }),
+  run(АННА, { dateIso: '2026-01-04', timeMs: 1200000 }),
 ];
 
 /** Мария's five newest: 21:30, 21:00, 20:30, 20:00 and 19:30 — a median of 20:30 flat. */

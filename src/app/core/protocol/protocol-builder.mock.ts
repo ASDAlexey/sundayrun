@@ -1,15 +1,17 @@
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../history/distance.constant';
-import { Gender, GenderConfidence, GenderSource, GenderType } from '../models/gender.enum';
-import { Participant } from '../models/participant.interface';
-import { ProtocolRow } from '../models/protocol-row.interface';
+import { Gender, GenderConfidence, GenderSource, type GenderType } from '../models/gender.enum';
+import { type Participant } from '../models/participant.interface';
+import { type ProtocolRow } from '../models/protocol-row.interface';
 
 function buildParticipant(
   id: number,
-  fullName: string,
-  totalMs: number | null,
-  lapsMs: (number | null)[],
-  gender: GenderType | null,
-  club = '',
+  {
+    fullName,
+    totalMs,
+    lapsMs,
+    gender,
+    club = '',
+  }: { fullName: string; totalMs: number | null; lapsMs: (number | null)[]; gender: GenderType | null; club?: string },
 ): Participant {
   return {
     id,
@@ -35,16 +37,16 @@ export const NO_SPLITS_PARTICIPANT_NAME = 'Гостев Семён';
  * Appended, never inserted: `auto-note-input.mock.ts` addresses this roster by index.
  */
 export const PROTOCOL_PARTICIPANTS: Participant[] = [
-  buildParticipant(1, 'Иванов Иван', 1398000, [660000, 738000], Gender.male, 'Парсек'),
-  buildParticipant(2, 'Петрова Анна', 1500000, [720000, 780000], Gender.female),
-  buildParticipant(3, 'Сидоров Пётр', 1398000, [700000, 698000], Gender.male),
-  buildParticipant(4, 'Безымянный Атлет', 1200000, [590000, 610000], null),
-  buildParticipant(5, 'Козлова Мария', 1600000, [null, 780000], Gender.female),
-  buildParticipant(6, 'Новиков Олег', 690000, [690000], Gender.male),
-  buildParticipant(7, 'Быстрова Яна', 600000, [600000], Gender.female),
-  buildParticipant(8, 'Сошедший Первый', null, [660000], Gender.male),
-  buildParticipant(9, 'Сошедшая Вторая', null, [], Gender.female),
-  buildParticipant(10, NO_SPLITS_PARTICIPANT_NAME, 1450000, [], Gender.male),
+  buildParticipant(1, { fullName: 'Иванов Иван', totalMs: 1398000, lapsMs: [660000, 738000], gender: Gender.male, club: 'Парсек' }),
+  buildParticipant(2, { fullName: 'Петрова Анна', totalMs: 1500000, lapsMs: [720000, 780000], gender: Gender.female }),
+  buildParticipant(3, { fullName: 'Сидоров Пётр', totalMs: 1398000, lapsMs: [700000, 698000], gender: Gender.male }),
+  buildParticipant(4, { fullName: 'Безымянный Атлет', totalMs: 1200000, lapsMs: [590000, 610000], gender: null }),
+  buildParticipant(5, { fullName: 'Козлова Мария', totalMs: 1600000, lapsMs: [null, 780000], gender: Gender.female }),
+  buildParticipant(6, { fullName: 'Новиков Олег', totalMs: 690000, lapsMs: [690000], gender: Gender.male }),
+  buildParticipant(7, { fullName: 'Быстрова Яна', totalMs: 600000, lapsMs: [600000], gender: Gender.female }),
+  buildParticipant(8, { fullName: 'Сошедший Первый', totalMs: null, lapsMs: [660000], gender: Gender.male }),
+  buildParticipant(9, { fullName: 'Сошедшая Вторая', totalMs: null, lapsMs: [], gender: Gender.female }),
+  buildParticipant(10, { fullName: NO_SPLITS_PARTICIPANT_NAME, totalMs: 1450000, lapsMs: [], gender: Gender.male }),
 ];
 
 /**
@@ -53,8 +55,8 @@ export const PROTOCOL_PARTICIPANTS: Participant[] = [
  * that happens to land on a whole second, which follows its column rather than its own value.
  */
 export const TIMED_PARTICIPANTS: Participant[] = [
-  buildParticipant(1, 'Троилин Антон', 1165061, [528310, 636751], Gender.male),
-  buildParticipant(2, 'Хандыго Наталья', 1928450, [949000, 979450], Gender.female),
+  buildParticipant(1, { fullName: 'Троилин Антон', totalMs: 1165061, lapsMs: [528310, 636751], gender: Gender.male }),
+  buildParticipant(2, { fullName: 'Хандыго Наталья', totalMs: 1928450, lapsMs: [949000, 979450], gender: Gender.female }),
 ];
 
 export const EXPECTED_TIMED_LAP_TEXTS = ['8:48,31', '15:49,00'];

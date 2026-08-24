@@ -2,7 +2,7 @@ import { Component, DOCUMENT, DestroyRef, computed, inject, input, output, signa
 
 import { buildSessionShareText } from '../../../core/timer/session-share-text';
 import { sessionToParticipants } from '../../../core/timer/session-to-participants';
-import { TimerSession } from '../../../core/timer/timer-session.interface';
+import { type TimerSession } from '../../../core/timer/timer-session.interface';
 import { buildTimerExportRows } from '../../../core/xlsx/timer-export-builder';
 import { writeXlsxRows } from '../../../core/xlsx/xlsx-writer';
 import { triggerBlobDownload } from '../../../pdf/blob-download';
@@ -112,7 +112,7 @@ export class TimerShare {
     const row = this.row();
 
     if (this.canShareFile()) {
-      await this.#share.shareFile(this.#workbook(), row.dateText, shareFileCaption(row.dateText, row.metaText));
+      await this.#share.shareFile(this.#workbook(), { title: row.dateText, text: shareFileCaption(row.dateText, row.metaText) });
 
       return;
     }
@@ -121,7 +121,7 @@ export class TimerShare {
   }
 
   protected onDownload(): void {
-    triggerBlobDownload(this.#document, this.#workbook(), this.row().fileName);
+    triggerBlobDownload(this.#document, { blob: this.#workbook(), fileName: this.row().fileName });
   }
 
   protected onTelegram(): void {

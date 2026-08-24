@@ -30,10 +30,10 @@ import {
 describe('applyEventToHistory', () => {
   it('rolls three sequential events into a new history without mutating the input', () => {
     const [[firstEvent, firstResults], [secondEvent, secondResults], [thirdEvent, thirdResults]] = ROLLUP_EVENTS;
-    const afterFirst = applyEventToHistory({}, firstEvent, firstResults);
+    const afterFirst = applyEventToHistory({}, { event: firstEvent, results: firstResults });
     const snapshotOfFirst = structuredClone(afterFirst);
-    const afterSecond = applyEventToHistory(afterFirst, secondEvent, secondResults);
-    const afterThird = applyEventToHistory(afterSecond, thirdEvent, thirdResults);
+    const afterSecond = applyEventToHistory(afterFirst, { event: secondEvent, results: secondResults });
+    const afterThird = applyEventToHistory(afterSecond, { event: thirdEvent, results: thirdResults });
 
     expect(afterThird).toEqual(EXPECTED_ROLLUP_HISTORY);
     expect(afterFirst, 'input history must stay untouched').toEqual(snapshotOfFirst);
@@ -57,24 +57,29 @@ describe('removeEventFromHistory', () => {
   });
 
   it('makes re-publication idempotent for DNF contributions (remove + apply)', () => {
-    const withMisspelled = applyEventToHistory({}, DNF_REPUBLISH_EVENT, MISSPELLED_DNF_RESULTS);
-    const reapplied = applyEventToHistory(withMisspelled, DNF_REPUBLISH_EVENT, MISSPELLED_DNF_RESULTS);
+    const withMisspelled = applyEventToHistory({}, { event: DNF_REPUBLISH_EVENT, results: MISSPELLED_DNF_RESULTS });
+    const reapplied = applyEventToHistory(withMisspelled, { event: DNF_REPUBLISH_EVENT, results: MISSPELLED_DNF_RESULTS });
 
     expect(reapplied[MISSPELLED_DNF_KEY].participationSlugs, 'an already registered slug is never duplicated').toEqual([
       DNF_REPUBLISH_EVENT.slug,
     ]);
 
-    const republished = applyEventToHistory(
-      removeEventFromHistory(withMisspelled, DNF_REPUBLISH_EVENT.slug),
-      DNF_REPUBLISH_EVENT,
-      CORRECTED_DNF_RESULTS,
-    );
+    const republished = applyEventToHistory(removeEventFromHistory(withMisspelled, DNF_REPUBLISH_EVENT.slug), {
+      event: DNF_REPUBLISH_EVENT,
+      results: CORRECTED_DNF_RESULTS,
+    });
 
     expect(republished[MISSPELLED_DNF_KEY], 'the misspelled DNF ghost is gone').toBeUndefined();
     expect(Object.keys(republished), 'only the corrected participant remains').toEqual([DNF_ONLY_KEY]);
 
-    const initial = applyEventToHistory(applyEventToHistory({}, RUN_EVENT, MIXED_RUN_RESULTS), DNF_EVENT, MIXED_DNF_RESULTS);
-    const afterRunRepublish = applyEventToHistory(removeEventFromHistory(initial, RUN_EVENT.slug), RUN_EVENT, MIXED_RUN_RESULTS);
+    const initial = applyEventToHistory(applyEventToHistory({}, { event: RUN_EVENT, results: MIXED_RUN_RESULTS }), {
+      event: DNF_EVENT,
+      results: MIXED_DNF_RESULTS,
+    });
+    const afterRunRepublish = applyEventToHistory(removeEventFromHistory(initial, RUN_EVENT.slug), {
+      event: RUN_EVENT,
+      results: MIXED_RUN_RESULTS,
+    });
 
     expect(afterRunRepublish[MIXED_ATHLETE_KEY], 'the DNF participation on the other event survives').toEqual(EXPECTED_MIXED_RECORD);
   });

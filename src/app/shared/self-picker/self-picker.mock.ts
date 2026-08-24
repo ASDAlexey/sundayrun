@@ -1,5 +1,5 @@
-import { AthleteRecord } from '../../core/models/athlete-history.interface';
-import { SelfAthlete } from '../../state/self-athlete.interface';
+import { type AthleteRecord } from '../../core/models/athlete-history.interface';
+import { type SelfAthlete } from '../../state/self-athlete.interface';
 
 const record = (key: string, displayName: string): AthleteRecord => ({
   key,

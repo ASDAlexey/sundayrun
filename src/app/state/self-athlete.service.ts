@@ -1,8 +1,8 @@
 import { Service, signal } from '@angular/core';
 
 import { SELF_ATHLETE_STORAGE_KEY, SELF_SSR_NOOP_STORAGE } from './self-athlete.constant';
-import { SelfAthlete } from './self-athlete.interface';
-import { SelfAthleteStorage } from './self-athlete.type';
+import { type SelfAthlete } from './self-athlete.interface';
+import { type SelfAthleteStorage } from './self-athlete.type';
 
 /**
  * Remembers which athlete the visitor is («Выбери себя» in the header) in localStorage.

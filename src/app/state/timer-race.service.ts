@@ -3,7 +3,7 @@ import { Service, computed, effect, inject, signal } from '@angular/core';
 import { freezeTileOrder, startSession, stopSession } from '../core/timer/session-actions';
 import { isRaceComplete } from '../core/timer/session-splits';
 import { TimerStatus } from '../core/timer/timer-session.enum';
-import { TimerSession } from '../core/timer/timer-session.interface';
+import { type TimerSession } from '../core/timer/timer-session.interface';
 import { TimerFeedback } from './haptics.enum';
 import { HapticsService } from './haptics.service';
 import { TIMER_CLOCK_IDLE_MS } from './timer-clock.constant';

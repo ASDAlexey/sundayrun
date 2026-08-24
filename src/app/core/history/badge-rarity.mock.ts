@@ -1,6 +1,6 @@
-import { YearBadgeActivityRow } from './badge-rarity.interface';
-import { YearBadgeRarity } from './badge-rarity.type';
-import { YearBadge, YearBadgeType } from './year-badges.enum';
+import { type YearBadgeActivityRow } from './badge-rarity.interface';
+import { type YearBadgeRarity } from './badge-rarity.type';
+import { YearBadge, type YearBadgeType } from './year-badges.enum';
 
 /** Year → its first race, the new-year one; 2024 is deliberately unknown. */
 export const RARITY_FIRST_EVENT_DATE_BY_YEAR: Record<string, string> = { '2025': '2025-01-05', '2026': '2026-01-04' };

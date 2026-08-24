@@ -46,7 +46,7 @@ export const eventPhoto = sqliteTable(
     largeUrl: text('large_url').notNull(),
     photoUrl: text('photo_url').notNull(),
   },
-  (t) => [primaryKey({ columns: [t.slug, t.idx] })],
+  (table) => [primaryKey({ columns: [table.slug, table.idx] })],
 );
 
 export const results = sqliteTable(
@@ -65,7 +65,7 @@ export const results = sqliteTable(
     club: text('club').notNull(),
     note: text('note').notNull(),
   },
-  (t) => [primaryKey({ columns: [t.slug, t.idx] })],
+  (table) => [primaryKey({ columns: [table.slug, table.idx] })],
 );
 
 export const athletes = sqliteTable('athletes', {
@@ -89,7 +89,7 @@ export const participations = sqliteTable(
     athleteKey: text('athlete_key').notNull(),
     slug: text('slug').notNull(),
   },
-  (t) => [primaryKey({ columns: [t.athleteKey, t.slug] })],
+  (table) => [primaryKey({ columns: [table.athleteKey, table.slug] })],
 );
 
 export const meta = sqliteTable('meta', {

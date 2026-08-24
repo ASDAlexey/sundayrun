@@ -1,5 +1,5 @@
-import { ParamMap, Params, convertToParamMap } from '@angular/router';
-import { Observable, Subject, concat, defer, of } from 'rxjs';
+import { type ParamMap, type Params, convertToParamMap } from '@angular/router';
+import { type Observable, Subject, concat, defer, of } from 'rxjs';
 
 export interface ActivatedRouteStub {
   readonly paramMap: Observable<ParamMap>;

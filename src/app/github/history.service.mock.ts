@@ -9,7 +9,7 @@ import {
 import { GITHUB_FETCH_CACHE_MODE } from '../core/github/github-fetch.constant';
 import { PROTOCOL_DB_PATH } from '../core/github/protocols-repo.constant';
 import { FIVE_KM_DISTANCE_KM, TWO_THREE_KM_DISTANCE_KM } from '../core/history/distance.constant';
-import { AthletesHistory } from '../core/models/athletes-history.type';
+import { type AthletesHistory } from '../core/models/athletes-history.type';
 import { Gender } from '../core/models/gender.enum';
 import { ADMIN_TOKEN_MOCK } from './admin-token.service.mock';
 
@@ -28,7 +28,7 @@ export const EXPECTED_HISTORY_INIT = {
 
 const ATHLETE_KEY = 'иван петров';
 
-const q = (value: string): string => `'${value}'`;
+const query = (value: string): string => `'${value}'`;
 
 /**
  * One athlete whose runs span the season best (the fastest), a slower same-year run and a 2.3 km run
@@ -43,9 +43,11 @@ const RUNS = [
 
 /** The seed SQL for one athlete's three tables; exported to bytes it is the `sundayrun.db` the service reads. */
 export const HISTORY_DB_SEED: readonly string[] = [
-  `INSERT INTO athletes VALUES (${q(ATHLETE_KEY)}, ${q('Иван Петров')}, ${q(Gender.male)}, 1500000)`,
-  ...RUNS.map((run) => `INSERT INTO runs VALUES (${q(ATHLETE_KEY)}, ${q(run.dateIso)}, ${q(run.slug)}, ${run.timeMs}, ${run.distanceKm})`),
-  ...RUNS.map((run) => `INSERT INTO participations VALUES (${q(ATHLETE_KEY)}, ${q(run.slug)})`),
+  `INSERT INTO athletes VALUES (${query(ATHLETE_KEY)}, ${query('Иван Петров')}, ${query(Gender.male)}, 1500000)`,
+  ...RUNS.map(
+    (run) => `INSERT INTO runs VALUES (${query(ATHLETE_KEY)}, ${query(run.dateIso)}, ${query(run.slug)}, ${run.timeMs}, ${run.distanceKm})`,
+  ),
+  ...RUNS.map((run) => `INSERT INTO participations VALUES (${query(ATHLETE_KEY)}, ${query(run.slug)})`),
 ];
 
 /** The history reassembled from `HISTORY_DB_SEED`, with `bestMsByYear` recomputed from the 5 km runs. */

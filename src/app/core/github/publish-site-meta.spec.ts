@@ -22,11 +22,11 @@ describe('publishSiteMeta', () => {
       }),
     );
 
-    await expect(publishSiteMeta(SITE_META_TOKEN, EXISTING_SITE_META, fetchFn)).resolves.toBe(SITE_META_SHAS.newCommitSha);
+    await expect(publishSiteMeta({ token: SITE_META_TOKEN, meta: EXISTING_SITE_META, fetchFn })).resolves.toBe(SITE_META_SHAS.newCommitSha);
 
-    const blobBodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, POST_METHOD, GIT_BLOBS_URL);
-    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, POST_METHOD, GIT_TREES_URL);
-    const commitBodies = requestBodiesOf(fetchFn.mock.calls, POST_METHOD, GIT_COMMITS_URL);
+    const blobBodies = requestBodiesOf<{ content: string }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_BLOBS_URL });
+    const treeBodies = requestBodiesOf<{ tree: { path: string }[] }>(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_TREES_URL });
+    const commitBodies = requestBodiesOf(fetchFn.mock.calls, { method: POST_METHOD, url: GIT_COMMITS_URL });
     const calledUrls = fetchFn.mock.calls.map(([url]) => url);
 
     expect(decodeBase64Json(blobBodies[0].content)).toEqual(EXISTING_SITE_META);
@@ -41,6 +41,6 @@ describe('publishSiteMeta', () => {
       vi.fn(() => Promise.resolve(statusResponse(HTTP_UNAUTHORIZED))),
     );
 
-    await expect(publishSiteMeta(SITE_META_TOKEN, EXISTING_SITE_META)).rejects.toBeInstanceOf(GithubAuthError);
+    await expect(publishSiteMeta({ token: SITE_META_TOKEN, meta: EXISTING_SITE_META })).rejects.toBeInstanceOf(GithubAuthError);
   });
 });
