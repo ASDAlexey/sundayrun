@@ -377,14 +377,14 @@
 ### 41. Типизировать `scripts/`
 
 - **Где**: `tsconfig.scripts.json:1`
-- **Проблема**: конфиг перечислен как project reference в `tsconfig.json:33`, но никогда не собирается: ни хук, ни CI его не зовут, `scripts` в `.eslintignore:8`, а `.eslintrc.cjs:90` знает только про app и spec. Bun срезает типы без проверки. `bunx tsc -p tsconfig.scripts.json --noEmit` даёт 17 ошибок: 16 в `scripts/build-course-track.ts` (почти все — TS4111 из `noPropertyAccessFromIndexSignature`) и одна в `scripts/fix-handygo-name.ts` (разовая правка данных).
+- **Проблема**: конфиг перечислен как project reference в `tsconfig.json:33`, но никогда не собирается: ни хук, ни CI его не зовут, `scripts` в `ignores` конфига ESLint (`eslint.config.mjs`), а сам конфиг знает только про app и spec. Bun срезает типы без проверки. `bunx tsc -p tsconfig.scripts.json --noEmit` даёт 17 ошибок: 16 в `scripts/build-course-track.ts` (почти все — TS4111 из `noPropertyAccessFromIndexSignature`) и одна в `scripts/fix-handygo-name.ts` (разовая правка данных).
 - **Почему это важно**: 13 скриптов импортируют `../src/app/core/**` и являются задокументированным ручным путём обслуживания БД (backfill-weather, verify-notes, backfill-vk-posts, вставки через `applyEventToDb`). Сейчас они компилируются чисто, но ничто не удержит их от гниения при смене интерфейсов. В CI работают `scripts/write-version.ts`, `scripts/bump-version.ts` (`ci.yml:138-139`) и `scripts/build-sqlite-assets.ts` с патчем HEAD-gzip, от которого зависит всё чтение БД.
-- **Что сделать**: добавить `bunx tsc -p tsconfig.scripts.json --noEmit` в `.husky/pre-push` и в джоб `quality`, починить 17 ошибок (16 — механические переходы на доступ через скобки в одном файле). Снятие `scripts` с `.eslintignore` — отдельный шаг, не смешивать.
+- **Что сделать**: добавить `bunx tsc -p tsconfig.scripts.json --noEmit` в `.husky/pre-push` и в джоб `quality`, починить 17 ошибок (16 — механические переходы на доступ через скобки в одном файле). Снятие `scripts` с `ignores` в `eslint.config.mjs` — отдельный шаг, не смешивать.
 
 ### 42. Проверять пререндер параметризованных маршрутов в CI
 
 - **Где**: `.github/workflows/ci.yml:170`
-- **Проблема**: smoke-check (`:170-178`) проверяет `index.html`, base href и наличие файла БД. Ни один гейт не смотрит на `app.routes.server.ts` — файл в `.eslintignore:20`, без спеки и вне отчёта покрытия, а `getPrerenderParams` на `:27` и `:32` строит списки слагов и годов запросом к БД.
+- **Проблема**: smoke-check (`:170-178`) проверяет `index.html`, base href и наличие файла БД. Ни один гейт не смотрит на `app.routes.server.ts` — файл в `ignores` конфига ESLint, без спеки и вне отчёта покрытия, а `getPrerenderParams` на `:27` и `:32` строит списки слагов и годов запросом к БД.
 - **Почему это важно**: бросающий `getPrerenderParams` уронит сборку громко, так что сценарий узкий — молча деградирует только запрос, легально вернувший ноль строк. Но тогда `/races/:slug` и `/year/:year` превращаются в отскок 404.html → index.csr.html: хуже LCP и нет краулимого HTML.
 - **Что сделать**: дописать в тот же шаг `test "$(find dist/parkrun/browser/races -mindepth 2 -name index.html | wc -l)" -gt 0`, то же для `year/`, и `test -f dist/parkrun/browser/timer/index.html` (от него зависит холодный офлайн-старт, см. комментарий `app.routes.server.ts:20-21`). Сверку с числом событий в БД не делать — это дублирование проверяемого запроса на bash.
 

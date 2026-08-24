@@ -6,6 +6,16 @@ import { defineConfig } from 'vitest/config';
 // `ɵsetClassMetadata` guards leaking unreachable branches.
 export default defineConfig({
   test: {
+    // Билдер сам выбирает happy-dom, раз он установлен. В отличие от jsdom он реально ходит
+    // в сеть за src иностранных iframe: спека протокола показывает PDF по внешнему url, и без
+    // этого прогон упирается в DNS и сыплет NetworkError в лог.
+    environmentOptions: {
+      happyDOM: {
+        settings: {
+          navigation: { disableChildFrameNavigation: true },
+        },
+      },
+    },
     coverage: {
       provider: 'istanbul',
       // The AOT signal-query transform leaves a dead source mapping on the `viewChild`
