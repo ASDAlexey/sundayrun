@@ -112,7 +112,7 @@
             "runner": "vitest",
             "providersFile": "src/test-providers.ts",
             "runnerConfig": "vitest-base.config.ts",
-            "coverage": true,
+            "coverage": false,
             "coverageReporters": ["text", "text-summary", "html"],
             "coverageExclude": [
               "**/*.spec.ts",
