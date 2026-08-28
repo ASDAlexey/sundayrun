@@ -9,6 +9,7 @@ import importPlugin from 'eslint-plugin-import';
 import localRules from 'eslint-plugin-local-rules';
 import optimizeRegex from 'eslint-plugin-optimize-regex';
 import rxjsX from 'eslint-plugin-rxjs-x';
+import autoSpy from 'vitest-auto-spy/eslint-plugin';
 
 // ESLint 10 больше не читает .eslintrc.* и .eslintignore — только flat config.
 // Набор правил повторяет tooling-пакет meta-libs (`createLegacyConfig`) в том виде, в каком его
@@ -206,6 +207,7 @@ const REQUIRE_SPEC_EXCLUDES = [
   '**/spec-utils/**',
   '**/index.ts',
   'src/test-providers.ts',
+  'src/test-setup.ts',
 
   'src/app/core/github/json-base64.ts',
   'src/app/core/github/protocol-db-path.ts',
@@ -414,6 +416,23 @@ export default [
         { object: 'it', property: 'skip', message: 'Do not commit skipped tests (it.skip)' },
         { object: 'test', property: 'skip', message: 'Do not commit skipped tests (test.skip)' },
       ],
+    },
+  },
+  // Собственные правила vitest-auto-spy. Локальные `no-object-define-property-in-specs` и
+  // `no-provide-auto-spy-directive` частично про то же, но сторожат другие узлы, поэтому набор
+  // включён целиком: пересечение стоит одного дублирующего сообщения, а `no-expect-in-subscribe`
+  // до сих пор не сторожил никто — подписка без ассерта даёт зелёный тест, ничего не проверивший.
+  {
+    files: ['src/**/*.spec.ts'],
+    ...autoSpy.configs.recommended,
+    rules: {
+      ...autoSpy.configs.recommended.rules,
+      // Единственные `vi.spyOn(TestBed.inject(...))` в проекте — это Router, и заменить его
+      // на `provideAutoSpy(Router)` нельзя: шаблоны страниц рисуют `routerLink`, а href считает
+      // настоящий роутер из `provideRouter([])` (проверено — спека админки падает на пустом href).
+      // Правило этого не видит, а вечное предупреждение, которое нельзя погасить, учит не читать
+      // предупреждения.
+      'vitest-auto-spy/prefer-inject-spy': 'off',
     },
   },
   {

@@ -1,3 +1,4 @@
+import { provideAutoSpy } from 'vitest-auto-spy/angular';
 import { PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -107,7 +108,7 @@ describe('TimerPage', () => {
         { provide: TimerFarewellService, useValue: farewell },
         { provide: WakeLockService, useValue: wakeLockServiceMock() },
         { provide: AdminTokenService, useValue: { isAdmin } },
-        { provide: ShareService, useValue: { canShareFile: vi.fn(() => false), shareFile: vi.fn() } },
+        provideAutoSpy(ShareService),
         { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
         // The empty state carries the install hint, whose readiness badge asks the worker channel.
         { provide: SwUpdate, useValue: { isEnabled: false } },

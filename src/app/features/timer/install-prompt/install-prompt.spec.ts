@@ -1,3 +1,4 @@
+import { createAutoMock } from 'vitest-auto-spy';
 import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { SwUpdate } from '@angular/service-worker';
@@ -145,7 +146,9 @@ describe('TimerInstall offline readiness', () => {
 
   beforeEach(() => {
     roster.cachedAtMs.set(ROSTER_CACHED_AT_MS);
-    vi.stubGlobal('localStorage', { getItem: () => null, setItem: vi.fn(), removeItem: vi.fn() });
+    // Ничего из этого хранилища здесь не читается — блок про офлайн-готовность. Мок по типу
+    // покрывает весь Storage, а не три метода, которые вспомнились.
+    vi.stubGlobal('localStorage', createAutoMock<Storage>({ getItem: () => null }));
     vi.stubGlobal('matchMedia', () => ({ matches: false }));
     TestBed.configureTestingModule({
       providers: [

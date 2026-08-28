@@ -1,3 +1,4 @@
+import { provideAutoSpy } from 'vitest-auto-spy/angular';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
@@ -9,10 +10,7 @@ describe('UploadPage', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
-        { provide: Router, useValue: { navigate: vi.fn(() => Promise.resolve(true)) } },
-      ],
+      providers: [provideAutoSpy(ProtocolStateService), provideAutoSpy(Router)],
     });
     fixture = TestBed.createComponent(UploadPage);
     fixture.detectChanges();

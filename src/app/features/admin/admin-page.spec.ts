@@ -1,3 +1,4 @@
+import { provideAutoSpy } from 'vitest-auto-spy/angular';
 import { PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params, Router, provideRouter } from '@angular/router';
@@ -92,7 +93,7 @@ describe('AdminPage', () => {
         { provide: PublishDurationService, useValue: publishDuration },
         { provide: DeleteDurationService, useValue: deleteDuration },
         { provide: DbFreshnessService, useValue: freshness },
-        { provide: ProtocolStateService, useValue: { reset: vi.fn(), importFile: vi.fn() } },
+        provideAutoSpy(ProtocolStateService),
         { provide: PLATFORM_ID, useFactory: (): typeof platformId => platformId },
         { provide: ActivatedRoute, useFactory: (): ReturnType<typeof activatedRouteQueryStub> => activatedRouteQueryStub(route.query) },
       ],
