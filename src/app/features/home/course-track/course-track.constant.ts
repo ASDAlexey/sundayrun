@@ -1,19 +1,6 @@
-/**
- * The course as the club declares it, which is not quite what a GPS watch reports.
- *
- * A recording of the route came to 5018 m — the excess is receiver noise and the line the
- * runner actually took, not extra course. The distance people race, compare and put in the
- * protocol is a round 5 km, split 2300 + 2300 + 400, and that is the only distance the page
- * ever shows. The measured figures live in `course-geometry.constant.ts` and are used for
- * one thing: deciding *when* along the animation each lap ends.
- */
-export const COURSE_TOTAL_METERS = 5000;
+import { COURSE_LAP_CROSSINGS } from '../../../core/course/course.constant';
 
-/** One big lap. The protocol records a split here — the site quotes it as «первый круг, 2,3 км». */
-export const COURSE_LAP_METERS = 2300;
-
-/** The short lap that tops the two big ones up to five kilometres. */
-export const COURSE_FINAL_LAP_METERS = 400;
+export { COURSE_FINAL_LAP_METERS, COURSE_LAP_METERS, COURSE_TOTAL_METERS } from '../../../core/course/course.constant';
 
 /** Radius of the travelling marker in viewBox units — about two metres of park. */
 export const COURSE_RUNNER_RADIUS = 11;
@@ -72,3 +59,20 @@ export const COURSE_PLAY_SECONDS = 14;
 
 /** The play-through is declared in seconds for CSS; the frame loop counting the metres is not. */
 export const COURSE_MS_PER_SECOND = 1000;
+
+/**
+ * How far below a caption's own line the second one sits, in viewBox units.
+ *
+ * Only the lap balloon ever needs it: two laps means the runner crosses that line twice, so the
+ * one mark carries two readings and they have to stack rather than overprint.
+ */
+export const COURSE_CAPTION_LINE_HEIGHT = 34;
+
+/** Font size of a pinned time, in viewBox units — a shade larger than the balloon it hangs off. */
+export const COURSE_CAPTION_FONT_SIZE = 27;
+
+/** What a kilometre balloon's number means in metres, once. */
+export const COURSE_METERS_IN_KM = 1000;
+
+/** The two readings the lap balloon stands for, in the order the runner collects them. */
+export const COURSE_LAP_MARK_METERS = COURSE_LAP_CROSSINGS;

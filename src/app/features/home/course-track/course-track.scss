@@ -111,6 +111,15 @@
   color: var(--map-ink-soft);
 }
 
+// The target on the finish chip. Same treatment as a caption out on the route, so the reading a
+// runner is aiming at looks the same wherever they meet it.
+.course-track__chip-time {
+  margin-left: 5px;
+  color: var(--accent-deep);
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
 .course-track__chip_start,
 .course-track__chip_finish {
   border: 1px solid;
@@ -183,15 +192,21 @@
   font-family: var(--mono);
 }
 
+// A planned time, hung off the mark it belongs to. Nothing else on the map is this colour: the
+// route and the officials own the drawing, and these are the one set of numbers a visitor put
+// there themselves, so they read as an overlay on the map rather than as part of it.
 .course-track__caption {
   // A halo instead of a plate behind the text. It costs no layout, needs no measuring, and is
   // what cartographers have always done — the label stays readable over park, path or building.
   paint-order: stroke;
-  fill: var(--accent-light);
-  stroke: var(--bg);
+  fill: var(--accent-deep);
+  stroke: var(--map-paper);
   stroke-linejoin: round;
-  stroke-width: 5;
+  stroke-width: 6;
   font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+
+  @include t.semibold;
 }
 
 // A lap boundary is a different kind of fact from a kilometre: a kilometre is a measurement of

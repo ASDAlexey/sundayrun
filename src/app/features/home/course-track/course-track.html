@@ -161,6 +161,20 @@ same span but sit in different branches, and a custom property only travels down
         </g>
       }
 
+      <!-- A plan's clock readings, hung off the anchors the marks were generated with. Drawn after
+      the balloons so a label always sits over the route rather than under it. -->
+      @for (caption of captions(); track caption.key) {
+        <text
+          class="course-track__caption"
+          [attr.font-size]="captionFontSize"
+          [attr.text-anchor]="caption.anchor"
+          [attr.x]="caption.x"
+          [attr.y]="caption.y"
+        >
+          {{ caption.text }}
+        </text>
+      }
+
       <!-- Start and finish: the two things every visitor looks for, so they are the largest marks on
       the map. Red for the one, the chequer for the other — the pair the legend below spells out. -->
       <circle
@@ -201,13 +215,13 @@ same span but sit in different branches, and a custom property only travels down
         >Старт</span
       >
 
-      <span
-        class="course-track__chip course-track__chip_finish"
-        i18n="@@course.finish"
-        [style.left]="finishLabel.left"
-        [style.top]="finishLabel.top"
-        >Финиш</span
-      >
+      <span class="course-track__chip course-track__chip_finish" [style.left]="finishLabel.left" [style.top]="finishLabel.top">
+        <span i18n="@@course.finish">Финиш</span>
+
+        @if (finishSplit(); as target) {
+          <span class="course-track__chip-time">{{ target }}</span>
+        }
+      </span>
 
       @for (place of landmarks; track place.name) {
         @if (place.labelled) {

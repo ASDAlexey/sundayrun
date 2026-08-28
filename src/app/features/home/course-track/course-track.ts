@@ -1,10 +1,9 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, computed, inject, input, signal } from '@angular/core';
 
 import {
   COURSE_ALLEY_PATH,
   COURSE_ARROWS,
   COURSE_LANDMARKS,
-  COURSE_MARKS,
   COURSE_FINAL_LAP_PATH,
   COURSE_FINISH_POINT,
   COURSE_LAP_ONE_END_FRACTION,
@@ -17,7 +16,8 @@ import {
 } from './course-geometry.constant';
 import {
   COURSE_AUTOPLAY_OBSERVER_OPTIONS,
-  COURSE_LAP_MARK_SHIFT,
+  COURSE_CAPTION_FONT_SIZE,
+  COURSE_CAPTION_LINE_HEIGHT,
   COURSE_MEETING_OFFSET,
   COURSE_MS_PER_SECOND,
   COURSE_PIN_RADIUS,
@@ -26,6 +26,8 @@ import {
   COURSE_RUNNER_RADIUS,
   COURSE_TOTAL_METERS,
 } from './course-track.constant';
+import { type CourseCaption } from './course-marks.interface';
+import { buildCourseMarks } from './course-marks';
 
 /**
  * The course as a map you can watch someone run.
@@ -56,6 +58,18 @@ export class CourseTrack {
   readonly #attempt = signal(0);
 
   /**
+   * The target time at each point of the course, keyed by metres from the start — empty until a
+   * visitor has asked for one on the card below.
+   *
+   * The map is where a plan stops being arithmetic. «По 4:24 на километр» is a number nobody can
+   * check while running: this course has no kilometre posts, and a watch lap button measures from
+   * wherever it was last pressed. «На развороте должно быть 10:07» is checkable, because the
+   * runner recognises the turn. So the times are pinned to the marks that were already drawn for
+   * exactly those places, and the card contributes only the clock.
+   */
+  readonly splits = input<ReadonlyMap<number, string>>(EMPTY_SPLITS);
+
+  /**
    * The reading on the distance plate: the whole 5 km at rest, and wherever the marker has got
    * to while the run plays.
    */
@@ -77,15 +91,50 @@ export class CourseTrack {
     transform: `translate(${arrow.x} ${arrow.y}) rotate(${arrow.angle})`,
   }));
 
+  /** The marks, finished into something drawable — see `buildCourseMarks`. */
+  protected readonly marks = buildCourseMarks();
+
   /**
-   * The marks, with the balloon's own position alongside the point it stands for: the kilometres
-   * sit on their point, the lap slides off it towards its label to clear the start disc.
+   * One label per reading, placed at the anchor the mark already carries for it.
+   *
+   * `lx`/`ly` were generated as the spot a caption for this balloon would go — off the route, on
+   * the side with room — so a pinned time lands clear of the line without a second layout pass.
+   * The lap balloon's two readings stack from that same anchor.
    */
-  protected readonly marks = COURSE_MARKS.map((mark) => ({
-    ...mark,
-    bx: mark.lap > 0 ? mark.x + (mark.lx - mark.x) * COURSE_LAP_MARK_SHIFT : mark.x,
-    by: mark.lap > 0 ? mark.y + (mark.ly - mark.y) * COURSE_LAP_MARK_SHIFT : mark.y,
-  }));
+  protected readonly captions = computed(() => {
+    const splits = this.splits();
+
+    return this.marks.flatMap((mark) => {
+      const captions: CourseCaption[] = [];
+
+      for (const [line, meters] of mark.meters.entries()) {
+        const text = splits.get(meters);
+
+        if (text !== undefined) {
+          captions.push({
+            key: `${mark.x}-${line}`,
+            x: mark.lx,
+            y: mark.ly + line * COURSE_CAPTION_LINE_HEIGHT,
+            anchor: mark.anchor,
+            text,
+          });
+        }
+      }
+
+      return captions;
+    });
+  });
+
+  /**
+   * The target itself, which goes into the finish chip rather than onto the map.
+   *
+   * Its own balloon would have to share the busiest square centimetre on the drawing with the
+   * start disc, the finish chequer and the gathering arrow. The chip is already placed there and
+   * already says what the spot is, so the time joins the word instead of crowding it.
+   */
+  protected readonly finishSplit = computed(() => this.splits().get(COURSE_TOTAL_METERS) ?? '');
+
+  protected readonly captionFontSize = COURSE_CAPTION_FONT_SIZE;
 
   protected readonly meetingPoint = {
     x: COURSE_START_POINT.x + COURSE_MEETING_OFFSET.x,
@@ -246,6 +295,9 @@ export class CourseTrack {
     observer.observe(this.#host.nativeElement);
   }
 }
+
+/** One instance, so an unplanned map is not a new empty map on every change detection. */
+const EMPTY_SPLITS: ReadonlyMap<number, string> = new Map();
 
 /** Guarded because `matchMedia` is missing in the prerender worker and in any non-browser runtime. */
 function prefersReducedMotion(): boolean {

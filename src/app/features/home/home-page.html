@@ -93,14 +93,14 @@
     </div>
 
     <!--
-      The map is the heaviest subtree the home page owns — the component itself plus the 76 KB
+      The map, and under it the card that writes times onto it. The heaviest subtree the home page owns — the component itself plus the 76 KB
       basemap it inlines — and it lives below the fold, under the two facts anyone actually came
       for. So it hydrates only once it is scrolled to. `hydrate on viewport` and not a plain
       `on viewport`: `/` is `RenderMode.Prerender` for LCP and for the crawlers that read the course
       description, so the drawing has to stay in the static HTML; only the wiring waits.
     -->
     @defer (hydrate on viewport) {
-      <app-course-track />
+      <app-pace-plan />
     } @placeholder {
       <!--
         A prerendered arrival never sees this — the real map is already on screen. It exists for

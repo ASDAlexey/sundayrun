@@ -1,0 +1,87 @@
+<!-- The map first and the form under it: the map is what the visitor came to look at, and once a
+target is entered it is also the answer, so the answer stays where the eye already is. -->
+<app-course-track [splits]="splits()" />
+
+<div class="pace-plan">
+  <div class="pace-plan__head">
+    <h3 class="pace-plan__title" i18n="@@pacePlan.title">Раскладка под цель</h3>
+
+    <p class="pace-plan__lede" i18n="@@pacePlan.lede">
+      Скажи, за сколько хочешь пробежать — или каким темпом бежать. Времена появятся прямо на карте: на каждом километре и на отсечке круга.
+    </p>
+  </div>
+
+  <div class="pace-plan__fields">
+    <label class="pace-plan__field">
+      <span class="pace-plan__label" i18n="@@pacePlan.finishLabel">Финиш за</span>
+
+      <input
+        #finishInput
+        autocomplete="off"
+        class="pace-plan__input"
+        enterkeyhint="done"
+        inputmode="numeric"
+        placeholder="22:00"
+        type="text"
+        [value]="finishText()"
+        (input)="onFinishInput(finishInput.value)"
+      />
+    </label>
+
+    <span aria-hidden="true" class="pace-plan__equals">=</span>
+
+    <label class="pace-plan__field">
+      <span class="pace-plan__label" i18n="@@pacePlan.paceLabel">Темп на километр</span>
+
+      <input
+        #paceInput
+        autocomplete="off"
+        class="pace-plan__input"
+        enterkeyhint="done"
+        inputmode="numeric"
+        placeholder="4:24"
+        type="text"
+        [value]="paceText()"
+        (input)="onPaceInput(paceInput.value)"
+      />
+    </label>
+  </div>
+
+  <!-- The cold start. A card that opens on two empty fields asks for a goal before it shows
+  anything; one tap here is both an answer and a demonstration. -->
+  <div class="pace-plan__presets">
+    <span class="pace-plan__presets-label" i18n="@@pacePlan.presets">Или сразу:</span>
+
+    @for (preset of presets; track preset) {
+      <button class="pace-plan__preset" type="button" (click)="usePreset(preset)">{{ preset }}</button>
+    }
+  </div>
+
+  @if (invalid()) {
+    <p class="pace-plan__note" i18n="@@pacePlan.invalid" role="status">Не похоже на время. Пиши минуты и секунды через двоеточие: 22:00.</p>
+  }
+
+  <ol class="pace-plan__splits">
+    @for (row of rows(); track row.meters) {
+      <li class="pace-plan__split" [class.pace-plan__split_lap]="row.lap">
+        <span class="pace-plan__split-label">{{ row.label }}</span>
+
+        <span class="pace-plan__split-time">{{ row.time }}</span>
+      </li>
+    }
+  </ol>
+
+  @if (plan()) {
+    <!-- The plan is used in a park at eight in the morning, possibly without signal. This is the
+    button that gets it off the site and onto the phone. -->
+    <button class="pace-plan__save" type="button" [disabled]="saving()" (click)="save()">
+      @if (saving()) {
+        <ng-container i18n="@@pacePlan.saving">Готовим картинку…</ng-container>
+      } @else {
+        <ng-container i18n="@@pacePlan.save">Сохранить картинку</ng-container>
+      }
+    </button>
+
+    <p class="pace-plan__hint" i18n="@@pacePlan.saveHint">Карта с отметками и вся раскладка одним файлом — чтобы открыть на старте.</p>
+  }
+</div>

@@ -19,7 +19,7 @@ import { LoadingState } from '../../shared/loading-state/loading-state';
 import { OfflineNotice } from '../../shared/offline-notice/offline-notice';
 import { ReloadButton } from '../../shared/reload-button/reload-button';
 import { RollNumber } from '../../shared/roll-number/roll-number';
-import { CourseTrack } from './course-track/course-track';
+import { PacePlan } from './pace-plan/pace-plan';
 import { type SelfAthlete } from '../../state/self-athlete.interface';
 import { SelfAthleteService } from '../../state/self-athlete.service';
 import { NO_BEST_TIME_TEXT } from '../athlete/athlete-page.constant';
@@ -59,7 +59,7 @@ import {
   selector: 'app-home-page',
   imports: [
     CountUp,
-    CourseTrack,
+    PacePlan,
     LoadingState,
     MatButtonModule,
     OfflineNotice,

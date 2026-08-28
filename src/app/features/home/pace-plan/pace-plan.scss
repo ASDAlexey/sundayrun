@@ -1,0 +1,184 @@
+@use 'styles/card' as c;
+@use 'styles/buttons' as b;
+@use 'styles/field' as f;
+@use 'styles/typography' as t;
+
+// Sits directly under the map with no gap of its own: the map is the card's own output, and a
+// margin between them would make two blocks out of one instrument.
+.pace-plan {
+  @include c.card;
+
+  display: grid;
+  margin-top: 14px;
+  padding: 22px;
+  gap: 18px;
+}
+
+.pace-plan__head {
+  display: grid;
+  gap: 6px;
+}
+
+.pace-plan__title {
+  @include t.text('title', 'medium');
+
+  margin: 0;
+  color: var(--text);
+}
+
+.pace-plan__lede {
+  @include t.text('body', 'medium');
+
+  max-width: 62ch;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+// Two fields and the sign between them, because the equals sign is the whole idea: type into
+// either one and the other is the same fact restated. On a phone the row folds and the sign turns
+// with it, so the relationship survives the wrap.
+.pace-plan__fields {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 12px;
+
+  @media (width <= 560px) {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+  }
+}
+
+.pace-plan__field {
+  display: grid;
+  gap: 7px;
+}
+
+.pace-plan__label {
+  @include t.mono-caption;
+
+  color: var(--text-muted);
+}
+
+// Big and monospaced: what goes in here is a clock reading, and it is read back as often as it is
+// typed. Tabular figures so the digits do not shuffle sideways while somebody types over them.
+.pace-plan__input {
+  @include f.field;
+  @include t.mono-value-secondary;
+
+  width: 100%;
+  outline: none;
+  transition: border-color var(--transition-time) var(--ease);
+
+  &:focus {
+    border-color: var(--accent);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+.pace-plan__equals {
+  @include t.mono-value-secondary;
+
+  padding-bottom: 12px;
+  color: var(--text-muted);
+
+  @media (width <= 560px) {
+    justify-self: center;
+    padding-bottom: 0;
+  }
+}
+
+.pace-plan__presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pace-plan__presets-label {
+  @include t.mono-caption;
+
+  color: var(--text-muted);
+}
+
+.pace-plan__preset {
+  @include b.button-outline;
+  @include t.mono-value;
+
+  padding: 6px 13px;
+}
+
+.pace-plan__note {
+  @include t.text('body', 'medium');
+
+  margin: 0;
+  color: var(--red);
+}
+
+// The readings as a list. It is the accessible form of the map — which is decorative to a screen
+// reader — and on a phone it is the form people actually read, the map being three fingers wide.
+.pace-plan__splits {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  list-style: none;
+
+  // Before there is a plan the list is empty, and an empty grid child would still take its share
+  // of the card's gap.
+  &:empty {
+    display: none;
+  }
+}
+
+.pace-plan__split {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 11px 2px;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-soft);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// A lap crossing is a different kind of fact from a kilometre — a kilometre is a measurement of
+// the route, a lap split is a person with a stopwatch — so it joins the officials in red here the
+// same way it does on the map.
+.pace-plan__split_lap .pace-plan__split-label {
+  color: var(--map-mark);
+}
+
+.pace-plan__split-label {
+  @include t.mono-meta;
+
+  color: var(--text-secondary);
+}
+
+.pace-plan__split-time {
+  @include t.mono-value;
+
+  color: var(--text);
+}
+
+.pace-plan__save {
+  @include b.button-accent;
+
+  justify-self: start;
+
+  @media (width <= 560px) {
+    justify-self: stretch;
+  }
+}
+
+.pace-plan__hint {
+  @include t.text('label', 'small');
+
+  margin: 0;
+  color: var(--text-muted);
+}
