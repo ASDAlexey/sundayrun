@@ -28,19 +28,29 @@ const ANGULAR_CLI = 'node_modules/@angular/cli/bin/ng.js';
 // shim resolves the same real Node through its shebang, so this is what `ng test` already used.
 const NODE = 'node';
 
-// Measured on this suite (16 CPU / 64 GB, coverage on, wall clock including the bundle build):
+// Measured on this suite (16 CPU / 64 GB, coverage on, wall clock including the bundle build).
+// The first row is what the split was originally tuned on, at 248 spec files and the `forks` pool:
 //
 //   processes x workers   1x2   1x3   1x4   1x6   2x6   4x4   6x2   8x2   12x2
 //   wall                  83 s  82 s  81 s  82 s  61 s  60 s  50 s  49 s  57 s
 //
-// Two things to read off it. Workers inside one process do nothing at all — 2 and 6 land within a
-// second of each other, which is the signature of a main-thread bound run. Processes do: 8 of them
-// is 1.7x faster than any single-process configuration, and 12 is past the point where the
-// concurrent Angular bundle builds cost more than the split saves.
+// Re-measured at 255 files after vitest-base.config.ts moved sharded runs onto `threads`:
+//
+//   processes x workers   1x2   4x4   6x2   8x1   8x2   8x4   12x2
+//   wall (threads)        80 s  50 s  40 s  45 s  40 s  48 s  50 s
+//   wall (forks)                      —     52 s  51 s        50 s
+//
+// What the two tables agree on: processes are the lever and eight is where it flattens. What
+// changed is why. On forks the run was main-thread bound and workers inside a process did nothing —
+// 2 and 6 landed within a second. On threads the two workers of a process share one heap and one
+// instrumentation pass, which is worth ~20%; a third and fourth worker start fighting over that
+// heap and give it all back. The floor is not the CPU either way: the whole run averages about
+// four of sixteen cores busy.
 const CPUS_PER_PROCESS = 2;
 const GB_PER_PROCESS = 3;
 const MAX_PROCESSES = 8;
-// Two, because more never helped above and each extra worker instruments the shared chunks again.
+// Two: on the `threads` pool the pair shares one heap and one instrumentation pass, and a third
+// worker starts costing more in contention than it returns (48 s against 40 s at four).
 const WORKERS_PER_PROCESS = 2;
 
 const args = process.argv.slice(2);

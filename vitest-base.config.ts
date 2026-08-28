@@ -11,17 +11,29 @@ import { defineConfig } from 'vitest/config';
 // is an env override with a working default, which is what lets scripts/run-tests.ts split the run
 // across processes without a second config file.
 const poolOverride = process.env['SPECS_POOL'];
-// `forks`, not `threads`. The app is zoneless, so threads would be safe, but they were measured
-// slower here: 118 s against 93 s on the full coverage run, because every worker thread instruments
-// the shared chunks inside one shared V8 heap. Kept as an override for the same reason it exists in
-// Vitest — a run that needs a shared heap can ask for it.
-const pool = poolOverride === 'threads' ? 'threads' : 'forks';
 const maxWorkers = Number(process.env['SPECS_MAX_WORKERS']) || undefined;
 
 // One slice of the suite, set per process by scripts/run-tests.ts. Vitest wants `i/N` with i from 1.
 const shardIndex = Number(process.env['SPECS_SHARD_INDEX']) || 0;
 const shardTotal = Number(process.env['SPECS_SHARD_TOTAL']) || 0;
 const isSharded = shardIndex > 0 && shardTotal > 1;
+
+/**
+ * `threads` for a sharded (coverage) run, `forks` for a plain one — and either one overridable.
+ *
+ * The choice flipped when the run was split across processes. A single process measured 118 s on
+ * threads against 93 s on forks, because every worker thread instruments the shared chunks inside
+ * one V8 heap; the note that used to stand here recorded that. Split eight ways, the same heap is
+ * what pays off — each process instruments its chunks once for both of its workers instead of once
+ * per worker — and the whole run comes to ~41 s on threads against ~51 s on forks (16 CPU / 64 GB,
+ * 255 spec files, best of three each). Two workers per process is where that stops: four measured
+ * 48–50 s on threads, back at the forks number.
+ *
+ * A plain run has one process and one instrumentation-free pass, so it keeps the pool that was
+ * measured faster for exactly that shape — 6.1 s against 6.6 s, which is noise, and no reason to
+ * make one config line mean two things.
+ */
+const pool = poolOverride === 'threads' || poolOverride === 'forks' ? poolOverride : isSharded ? 'threads' : 'forks';
 
 // Each slice writes its own report, which scripts/merge-coverage.ts then merges and gates. A
 // single-process run keeps the plain directory the builder would have used.
