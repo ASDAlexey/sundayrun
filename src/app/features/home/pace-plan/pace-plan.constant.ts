@@ -58,3 +58,30 @@ export const PACE_PLAN_POSTER_TOKENS = {
 
 /** Fallbacks for a runtime with no computed styles at all — the prerender worker, mostly. */
 export const PACE_PLAN_POSTER_FALLBACK = '#000000';
+
+/**
+ * The step between «повторить ЛР» and the next goal up.
+ *
+ * Half a minute over five kilometres is six seconds a kilometre — a change of pace a person can
+ * feel and hold, and small enough that the plan stays a plan rather than a wish. Any rounder step
+ * would be either invisible or a different race.
+ */
+export const PACE_PLAN_STEP_MS = 30 * 1000;
+
+/** Captions of the goals offered to a visitor who has picked themselves in the header. */
+export const PACE_PLAN_TARGET_LABELS = {
+  best: $localize`:@@pacePlan.targetBest:ЛР`,
+  faster: $localize`:@@pacePlan.targetFaster:−30 с`,
+  form: $localize`:@@pacePlan.targetForm:форма`,
+} as const;
+
+/**
+ * The query parameters the card reads on arrival and keeps written as the plan changes, so the
+ * address bar is the share button: `?target=22:00&split=neg` opens on somebody else's phone as the
+ * plan they were sent, laid out on the map.
+ */
+export const PACE_PLAN_TARGET_PARAM = 'target';
+
+export const PACE_PLAN_SPLIT_PARAM = 'split';
+
+export const PACE_PLAN_NEGATIVE_SPLIT_VALUE = 'neg';

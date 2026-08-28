@@ -1,4 +1,5 @@
-import { PACE_PLAN_MAX_FINISH_MS, PACE_PLAN_METERS, PACE_PLAN_MIN_FINISH_MS } from './pace-plan.constant';
+import { COURSE_LAP_METERS } from '../course/course.constant';
+import { PACE_PLAN_MAX_FINISH_MS, PACE_PLAN_METERS, PACE_PLAN_MIN_FINISH_MS, PACE_PLAN_NEGATIVE_INDEX } from './pace-plan.constant';
 import { paceFromFinish, planFromFinish, planFromPace, toKilometres } from './pace-plan';
 
 /** 22:00 — a round target, and the one the card offers as its example. */
@@ -17,6 +18,20 @@ describe('planFromFinish', () => {
     expect(plan?.splits.map((split) => split.ms)).toEqual([264_000, 528_000, 607_200, 792_000, 1_056_000, 1_214_400, 1_320_000]);
   });
 
+  it('buys the second lap its speed out of the first when asked to negative-split', () => {
+    const plan = planFromFinish(TARGET_MS, PACE_PLAN_NEGATIVE_INDEX);
+    const lapIndex = PACE_PLAN_METERS.indexOf(COURSE_LAP_METERS);
+
+    expect(plan?.finishMs, 'the target is what was asked for, however it is spent').toBe(TARGET_MS);
+    expect(plan?.paceMs, 'the pace field still states the average').toBe(PACE_MS);
+    expect(plan?.secondLegPaceMs).toBeCloseTo((plan?.firstLegPaceMs ?? 0) * PACE_PLAN_NEGATIVE_INDEX, 6);
+    expect(plan?.secondLegPaceMs, 'below 1 means the closing 2,7 км go quicker').toBeLessThan(plan?.firstLegPaceMs ?? 0);
+    expect(plan?.splits.at(-1)?.ms, 'the legs still add up to the target').toBeCloseTo(TARGET_MS, 6);
+    expect(plan?.splits[lapIndex].ms, 'so the lap is reached later than an even plan would').toBeGreaterThan(
+      planFromFinish(TARGET_MS)?.splits[lapIndex].ms ?? 0,
+    );
+  });
+
   it('refuses the typo rather than quoting a pace in hours', () => {
     expect(planFromFinish(PACE_PLAN_MIN_FINISH_MS - 1)).toBeNull();
     expect(planFromFinish(PACE_PLAN_MAX_FINISH_MS + 1)).toBeNull();
@@ -29,6 +44,7 @@ describe('planFromFinish', () => {
 describe('planFromPace', () => {
   it('is the same plan asked for from the other end', () => {
     expect(planFromPace(PACE_MS)).toEqual(planFromFinish(TARGET_MS));
+    expect(planFromPace(PACE_MS, PACE_PLAN_NEGATIVE_INDEX)).toEqual(planFromFinish(TARGET_MS, PACE_PLAN_NEGATIVE_INDEX));
     expect(planFromPace(1), 'a pace nobody can hold is a target nobody can hold').toBeNull();
   });
 });

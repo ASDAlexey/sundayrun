@@ -48,14 +48,43 @@ target is entered it is also the answer, so the answer stays where the eye alrea
   </div>
 
   <!-- The cold start. A card that opens on two empty fields asks for a goal before it shows
-  anything; one tap here is both an answer and a demonstration. -->
-  <div class="pace-plan__presets">
-    <span class="pace-plan__presets-label" i18n="@@pacePlan.presets">Или сразу:</span>
+  anything; one tap here is both an answer and a demonstration. A visitor the header knows gets
+  their own times instead of round numbers picked for a stranger. -->
+  @if (targets().length > 0) {
+    <div class="pace-plan__presets">
+      <span class="pace-plan__presets-label" i18n="@@pacePlan.targets">Твои цели:</span>
 
-    @for (preset of presets; track preset) {
-      <button class="pace-plan__preset" type="button" (click)="usePreset(preset)">{{ preset }}</button>
-    }
-  </div>
+      @for (target of targets(); track target.label) {
+        <button class="pace-plan__preset" type="button" (click)="usePreset(target.text)">
+          <span class="pace-plan__preset-label">{{ target.label }}</span>
+
+          {{ target.text }}
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="pace-plan__presets">
+      <span class="pace-plan__presets-label" i18n="@@pacePlan.presets">Или сразу:</span>
+
+      @for (preset of presets; track preset) {
+        <button class="pace-plan__preset" type="button" (click)="usePreset(preset)">{{ preset }}</button>
+      }
+    </div>
+  }
+
+  <!-- One decision, not a number to invent: hold the pace, or spend the first lap buying the
+  second. The seconds it comes to are the card's answer, below. -->
+  <label class="pace-plan__mode">
+    <input class="pace-plan__mode-box" type="checkbox" [checked]="negative()" (change)="toggleNegative()" />
+
+    <span class="pace-plan__mode-text" i18n="@@pacePlan.negative">Второй круг быстрее</span>
+  </label>
+
+  @if (legGapText(); as gap) {
+    <p class="pace-plan__note pace-plan__note_mode" i18n="@@pacePlan.negativeNote">
+      Первые 2,3 км ровно, дальше — на {{ gap }} быстрее на километре. Если получится, в протоколе будет «Негативный сплит».
+    </p>
+  }
 
   @if (invalid()) {
     <p class="pace-plan__note" i18n="@@pacePlan.invalid" role="status">Не похоже на время. Пиши минуты и секунды через двоеточие: 22:00.</p>

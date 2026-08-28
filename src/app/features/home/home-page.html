@@ -100,7 +100,7 @@
       description, so the drawing has to stay in the static HTML; only the wiring waits.
     -->
     @defer (hydrate on viewport) {
-      <app-pace-plan />
+      <app-pace-plan [self]="selfRecord()" />
     } @placeholder {
       <!--
         A prerendered arrival never sees this — the real map is already on screen. It exists for

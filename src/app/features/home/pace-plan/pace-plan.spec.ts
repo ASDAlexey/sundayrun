@@ -1,13 +1,20 @@
+import { provideLocationMocks } from '@angular/common/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/core';
+import { Location } from '@angular/common';
+import { Router, provideRouter } from '@angular/router';
 
 import { PACE_PLAN_METERS } from '../../../core/pace/pace-plan.constant';
-import { PACE_PLAN_POINTS, PACE_PLAN_POSTER_FALLBACK } from './pace-plan.constant';
+import { PACE_PLAN_POINTS, PACE_PLAN_POSTER_FALLBACK, PACE_PLAN_TARGET_LABELS } from './pace-plan.constant';
+import { TARGETS_RECORD } from './plan-targets.mock';
 import { POSTER_FILE_NAME } from './plan-poster.constant';
 import { PlanImageService } from './plan-image.service';
 import { PacePlan } from './pace-plan';
 
 const saveSpy = vi.fn<(svg: string, fileName: string) => Promise<boolean>>();
+
+/** The card lives on `/`, which takes no path parameters — only the query string it writes. */
+const routerProviders = [provideRouter([{ path: '**', children: [] }]), provideLocationMocks()];
 
 describe('PACE_PLAN_POINTS', () => {
   it('lists the same points as the plan, in the same order — the card reads them off position', () => {
@@ -24,7 +31,7 @@ describe('PacePlan', () => {
 
   beforeEach(() => {
     saveSpy.mockReset().mockResolvedValue(true);
-    TestBed.overrideProvider(PlanImageService, { useValue: { save: saveSpy } });
+    TestBed.configureTestingModule({ providers: [...routerProviders, { provide: PlanImageService, useValue: { save: saveSpy } }] });
     fixture = TestBed.createComponent(PacePlan);
     fixture.detectChanges();
   });
@@ -36,6 +43,11 @@ describe('PacePlan', () => {
 
     field.value = value;
     field.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  }
+
+  function toggleSplit(): void {
+    fixture.nativeElement.querySelector('.pace-plan__mode-box').click();
     fixture.detectChanges();
   }
 
@@ -147,5 +159,88 @@ describe('PacePlan', () => {
 
   it('has nothing to save before there is a plan', async () => {
     expect(fixture.nativeElement.querySelector('.pace-plan__save'), 'the button is not there to be pressed').toBeNull();
+  });
+
+  it('spends the target on a quicker second lap when asked, without touching the average pace', () => {
+    type('.pace-plan__input', '22:00');
+    toggleSplit();
+
+    expect(fields()[1].value, 'the average over five kilometres is the same however it is spent').toBe('4:24');
+    expect(rows()[2], 'the lap comes later, because the first 2,3 км are the ones being slowed').toBe('круг · 2,3 км10:17');
+    expect(rows().at(-1), 'and the target still lands where it was asked to').toBe('финиш · 5 км22:00');
+    expect(fixture.nativeElement.querySelector('.pace-plan__note_mode').textContent, 'the choice is answered in seconds').toContain('0:08');
+
+    toggleSplit();
+
+    expect(rows()[2], 'and back, because it is a plan, not a commitment').toBe('круг · 2,3 км10:07');
+    expect(fixture.nativeElement.querySelector('.pace-plan__note_mode')).toBeNull();
+  });
+
+  it('says nothing about a split nobody has a target for', () => {
+    toggleSplit();
+
+    expect(fixture.nativeElement.querySelector('.pace-plan__note_mode'), 'there is no gap to quote yet').toBeNull();
+  });
+
+  it('offers a visitor it knows their own times instead of round numbers', () => {
+    fixture.componentRef.setInput('self', TARGETS_RECORD);
+    fixture.detectChanges();
+
+    const presets = [...fixture.nativeElement.querySelectorAll('.pace-plan__preset')].map((button: Element) =>
+      button.textContent.replace(/\s+/g, ' ').trim(),
+    );
+
+    expect(presets).toEqual([
+      `${PACE_PLAN_TARGET_LABELS.best} 21:00`,
+      `${PACE_PLAN_TARGET_LABELS.faster} 20:30`,
+      `${PACE_PLAN_TARGET_LABELS.form} 23:00`,
+    ]);
+
+    fixture.nativeElement.querySelectorAll('.pace-plan__preset')[1].click();
+    fixture.detectChanges();
+
+    expect(fields()[0].value, 'one tap and the goal is in the field').toBe('20:30');
+    expect(rows()).toHaveLength(7);
+  });
+
+  it('keeps the address bar equal to the plan, so sharing it is copying the URL', () => {
+    type('.pace-plan__input', '22:00');
+
+    expect(TestBed.inject(Location).path()).toBe('/?target=22:00');
+
+    toggleSplit();
+
+    expect(TestBed.inject(Location).path(), 'the second lap travels with the target').toBe('/?target=22:00&split=neg');
+
+    type('.pace-plan__input', '');
+
+    expect(TestBed.inject(Location).path(), 'and an empty card shares nothing').toBe('/');
+  });
+});
+
+describe('PacePlan opened from a shared link', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [...routerProviders, { provide: PlanImageService, useValue: { save: saveSpy } }] });
+  });
+
+  it('opens as the plan it was sent, toggle and all', async () => {
+    // The query string has to be on the route before the card is built: it reads the address once,
+    // after the first render, the way a visitor arriving on the link does.
+    await TestBed.inject(Router).navigate([], { queryParams: { target: '22:00', split: 'neg' } });
+
+    const fixture = TestBed.createComponent(PacePlan);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const fields: HTMLInputElement[] = [...fixture.nativeElement.querySelectorAll('.pace-plan__input')];
+    const rows = [...fixture.nativeElement.querySelectorAll('.pace-plan__split')].map((row: Element) => row.textContent.trim());
+
+    expect(fields.map((field) => field.value)).toEqual(['22:00', '4:24']);
+    expect(fixture.nativeElement.querySelector('.pace-plan__mode-box').checked, 'including how it was meant to be run').toBe(true);
+    expect(rows[2]).toBe('круг · 2,3 км10:17');
+
+    fixture.destroy();
   });
 });

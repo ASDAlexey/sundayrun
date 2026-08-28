@@ -111,11 +111,46 @@
   padding: 6px 13px;
 }
 
+.pace-plan__preset-label {
+  @include t.mono-caption;
+
+  margin-right: 6px;
+  color: var(--text-muted);
+}
+
+// A plain checkbox with its own label, not a switch: the two states are «ровно» and «быстрее», and
+// a switch would imply one of them is off.
+.pace-plan__mode {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+
+.pace-plan__mode-box {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.pace-plan__mode-text {
+  @include t.text('body', 'medium');
+
+  color: var(--text);
+}
+
 .pace-plan__note {
   @include t.text('body', 'medium');
 
   margin: 0;
   color: var(--red);
+}
+
+// The same element saying something that is not a complaint — what the chosen split comes to in
+// seconds — so it drops the red the invalid-input note is written in.
+.pace-plan__note_mode {
+  color: var(--text-secondary);
 }
 
 // The readings as a list. It is the accessible form of the map — which is decorative to a screen

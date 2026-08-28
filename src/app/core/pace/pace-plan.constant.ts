@@ -1,4 +1,4 @@
-import { COURSE_LAP_CROSSINGS, COURSE_TOTAL_METERS } from '../course/course.constant';
+import { COURSE_LAP_CROSSINGS, COURSE_LAP_METERS, COURSE_TOTAL_METERS } from '../course/course.constant';
 
 /** A pace is quoted per kilometre, so this is the unit every pace figure is divided into. */
 export const PACE_UNIT_METERS = 1000;
@@ -37,3 +37,29 @@ export const PACE_PLAN_METERS: readonly number[] = [
 export const PACE_PLAN_MIN_FINISH_MS = 12 * 60 * 1000;
 
 export const PACE_PLAN_MAX_FINISH_MS = 2 * 60 * 60 * 1000;
+
+/**
+ * The two legs a pacing plan is allowed to differ between, in kilometres.
+ *
+ * The same cut the protocol already measures: everything about pacing on this site — the index in
+ * `core/history/pacing.ts`, the «Негативный сплит» chip, the «Раскладка» card — is 2,3 км against
+ * the 2,7 км that follow. A plan that split the race anywhere else would produce numbers nobody
+ * could check against their own protocol row afterwards.
+ */
+export const PACE_PLAN_FIRST_LEG_KM = COURSE_LAP_METERS / PACE_UNIT_METERS;
+
+export const PACE_PLAN_SECOND_LEG_KM = (COURSE_TOTAL_METERS - COURSE_LAP_METERS) / PACE_UNIT_METERS;
+
+/** Even pace: the second leg run at the pace of the first. The plan's default and its floor. */
+export const PACE_PLAN_EVEN_INDEX = 1;
+
+/**
+ * The index a «второй круг быстрее» plan is built on — the second leg 3% quicker per kilometre.
+ *
+ * Chosen against the two numbers the site already lives by rather than picked for roundness.
+ * Below 1 it is a negative split, so the protocol will mark the finish «Негативный сплит» if it
+ * comes off; and 0.97 is exactly `PACING_EVEN_MIN_INDEX`, the edge of the band this site calls an
+ * even race — the mildest plan that still counts as speeding up. Anything braver would be the card
+ * having an opinion about somebody else's Sunday.
+ */
+export const PACE_PLAN_NEGATIVE_INDEX = 0.97;

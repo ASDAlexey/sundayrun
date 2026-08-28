@@ -92,6 +92,10 @@ export class HomePage {
   readonly latestRaces = signal<RaceListItem[]>([]);
   readonly siteMeta = signal(EMPTY_SITE_META);
   readonly statsView = computed(() => toStatsView(this.#stats()));
+
+  // Handed to the pace card so it can offer this visitor their own times instead of round presets.
+  // The same read the personal card below already made — passed along rather than fetched twice.
+  readonly selfRecord = this.#selfRecord.asReadonly();
   readonly selfView = computed(() => toSelfView(this.#selfAthlete.self(), { record: this.#selfRecord(), eventSlugs: this.#eventSlugs() }));
   readonly startTime = computed(() => this.siteMeta().startTime || DEFAULT_START_TIME);
   readonly startLabel = computed(() => formatStartTimeLabel(this.startTime()));
