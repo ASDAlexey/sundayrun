@@ -68,7 +68,7 @@ const readShards = (): { name: string; data: Record<string, FileEntry> }[] => {
 /** Identity of the *shape* of a file entry: same maps means the same instrumentation of the same source. */
 const shapeOf = (entry: FileEntry): string =>
   createHash('sha1')
-    .update(JSON.stringify([entry.statementMap, entry.fnMap, entry.branchMap]))
+    .update(JSON.stringify([entry.statementMap, Object.values(entry.fnMap).map(functionIdentityOf), entry.branchMap]))
     .digest('hex');
 
 const sumHits = (entry: FileEntry): number => {
@@ -122,6 +122,21 @@ const groupByFileAndShape = (shards: { data: Record<string, FileEntry> }[]): Map
 const identityOf = (item: unknown): string => JSON.stringify(item);
 
 /**
+ * Identity of one function — everything about it except the name it was reported under.
+ *
+ * The name is the one part of an fnMap entry that depends on the shard rather than on the source.
+ * An unnamed function is `(anonymous_N)` with `N` counted over everything *that shard*
+ * instrumented, and a named one collides with same-named functions elsewhere in the bundle and
+ * comes back as `text`, `text2`, `toBestView2` — again per shard. Left in the identity, one
+ * function looks like as many functions as there are shards, all but one of them with zero hits:
+ * the 61 functions of `protocol-state.service.ts` were counted as 341, and the suite's function
+ * coverage read 65% against a denominator twice the real one. Position is identity enough — two
+ * functions cannot be declared at the same place in one file. Statements and branches carry no
+ * name, which is why only the functions metric fell through the floor.
+ */
+const functionIdentityOf = ({ name: _name, ...item }: { name?: string }): string => identityOf(item);
+
+/**
  * Unions entries that carry execution data into the map a single-process run would have produced.
  *
  * They all come from the same instrumentation family — the file compiled into the spec bundle and
@@ -142,7 +157,7 @@ const unionEntries = (entries: FileEntry[]): FileEntry => {
     }
 
     for (const [key, item] of Object.entries(entry.fnMap)) {
-      const identity = identityOf(item);
+      const identity = functionIdentityOf(item);
       const known = functions.get(identity);
 
       functions.set(identity, { item, hits: (known?.hits ?? 0) + entry.f[key] });
