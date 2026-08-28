@@ -111,6 +111,7 @@
             "buildTarget": "parkrun:build:test",
             "runner": "vitest",
             "providersFile": "src/test-providers.ts",
+            "setupFiles": ["src/test-setup.ts"],
             "runnerConfig": "vitest-base.config.ts",
             "coverage": false,
             "coverageReporters": ["text", "text-summary", "html"],
@@ -125,7 +126,8 @@
               "**/app.config.ts",
               "**/app.ts",
               "**/main.ts",
-              "**/test-providers.ts"
+              "**/test-providers.ts",
+              "**/test-setup.ts"
             ]
           }
         }

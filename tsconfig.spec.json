@@ -6,6 +6,6 @@
     "types": ["vitest/globals", "@angular/localize", "node"]
   },
   "extends": "./tsconfig.json",
-  "files": ["src/test-providers.ts"],
+  "files": ["src/test-providers.ts", "src/test-setup.ts"],
   "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]
 }

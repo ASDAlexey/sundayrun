@@ -1,4 +1,4 @@
-import { mockValueProp, restoreMockedProps } from 'vitest-auto-spy/angular';
+import { mockValueProp } from 'vitest-auto-spy/angular';
 
 import { POSTER_FILE_NAME, POSTER_IMAGE_TYPE, POSTER_PIXEL_RATIO } from './plan-poster.constant';
 import { savePlanImage } from './plan-image';
@@ -49,7 +49,6 @@ describe('savePlanImage', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
-    restoreMockedProps();
   });
 
   it('rasterises at twice the declared size and downloads when there is no share sheet', async () => {
