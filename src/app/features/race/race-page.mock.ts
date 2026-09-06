@@ -201,18 +201,19 @@ const gapRow = (
   note: '',
 });
 
-/** Two finishers per gender: each runner-up learns the gap to the place above, the winners stay clean. */
+/** Three men and two women: every non-winner reads against the group winner, the winners stay clean. */
 export const GAP_PROTOCOL_ROWS: ProtocolRow[] = [
   gapRow(1, { fullName: 'Первый Пётр', gender: Gender.male, place: 1, totalMs: 1200000 }),
   gapRow(2, { fullName: 'Второв Василий', gender: Gender.male, place: 2, totalMs: 1212000 }),
-  gapRow(3, { fullName: 'Анина Анна', gender: Gender.female, place: 1, totalMs: 1500000 }),
-  gapRow(4, { fullName: 'Близкова Белла', gender: Gender.female, place: 2, totalMs: 1530000 }),
+  gapRow(3, { fullName: 'Третьев Тимофей', gender: Gender.male, place: 3, totalMs: 1240000 }),
+  gapRow(4, { fullName: 'Анина Анна', gender: Gender.female, place: 1, totalMs: 1500000 }),
+  gapRow(5, { fullName: 'Близкова Белла', gender: Gender.female, place: 2, totalMs: 1530000 }),
 ];
 
 /** Row-by-row `gapMText`/`gapFText` behind GAP_PROTOCOL_ROWS. */
-export const EXPECTED_GAP_M_TEXTS = ['', '+0:12,00', '', ''];
+export const EXPECTED_GAP_M_TEXTS = ['', '+0:12,00', '+0:40,00', '', ''];
 
-export const EXPECTED_GAP_F_TEXTS = ['', '', '', '+0:30,00'];
+export const EXPECTED_GAP_F_TEXTS = ['', '', '', '', '+0:30,00'];
 
 const splitRow = (index: number, { fullName, time23, totalMs }: { fullName: string; time23: string; totalMs: number }): ProtocolRow => ({
   index,

@@ -6,8 +6,8 @@ import { normalizeAthleteKey } from '../../../core/history/athlete-key';
 import { FIVE_KM_DISTANCE_KM } from '../../../core/history/distance.constant';
 import { finishCountsWithDrafts, previousBestsWithDrafts } from '../../../core/history/draft-priors';
 import { eventFinishCounts } from '../../../core/history/finish-counts';
+import { leaderGapsMs } from '../../../core/history/leader-gaps';
 import { splitNote } from '../../../core/history/note-tokens';
-import { placeGapsMs } from '../../../core/history/place-gaps';
 import { prDelta } from '../../../core/history/pr-delta';
 import { prDeltaHint } from '../../../core/history/pr-delta-text';
 import { type PreviousBest } from '../../../core/history/previous-bests.interface';
@@ -90,7 +90,7 @@ export class ParticipantsTable {
   readonly rows = computed(() => {
     const rows = this.#store.protocolRows();
     const ordered = orderProtocolParticipants(this.#store.participants());
-    const gapsMs = placeGapsMs(rows);
+    const gapsMs = leaderGapsMs(rows);
     const finishCounts = this.#finishCounts();
     const previousBests = this.#previousBests();
 

@@ -1,6 +1,8 @@
 /** One protocol line as the «Финиш» tab shows it — the same strings the site will publish. */
 export interface TimerFinishRow {
   fullName: string;
+  /** «+2:54,00» behind the winner of the row's gender group; empty for that winner and for rows without one. */
+  gapText: string;
   index: number;
   /** A DNF or a 2.3 km runner: no 5 km time, and the row is dimmed. */
   out: boolean;

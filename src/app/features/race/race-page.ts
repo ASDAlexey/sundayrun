@@ -19,7 +19,7 @@ import { type FormBaseline } from '../../core/history/form-delta.interface';
 import { medianMsOrNull } from '../../core/history/median';
 import { monthFinalSlugs } from '../../core/history/month-finals';
 import { buildEventNotables } from '../../core/history/notables';
-import { placeGapsMs } from '../../core/history/place-gaps';
+import { leaderGapsMs } from '../../core/history/leader-gaps';
 import { NotableKind } from '../../core/history/notables.enum';
 import { type Notable } from '../../core/history/notables.interface';
 import { splitNote } from '../../core/history/note-tokens';
@@ -310,9 +310,9 @@ interface RaceRowInputs extends RaceRowContext {
   readonly lapGain: number | null;
 }
 
-/** The Smashrun-style gaps and the lap-2 ranks are scanned over the whole protocol before the per-row mapping. */
+/** The leader gaps and the lap-2 ranks are scanned over the whole protocol before the per-row mapping. */
 function toRowViews(rows: ProtocolRow[], context: RaceRowContext): RaceRowView[] {
-  const gapsMs = placeGapsMs(rows);
+  const gapsMs = leaderGapsMs(rows);
   const lapGains = lapPlaceDeltas(rows);
 
   return rows.map((row, index) => toRowView(row, { ...context, gapMs: gapsMs[index], lapGain: lapGains[index] }));

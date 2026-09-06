@@ -11,6 +11,8 @@
 
           <th i18n="@@timer.finishHead5" scope="col">5 км</th>
 
+          <th i18n="@@timer.finishHeadGap" scope="col">Отст.</th>
+
           <th i18n="@@timer.finishHeadPace" scope="col">Темп</th>
         </tr>
       </thead>
@@ -25,6 +27,8 @@
             <td class="timer-finish-board__value"><app-race-time pinnedFraction [value]="row.time23" /></td>
 
             <td class="timer-finish-board__value"><app-race-time pinnedFraction [value]="row.time5" /></td>
+
+            <td class="timer-finish-board__gap"><app-race-time pinnedFraction [value]="row.gapText" /></td>
 
             <td class="timer-finish-board__pace"><app-race-time pinnedFraction [value]="row.paceText" /></td>
           </tr>

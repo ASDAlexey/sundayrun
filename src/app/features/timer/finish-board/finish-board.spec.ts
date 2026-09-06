@@ -49,6 +49,12 @@ describe('TimerFinishBoard', () => {
     expect(element.querySelector('.timer-finish-board__place').textContent.trim()).toBe(FINISH_EXPECTED_ROWS[0].placeText);
     expect(element.querySelectorAll('.timer-finish-board__unassigned-time')).toHaveLength(FINISH_EXPECTED_UNASSIGNED_TIMES.length);
 
+    const gaps = element.querySelectorAll('.timer-finish-board__gap');
+
+    expect(gaps[1].textContent.trim()).toBe('+2:54,00');
+    expect(gaps[0].textContent.trim(), 'the winner of his group is nobody’s chaser').toBe('');
+    expect(gaps[2].textContent.trim(), 'a finisher without a gender has no group leader to read against').toBe('');
+
     sessions.active.set(TIMER_SESSION_WITHOUT_SPLITS);
     fixture.detectChanges();
 

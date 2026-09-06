@@ -178,7 +178,7 @@ describe('RacePage', () => {
     expect(selfRows[0].querySelector('.race__athlete').textContent.trim()).toBe(RACE_SELF_PICK.displayName);
   });
 
-  it('shows each runner-up the gap to the place above in their own gender group', async () => {
+  it('shows each finisher the gap behind the winner of their own gender group', async () => {
     loadResults.mockResolvedValue(buildEventResultsFile(RACE_EVENT, GAP_PROTOCOL_ROWS));
     fixture = await createPage();
 
@@ -193,8 +193,8 @@ describe('RacePage', () => {
 
     expect(
       gaps.map((gap) => gap.textContent.trim()),
-      'one hint per runner-up, none for the winners',
-    ).toEqual(['+0:12,00', '+0:30,00']);
+      'one hint per finisher behind the winner, none for the winners themselves',
+    ).toEqual(['+0:12,00', '+0:40,00', '+0:30,00']);
   });
 
   it('marks the negative split and the places gained on lap 2, staying silent about fades', async () => {

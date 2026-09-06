@@ -30,10 +30,10 @@
   }
 
   // With `table-layout: fixed` it is the first row that sets the columns, and the first row is this
-  // one — so the widths live here and the name column takes whatever is left. Without them all five
+  // one — so the widths live here and the name column takes whatever is left. Without them all six
   // columns would come out equal and «Романенко» would be cut to fit next to a three-character pace.
   //
-  // The three mono columns are sized for the longest reading each of them can hold, hundredths and
+  // The four mono columns are sized for the longest reading each of them can hold, hundredths and
   // all: «19:03,03» measures 72 px in `mono-value` and the pace «3:48,61» 54 px in `mono-meta`, and
   // a `td` that overflows a fixed column does not clip — it prints straight over its neighbour, so
   // an undersized column here is two times on top of each other rather than a tighter table.
@@ -56,6 +56,10 @@
     &:nth-child(3),
     &:nth-child(4) {
       width: 82px;
+    }
+
+    &:nth-child(5) {
+      width: 80px;
     }
 
     &:last-child {
@@ -96,6 +100,15 @@
 
     width: 82px;
     color: var(--text);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  &__gap {
+    @include t.mono-meta;
+
+    width: 80px;
+    color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
     text-align: right;
   }
@@ -158,11 +171,14 @@
     color: var(--text-secondary);
   }
 
-  // Under 420 px the five columns stop fitting without eating the surnames. The pace is the one
-  // column that is arithmetic rather than a measurement — it can be read off the 5 km time — so it
-  // is the one that goes, and the names keep their width.
+  // Under 420 px the six columns stop fitting without eating the surnames. The pace is arithmetic
+  // rather than a measurement — it can be read off the 5 km time — and the 2,3 km split has its own
+  // table on the «Круг» tab, so those two go and the names keep their width. The gap stays: it is
+  // the reading the organiser calls out, and it cannot be derived from anything left on screen.
   @media (width < 420px) {
+    &__head th:nth-child(3),
     &__head th:last-child,
+    &__row td:nth-child(3),
     &__pace {
       display: none;
     }

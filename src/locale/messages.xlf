@@ -2265,14 +2265,14 @@
         </context-group>
       </trans-unit>
       <trans-unit id="guide.gapTitle" datatype="html">
-        <source>🎯 До следующего места</source>
+        <source>🎯 Отставание от лидера</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/guide/guide-page.html</context>
           <context context-type="linenumber">102,104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="guide.gapText" datatype="html">
-        <source> В онлайн-протоколе под местом в своей группе видно отставание от бегуна на строчку выше: не просто «вы пятый», а «до четвёртого не хватило 12 секунд». Конкретная цель на следующее воскресенье. </source>
+        <source> В онлайн-протоколе под местом в своей группе видно отставание от лидера: не просто «вы пятый», а «до победителя 1:42». Мера разрыва с лучшим — та самая цель, к которой тянуться следующее воскресенье. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/guide/guide-page.html</context>
           <context context-type="linenumber">105,109</context>
@@ -3356,7 +3356,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="preview.table.gapTitle" datatype="html">
-        <source>До следующего места в своей группе</source>
+        <source>Отставание от лидера своей группы</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/preview/participants-table/participants-table.html</context>
           <context context-type="linenumber">163,165</context>
@@ -3836,7 +3836,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="race.gapTitle" datatype="html">
-        <source>До следующего места в своей группе</source>
+        <source>Отставание от лидера своей группы</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/race/race-page.html</context>
           <context context-type="linenumber">251,252</context>
@@ -5146,25 +5146,32 @@
           <context context-type="linenumber">12,14</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="timer.finishHeadGap" datatype="html">
+        <source>Отст.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/timer/finish-board/finish-board.html</context>
+          <context context-type="linenumber">14,16</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="timer.finishHeadPace" datatype="html">
         <source>Темп</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/finish-board/finish-board.html</context>
-          <context context-type="linenumber">14,17</context>
+          <context context-type="linenumber">16,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.finishEmpty" datatype="html">
         <source>Протокол пуст: в составе ещё никого нет.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/finish-board/finish-board.html</context>
-          <context context-type="linenumber">35,38</context>
+          <context context-type="linenumber">39,42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.finishUnnamedHint" datatype="html">
         <source> Привяжите их к участникам или выбросьте осознанно — иначе они не уедут в архив. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/finish-board/finish-board.html</context>
-          <context context-type="linenumber">49,53</context>
+          <context context-type="linenumber">53,57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.finishUnnamedOne" datatype="html">
@@ -6603,70 +6610,70 @@
         <source> Добавить атлета <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;timer__tab-count&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{ header().runnerCount }}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">172,175</context>
+          <context context-type="linenumber">171,174</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.announceLap" datatype="html">
         <source>круг</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">197,199</context>
+          <context context-type="linenumber">196,198</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.announceFinish" datatype="html">
         <source>финиш</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">200,202</context>
+          <context context-type="linenumber">199,201</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.announceUndo" datatype="html">
         <source>отменено</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">203,207</context>
+          <context context-type="linenumber">202,206</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.resetAction" datatype="html">
         <source>Сбросить времена</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">226,228</context>
+          <context context-type="linenumber">225,227</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.resetHeading" datatype="html">
         <source>Сбросить забег?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">228,229</context>
+          <context context-type="linenumber">227,228</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.clearRosterAction" datatype="html">
         <source>Очистить состав</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">239,241</context>
+          <context context-type="linenumber">238,240</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.clearRosterHeading" datatype="html">
         <source>Очистить состав?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">241,242</context>
+          <context context-type="linenumber">240,241</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.homeTitle" datatype="html">
         <source>Секундомер забега</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">252,254</context>
+          <context context-type="linenumber">251,253</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.homeLead" datatype="html">
         <source>Соберите состав, нажмите «Старт» и тапайте по фамилиям на финише.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/timer/timer-page.html</context>
-          <context context-type="linenumber">254,256</context>
+          <context context-type="linenumber">253,255</context>
         </context-group>
       </trans-unit>
       <trans-unit id="timer.toggleOn" datatype="html">

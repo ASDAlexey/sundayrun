@@ -24,7 +24,7 @@ export const FEMALE_GENDER_TEXT = $localize`:@@race.genderFemale:Ж`;
 /** Absent time, place, gender, club or note cells stay blank, matching the published PDF. */
 export const EMPTY_CELL_TEXT = '';
 
-/** Leads the Smashrun-style «до следующего места» gap under the gender place: «+0:12». */
+/** Leads the «отставание от лидера» gap under the gender place: «+0:12». */
 export const GAP_TEXT_PREFIX = '+';
 
 /** Leads the count of places gained on lap 2 under the finish time: «+3». */

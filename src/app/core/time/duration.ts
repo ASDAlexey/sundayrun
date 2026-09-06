@@ -53,7 +53,7 @@ export function formatDuration(ms: number): string {
 
 /**
  * Formats milliseconds as 'm:ss,cc' or 'h:mm:ss,cc' (>= 1 hour) — the form every measured result
- * is drawn in: finish times, splits, paces, medians, the gap to the next place.
+ * is drawn in: finish times, splits, paces, medians, the gap behind the leader.
  *
  * The hundredths are always printed, zeros included. Most of the archive was written down to whole
  * seconds and can only ever read ',00', but a column that dropped the fraction on those rows and

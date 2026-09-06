@@ -54,9 +54,9 @@ export interface RaceRowView {
   placeMMedalClass: string;
   /** The same gold/silver/bronze modifier for the female podium. */
   placeFMedalClass: string;
-  /** «+0:12» до следующего места в своей группе under the male place; blank for winners, ties and the rest. */
+  /** «+0:12» отставание от лидера своей группы under the male place; blank for the winner and the rest. */
   gapMText: string;
-  /** The same Smashrun-style gap under the female place. */
+  /** The same leader gap under the female place. */
   gapFText: string;
   /** «Каким по счёту» — the athlete's 5 km finish count as of this race; blank for DNF and one-lap rows. */
   finishCountText: string;

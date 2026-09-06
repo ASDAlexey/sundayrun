@@ -4,7 +4,7 @@ import { NoteBadgeKind, type NoteBadgeKindType } from '../../../core/protocol/no
 /** Absent time, place, count or note cells stay blank, matching the published protocol. */
 export const EMPTY_CELL_TEXT = '';
 
-/** Leads the Smashrun-style «до следующего места» gap under the gender place: «+0:12». */
+/** Leads the «отставание от лидера» gap under the gender place: «+0:12». */
 export const GAP_TEXT_PREFIX = '+';
 
 /** The BEM modifier of each badge kind; `plain` renders as running text and carries no chip. */
