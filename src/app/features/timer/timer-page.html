@@ -162,13 +162,7 @@
     @if (tapeNeeded()) {
       <div class="timer__actions">
         @if (current.status === statuses.idle) {
-          <button
-            class="timer__roster"
-            i18n="@@timer.roster"
-            type="button"
-            [class.timer__roster_call]="header().runnerCount === 0"
-            (click)="onPicker()"
-          >
+          <button class="timer__roster" i18n="@@timer.roster" type="button" (click)="onPicker()">
             Добавить атлета
 
             <span class="timer__tab-count">{{ header().runnerCount }}</span>

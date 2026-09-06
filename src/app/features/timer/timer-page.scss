@@ -324,7 +324,7 @@
   // Before the start the roster is the whole job, so it shares the panel with the keys; during the
   // race the same sheet lives in «⋮» and «ОТСЕЧКА» gets the width back (design §7.1).
   &__roster {
-    @include b.button-outline;
+    @include b.button-accent;
 
     display: inline-flex;
     flex: none;
@@ -342,13 +342,6 @@
     // so «ОТСЕЧКА» narrows instead of this key breaking in half over the count.
     white-space: nowrap;
     touch-action: manipulation;
-
-    // Nobody in the line-up yet: this key is the only thing on screen worth pressing, so it says so.
-    &_call {
-      border-color: var(--accent);
-      background: var(--accent-glow);
-      color: var(--accent-light);
-    }
   }
 
   // ---------------------------------------------------------------------------------------------
