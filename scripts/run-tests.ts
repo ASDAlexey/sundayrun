@@ -137,7 +137,15 @@ const runOne = (env: NodeJS.ProcessEnv, label: string | undefined): Promise<numb
   });
 
 if (!isSharded) {
-  process.exit(await runOne(process.env, undefined));
+  // Whole-suite coverage in one process on a small runner: forks give every worker its own
+  // instrumented heap and the 4-CPU GitHub runner OOM-kills one — threads share it, like a shard.
+  const sharedHeap = withCoverage && cpuCount < MIN_SHARD_CPUS;
+  process.exit(
+    await runOne(
+      sharedHeap ? { ...process.env, SPECS_POOL: 'threads', SPECS_MAX_WORKERS: String(WORKERS_PER_PROCESS) } : process.env,
+      undefined,
+    ),
+  );
 }
 
 // Stale directories would be merged into the report as if they were part of this run.
