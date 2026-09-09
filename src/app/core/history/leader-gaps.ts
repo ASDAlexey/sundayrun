@@ -11,14 +11,15 @@ export function leaderGapsMs(rows: readonly LeaderGapRow[]): (number | null)[] {
   const winnerMs = winnerMsOf(rows);
 
   return rows.map((row) => {
-    if (row.gender === null || row.totalMs === null || row.distanceKm !== FIVE_KM_DISTANCE_KM) {
+    const leaderMs = row.gender === null ? null : winnerMs[row.gender];
+
+    if (leaderMs === null || row.totalMs === null || row.distanceKm !== FIVE_KM_DISTANCE_KM) {
       return null;
     }
 
-    const leaderMs = winnerMs[row.gender];
-    const gapMs = leaderMs === null ? null : row.totalMs - leaderMs;
+    const gapMs = row.totalMs - leaderMs;
 
-    return gapMs !== null && gapMs > 0 ? gapMs : null;
+    return gapMs > 0 ? gapMs : null;
   });
 }
 
