@@ -4,6 +4,9 @@ export const MAIN_CONTENT_ID = 'main';
 /** The site author's personal page, credited in the footer. */
 export const CREATOR_SITE_URL = 'https://asdalexey.github.io/ru/';
 
+/** The second developer's personal page, credited in the footer. */
+export const SECOND_DEVELOPER_SITE_URL = 'https://denis-shirshov.ru/';
+
 /** The run's VK community, linked from the footer organizer block. */
 export const VK_COMMUNITY_URL = 'https://vk.com/parkgorkogoruntgn';
 

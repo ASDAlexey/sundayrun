@@ -423,6 +423,11 @@
     }
   }
 
+  // A link that follows a site line opens the next credited developer — keep the pairs apart.
+  &__meta + &__link {
+    margin-top: 4px;
+  }
+
   &__bottom {
     border-top: 1px solid var(--border);
   }

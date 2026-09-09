@@ -8,6 +8,7 @@ import {
   HOME_PAGE_LINK,
   MAIN_CONTENT_ID,
   RACES_LIST_PAGE_LINK,
+  SECOND_DEVELOPER_SITE_URL,
   TIMER_PAGE_LINK,
   VERSUS_PAGE_LINK,
   VK_COMMUNITY_URL,
@@ -52,6 +53,7 @@ export class App {
   protected readonly timerLink = TIMER_PAGE_LINK;
   protected readonly adminLink = ADMIN_PAGE_LINK;
   protected readonly creatorUrl = CREATOR_SITE_URL;
+  protected readonly secondDeveloperUrl = SECOND_DEVELOPER_SITE_URL;
   protected readonly vkUrl = VK_COMMUNITY_URL;
   protected readonly version = APP_VERSION;
 
