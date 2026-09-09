@@ -49,6 +49,9 @@ const NODE = 'node';
 const CPUS_PER_PROCESS = 2;
 const GB_PER_PROCESS = 3;
 const MAX_PROCESSES = 8;
+// A shard is a whole `ng test`: its own bundle, its own heap, its own report pass at the end. Two of
+// those on the 4-CPU GitHub runner took the runner down with them, so small machines run unsplit.
+const MIN_SHARD_CPUS = 8;
 // Two: on the `threads` pool the pair shares one heap and one instrumentation pass, and a third
 // worker starts costing more in contention than it returns (48 s against 40 s at four).
 const WORKERS_PER_PROCESS = 2;
@@ -66,6 +69,10 @@ const detectProcesses = (): number => {
   if (!withCoverage) {
     // Nothing to split: without instrumentation the whole suite is a few seconds, and a second
     // bundle build would cost more than it saves.
+    return 1;
+  }
+
+  if (cpuCount < MIN_SHARD_CPUS) {
     return 1;
   }
 
