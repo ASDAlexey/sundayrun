@@ -140,12 +140,16 @@ if (!isSharded) {
   // Whole-suite coverage in one process on a small runner: forks give every worker its own
   // instrumented heap and the 4-CPU GitHub runner OOM-kills one — threads share it, like a shard.
   const sharedHeap = withCoverage && cpuCount < MIN_SHARD_CPUS;
-  process.exit(
-    await runOne(
-      sharedHeap ? { ...process.env, SPECS_POOL: 'threads', SPECS_MAX_WORKERS: String(WORKERS_PER_PROCESS) } : process.env,
-      undefined,
-    ),
-  );
+  // One heap for the whole suite tops V8's ~4 GB default ceiling (the runner died at 4.1 GB):
+  // lift old space to half the machine's RAM, capped at 8 GB.
+  const heapMb = Math.max(4096, Math.min(8192, Math.floor((memoryGb / 2) * 1024)));
+  const sharedEnv: NodeJS.ProcessEnv = {
+    ...process.env,
+    SPECS_POOL: 'threads',
+    SPECS_MAX_WORKERS: String(WORKERS_PER_PROCESS),
+    NODE_OPTIONS: `${process.env['NODE_OPTIONS'] ? `${process.env['NODE_OPTIONS']} ` : ''}--max-old-space-size=${heapMb}`,
+  };
+  process.exit(await runOne(sharedHeap ? sharedEnv : process.env, undefined));
 }
 
 // Stale directories would be merged into the report as if they were part of this run.
