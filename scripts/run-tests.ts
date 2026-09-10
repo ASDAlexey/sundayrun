@@ -1,6 +1,6 @@
-import { spawn } from 'node:child_process';
+import { spawn, type ChildProcess } from 'node:child_process';
 import { rmSync } from 'node:fs';
-import { availableParallelism, totalmem } from 'node:os';
+import { availableParallelism, freemem, totalmem } from 'node:os';
 
 /**
  * Entry point for `bun run test` and `bun run test:coverage`.
@@ -65,6 +65,22 @@ const passthrough = args.filter((arg) => arg !== '--coverage');
 const cpuCount = availableParallelism();
 const memoryGb = totalmem() / 1024 ** 3;
 
+// GitHub renders ANSI in the log without giving the step a TTY, so colour is on unless NO_COLOR asks
+// otherwise: a run that dies from the outside must not look like one more grey line among 250 green ones.
+const paint = (text: string): string => (process.env['NO_COLOR'] ? text : `\x1b[1;31m${text}\x1b[0m`);
+
+const memoryNow = (): string => `${(freemem() / 1024 ** 3).toFixed(1)} GB free of ${Math.round(memoryGb)} GB`;
+
+const reportFailure = (headline: string, details: string[]): void => {
+  console.error(paint(`\nERROR: ${headline}`));
+
+  for (const detail of details) {
+    console.error(paint(`       ${detail}`));
+  }
+
+  console.error('');
+};
+
 const detectProcesses = (): number => {
   if (!withCoverage) {
     // Nothing to split: without instrumentation the whole suite is a few seconds, and a second
@@ -83,6 +99,46 @@ const detectProcesses = (): number => {
 
 const processCount = Math.max(1, Number(process.env['SPECS_PROCESSES']) || detectProcesses());
 const isSharded = processCount > 1;
+// One heap for the whole suite tops V8's ~4 GB default ceiling (the runner died at 4.1 GB): lift old
+// space to half the machine's RAM, capped at 8 GB.
+const heapMb = Math.max(4096, Math.min(8192, Math.floor((memoryGb / 2) * 1024)));
+// Whole-suite coverage in one process on a small runner: forks give every worker its own instrumented
+// heap and the 4-CPU GitHub runner OOM-kills one — threads share it, like a shard.
+const sharedHeap = withCoverage && !isSharded && cpuCount < MIN_SHARD_CPUS;
+
+const shape = (): string =>
+  `${isSharded ? `${processCount} shards x ` : ''}${WORKERS_PER_PROCESS} workers${sharedHeap ? `, heap cap ${heapMb} MB` : ''}, ${cpuCount} CPU`;
+
+const children = new Set<ChildProcess>();
+
+let terminating = false;
+
+// Bun's own epitaph for a killed run is `terminated by signal SIGTERM (Polite quit request)`, which
+// names neither the sender nor the reason; the free-memory reading is what tells cancel from OOM.
+const onSignal = (signal: NodeJS.Signals): void => {
+  if (terminating) {
+    return;
+  }
+
+  terminating = true;
+
+  reportFailure(`the test run was terminated by ${signal} from the outside — every test that had run was still green`, [
+    signal === 'SIGINT'
+      ? 'Interrupted from the keyboard.'
+      : 'Nobody inside the run sends this: the CI job was cancelled, hit a timeout, or the machine ran out of memory and took the process tree with it.',
+    `Memory right now: ${memoryNow()}. This run: ${shape()}.`,
+    'Free memory near zero means it was the memory — lower the heap cap or the worker count in scripts/run-tests.ts.',
+  ]);
+
+  for (const child of children) {
+    child.kill(signal);
+  }
+
+  process.exit(signal === 'SIGINT' ? 130 : 143);
+};
+
+process.on('SIGTERM', () => onSignal('SIGTERM'));
+process.on('SIGINT', () => onSignal('SIGINT'));
 
 /**
  * Runs one `ng test`. `label` is set only when several run side by side, where two processes
@@ -104,6 +160,8 @@ const runOne = (env: NodeJS.ProcessEnv, label: string | undefined): Promise<numb
       ],
       { stdio: label ? ['ignore', 'pipe', 'pipe'] : 'inherit', env },
     );
+
+    children.add(child);
 
     if (label) {
       for (const stream of [child.stdout, child.stderr]) {
@@ -128,21 +186,30 @@ const runOne = (env: NodeJS.ProcessEnv, label: string | undefined): Promise<numb
     // ends with exit 1 and a quarter of the suite silently missing from the log and from
     // `coverage/shard-*`.
     child.on('exit', (code, signal) => {
+      children.delete(child);
+
       if (label && (signal || code !== 0)) {
         process.stdout.write(`${label} exited with ${signal ? `signal ${signal}` : `code ${code}`}\n`);
+      }
+
+      if (signal && !terminating) {
+        reportFailure(`${label ? `shard ${label}` : 'the test run'} was killed by ${signal} — no test failed, the process was taken down`, [
+          signal === 'SIGKILL'
+            ? 'The OS out-of-memory killer is the usual sender of this one.'
+            : 'Something outside the suite sent it — a cancelled CI job, a timeout, or the OS under memory pressure.',
+          `Memory right now: ${memoryNow()}. This run: ${shape()}.`,
+        ]);
       }
 
       resolve(signal ? 1 : (code ?? 1));
     });
   });
 
+if (withCoverage) {
+  console.info(`[test] ${shape()}, ${Math.round(memoryGb)} GB RAM, coverage on`);
+}
+
 if (!isSharded) {
-  // Whole-suite coverage in one process on a small runner: forks give every worker its own
-  // instrumented heap and the 4-CPU GitHub runner OOM-kills one — threads share it, like a shard.
-  const sharedHeap = withCoverage && cpuCount < MIN_SHARD_CPUS;
-  // One heap for the whole suite tops V8's ~4 GB default ceiling (the runner died at 4.1 GB):
-  // lift old space to half the machine's RAM, capped at 8 GB.
-  const heapMb = Math.max(4096, Math.min(8192, Math.floor((memoryGb / 2) * 1024)));
   const sharedEnv: NodeJS.ProcessEnv = {
     ...process.env,
     SPECS_POOL: 'threads',
@@ -154,10 +221,6 @@ if (!isSharded) {
 
 // Stale directories would be merged into the report as if they were part of this run.
 rmSync('coverage', { recursive: true, force: true });
-
-console.info(
-  `[test] ${processCount} processes x ${WORKERS_PER_PROCESS} workers, coverage on (${cpuCount} CPU, ${Math.round(memoryGb)} GB)`,
-);
 
 const codes = await Promise.all(
   Array.from({ length: processCount }, (_, slot) =>
