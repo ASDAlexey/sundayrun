@@ -11,7 +11,8 @@ import { availableParallelism, freemem, totalmem } from 'node:os';
  *    so the edit loop must not pay for a report nobody reads. CI and the pre-push hook call
  *    `test:coverage`, which turns it back on together with the 100% gate.
  *
- * 2. A coverage run is split across several `ng test` processes. Past ~3 workers the limit is not
+ * 2. A coverage run is split across several `ng test` processes — side by side on a big machine, one
+ *    after another where the memory is not there for two. Past ~3 workers the limit is not
  *    the CPU but the one main thread of the process: it remaps every file's coverage out of the
  *    spec bundle back into the source, walks the untouched files and receives each worker's
  *    counters over RPC, all serially — the full run sits at ~175% CPU of the 1600% this machine
@@ -19,8 +20,9 @@ import { availableParallelism, freemem, totalmem } from 'node:os';
  *    `SPECS_SHARD_INDEX`/`SPECS_SHARD_TOTAL` in vitest-base.config.ts, each process writes
  *    `coverage/shard-<n>`, and scripts/merge-coverage.ts merges them and applies the gate.
  *
- * Overrides, all optional: `SPECS_PROCESSES` (how many `ng test` processes), `SPECS_MAX_WORKERS`
- * (Vitest workers inside one process), `SPECS_POOL` (`threads` or `forks`).
+ * Overrides, all optional: `SPECS_PROCESSES` (how many `ng test` processes), `SPECS_PARALLEL` (how
+ * many of them at a time), `SPECS_MAX_WORKERS` (Vitest workers inside one process), `SPECS_POOL`
+ * (`threads` or `forks`).
  */
 const ANGULAR_CLI = 'node_modules/@angular/cli/bin/ng.js';
 // `node`, not `process.execPath`: this script runs under bun, which reports itself as Node 24.3.0,
@@ -50,8 +52,15 @@ const CPUS_PER_PROCESS = 2;
 const GB_PER_PROCESS = 3;
 const MAX_PROCESSES = 8;
 // A shard is a whole `ng test`: its own bundle, its own heap, its own report pass at the end. Two of
-// those on the 4-CPU GitHub runner took the runner down with them, so small machines run unsplit.
+// those side by side took the 4-CPU GitHub runner down with them — below this many CPUs the shards
+// still happen, one at a time.
 const MIN_SHARD_CPUS = 8;
+// What a small machine splits the suite into. The whole suite in one process is what the 16 GB
+// runner kept dying of: 255 spec files instrumented into one heap topped V8's 4 GB ceiling, and
+// lifting the ceiling only moved the death to the machine, which took the process tree with it.
+// A quarter of the files is ~2 GB live, and one shard at a time means only ever one of those plus
+// its own report pass — the merge at the end is what sees the whole suite.
+const SMALL_MACHINE_SHARDS = 4;
 // Two: on the `threads` pool the pair shares one heap and one instrumentation pass, and a third
 // worker starts costing more in contention than it returns (48 s against 40 s at four).
 const WORKERS_PER_PROCESS = 2;
@@ -69,7 +78,18 @@ const memoryGb = totalmem() / 1024 ** 3;
 // otherwise: a run that dies from the outside must not look like one more grey line among 250 green ones.
 const paint = (text: string): string => (process.env['NO_COLOR'] ? text : `\x1b[1;31m${text}\x1b[0m`);
 
-const memoryNow = (): string => `${(freemem() / 1024 ** 3).toFixed(1)} GB free of ${Math.round(memoryGb)} GB`;
+// The reading taken when the run dies is worthless on its own: the OS frees what it killed before
+// anyone gets to look, so an out-of-memory death reports a nearly empty machine. The low-water mark
+// is what tells one apart from a cancelled job.
+const freeGb = (): number => freemem() / 1024 ** 3;
+
+let lowestFreeGb = freeGb();
+
+setInterval(() => {
+  lowestFreeGb = Math.min(lowestFreeGb, freeGb());
+}, 1000).unref();
+
+const memoryNow = (): string => `${freeGb().toFixed(1)} GB free of ${Math.round(memoryGb)} GB, low-water ${lowestFreeGb.toFixed(1)} GB`;
 
 const reportFailure = (headline: string, details: string[]): void => {
   console.error(paint(`\nERROR: ${headline}`));
@@ -89,7 +109,7 @@ const detectProcesses = (): number => {
   }
 
   if (cpuCount < MIN_SHARD_CPUS) {
-    return 1;
+    return SMALL_MACHINE_SHARDS;
   }
 
   const budget = Math.min(Math.floor(cpuCount / CPUS_PER_PROCESS), Math.floor(memoryGb / GB_PER_PROCESS));
@@ -99,15 +119,16 @@ const detectProcesses = (): number => {
 
 const processCount = Math.max(1, Number(process.env['SPECS_PROCESSES']) || detectProcesses());
 const isSharded = processCount > 1;
-// One heap for the whole suite tops V8's ~4 GB default ceiling (the runner died at 4.1 GB): lift old
-// space to half the machine's RAM, capped at 8 GB.
-const heapMb = Math.max(4096, Math.min(8192, Math.floor((memoryGb / 2) * 1024)));
-// Whole-suite coverage in one process on a small runner: forks give every worker its own instrumented
-// heap and the 4-CPU GitHub runner OOM-kills one — threads share it, like a shard.
-const sharedHeap = withCoverage && !isSharded && cpuCount < MIN_SHARD_CPUS;
+// How many shards are allowed to run at once. A machine that has the CPUs for the split has the
+// memory for it too; the small runner gets the same split spread over time instead.
+const parallelism = Math.max(
+  1,
+  Math.min(processCount, Number(process.env['SPECS_PARALLEL']) || (cpuCount < MIN_SHARD_CPUS ? 1 : processCount)),
+);
 
-const shape = (): string =>
-  `${isSharded ? `${processCount} shards x ` : ''}${WORKERS_PER_PROCESS} workers${sharedHeap ? `, heap cap ${heapMb} MB` : ''}, ${cpuCount} CPU`;
+const spread = parallelism > 1 ? `x ${parallelism} at a time` : 'one at a time';
+
+const shape = (): string => `${isSharded ? `${processCount} shards ${spread}, ` : ''}${WORKERS_PER_PROCESS} workers, ${cpuCount} CPU`;
 
 const children = new Set<ChildProcess>();
 
@@ -127,7 +148,7 @@ const onSignal = (signal: NodeJS.Signals): void => {
       ? 'Interrupted from the keyboard.'
       : 'Nobody inside the run sends this: the CI job was cancelled, hit a timeout, or the machine ran out of memory and took the process tree with it.',
     `Memory right now: ${memoryNow()}. This run: ${shape()}.`,
-    'Free memory near zero means it was the memory — lower the heap cap or the worker count in scripts/run-tests.ts.',
+    'A low-water mark near zero means it was the memory — split the suite further in scripts/run-tests.ts.',
   ]);
 
   for (const child of children) {
@@ -210,31 +231,36 @@ if (withCoverage) {
 }
 
 if (!isSharded) {
-  const sharedEnv: NodeJS.ProcessEnv = {
-    ...process.env,
-    SPECS_POOL: 'threads',
-    SPECS_MAX_WORKERS: String(WORKERS_PER_PROCESS),
-    NODE_OPTIONS: `${process.env['NODE_OPTIONS'] ? `${process.env['NODE_OPTIONS']} ` : ''}--max-old-space-size=${heapMb}`,
-  };
-  process.exit(await runOne(sharedHeap ? sharedEnv : process.env, undefined));
+  process.exit(await runOne(process.env, undefined));
 }
 
 // Stale directories would be merged into the report as if they were part of this run.
 rmSync('coverage', { recursive: true, force: true });
 
-const codes = await Promise.all(
-  Array.from({ length: processCount }, (_, slot) =>
-    runOne(
-      {
-        ...process.env,
-        SPECS_SHARD_INDEX: String(slot + 1),
-        SPECS_SHARD_TOTAL: String(processCount),
-        SPECS_MAX_WORKERS: process.env['SPECS_MAX_WORKERS'] ?? String(WORKERS_PER_PROCESS),
-      },
-      `[${slot + 1}/${processCount}]`,
-    ),
-  ),
-);
+const shardEnv = (slot: number): NodeJS.ProcessEnv => ({
+  ...process.env,
+  SPECS_SHARD_INDEX: String(slot + 1),
+  SPECS_SHARD_TOTAL: String(processCount),
+  SPECS_MAX_WORKERS: process.env['SPECS_MAX_WORKERS'] ?? String(WORKERS_PER_PROCESS),
+});
+
+const codes = new Array<number>(processCount).fill(1);
+
+let nextSlot = 0;
+
+// One lane per shard allowed to run at once. Sequential lanes need no label — nothing else is
+// writing to the terminal — so the shard announces itself and then prints as `ng test` always does.
+const lane = async (): Promise<void> => {
+  for (let slot = nextSlot++; slot < processCount; slot = nextSlot++) {
+    if (parallelism === 1) {
+      console.info(`[test] shard ${slot + 1}/${processCount}`);
+    }
+
+    codes[slot] = await runOne(shardEnv(slot), parallelism > 1 ? `[${slot + 1}/${processCount}]` : undefined);
+  }
+};
+
+await Promise.all(Array.from({ length: parallelism }, () => lane()));
 
 const failed = codes.find((code) => code !== 0);
 
