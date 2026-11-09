@@ -55,6 +55,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://asdalexey.github.io/sundayrun/races/2026-10-11</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://asdalexey.github.io/sundayrun/races/2026-10-04</loc>
     <lastmod>2026-10-04</lastmod>
     <changefreq>yearly</changefreq>
